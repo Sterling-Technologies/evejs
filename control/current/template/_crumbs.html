@@ -1,0 +1,15 @@
+<ul class="breadcrumb">
+    {{#crumbs}}
+    <li{{#active}} class="active"{{/active}}>
+        {{#icon}}
+        <i class="icon-{{icon}}"></i>
+        {{/icon}}
+        {{#path}}
+        <a href="{{path}}">{{label}}</a>
+        {{/path}}
+        {{^path}}
+        {{label}}
+        {{/path}}
+    </li>
+    {{/crumbs}}
+</ul><!-- .breadcrumb -->
