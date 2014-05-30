@@ -44,6 +44,16 @@ module.exports = function() {
 	};
 	
 	/**
+	 * Global event once listener for the server
+	 *
+	 * @return this
+	 */
+	public.once = function(event, callback) {
+		_events.once(event, callback);
+		return this;
+	};
+	
+	/**
 	 * Returns the path given the key
 	 *
 	 * @param string

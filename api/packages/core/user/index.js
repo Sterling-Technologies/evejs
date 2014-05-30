@@ -44,7 +44,7 @@ module.exports = function() {
 	//when a server request has been made
 	.listen('server-request', this.eden.alter(function(control, request, response) {
 		//if path does not starts with /user
-		if(request.path.indexOf('/user') !== 0) {
+		if(request.path.indexOf('/user/') !== 0) {
 			//do nothing
 			return;
 		}

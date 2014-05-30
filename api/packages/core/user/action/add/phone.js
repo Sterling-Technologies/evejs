@@ -35,7 +35,7 @@ module.exports = function(controller, request, response) {
 	//3. TRIGGER
 	controller
 		//when there is an error
-		.listen('user-add-phone-error', function(error) {
+		.once('user-add-phone-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 
 				error: true, 
@@ -45,7 +45,7 @@ module.exports = function(controller, request, response) {
 			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
-		.listen('user-add-phone-success', function() {
+		.once('user-add-phone-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
 			

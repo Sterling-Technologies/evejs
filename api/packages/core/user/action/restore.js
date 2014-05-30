@@ -16,7 +16,7 @@ module.exports = function(controller, request, response) {
 	//2. TRIGGER
 	controller
 		//when there is an error
-		.listen('user-restore-error', function(error) {
+		.once('user-restore-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 
 				error: true, 
@@ -26,7 +26,7 @@ module.exports = function(controller, request, response) {
 			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
-		.listen('user-restore-success', function() {
+		.once('user-restore-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
 			

@@ -16,7 +16,7 @@ module.exports = function(controller, request, response) {
 	//2. TRIGGER
 	controller
 		//when there is an error
-		.listen('user-remove-error', function(error) {
+		.once('user-remove-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 
 				error: true, 
@@ -26,7 +26,7 @@ module.exports = function(controller, request, response) {
 			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
-		.listen('user-remove-success', function() {
+		.once('user-remove-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
 			

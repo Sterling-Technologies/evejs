@@ -8,7 +8,7 @@ module.exports = function(controller, request, response) {
 	//2. TRIGGER
 	controller
 		//when there is an error
-		.listen('user-create-error', function(error) {
+		.once('user-create-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 
 				error: true, 
@@ -18,7 +18,7 @@ module.exports = function(controller, request, response) {
 			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
-		.listen('user-create-success', function() {
+		.once('user-create-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
 			
