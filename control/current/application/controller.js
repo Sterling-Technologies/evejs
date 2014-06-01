@@ -106,6 +106,17 @@ var controller = function() {
 	};
 	
 	/**
+	 * Sets a global template partial
+	 *
+	 * @param string partial name
+	 * @param string template
+	 */
+	public.setPartial = function(key, template) {
+		Handlebars.registerPartial(key, template);
+		return this;
+	};
+	
+	/**
 	 * Global event trigger for the server
 	 *
 	 * @return this
@@ -135,18 +146,21 @@ var controller = function() {
 		
 		//require all the default templates
 		require(templates, function(page, head, foot, menu) {
-			//render head
-			head = Mustache.render(head, { right: false });
-			
 			//allow any package to add to the menu
 			self.trigger('menu', [self.menu]);
 			
+			//render head
+			head = Handlebars.compile(head)({ right: false });
+			
+			//render menu
+			menu = Handlebars.compile(menu)({ items: self.menu });
+			
 			//render page
-			$(document.body).html(Mustache.render(page, {
+			$(document.body).html(Handlebars.compile(page)({
 				head		: head,
 				foot		: foot,
-				menu		: self.menu,
-			}, { menu: menu }));
+				menu		: menu
+			}));
 			
 			//listen for a change in url
 			self.listen('request', function(e) {
@@ -315,10 +329,11 @@ var controller = function() {
 		//get the alert template
 		require(['text!' + this.path('template') + '/_alert.html'], function(template) {
 			//add the message to the messages container
-			$('#messages').append(Mustache.render(template, {
+			$('#messages').append(Handlebars.compile(template)({
 				type	: type,
 				message	: message,
-				icon	: icon }));
+				icon	: icon
+			}));
 		});
 		
 		return this;
@@ -330,29 +345,15 @@ var controller = function() {
 	 * @param array
 	 * @return this
 	 */
-	public.setBody = function(template, variables, partials) {
+	public.setBody = function(template, variables) {
 		var self = this, templates = ['text!' + template];
 		
-		partials 	= partials || {};
 		variables 	= variables || {};
-		
-		//add in the partials to the 
-		//template list for the require
-		for(var key in partials) {
-			templates.push('text!' + partials[key]);
-		}	
 		
 		//bulk load the templates
 		require(templates, function(template) {
-			//bind the HTML templates to the partials
-			var i = 1;
-			for(var key in partials) {
-				partials[key] = arguments[i];
-				i++;
-			}
-			
 			//render the body
-			$('#body').html(Mustache.render(template, variables, partials));
+			$('#body').html(Handlebars.compile(template)(variables));
 			
 			//trigger body event
 			self.trigger('body');
@@ -371,7 +372,7 @@ var controller = function() {
 		//get the global crumbs template
 		require(['text!' + this.path('template') + '/_crumbs.html'], function(template) {
 			//add the crumbs to the breadcrumbs container
-			$('#breadcrumbs').html(Mustache.render(template, { crumbs: crumbs }));
+			$('#breadcrumbs').html(Handlebars.compile(template)({ crumbs: crumbs }));
 		});
 		
 		return this;

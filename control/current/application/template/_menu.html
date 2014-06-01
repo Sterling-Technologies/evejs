@@ -4,7 +4,7 @@
 
 <div class="sidebar" id="sidebar">
     <ul class="nav nav-list">
-        {{#menu}}
+        {{#items}}
         <li>
         	<a href="{{path}}">
             	{{#icon}}
@@ -12,9 +12,9 @@
                 {{/icon}}
         		<span class="menu-text">{{label}}</span>
             </a>
-            {{#children.length}}
+            {{#if children}}
             <ul class="submenu">
-                {{#children}}
+                {{#each children}}
                 <li>
                     <a href="{{path}}">
                         {{#icon}}
@@ -22,9 +22,9 @@
                         {{/icon}}
                         <span class="menu-text">{{label}}</span>
                     </a>
-                    {{#grand.length}}
+                    {{#if children}}
                     <ul class="submenu">
-                        {{#grand}}
+                        {{#each children}}
                         <li>
                             <a href="{{path}}">
                                 {{#icon}}
@@ -33,15 +33,15 @@
                                 <span class="menu-text">{{label}}</span>
                             </a>
                         </li>
-                        {{/grand}}
+                        {{/each}}
                     </ul>
-                    {{/grand.length}}
+                    {{/if}}
                 </li>
-                {{/children}}
+                {{/each}}
             </ul>
-            {{/children.length}}
+            {{/if}}
         </li>
-        {{/menu}}
+        {{/items}}
     </ul><!-- /.nav-list -->
 
     <div class="sidebar-collapse" id="sidebar-collapse">

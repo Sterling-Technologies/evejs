@@ -105,6 +105,17 @@ var controller = function() {
 	};
 	
 	/**
+	 * Sets a global template partial
+	 *
+	 * @param string partial name
+	 * @param string template
+	 */
+	public.setPartial = function(key, template) {
+		Handlebars.registerPartial(key, template);
+		return this;
+	};
+	
+	/**
 	 * Global event trigger for the server
 	 *
 	 * @return this
@@ -132,16 +143,12 @@ var controller = function() {
 				'text!' + this.path('template') + '/_foot.html'];
 		
 		//require all the default templates
-		require(templates, function(page, head, foot, menu) {
-			
-			//render head
-			head = Mustache.render(head, { right: false });
-			
+		require(templates, function(page, head, foot) {
 			//render page
-			$(document.body).html(Mustache.render(page, {
+			$(document.body).html(Handlebars.compile(page)({
 				head		: head,
-				foot		: foot,
-			}, { menu: menu }));
+				foot		: foot
+			}));
 			
 			//if sequence
 			if(typeof args[0] == 'function') {
@@ -285,29 +292,15 @@ var controller = function() {
 	 * @param array
 	 * @return this
 	 */
-	public.setBody = function(template, variables, partials) {
+	public.setBody = function(template, variables) {
 		var self = this, templates = ['text!' + template];
 		
-		partials 	= partials || {};
 		variables 	= variables || {};
-		
-		//add in the partials to the 
-		//template list for the require
-		for(var key in partials) {
-			templates.push('text!' + partials[key]);
-		}	
 		
 		//bulk load the templates
 		require(templates, function(template) {
-			//bind the HTML templates to the partials
-			var i = 1;
-			for(var key in partials) {
-				partials[key] = arguments[i];
-				i++;
-			}
-			
 			//render the body
-			$('#body').html(Mustache.render(template, variables, partials));
+			$('#body').html(Handlebars.compile(template)(variables));
 			
 			//trigger body event
 			self.trigger('body');
