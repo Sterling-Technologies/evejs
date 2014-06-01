@@ -37,7 +37,7 @@ define(function() {
 	public.getData = function(callback) {
 		var self = this;
 		$.getJSON(_api, function(response) {
-			var i, row, list = [];
+			var i, rows = [];
 			
 			//if error
 			if(response.error) {
@@ -46,41 +46,26 @@ define(function() {
 			
 			//prepare template variables
 			for(i in response.results) {
-				row = {
+				var updated = new Date(response.results[i].updated);
+				var format = controller.timeToDate(updated.getTime(), true, true);
+				
+				rows.push({
 					name: response.results[i].name,
 					email: response.results[i].email, 
-					street	: '',	city	: '',
-					state	: '',	country	: '',
-					postal	: '',	phone: '' };
-				
-				//have address ?
-				if(response.results[i].address.length) {
-					row.street = response
-					.results[i].address[0].street;
-					
-					row.city = response
-					.results[i].address[0].city;
-					
-					row.state = response
-					.results[i].address[0].state;
-					
-					row.country = response
-					.results[i].address[0].country;
-					
-					row.postal = response
-					.results[i].address[0].postal;
-				}
-				
-				//have phone ?
-				if(response.results[i].phone.length) {
-					row.phone = response
-					.results[i].phone[0].value;
-				}
-				
-				list.push(row);
+					active: response.results[i].active,
+					updated: format });
 			}
 			
-			self.data.list = list;
+			self.data = {
+				showing : 'Now Showing',
+				rows	: rows,
+				action	: 'active',
+				all		: 76,
+				active	: 24,
+				guests	: 12,
+				trash	: 4,
+				range	: 15
+			};
 			
 			callback();
 		});

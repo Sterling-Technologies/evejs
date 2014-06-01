@@ -254,6 +254,55 @@ var controller = function() {
 	};
 	
 	/**
+	 * Set template engine
+	 *
+	 * @return this
+	 */
+	public.setTemplateEngine = function() {
+		Handlebars.registerHelper('when', function (value1, operator, value2, options) {
+			var valid = false;
+			
+			switch (true) {
+				case operator == 'eq' 	&& value1 == value2:
+				case operator == '==' 	&& value1 == value2:
+				case operator == 'req' 	&& value1 === value2:
+				case operator == '===' 	&& value1 === value2:
+				case operator == 'neq' 	&& value1 != value2:	
+				case operator == '!=' 	&& value1 != value2:
+				case operator == 'rneq' && value1 !== value2:
+				case operator == '!==' 	&& value1 !== value2:
+				case operator == 'lt' 	&& value1 < value2:
+				case operator == '<' 	&& value1 < value2:
+				case operator == 'lte' 	&& value1 <= value2:
+				case operator == '<=' 	&& value1 <= value2:
+				case operator == 'gt' 	&& value1 > value2:
+				case operator == '>' 	&& value1 > value2:
+				case operator == 'gte' 	&& value1 >= value2:
+				case operator == '>=' 	&& value1 >= value2:
+				case operator == 'and' 	&& value1 && value2:
+				case operator == '&&' 	&& (value1 && value2):
+				case operator == 'or' 	&& value1 || value2:
+				case operator == '||' 	&& (value1 || value2):
+					valid = true;
+					break;
+			}
+			
+			if(valid) {
+				return options.fn(this);
+			}
+			
+			return options.inverse(this);
+		});
+		
+		//if sequence
+		if(typeof arguments[0] == 'function') {
+			arguments[0]();
+		}
+		
+		return this;
+	};
+	
+	/**
 	 * Process to start server
 	 *
 	 * @return this

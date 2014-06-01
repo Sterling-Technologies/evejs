@@ -90,8 +90,8 @@ define(function() {
 	
 	public.output = function(callback) {
 		controller
-		.setTitle(this.title)
-		.setBody(this.template, this.data);
+			.setTitle(this.title)
+			.setBody(this.template, this.data);
 		
 		callback();
 		

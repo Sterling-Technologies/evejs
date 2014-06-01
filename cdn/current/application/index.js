@@ -27,6 +27,14 @@ jQuery(function($) {
 	-------------------------------*/
 	.then(controller.sequenceTrigger, 'init')
 	
+	/* Set Template Engine
+	-------------------------------*/
+	.then(controller.setTemplateEngine)
+	
+	/* Trigger Template Engine
+	-------------------------------*/
+	.then(controller.sequenceTrigger, 'engine')
+	
 	/* Render Page
 	-------------------------------*/
 	.then(controller.renderPage)
