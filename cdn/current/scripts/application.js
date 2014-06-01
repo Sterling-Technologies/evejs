@@ -1,8 +1,8 @@
 jQuery(function($) {
-	var application = 'http://cdn.lbc.dev/application/';
+	var application = 'http://cdn.eve.dev/application/';
 	var template 	= application + '/template';
 	var action 		= application + '/action';
-	var api			= 'http://api.lbc.dev:8082';
+	var api			= 'http://api.eve.dev:8082';
 	
 	require.config({
 	    paths: { text: 'http://cdn.lbc.dev/scripts/text' },

@@ -11,7 +11,7 @@ module.exports = function(controller, request, response) {
 		controller.server.trigger('response', request, response);
 		
 		return;
-	} 
+	}
 	
 	//2. SETUP
 	//change the string into a native object
@@ -19,23 +19,10 @@ module.exports = function(controller, request, response) {
 		.load('string', request.message)
 		.queryToHash().get();
 	
-	//if no query
-	if(JSON.stringify(query) == '{}') {
-		//setup an error response
-		response.message = JSON.stringify({ 
-			error: true, 
-			message: 'No Parameters Defined' });
-			
-		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
-		
-		return;
-	}
-	
 	//3. TRIGGER
 	controller
 		//when there is an error
-		.once('user-add-photo-error', function(error) {
+		.once('post-update-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 
 				error: true, 
@@ -45,16 +32,16 @@ module.exports = function(controller, request, response) {
 			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
-		.once('user-add-photo-success', function() {
+		.once('post-update-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
 			
 			//trigger that a response has been made
 			controller.server.trigger('response', request, response);
 		})
-		//Now call to remove the user
+		//Now call to update the post
 		.trigger(
-			'user-add-photo', 
+			'post-update', 
 			controller, 
 			request.variables[0], 
 			query);

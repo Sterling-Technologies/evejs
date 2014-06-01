@@ -10,34 +10,49 @@ module.exports = function() {
 	var mongoose 	= require('mongoose');
 	
 	var _schema = {
-		name		: String,
-		email		: String,
-		phone		: [{ label: String, value: String }],
-		address		: [{
-			label		: String,
-			contact		: String, 
-			street		: String, 
-			neighborhood: String, 
-			city		: String, 
-			state		: String, 
-			region		: String, 
-			country		: String, 
-			postal		: String, 
-			phone		: String
-		}],
+		title: String,
+		detail: String,
+		user: {
+			name	: String,
+			email	: String,
+			photo	: {
+				name		: String,
+				source		: String,
+				mime		: String,
+				size		: String,
+				date		: { type: Date, default: Date.now }
+			},
+			
+			facebook	: String,
+			twitter		: String,
+			google		: String,
+			linkedin	: String
+		},
 		
-		photo		: [{
-			name		: String,
-			source		: String,
-			mime		: String,
-			size		: String,
-			date		: { type: Date, default: Date.now }
+		comments: [{
+			title: String,
+			detail: String,
+			user: {
+				name	: String,
+				email	: String,
+				photo	: {
+					name		: String,
+					source		: String,
+					mime		: String,
+					size		: String,
+					date		: { type: Date, default: Date.now }
+				},
+				
+				facebook	: String,
+				twitter		: String,
+				google		: String,
+				linkedin	: String
+			},
+			
+			active: { type: Boolean, default: true },
+			created: { type: Date, default: Date.now },
+			updated: { type: Date, default: Date.now }
 		}],
-		
-		facebook	: String,
-		twitter		: String,
-		google		: String,
-		linkedin	: String,
 		
 		active: { type: Boolean, default: true },
 		created: { type: Date, default: Date.now },
@@ -95,7 +110,7 @@ module.exports = function() {
 		this.schema = new schema(_schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('User', this.schema);
+		this.store = mongoose.model('post', this.schema);
 	};
 	
 	/* Public Methods

@@ -3,8 +3,7 @@ var controller = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.cdn		= 'http://control.eve.dev';
-	public.menu 	= []; 
+	public.cdn		= 'http://cdn.eve.dev';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -130,39 +129,19 @@ var controller = function() {
 			templates 	= [
 				'text!' + this.path('template') + '/_page.html',
 				'text!' + this.path('template') + '/_head.html',
-				'text!' + this.path('template') + '/_foot.html',
-				'text!' + this.path('template') + '/_menu.html'];
+				'text!' + this.path('template') + '/_foot.html'];
 		
 		//require all the default templates
 		require(templates, function(page, head, foot, menu) {
+			
 			//render head
 			head = Mustache.render(head, { right: false });
-			
-			//allow any package to add to the menu
-			self.trigger('menu', [self.menu]);
 			
 			//render page
 			$(document.body).html(Mustache.render(page, {
 				head		: head,
 				foot		: foot,
-				menu		: self.menu,
 			}, { menu: menu }));
-			
-			//listen for a change in url
-			self.listen('request', function(e) {
-				//find all menu items
-				$('#sidebar li')
-				//make them inactive
-				.removeClass('active')
-				//for each link in the items
-				.find('a').each(function() {
-					//if the url starts with whats in the link
-					if(window.location.href.indexOf(this.href) === 0) {
-						//set the item active
-						$(this).parent('li').addClass('active');
-					}
-				});
-			});
 			
 			//if sequence
 			if(typeof args[0] == 'function') {
@@ -301,30 +280,6 @@ var controller = function() {
 	/* Page Methods
 	-------------------------------*/
 	/**
-	 * Adds an alert message
-	 *
-	 * @param string
-	 * @param string
-	 * @param string
-	 * @return this
-	 */
-	public.addMessage = function(message, type, icon) {
-		icon = icon || 'okay';
-		type = type || 'success';
-		
-		//get the alert template
-		require(['text!' + this.path('template') + '/_alert.html'], function(template) {
-			//add the message to the messages container
-			$('#messages').append(Mustache.render(template, {
-				type	: type,
-				message	: message,
-				icon	: icon }));
-		});
-		
-		return this;
-	};
-	
-	/**
 	 * Sets page body
 	 *
 	 * @param array
@@ -358,44 +313,6 @@ var controller = function() {
 			self.trigger('body');
 		});
 		
-		return this;
-	};
-	
-	/**
-	 * Sets page crumbs
-	 *
-	 * @param array
-	 * @return this
-	 */
-	public.setCrumbs = function(crumbs) {
-		//get the global crumbs template
-		require(['text!' + this.path('template') + '/_crumbs.html'], function(template) {
-			//add the crumbs to the breadcrumbs container
-			$('#breadcrumbs').html(Mustache.render(template, { crumbs: crumbs }));
-		});
-		
-		return this;
-	};
-	
-	/**
-	 * Sets page header
-	 *
-	 * @param string
-	 * @return this
-	 */
-	public.setHeader = function(header) {
-		$('#header-title').html(header);
-		return this;
-	};
-	
-	/**
-	 * Sets page subheader
-	 *
-	 * @param string
-	 * @return this
-	 */
-	public.setSubheader = function(subheader) {
-		$('#subheader-title').html(subheader);
 		return this;
 	};
 	
