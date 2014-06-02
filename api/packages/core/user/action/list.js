@@ -70,7 +70,7 @@ var _getResults = function(next, controller,
 results, query, start, range, order, count) {
 	//fix query
 	query.active = query.active != 0;
-	console.log(query);
+	
 	//if null value, just test if it exists
 	for(var key in query) {
 		if(query[key] !== null) {

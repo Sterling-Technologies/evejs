@@ -13,7 +13,7 @@ define(function() {
 	}, {  label: 'Create User' }];
 	
 	public.data 	= {};
-	public.template = controller.path('user/template') + '/index.html';
+	public.template = controller.path('user/template') + '/form.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -45,17 +45,26 @@ define(function() {
 	
 	public.output = function(callback) {
 		controller
-		.setTitle(this.title)
-		.setHeader(this.header)
-		.setSubheader(this.subheader)
-		.setCrumbs(this.crumbs)
-		.setBody(this.template, this.data);
+			.setTitle(this.title)
+			.setHeader(this.header)
+			.setSubheader(this.subheader)
+			.setCrumbs(this.crumbs)
+			.setBody(this.template, this.data);
+		
+		$('#body').on('submit', 'form.package-user-form', { scope: this }, _process)
+		
+		callback();
 		
 		return this;
 	};
 	
 	/* Private Methods
 	-------------------------------*/
+	var _process = function(e) {
+		e.preventDefault();
+		console.log(this, e.data.scope.title);
+	};
+	
 	/* Adaptor
 	-------------------------------*/
 	return c.load(); 
