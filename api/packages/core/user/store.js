@@ -100,6 +100,10 @@ module.exports = function() {
 	
 	/* Public Methods
 	-------------------------------*/
+	public.count = function(query, callback) {
+		return this.store.count(query, callback);
+	};
+	
 	public.model = function(data) {
 		return new (this.store)(data);
 	};
