@@ -336,7 +336,7 @@ define(function() {
                 'text!' + controller.path('user/template') + '/contact.html',
                 'text!' + controller.path('user/template') + '/company.html'],
                 function(contact, company) {
-                    //load contact form
+                    //load contact forms
                     contact = Handlebars.compile(contact)({
                         contact : {
                             header           : 'Contact',
