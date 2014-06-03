@@ -10,7 +10,7 @@
         <input class="col-xs-12 col-sm-10" type="text" name="user_name" 
         placeholder="Full Name" value="{{user_name}}" />
 
-        {{#if user_name}}
+        {{#if errors.user_name}}
         <span class="help-block">{{user_name}}</span>
         {{/if}}
     </div>
@@ -24,7 +24,7 @@
         <input class="col-xs-12 col-sm-10" type="text" name="user_slug" 
         placeholder="alex-doe" value="{{user_slug}}" />
 
-        {{#if user_slug}}
+        {{#if errors.user_slug}}
         <span class="help-block">{{user_slug}}</span>
         {{/if}}
     </div>
@@ -38,7 +38,7 @@
         <input class="col-xs-12 col-sm-10" type="text" name="user_email" 
         placeholder="alexdoe@example.com" value="{{user_email}}" />
         
-        {{#if user_email}}
+        {{#if errors.user_email}}
         <span class="help-block">{{user_email}}</span>
         {{/if}}
     </div>
@@ -51,8 +51,8 @@
     	<input class="col-xs-12 col-sm-10" type="password" name="user_password" 
         placeholder="" value="{{user_password}}" />
         
-        {{#if user_password}}
-        <span class="help-block"><?php echo $errors['user_password']; ?></span>
+        {{#if errors.user_password}}
+        <span class="help-block">{{user_password}}</span>
         {{/if}}
     </div>
 </div>
@@ -64,7 +64,7 @@
     	<input class="col-xs-12 col-sm-10" type="password" name="user_confirm" 
         placeholder="" value="{{user_confirm}}" />
         
-        {{#if user_confirm}}
+        {{#if errors.user_confirm}}
         <span class="help-block">{{user_confirm}}</span>
         {{/if}}
     </div>
