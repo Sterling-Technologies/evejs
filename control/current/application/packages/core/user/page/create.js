@@ -330,16 +330,13 @@ define(function() {
             .setSubheader(this.subheader)
             .setCrumbs(this.crumbs)
             .setBody(self.template, self.data);
-            $('#body').on('submit', 'form.package-user-form', { scope: self }, _process);               
-            callback();
 
             //require template forms
             require([
                 'text!' + controller.path('user/template') + '/contact.html',
                 'text!' + controller.path('user/template') + '/company.html'],
                 function(contact, company) {
-                    
-                    //load contact form and set handlebars
+                    //load contact form
                     contact = Handlebars.compile(contact)({
                         contact : {
                             header           : 'Contact',
@@ -349,11 +346,10 @@ define(function() {
                             phone_number    : ''
                         }
                     });
-                    
-                    //append contact template template to main form
+                    //load template
                     $('.package-user-form').append(contact);
 
-                    //load company form and set handlebars
+                    //load company form
                     company = Handlebars.compile(company)({
                         company : {
                             title                : 'Company',
@@ -621,11 +617,13 @@ define(function() {
                             user_company_email   : ''
                         }
                     });
-
-                    //append company template to main form
+                    //load template
                     $('.package-user-form').append(company);
-                });  
 
+                $('#body').on('submit', 'form.package-user-form', { scope: self }, _process);               
+                callback();
+            });
+        
         return this;
     };
 	
