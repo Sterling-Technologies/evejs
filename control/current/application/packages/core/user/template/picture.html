@@ -1,0 +1,76 @@
+{{#Picture}}
+<h4 class="header blue bolder smaller">{{Picture}}</h4>
+<input name="user_picture" type="file" />
+<input id="image" type="hidden" value="{{user_photo}}" name="user_photo" />
+<link rel="stylesheet" href="/styles/jquery.gritter.css" />
+<script src="/scripts/jquery.gritter.min.js"></script>
+<script type="text/javascript">
+	jQuery(function($) {
+		$('input[type=file]').ace_file_input({
+			style:'well',
+			btn_choose:'Change avatar',
+			btn_change:null,
+			no_icon:'icon-picture',
+			thumbnail:'large',
+			droppable:true,
+			max_size: 100,
+			before_change: function(files, dropped) {
+				var file = files[0];
+				if(typeof file === "string") {
+					//files is just a file name here (in browsers that don't support FileReader API)
+					if(! (/\.(jpe?g|png|gif)$/i).test(file) ) {
+						$.gritter.add({
+							title: 'File is not an image!',
+							text: 'Please choose a jpg|gif|png image!',
+							class_name: 'gritter-error gritter-center'
+						});
+						return false;
+					}
+				}
+				else {
+					//file is a File object
+					var type = $.trim(file.type);
+					if( ( type.length > 0 && ! (/^image\/(jpe?g|png|gif)$/i).test(type) )
+							|| ( type.length == 0 && ! (/\.(jpe?g|png|gif)$/i).test(file.name) )
+							//for android default browser!
+						) {
+						$.gritter.add({
+							title: 'File is not an image!',
+							text: 'Please choose a jpg|gif|png image!',
+							class_name: 'gritter-error gritter-center'
+						});
+						
+						return false;
+					}
+	
+					if( file.size > 110000 ) {
+						//~100Kb
+						$.gritter.add({
+							title: 'File too big!',
+							text: 'Image size should not exceed ~100kb',
+							class_name: 'gritter-center gritter-error'
+						});
+						return false;
+					}
+				}
+	
+				return true;
+			}
+		}).promise().done(function() {
+			var image = $('#image').val();
+			var label = $('.file-label');
+			label.addClass('hide-placeholder');
+			if(image) {
+				var img = $('<img/>', {
+					class:'middle',
+					src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA\
+					AEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=='
+				});
+				img.css({width: '150px', height:'112px', 'background-image': 'url('+image+')', 'background-size': '100%'});
+				$('span:first', label).prepend(img).addClass('large');
+			}
+		});
+	});
+</script>
+
+{{/Picture}}
