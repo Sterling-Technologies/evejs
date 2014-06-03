@@ -1,7 +1,7 @@
 define(function() {
 	var c = function() {}, public = c.prototype;
 	
-	/* Public Properties
+	/* Public Properties 
 	-------------------------------*/
 	public.title 		= 'Create User';
 	public.header 		= 'Create User';
