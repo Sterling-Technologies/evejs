@@ -9,7 +9,10 @@
     <div class="col-sm-8">
         <input class="col-xs-12 col-sm-10" type="text" name="user_name" 
         placeholder="Full Name" value="{{user_name}}" />
-        <span class="help-block"></span>
+
+        {{#if user_name}}
+        <span class="help-block">{{user_name}}</span>
+        {{/if}}
     </div>
 </div>
 <div class="space-4"></div>
@@ -20,7 +23,10 @@
     <div class="col-sm-8">
         <input class="col-xs-12 col-sm-10" type="text" name="user_slug" 
         placeholder="alex-doe" value="{{user_slug}}" />
-        <span class="help-block"></span>
+
+        {{#if user_slug}}
+        <span class="help-block">{{user_slug}}</span>
+        {{/if}}
     </div>
 </div>
 <div class="space-4"></div>
@@ -31,7 +37,10 @@
     <div class="col-sm-8">
         <input class="col-xs-12 col-sm-10" type="text" name="user_email" 
         placeholder="alexdoe@example.com" value="{{user_email}}" />
-        <span class="help-block"></span>
+        
+        {{#if user_email}}
+        <span class="help-block">{{user_email}}</span>
+        {{/if}}
     </div>
 </div>
 <div class="space-4"></div>
@@ -41,7 +50,10 @@
     <div class="col-sm-8">
     	<input class="col-xs-12 col-sm-10" type="password" name="user_password" 
         placeholder="" value="{{user_password}}" />
-        <span class="help-block"></span>
+        
+        {{#if user_password}}
+        <span class="help-block"><?php echo $errors['user_password']; ?></span>
+        {{/if}}
     </div>
 </div>
 <div class="space-4"></div>
@@ -51,7 +63,10 @@
     <div class="col-sm-8">
     	<input class="col-xs-12 col-sm-10" type="password" name="user_confirm" 
         placeholder="" value="{{user_confirm}}" />
-        <span class="help-block"></span>
+        
+        {{#if user_confirm}}
+        <span class="help-block">{{user_confirm}}</span>
+        {{/if}}
     </div>
 </div>
 </form>
