@@ -1,0 +1,67 @@
+<!--START: Required Form-->
+<!--access data using handlebars
+    we can use the old style object.property method to retrieve the data
+    which is {{object.property}}
+    or we can use handlebars block which will result to this 
+    {{#object}})
+        {{property}}
+    {{/object}})
+-->
+{{#required}}
+<form class="package-user-form">
+<h4 class="header blue bolder smaller">{{header}}</h4>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_name">{{name}}
+    <span class="required">*</span></label>
+    <div class="col-sm-8">
+        <input class="col-xs-12 col-sm-10" type="text" name="user_name" 
+        placeholder="{{namePlaceholder}}" value="" />
+        <span class="help-block"></span>
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group"> 
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_slug">{{userName}}
+    <span class="required">*</span></label>
+    <div class="col-sm-8">
+        <input class="col-xs-12 col-sm-10" type="text" name="user_slug" 
+        placeholder="{{userNamePlaceholder}}" value="" />
+        <span class="help-block"></span>
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_email">{{userEmail}}
+    <span class="required">*</span></label>
+    <div class="col-sm-8">
+        <input class="col-xs-12 col-sm-10" type="text" name="user_email" 
+        placeholder="{{userEmailPlaceholder}}" value="" />
+        <span class="help-block"></span>
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_password">{{userPassword}}</label>
+    <div class="col-sm-8">
+    	<input class="col-xs-12 col-sm-10" type="password" name="user_email" 
+        placeholder="" value="" />
+        <span class="help-block"></span>
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_password">{{confirmUserPassword}}</label>
+    <div class="col-sm-8">
+    	<input class="col-xs-12 col-sm-10" type="password" name="user_email" 
+        placeholder="" value="" />
+        <span class="help-block"></span>
+    </div>
+</div>
+</form>
+{{/required}} 
+<!-- END: Required -->

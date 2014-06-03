@@ -1,6 +1,16 @@
+<!--START: Picture Form-->
+<!--access data using handlebars
+    we can use the old style object.property method to retrieve the data
+    which is {{object.property}}
+    or we can use handlebars block which will result to this 
+    {{#object}})
+        {{property}}
+    {{/object}})
+-->
 {{#picture}}
 <h4 class="header blue bolder smaller">{{header}}</h4>
 <input name="user_picture" type="file" />
 <input id="image" type="hidden" value="{{user_photo}}" name="user_photo" />
 <link rel="stylesheet" href="/styles/jquery.gritter.css" />
 {{/picture}}
+<!-- End: Picture Form -->
