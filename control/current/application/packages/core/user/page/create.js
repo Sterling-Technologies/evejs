@@ -39,8 +39,6 @@ define(function() {
 	};
 	
 	public.getData = function(callback) {
-		callback();
-		
 		var self = this,
         forms = [
         controller.path('config') + '/countries.js',
@@ -52,7 +50,8 @@ define(function() {
         'text!' + controller.path('user/template') +  'form/required.html',
         'text!' + controller.path('user/template') +  'form/company.html'];
 
-        require(forms, function(countries, tabs, picture, basic, contact, social, required, company) {
+        require(forms, function(countries, tabs, picture, basic,
+        contact, social, required, company) {
 
             //load basic form template
             self.data.basic = Handlebars.compile(basic)({
@@ -123,6 +122,8 @@ define(function() {
             });
         });
 
+        callback();
+        
 		return this;
 	};
 	
@@ -135,9 +136,10 @@ define(function() {
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
+
         $('#body').on('submit', 'form.package-user-form', { scope: self }, _process);               
-        callback();    
-        
+        callback();
+
         return this;
     };
 	
