@@ -1,17 +1,9 @@
 <!--START: Company Form-->
-<!--access data using handlebars
-    we can use the old style object.property method to retrieve the data
-    which is {{object.property}}
-    or we can use handlebars block which will result to this 
-    {{#object}})
-        {{property}}
-    {{/object}})
--->
 {{#company}}
-<h4 class="header blue bolder smaller"> {{header}} </h4>
+<h4 class="header blue bolder smaller">Company</h4>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company">{{company_name}}</label>
+    for="user_company">Company Name</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="Acme Inc." name="user_company"
@@ -22,7 +14,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_job_title">{{job_title}}</label>
+    for="user_job_title">Job Title</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="CEO" name="user_job_title"
@@ -33,7 +25,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_street">{{street}}</label>
+    for="user_company_street">Street</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="123 Sesame Street" name="user_company_street"
@@ -44,7 +36,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_city">{{city}}</label>
+    for="user_company_city">City</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="White Plains" name="user_company_city"
@@ -55,7 +47,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_state">{{state_province}}</label>
+    for="user_company_state">State/Province</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="New York" name="user_company_state"
@@ -66,11 +58,11 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_country">{{country_title}}</label>
+    for="user_company_country">Country</label>
     <div class="col-sm-8"> 
         <select class="col-xs-12 col-sm-10" name="user_company_country">
             {{#country}}
-            <option value="{{code}}"> {{name}} </option>
+            <option value="{{code}}">{{name}}</option>
             {{/country}}
         </select>
     </div>
@@ -79,7 +71,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_postal">{{postal}}</label>
+    for="user_company_postal">Postal</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="54545" name="user_company_postal"
@@ -90,7 +82,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_phone">{{phone}}</label>
+    for="user_company_phone">Phone</label>
     <div class="col-sm-8"> 
        <input class="col-xs-12 col-sm-12 input-mask-phone eden-field-mask 
         eden-field-loaded" type="text" value="{{user_company_phone}}" 
@@ -101,7 +93,7 @@
 <div class="space-4"></div>
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right" 
-    for="user_company_email">{{company_email}}</label>
+    for="user_company_email">Company Email</label>
     <div class="col-sm-8"> 
         <input class="col-xs-12 col-sm-10" type="text" 
         placeholder="info@acme.com" name="user_company_email"
