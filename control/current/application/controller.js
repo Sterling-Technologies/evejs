@@ -548,7 +548,7 @@ var controller = function() {
 			//for each package
 			for(var i = 0; i < packages.length; i++) {
 				//create the path and push it into the list
-				list.push(self.path('packages') + '/' + packages[i] + '/index');
+				list.push(self.path('packages') + '/' + packages[i] + '/index.js');
 			}
 			
 			//now we can bulk require all the packages
