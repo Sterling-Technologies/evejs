@@ -40,11 +40,33 @@ define(function() {
 	
 	public.getData = function(callback) {
 		callback();
+		
+		var self = this,
+        forms = [
+        'text!' + controller.path('user/template') +  'form/tabs.html',
+        'text!' + controller.path('user/template') +  'form/picture.html',
+        'text!' + controller.path('user/template') +  'form/basic.html',
+        'text!' + controller.path('user/template') +  'form/contact.html',
+        'text!' + controller.path('user/template') +  'form/social.html',
+        'text!' + controller.path('user/template') +  'form/required.html',
+        'text!' + controller.path('user/template') +  'form/company.html'];
+
+        require(forms, function(tabs, picture, basic, contact, social, required, company) {
+        	self.data.tabs = Handlebars.compile(tabs);
+        	self.data.picture = Handlebars.compile(picture);
+        	self.data.basic = Handlebars.compile(basic);
+        	self.data.contact = Handlebars.compile(contact);
+        	self.data.social = Handlebars.compile(social);
+        	self.data.required = Handlebars.compile(required);
+        	self.data.company = Handlebars.compile(company);
+        });
+
 		return this;
 	};
 	
 	public.output = function(callback) {
         var self = this;
+   
         controller
         .setTitle(this.title)
         .setHeader(this.header)
