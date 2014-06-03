@@ -61,9 +61,9 @@
     for="user_company_country">Country</label>
     <div class="col-sm-8"> 
         <select class="col-xs-12 col-sm-10" name="user_company_country">
-            {{#country}}
+            {{#each country}}
             <option value="{{code}}">{{name}}</option>
-            {{/country}}
+            {{/each}}
         </select>
     </div>
 </div>
