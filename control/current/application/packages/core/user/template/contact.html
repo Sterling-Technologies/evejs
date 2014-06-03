@@ -1,0 +1,25 @@
+{{#contact}}
+<h4 class="header blue bolder smaller">{{title}}</h4>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_website">{{website}}</label>
+    <div class="col-sm-8"> <span class="input-icon input-icon-right">
+        <input class="col-xs-12 col-sm-12" type="url" 
+        name="user_website" placeholder="http://www.alexdoe.com/"
+        value="{{user_website}}" />
+        <i class="icon-globe"></i> </span> 
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_phone">{{phone}}</label>
+    <div class="col-sm-8"> 
+    	<span class="input-icon input-icon-right">
+        <input class="col-xs-12 col-sm-12 input-mask-phone eden-field-mask 
+        eden-field-loaded" type="text" value="{{phone_number}}" 
+        placeholder="(415) 555-2424" name="user_phone" />
+        <i class="icon-phone icon-flip-horizontal"></i> </span> 
+    </div>
+</div>
+{{/contact}}
