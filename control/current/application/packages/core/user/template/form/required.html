@@ -10,7 +10,7 @@
         placeholder="Full Name" value="{{user_name}}" />
 
         {{#if errors.user_name}}
-        <span class="help-block">{{user_name}}</span>
+        <span class="help-block">{{errors.user_name}}</span>
         {{/if}}
     </div>
 </div>
@@ -24,7 +24,7 @@
         placeholder="alex-doe" value="{{user_slug}}" />
 
         {{#if errors.user_slug}}
-        <span class="help-block">{{user_slug}}</span>
+        <span class="help-block">{{errors.user_slug}}</span>
         {{/if}}
     </div>
 </div>
@@ -38,7 +38,7 @@
         placeholder="alexdoe@example.com" value="{{user_email}}" />
         
         {{#if errors.user_email}}
-        <span class="help-block">{{user_email}}</span>
+        <span class="help-block">{{errors.user_email}}</span>
         {{/if}}
     </div>
 </div>
@@ -51,7 +51,7 @@
         placeholder="" value="{{user_password}}" />
         
         {{#if errors.user_password}}
-        <span class="help-block">{{user_password}}</span>
+        <span class="help-block">{{errors.user_password}}</span>
         {{/if}}
     </div>
 </div>
@@ -64,7 +64,7 @@
         placeholder="" value="{{user_confirm}}" />
         
         {{#if errors.user_confirm}}
-        <span class="help-block">{{user_confirm}}</span>
+        <span class="help-block">{{errors.user_confirm}}</span>
         {{/if}}
     </div>
 </div>
