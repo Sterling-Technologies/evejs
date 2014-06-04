@@ -29,7 +29,6 @@ define(function() {
     };
 
     public.removeData = function(callback) {
-    	
     	var _id = _api + window.location.pathname.split('/')[3];
     	
     	$.getJSON(_id, function(response) {
@@ -40,17 +39,17 @@ define(function() {
 
     		callback();
     	});
+
     	return this;
     };
 
     public.output = function(callback) { 
+    	//TODO: reload function
+    	// $('.icon-remove').click(function() {
+    	// 	console.log('reload');
+    	// 	location.reload();
 
-
-    	$('.icon-remove').click(function() {
-    		console.log('reload');
-    		location.reload();
-    		
-    	});
+    	// });
     	callback();
     	return this;
     };
