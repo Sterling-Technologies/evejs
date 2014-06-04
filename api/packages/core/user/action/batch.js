@@ -1,24 +1,27 @@
 module.exports = function(controller, request, response) {
+    //Batch file called
+    var response.batch = true;
     //Converting request messages to JSON
-    var batch = JSON.parse(request.message)
+    var batch = JSON.parse(request.message);
     //Loop the all the batch request
     for(var i = 0; i < batch.length; i++){
         //Check for the batch method
-        switch(batch[i].method.toUpperCase()){
-            case 'POST':
-                require('./create')(controller, request, response); return;
-            break;
-            case 'DELETE': 
-            case 'PUT':
-                if ( batch[i].method.toUpperCase() == 'DELETE'){
-                    require('./remove')(controller, request, response); return;
-                } else if ( batch[i].method.toUpperCase() == 'PUT' ){
-                    require('./update')(controller, request, response); return;
-                } 
+        switch(batch[i].method.toLowerCase()){
+            case 'create':
+                require('./create')(controller, request, response);
+                break;
+            case 'remove':
+                require('./remove')(controller, request, response);
+                break;
+            case 'update':
+                require('./update')(controller, request, response);
+                break;
+            case 'detail':
                 require('./detail')(controller, request, response);
-                return;
-            break;
-            default: require('./list')(controller, request, response);
+                break;
+            case 'list':
+                require('./list')(controller, request, response);
+                break;
         }
     }
 
