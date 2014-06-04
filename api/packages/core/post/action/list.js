@@ -18,7 +18,7 @@ module.exports = function(controller, request, response) {
 				message: error.message });
 			
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
+			controller.trigger('response', request, response);
 			return;
 		}
 		
@@ -26,6 +26,6 @@ module.exports = function(controller, request, response) {
 		response.message = JSON.stringify({ error: false, results: posts });
 		
 		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
+		controller.trigger('response', request, response);
 	});
 };
