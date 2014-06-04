@@ -92,7 +92,6 @@ define(function() {
 			callback();
 		});
 		
-		//console.log(rows);
 		return this;
 	};
 	
