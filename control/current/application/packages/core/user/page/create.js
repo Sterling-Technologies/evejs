@@ -55,7 +55,10 @@ define(function() {
         require(forms, function(countries, tabs, picture, basic, contact, social, required, company) {
 
             //load basic form template
-            self.data.basic = Handlebars.compile(basic)({});
+            self.data.basic = Handlebars.compile(basic)({
+                user_birthdate : '',
+                user_gender    : 'male'
+            });
 
             //load company form template
             self.data.company = Handlebars.compile(company)({
