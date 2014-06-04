@@ -77,7 +77,7 @@ module.exports = function() {
 			region		  : '', 
 			country		  : 'United States', 
 			postal		  : '20607', 
-			phone		  : '1 (301) 203-5535'
+			phone		  : '1 (301) 203-5535',
             company_email : 'email@example.com'
 		}]
 	};
