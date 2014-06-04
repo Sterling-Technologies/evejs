@@ -1,6 +1,6 @@
 module.exports = function(controller, request, response) {
     //Batch file called
-    var response.batch = true;
+    response.batch = true;
     //Converting request messages to JSON
     var batch = JSON.parse(request.message);
     //Loop the all the batch request
@@ -22,6 +22,16 @@ module.exports = function(controller, request, response) {
             case 'list':
                 require('./list')(controller, request, response);
                 break;
+            case 'address':
+                require('./address')(controller, request, response);
+                break;
+            case 'phone':
+                require('./phone')(controller, request, response);
+                break;
+            case 'photo':
+                require('./photo')(controller, request, response);
+                break;
+
         }
     }
 
