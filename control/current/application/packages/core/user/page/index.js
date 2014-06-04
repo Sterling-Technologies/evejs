@@ -34,6 +34,7 @@ define(function() {
 		return this;
 	};
 	
+	//TODO: GET JSON, PREPARE SET CALLBACK from Schema.
 	public.getData = function(callback) {
 		var self = this;
 		$.getJSON(_api, function(response) {
