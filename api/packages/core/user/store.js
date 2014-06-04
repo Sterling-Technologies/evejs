@@ -14,16 +14,18 @@ module.exports = function() {
 		email		: String,
 		phone		: [{ label: String, value: String }],
 		address		: [{
-			label		: String,
-			contact		: String, 
-			street		: String, 
-			neighborhood: String, 
-			city		: String, 
-			state		: String, 
-			region		: String, 
-			country		: String, 
-			postal		: String, 
-			phone		: String
+            company_name    : String,
+			label		    : String,
+			contact		    : String, 
+			street		    : String, 
+			neighborhood    : String, 
+			city		    : String, 
+			state		    : String, 
+			region		    : String, 
+			country		    : String, 
+			postal		    : String, 
+			phone		    : String,
+            company_email   : String
 		}],
 		
 		photo		: [{
