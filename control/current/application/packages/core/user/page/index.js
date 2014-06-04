@@ -66,7 +66,7 @@ define(function() {
 				trash	: 4,
 				range	: 15
 			};
-			
+            
 			callback();
 		});
 		
