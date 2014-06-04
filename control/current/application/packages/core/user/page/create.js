@@ -40,18 +40,22 @@ define(function() {
 	
 	public.getData = function(callback) {
 		var self = this,
+
+        //store form templates path to array
         forms = [
         controller.path('config') + '/countries.js',
-        'text!' + controller.path('user/template') +  'form/tabs.html',
-        'text!' + controller.path('user/template') +  'form/picture.html',
         'text!' + controller.path('user/template') +  'form/basic.html',
+        'text!' + controller.path('user/template') +  'form/company.html',
         'text!' + controller.path('user/template') +  'form/contact.html',
-        'text!' + controller.path('user/template') +  'form/social.html',
+        'text!' + controller.path('user/template') +  'form/picture.html',
         'text!' + controller.path('user/template') +  'form/required.html',
-        'text!' + controller.path('user/template') +  'form/company.html'];
+        'text!' + controller.path('user/template') +  'form/tabs.html',
+        'text!' + controller.path('user/template') +  'form/social.html'];
 
-        require(forms, function(countries, tabs, picture, basic,
-        contact, social, required, company) {
+        //require form templates
+        //assign it to main form
+        require(forms, function(countries, basic, company, contact, picture,
+        required, tabs, social) {
 
             //load basic form template
             self.data.basic = Handlebars.compile(basic)({
@@ -101,24 +105,24 @@ define(function() {
                 }
             });
 
+            //load tabs template
+            self.data.tabs = Handlebars.compile(tabs)({
+                request_uri : '',
+                path : 'example/path',
+                id : 'example_id',
+                tabs : [{
+                    item : {
+                        icon : 'example.icon',
+                        label : 'example label'
+                    }
+                }]
+            });
+
             //load social form template
             self.data.social = Handlebars.compile(social)({
                 user_facebook : 'user facebook',
                 user_twitter  : 'user twitter',
                 user_google   : 'user google'
-            });
-
-            //load tabs template
-            self.data.tabs = Handlebars.compile(tabs)({
-                request_uri : '',
-                path        : 'example/path',
-                id          : 'example_id',
-                tabs        : [{
-                    item : {
-                        icon    : 'example.icon',
-                        label   : 'example label'
-                    }
-                }]
             });
         });
 
