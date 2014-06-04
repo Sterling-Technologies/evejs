@@ -73,22 +73,22 @@
 			<tbody>
 				{{#each rows}}
                 <tr>
-                    <td><input name="user_id[]" value="{{_id}}" type="checkbox" class="form-control"></td>
+                    <td><input name="user_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
                         {{#if active}}
-                        <a title="Edit" href="/user/update/{{_id}}">
+                        <a title="Edit" href="/user/update/{{id}}">
                         <i class="icon-edit"></i></a> &nbsp; 
                         
-                        <a title="Remove" href="/user/remove/{{_id}}"
+                        <a title="Remove" href="/user/remove/{{id}}"
                         class="text-danger"><i class="icon-remove"></i></a>
                         
                         {{else}}
                         
-                        <a title="Restore" href="/user/restore/{{_id}}" class="text-success">
+                        <a title="Restore" href="/user/restore/{{id}}" class="text-success">
                         <i class="icon-external-link"></i></a>
                         {{/if}}
                     </td>
-                    <td>{{_id}}</td>
+                    <td>{{id}}</td>
                     <td>{{name}}</td>
                     <td>{{email}}</td>
                     <td valign="middle">{{updated}}</td>

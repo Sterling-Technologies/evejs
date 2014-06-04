@@ -50,6 +50,7 @@ define(function() {
 				var format = controller.timeToDate(updated.getTime(), true, true);
 
 				rows.push({
+					id              : response.results[i]._id,
 					name            : response.results[i].name,
 					email           : response.results[i].email, 
 					active          : response.results[i].active,
@@ -73,7 +74,8 @@ define(function() {
                     company_email   : response.results[i].email,
                     phone_label     : response.results[i].label,
                     phone_value     : response.results[i].value,
-					updated: format }); 
+					updated: format });
+ 
             }
 
 			
@@ -91,10 +93,12 @@ define(function() {
 			callback();
 		});
 		
+		//console.log(rows);
 		return this;
 	};
 	
 	public.output = function(callback) {
+
 		controller
 		.setTitle(this.title)
 		.setHeader(this.header)
