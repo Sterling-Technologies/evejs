@@ -31,7 +31,7 @@ module.exports = function() {
 			phone		    : String
 		}],
 
-        company     : [{
+        company     : {
             name    : String,
             title   : String,
             street  : String,
@@ -41,7 +41,7 @@ module.exports = function() {
             postal  : String,
             phone   : String,
             email   : String
-        }],
+        },
 		
 		photo		: [{
 			name		: String,
