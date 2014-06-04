@@ -47,7 +47,7 @@ module.exports = function(controller, request, response) {
             response.message = JSON.stringify({ batch:results })
 
             //Been trigger to the user action
-            controller.trigger('user-action-response', request, response);
+            controller.server.trigger('user-action-response', request, response);
         }
     });
 }

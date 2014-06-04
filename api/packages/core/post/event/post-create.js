@@ -8,11 +8,11 @@ module.exports = function(controller, query) {
 			//if there are errors
 			if(error) {
 				//trigger an error
-				controller.trigger('post-create-error', error);
+				controller.server.trigger('post-create-error', error);
 				return;
 			}
 			
 			//trigger that we are good
-			controller.trigger('post-create-success');
+			controller.server.trigger('post-create-success');
 		});
 };

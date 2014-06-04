@@ -9,11 +9,11 @@ module.exports = function(controller, id, source) {
 			//if there are errors
 			if(error) {
 				//trigger an error
-				controller.trigger('user-add-photo-error', error);
+				controller.server.trigger('user-add-photo-error', error);
 				return;
 			}
 			
 			//trigger that we are good
-			controller.trigger('user-add-photo-success');
+			controller.server.trigger('user-add-photo-success');
 		});
 };

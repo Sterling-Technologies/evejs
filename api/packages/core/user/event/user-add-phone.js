@@ -9,11 +9,11 @@ module.exports = function(controller, id, query) {
 			//if there are errors
 			if(error) {
 				//trigger an error
-				controller.trigger('user-add-phone-error', error);
+				controller.server.trigger('user-add-phone-error', error);
 				return;
 			}
 			
 			//trigger that we are good
-			controller.trigger('user-add-phone-success');
+			controller.server.trigger('user-add-phone-success');
 		});
 };

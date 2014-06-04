@@ -15,7 +15,7 @@ module.exports = function(controller, request, response) {
 				message: error.message });
 			
 			//trigger that a response has been made
-			controller.trigger('response', request, response);
+			controller.server.trigger('response', request, response);
 		})
 		//when it is successfull
 		.once('post-create-success', function() {
@@ -23,7 +23,7 @@ module.exports = function(controller, request, response) {
 			response.message = JSON.stringify({ error: false });
 			
 			//trigger that a response has been made
-			controller.trigger('response', request, response);
+			controller.server.trigger('response', request, response);
 		})
 		//Now call to remove the post
 		.trigger('post-create', controller, query);

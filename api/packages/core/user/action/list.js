@@ -92,7 +92,7 @@ results, query, start, range, order, count) {
 					message: error.message });
 				
 				//trigger that a response has been made
-				controller.trigger('user-action-response', request, response);
+				controller.server.trigger('user-action-response', request, response);
 				return;
 			}
 			
@@ -179,6 +179,6 @@ module.exports = function(controller, request, response) {
 		}
 		
 		//trigger that a response has been made
-		controller.trigger('user-action-response', request, response);
+		controller.server.trigger('user-action-response', request, response);
 	});
 };

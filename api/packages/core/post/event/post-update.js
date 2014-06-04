@@ -7,11 +7,11 @@ module.exports = function(controller, id, query) {
 		//if there are errors
 		if(error) {
 			//trigger an error
-			controller.trigger('post-update-error', error);
+			controller.server.trigger('post-update-error', error);
 			return;
 		}
 		
 		//trigger that we are good
-		controller.trigger('post-update-success');
+		controller.server.trigger('post-update-success');
 	});
 };

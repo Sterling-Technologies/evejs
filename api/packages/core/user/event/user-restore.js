@@ -7,11 +7,11 @@ module.exports = function(controller, id) {
 		//if there are errors
 		if(error) {
 			//trigger an error
-			controller.trigger('user-restore-error', error);
+			controller.server.trigger('user-restore-error', error);
 			return;
 		}
 		
 		//trigger that we are good
-		controller.trigger('user-restore-success');
+		controller.server.trigger('user-restore-success');
 	});
 };
