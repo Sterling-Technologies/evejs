@@ -1,9 +1,9 @@
 <!--START: Social Form-->
 <!--access data using handlebars-->
 {{#social}}
-<h4 class="header blue bolder smaller">Social</h4>
+<h4 class="header blue bolder smaller">{{header}}</h4>
 <div class="form-group">
-    <label class="col-sm-4 control-label no-padding-right" for="user_facebook">Facebook</label>
+    <label class="col-sm-4 control-label no-padding-right" for="user_facebook">{{facebook}}</label>
     <div class="col-sm-8"> <span class="input-icon">
         <input type="text" placeholder="facebook_alexdoe" name="user_facebook" value="{{user_facebook}}">
         <i class="icon-facebook blue"></i> </span> 
@@ -11,7 +11,7 @@
 </div>
 <div class="space-4"></div>
 <div class="form-group">
-    <label class="col-sm-4 control-label no-padding-right" for="user_twitter">Twitter</label>
+    <label class="col-sm-4 control-label no-padding-right" for="user_twitter">{{twitter}}</label>
     <div class="col-sm-8"> <span class="input-icon">
         <input type="text" placeholder="twitter_alexdoe" name="user_twitter" value="{{user_twitter}}">
         <i class="icon-twitter light-blue"></i> </span> 
@@ -19,7 +19,7 @@
 </div>
 <div class="space-4"></div>
 <div class="form-group">
-    <label class="col-sm-4 control-label no-padding-right" for="user_google">Google</label>
+    <label class="col-sm-4 control-label no-padding-right" for="user_google">{{google}}</label>
     <div class="col-sm-8">
         <span class="input-icon">
             <input type="text" placeholder="google_alexdoe" name="user_google" value="{{user_google}}">
