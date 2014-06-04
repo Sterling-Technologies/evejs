@@ -28,9 +28,9 @@ module.exports = function() {
 			region		    : String, 
 			country		    : String, 
 			postal		    : String, 
-			phone		    : String,
+			phone		    : String
 		}],
-        
+
         company     : [{
             name    : String,
             title   : String,
@@ -38,7 +38,7 @@ module.exports = function() {
             city    : String,
             state   : String,
             country : String,
-            postal  : String
+            postal  : String,
             phone   : String,
             email   : String
         }],
