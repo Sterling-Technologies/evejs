@@ -11,10 +11,14 @@ module.exports = function() {
 	
 	var _schema = {
 		name		: String,
+        username    : String,
 		email		: String,
-		phone		: [{ label: String, value: String }],
+        password    : String,
+        birthdate   : Date,
+        gender      : String,
+		website     : String,
+        phone		: [{ label: String, value: String }],
 		address		: [{
-            company_name    : String,
 			label		    : String,
 			contact		    : String, 
 			street		    : String, 
@@ -25,8 +29,19 @@ module.exports = function() {
 			country		    : String, 
 			postal		    : String, 
 			phone		    : String,
-            company_email   : String
 		}],
+        
+        company     : [{
+            name    : String,
+            title   : String,
+            street  : String,
+            city    : String,
+            state   : String,
+            country : String,
+            postal  : String
+            phone   : String,
+            email   : String
+        }],
 		
 		photo		: [{
 			name		: String,
