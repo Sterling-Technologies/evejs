@@ -2,7 +2,6 @@
 <a href="/user/update/{{id}}">
 <i class="green icon-edit bigger-125"></i>Basic Info</a></li>
 
-{{#if tabs}}
 {{#each tabs}}
 <li{{#if request_uri}} class="active"{{/if}}>
 	<a href="{{path}}/{{id}}">
@@ -13,4 +12,3 @@
     </a>
 </li>
 {{/each}}
-{{/if}}
