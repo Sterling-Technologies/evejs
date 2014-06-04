@@ -16,8 +16,28 @@ define(function() {
 		return new c();
 	};
 
+	/* Construct
+    -------------------------------*/
+    /* Public Methods
+    -------------------------------*/
+	public.render = function() { 
+        $.sequence().setScope(this)
+        .then(this.removeData)
+        .then(this.output);
+        
+        return this;
+    };
 
+    public.removeData = function(callback) { 
+    	callback();
+    	return this;
+    };
 
+    public.output = function(callback) { 
+
+    	callback();
+    	return this;
+    };
 
 	/* Adaptor
 	-------------------------------*/
