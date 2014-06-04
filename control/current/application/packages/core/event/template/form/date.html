@@ -1,0 +1,42 @@
+<div class="widget-box">
+    <div class="widget-header header-color-pink">
+        <h5>Event Info</h5>
+    </div>
+    <div class="widget-body">
+    	<div class="widget-main">
+        	<div>
+                <h6>Organizer</h6>
+                <div>
+                    <?php echo control()
+                    ->block()->field()
+                    ->text('event_organizer', $item['event_organizer'] ? 
+                    $item['event_organizer'] : NULL)
+					->setHolder('Event Organizer'); ?>
+                </div>
+            </div>
+            <div>
+                <h6>Start Date</h6>
+                <div>
+                    <?php echo control()
+                    ->block()->field()
+                    ->datetime('event_start', $item['event_start'] ? 
+                    date('m/d/Y g:i A', strtotime($item['event_start'])): date('m/d/Y g:i A')); ?>
+                    <?php if(isset($errors['event_start'])): ?>
+                    <span class="text-danger"><?php echo $errors['event_start']; ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div>
+                <h6>End Date</h6>
+                <div>
+                    <?php echo control()
+                    ->block()->field()
+                    ->datetime('event_end', date('m/d/Y g:i A', strtotime($item['event_end']))); ?>
+                    <?php if(isset($errors['event_end'])): ?>
+                    <span class="text-danger"><?php echo $errors['event_end']; ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

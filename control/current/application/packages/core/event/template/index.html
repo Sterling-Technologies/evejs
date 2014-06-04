@@ -1,0 +1,92 @@
+<link rel="stylesheet" href="/assets/Eve/Package/Core/Event/Back/assets/index.css" />
+<!-- START: BULK FORM -->
+<form method="post" class="form-inline bulk-form">
+	<div class="view-action clearfix">
+    	<a href="/event/<?php echo $action; ?>?view=calendar"><i class="icon-calendar"></i></a>
+    	<a href="/event/<?php echo $action; ?>"><i class="icon-list"></i></a>
+    </div>
+	<div class="table-responsive">
+    	<div class="dataTables_wrapper table-filters" role="grid">
+        	<div class="row">
+            	<div class="col-sm-12">
+                    <?php if(!empty($rows)): ?>
+    				<!-- START: BULK ACTION -->
+                    <?php echo control()
+					->block()->field()
+                    ->select('action', NULL, array(
+                    ''			=> 'Bulk Actions',
+                    'remove' 	=> 'Remove',
+                    'restore' 	=> 'Restore'))
+                    ->setAttributes('style', 'width:auto;'); ?>
+                    <?php echo control()
+					->block()->field()
+					->button('Apply')
+                    ->setAttributes('class', 'btn-primary btn-sm'); ?>
+                    <?php endif; ?>
+    				<!-- END: BULK ACTION -->
+                    
+                    <!-- START: FILTER BUTTONS -->
+                    <span class="filter">
+                        <?php if($action == 'active'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/event/active?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-circle"></i> 
+						<?php $_('Active'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $totalActive; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm btn-success"
+                        href="/event/active?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-circle"></i> 
+						<?php $_('Active'); ?> &nbsp;
+                        <span class="badge badge-yellow"><?php echo $totalActive; ?></span></a>
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'inactive'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/event/inactive?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-circle-blank"></i> 
+						<?php $_('Inactive'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $totalInactive; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm btn-danger"
+                        href="/event/inactive?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-circle-blank"></i> 
+						<?php $_('Inactive'); ?> &nbsp;
+                        <span class="badge badge-warning"><?php echo $totalInactive; ?></span></a>
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'trash'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/event/trash?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $totalTrash; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm btn-danger"
+                        href="/event/trash?<?php echo http_build_query($_GET); ?>">
+                        <i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-warning"><?php echo $totalTrash; ?></span></a>
+                        <?php endif; ?>
+                    </span>
+    				<!-- END: FILTER BUTTONS -->
+                </div>
+            </div>
+        </div>
+        <?php if($view == 'calendar') : ?>
+        <?php include(__DIR__.'/index/calendar.php'); ?>
+        <?php else : ?>
+        <?php include(__DIR__.'/index/table.php'); ?>
+        <?php endif; ?>
+	</div>
+    
+    <?php if($action == 'active'): ?>
+	<?php echo control()->block()->component()->pagination($totalActive)->setRange($range); ?>
+    <?php elseif($action == 'inactive'): ?>
+	<?php echo control()->block()->component()->pagination($totalInactive)->setRange($range); ?>
+    <?php elseif($action == 'trash'): ?>
+    <?php echo control()->block()->component()->pagination($totalTrash)->setRange($range); ?>
+	<?php endif; ?>
+</form>
+<!-- END: BULK FORM -->
+<script src="/assets/Eve/Package/Core/File/Back/assets/checkall.js"></script>

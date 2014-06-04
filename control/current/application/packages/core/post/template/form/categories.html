@@ -1,0 +1,31 @@
+<style>.category-tree { overflow: auto; } .eve-block-tree { border: 0; box-shadow: none; } .icon-expand-alt.toggle.eve-block-tree-handle { margin-left: -16px; }</style>
+<div class="widget-box">
+    <div class="widget-header header-color-purple">
+        <h5>Categories</h5>
+    </div>
+    <div class="widget-body category-tree">
+    	<div class="widget-main">
+		<?php $e($b('component')
+		->tree()
+		->setCallback(function($path, $item) {
+			$template = '<input type="checkbox" name="category[]" /> '.$item['name'];
+			if(isset($item['children']) && !empty($item['children'])) {
+				$template = '<i class="icon-expand-alt toggle"></i> '.$template;
+			}
+			
+			return $template;
+		})
+		->canToggle('i.toggle')
+		->addItem('some/path/0',    array('name' => 'One',   'active' => 1))
+		->addItem('some/path',      array('name' => 'Two',   'active' => 1))
+		->addItem('some',           array('name' => 'Three', 'active' => 0))
+		->addItem('some/path/2',    array('name' => 'Four',  'active' => 1))
+		->addItem('some/other',     array('name' => 'Five',  'active' => 0))
+		->addItem('another/path/0', array('name' => 'Six',   'active' => 1))
+		->addItem('another/path',   array('name' => 'Seven', 'active' => 1))
+		->addItem('another',        array('name' => 'Eight', 'active' => 0))
+		->addItem('another/path/2', array('name' => 'Nine',  'active' => 1))
+		->addItem('another/other',  array('name' => 'Ten',   'active' => 0))); ?>
+		</div>
+    </div>
+</div>

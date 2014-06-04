@@ -1,0 +1,101 @@
+<link rel="stylesheet" href="/assets/Eve/Package/Core/File/Back/assets/index.css" />
+<!-- START: BULK FORM -->
+<form method="post" class="form-inline bulk-form">
+	<!-- START: i18n HEADER TITLE -->
+	<div class="table-header">
+    	<?php if(!$keyword): ?>
+        
+		<?php if($page == 1): ?>
+        <?php $_('Showing %s', ucwords($action)); ?>
+        <?php else: ?>
+        <?php $_('Showing %s, Page %s', ucwords($action), $page); ?>
+        <?php endif; ?>
+        
+		<?php else: ?>
+        
+        <?php if($page == 1): ?>
+        <?php $_('Showing results for &quot;%s&quot; in %s', $keyword, ucwords($action)); ?>
+        <?php else: ?>
+        <?php $_('Showing results for &quot;%s&quot; in %s, Page %s', $keyword, ucwords($action), $page); ?>
+        <?php endif; ?>
+        
+		<?php endif; ?>
+    </div>
+    
+    <!-- END: i18n HEADER TITLE -->
+	<div class="table-responsive">
+    	<div class="dataTables_wrapper table-filters" role="grid">
+        	<div class="row">
+            	<div class="col-sm-12">
+                    <?php if(!empty($rows)): ?>
+    				<!-- START: BULK ACTION -->
+                    <?php echo control()
+					->block()->field()
+                    ->select('action', NULL, array(
+                    ''			=> 'Bulk Actions',
+                    'remove' 	=> 'Remove',
+                    'restore' 	=> 'Restore'))
+                    ->setAttributes('style', 'width:auto;'); ?>
+                    <?php echo control()
+					->block()->field()
+					->button('Apply')
+                    ->setAttributes('class', 'btn-primary btn-sm'); ?>
+                    <?php endif; ?>
+    				<!-- END: BULK ACTION -->
+                    
+                    <!-- START: FILTER BUTTONS -->
+                    <span class="filter">
+                        <?php if($action == 'all'): ?>
+                        <a class="btn btn-sm btn-light" href="/file/<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('All'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $all; ?></span></a> 
+                        <?php else: ?>
+                        <a class="btn btn-sm" href="/file/<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('All'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $all; ?></span></a> 
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'trash'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/file/trash<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $trash; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm btn-danger"
+                        href="/file/trash<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-warning"><?php echo $trash; ?></span></a>
+                        <?php endif; ?>
+                    </span>
+    				<!-- END: FILTER BUTTONS -->
+                </div>
+            </div>
+        </div> 
+        <?php if(empty($rows)): ?>
+    	<!-- START: NO RESULTS -->
+        <div class="well no-results"><?php $_('No File Found.'); ?></div>
+    	<!-- END: NO RESULTS -->
+        <?php else: ?>
+    	<!-- START: POST TABLE -->
+		<table class="table table-striped">
+			<thead><?php $t(__DIR__.'/index/head.php', 'file-head'); ?></thead>
+			<tbody>
+				<?php foreach($rows as $row): ?>
+				<?php $t(__DIR__.'/index/row.php', $row, 'file-row'); ?>
+				<?php endforeach; ?>
+			</tbody>	
+		</table>
+    	<!-- END: POST TABLE -->
+        <?php endif; ?>
+	</div>
+    
+    <?php if($action == 'all'): ?>
+	<?php echo control()->block()->component()->pagination($all)->setRange($range); ?>
+    <?php elseif($action == 'trash'): ?>
+    <?php echo control()->block()->component()->pagination($trash)->setRange($range); ?>
+	<?php endif; ?>
+</form>
+<!-- END: BULK FORM -->
+<script src="/assets/Eve/Package/Core/File/Back/assets/checkall.js"></script>

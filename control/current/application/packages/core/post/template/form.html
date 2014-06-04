@@ -1,0 +1,30 @@
+<style>
+.widget-container-span { padding-bottom: 10px; }
+</style>
+<form class="form-horizontal" method="post">
+    <div class="row">
+        <section class="col col-md-9 widget-container-span">
+            {{{copy}}}
+            
+        	{{#if left}}
+        	<?php echo implode('', $left); ?>
+            {{/if}}
+            
+			<?php if(isset($revisions) && !empty($revisions)): ?>
+            <?php $t(__DIR__.'/form/revisions.php', $this->data, 'post-form-revisions'); ?>
+            <?php endif; ?>
+        </section>
+        <aside class="col col-md-3 widget-container-span">
+			<?php $t(__DIR__.'/form/publish.php', $this->data, 'post-form-publish'); ?>
+        	
+			<?php if(isset($right)): ?>
+        	<?php echo implode('', $right); ?>
+            <?php endif; ?>
+            
+            <?php if(control()->installed('Core', 'Category')): ?>
+            <?php //$t(__DIR__.'/form/categories.php', $this->data, 'post-form-categories'); ?>
+            <?php //$t(__DIR__.'/form/tags.php', $this->data, 'post-form-tags'); ?>
+            <?php endif; ?>
+        </aside>
+    </div>
+</form>

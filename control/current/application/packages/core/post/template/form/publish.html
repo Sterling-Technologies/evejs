@@ -1,0 +1,53 @@
+<div class="widget-box panel-primary">
+    <div class="widget-header header-color-green2">
+        <h5>Publish</h5>
+    </div>
+    <div class="widget-body">
+    	<div class="widget-main">
+        <div>
+            <h6>Status</h6>
+            <div>
+                <?php echo control()
+				->block()->field()
+                ->select('post_status', $item['post_status'] ? 
+				$item['post_status']: 'published', array(
+                'draft' 	=> 'Draft',
+                'review'	=> 'Review',
+                'published'	=> 'Publish' )); ?>
+            </div>
+        </div>
+        <div>
+            <h6>Visibility</h6>
+            <div>
+                <?php echo control()
+				->block()->field()
+                ->select('post_visibility', $item['post_visibility'] ? 
+				$item['post_visibility']: 'public', array(
+                'public' 	=> 'Public',
+                'private'	=> 'Private' )); ?>
+            </div>
+        </div>
+        <div>
+            <h6>Publish Date</h6>
+            <div>
+                <?php echo control()
+				->block()->field()
+                ->date('post_published', $item['post_published'] ? 
+				$item['post_published']: date('m/d/Y')); ?>
+                <?php if(isset($errors['post_published'])): ?>
+                <span class="text-danger"><?php echo $errors['post_published']; ?></span>
+				<?php endif; ?>
+            </div>
+        </div>
+        <hr />
+        <button class="pull-right btn btn-success">Save</button>
+        <?php if($mode == 'update'): ?>
+        <a class="btn-danger btn btn-default" href="/post/remove/<?php echo $id; ?>">
+        <i class="icon-trash"></i> Trash</a>
+        <?php else: ?>
+        <a class="btn-danger btn btn-default" href="/post">
+        <i class="icon-minus"></i> Cancel</a>
+        <?php endif; ?>
+     	</div>
+    </div>
+</div>

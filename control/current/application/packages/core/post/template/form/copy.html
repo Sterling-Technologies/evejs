@@ -1,0 +1,25 @@
+<div class="widget-box">
+    <div class="widget-header header-color-blue2">
+        <?php if($mode == 'create'): ?>
+        <h5><?php $_('Enter Copy'); ?></h5>
+        <?php elseif(isset($revision['post_detail'])): ?>
+        <h5><?php $_('Restoring Copy From %s', date('F d, Y h:i:s A', 
+        strtotime($revision['post_created']))); ?></h5>
+        <?php else: ?>
+        <h5><?php $_('Change Copy'); ?></h5>
+        <?php endif; ?>
+    </div>
+    <div class="widget-body">  
+        <div class="widget-main">              
+        <?php echo control()
+        ->block()
+		->form()
+        ->post()
+        ->useWysiwyg()
+        ->setData($item)
+        ->setErrors($errors)
+        ->noActive(); ?>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/assets/Eve/Package/Core/Post/Back/assets/slugger.js"></script>

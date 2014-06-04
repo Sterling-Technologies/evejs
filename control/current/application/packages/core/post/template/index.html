@@ -1,0 +1,164 @@
+<link rel="stylesheet" type="text/css" href="/assets/Eve/Package/Core/Post/Back/assets/index.css" />
+<!-- START: SEARCH FORM -->
+<?php if(!empty($rows) || trim($keyword)): ?>
+<form class="pull-right search form-inline" method="get">
+    <?php $e($b('form')
+	->search()
+	->useIcon()
+	->setName('q')
+    ->setHolder(control()->translate('Search Posts'))
+    ->setValue($keyword)); ?>
+</form>
+<?php endif; ?>
+<!-- END: SEARCH FORM -->
+
+<!-- START: BULK FORM -->
+<form method="post" class="form-inline bulk-form">
+    <!-- START: i18n HEADER TITLE -->
+	<div class="table-header">
+    	<?php if(!$keyword): ?>
+        
+		<?php if($page == 1): ?>
+        <?php $_('Showing %s', ucwords($action)); ?>
+        <?php else: ?>
+        <?php $_('Showing %s, Page %s', ucwords($action), $page); ?>
+        <?php endif; ?>
+        
+		<?php else: ?>
+        
+        <?php if($page == 1): ?>
+        <?php $_('Showing results for &quot;%s&quot; in %s', $keyword, ucwords($action)); ?>
+        <?php else: ?>
+        <?php $_('Showing results for &quot;%s&quot; in %s, Page %s', $keyword, ucwords($action), $page); ?>
+        <?php endif; ?>
+        
+		<?php endif; ?>
+    </div>
+    <!-- END: i18n HEADER TITLE -->
+	<div class="table-responsive">
+    	<div class="dataTables_wrapper table-filters" role="grid">
+        	<div class="row">
+            	<div class="col-sm-12">
+    				<!-- START: ADD NEW POST -->
+                    <div class="pull-right create"><a class="btn btn-info btn-sm" 
+                    href="/post/create"><?php $_('Add New'); ?></a></div>
+    				<!-- END: ADD NEW POST -->
+                    
+                    <?php if(!empty($rows)): ?>
+                    <!-- START: BULK ACTION -->
+                    <?php echo control()
+					->block()->field()
+                    ->select('action', NULL, array(
+                    ''			=> 'Bulk Actions',
+                    'remove' 	=> 'Remove',
+                    'restore' 	=> 'Restore',
+                    'draft' 	=> 'Set to Draft',
+                    'publish' 	=> 'Publish All'))
+                    ->setAttributes('style', 'width:auto;'); ?>
+                    <?php echo control()
+					->block()->field()
+					->button('Apply')
+                    ->setAttributes('class', 'btn-primary btn-sm'); ?>
+                    <?php endif; ?>
+    				<!-- END: BULK ACTION -->
+                    
+    				<!-- START: FILTER BUTTONS -->
+                    <span class="filter">
+                    	<?php if($action == 'all'): ?>
+                        <a class="btn btn-sm btn-light" href="/post<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('All'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $all; ?></span></a> 
+                        <?php else: ?>
+                        <a class="btn btn-sm" href="/post<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('All'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $all; ?></span></a> 
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'published'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/post/published<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Published'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $published; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm"
+                        href="/post/published<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Published'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $published; ?></span></a>
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'draft'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/post/draft<?php $e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Draft'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $draft; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm"
+                        href="/post/draft<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Draft'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $draft; ?></span></a>
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'review'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/post/review<?php $e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Review'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $review; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm"
+                        href="/post/review<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><?php $_('Review'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $review; ?></span></a>
+                        <?php endif; ?>
+                        
+                        <?php if($action == 'trash'): ?>
+                        <a class="btn btn-sm btn-light" 
+                        href="/post/trash<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-grey"><?php echo $trash; ?></span></a>
+                        <?php else: ?>
+                        <a class="btn btn-sm btn-danger"
+                        href="/post/trash<?php 
+						$e(!!$keyword, '?q='.$keyword); ?>"><i class="icon-trash"></i> 
+						<?php $_('Trash'); ?> &nbsp;
+                        <span class="badge badge-warning"><?php echo $trash; ?></span></a>
+                        <?php endif; ?>
+                    </span>
+    				<!-- END: FILTER BUTTONS -->
+                </div>
+            </div>
+        </div> 
+        <?php if(empty($rows)): ?>
+    	<!-- START: NO RESULTS -->
+        <div class="well no-results"><?php $_('No Posts Found.'); ?></div>
+    	<!-- END: NO RESULTS -->
+        <?php else: ?>
+    	<!-- START: POST TABLE -->
+		<table class="table table-striped">
+			<thead><?php $t(__DIR__.'/index/head.php', $this->data, 'post-head'); ?></thead>
+			<tbody>
+				<?php foreach($rows as $row): ?>
+				<?php $t(__DIR__.'/index/row.php', $row, 'post-row'); ?>
+				<?php endforeach; ?>
+			</tbody>		
+		</table>
+    	<!-- END: POST TABLE -->
+        <?php endif; ?>
+	</div>
+    
+	<?php if($action == 'all'): ?>
+	<?php echo control()->block()->component()->pagination($all)->setRange($range); ?>
+    
+    <?php elseif($action == 'published'): ?>
+    <?php echo control()->block()->component()->pagination($published)->setRange($range); ?>
+    
+	<?php elseif($action == 'draft'): ?>
+    <?php echo control()->block()->component()->pagination($draft)->setRange($range); ?>
+    
+	<?php elseif($action == 'review'): ?>
+    <?php echo control()->block()->component()->pagination($review)->setRange($range); ?>
+    
+	<?php elseif($action == 'trash'): ?>
+    <?php echo control()->block()->component()->pagination($trash)->setRange($range); ?>
+	<?php endif; ?>
+</form>
+<!-- END: BULK FORM -->
+<script type="text/javascript" src="/assets/Eve/Package/Core/Post/Back/assets/checkall.js"></script>

@@ -1,0 +1,39 @@
+<div class="widget-box">
+    <div class="widget-header header-color-dark">
+        <h5 class="bigger lighter">Event Address</h5>
+    </div>
+
+    <div class="widget-body">
+        <div class="widget-main padding-16">
+        	<div class="form-group">
+            	<label for="address_label" class="col-lg-2 control-label">
+                Place <span>*</span></label>
+                <div class="col-lg-10">
+                <?php echo control()
+				->block()->field()
+				->text('address_label', $item['address_label'] ? 
+				$item['address_label'] : NULL)
+				->setHolder('Place Name'); ?>     
+                </div>
+            </div>
+            
+            <?php echo eden('block')
+			->form()->address()
+			->setData('address_street_1', $item['address_street'])
+			->setData('address_city', $item['address_city'])
+			->setData('address_state', $item['address_state'])
+			->setData('address_postal', $item['address_postal'])
+			->setData('address_country', $item['address_country'])
+			->setHolders('address_street_1', '123 Sesame Street')
+			->setHolders('address_city', 'White Plains')
+			->setHolders('address_state', 'Metro Manila')
+			->setHolders('address_postal', '1550')
+			->noStreet2()
+			->noPhone()
+			->noNeighborhood()
+			->noRegion()
+			->setErrors($errors); ?>
+            
+        </div>
+    </div>
+</div>
