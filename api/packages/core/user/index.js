@@ -72,6 +72,18 @@ module.exports = function() {
 		
 		//set the variables
 		request.variables = variables;
+
+		//listen for response
+		controller.listen('user-action-response', function(request, response) {
+			//if it is a batch process
+			if(response.batch) {
+				//the batch will trigger the response
+				return;
+			}
+
+			//trigger that a response has been made
+			controller.server.trigger('response', request, response);
+		});
 		
 		//call it
 		require(action).call(this, control, request, response);

@@ -7,7 +7,7 @@ module.exports = function(controller, request, response) {
 			message: 'No ID set' });
 		
 		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
+		controller.server.trigger('user-action-response', request, response);
 		
 		return;
 	}
@@ -26,7 +26,7 @@ module.exports = function(controller, request, response) {
 				message: error.message });
 			
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
+			controller.server.trigger('user-action-response', request, response);
 			return;
 		}
 		
@@ -36,6 +36,6 @@ module.exports = function(controller, request, response) {
 			results: user });
 		
 		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
+		controller.server.trigger('user-action-response', request, response);
 	});
 };

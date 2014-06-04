@@ -8,7 +8,7 @@ module.exports = function(controller, request, response) {
 			message: 'No ID set' });
 		
 		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
+		controller.server.trigger('user-action-response', request, response);
 		
 		return;
 	}
@@ -29,7 +29,7 @@ module.exports = function(controller, request, response) {
 				message: error.message });
 			
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
+			controller.server.trigger('user-action-response', request, response);
 		})
 		//when it is successfull
 		.once('user-update-success', function() {
@@ -37,7 +37,7 @@ module.exports = function(controller, request, response) {
 			response.message = JSON.stringify({ error: false });
 			
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
+			controller.server.trigger('user-action-response', request, response);
 		})
 		//Now call to update the user
 		.trigger(
