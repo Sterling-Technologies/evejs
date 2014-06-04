@@ -1,12 +1,12 @@
 html { min-height: 100%; position: relative; }
 body {
-	padding-bottom: 0;
 	background-color: #e4e6e9;
-	min-height: 100%;
+	color: #393939;
 	font-family: 'Open Sans';
 	font-size: 13px;
-	color: #393939;
 	line-height: 1.5;
+	min-height: 100%;
+	padding-bottom: 0;
 }
 
 body.navbar-fixed { padding-top: 45px; }
@@ -102,9 +102,9 @@ h3.smaller { font-size: 21px; }
 h3.bigger { font-size: 23px; }
 h3.block { margin-bottom: 16px; }
 h4 {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 18px;
 	font-weight: normal;
-	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 h4.smaller { font-size: 17px; }
