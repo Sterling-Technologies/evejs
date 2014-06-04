@@ -74,7 +74,7 @@ module.exports = function() {
 		request.variables = variables;
 
 		//listen for response
-		control.listen('user-action-response', function(request, response) {
+		control.once('user-action-response', function(request, response) {
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response
