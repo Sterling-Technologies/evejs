@@ -48,7 +48,7 @@ define(function() {
 			for(i in response.results) {
 				var updated = new Date(response.results[i].updated);
 				var format = controller.timeToDate(updated.getTime(), true, true);
-				
+
 				rows.push({
 					name            : response.results[i].name,
 					email           : response.results[i].email, 
