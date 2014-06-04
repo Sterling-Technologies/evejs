@@ -1,0 +1,13 @@
+{{#social}}
+<h4 class="header blue bolder smaller">{{title}}</h4>
+{{#each items}}
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" for="{{forAttr}}">
+    	{{title}}</label>
+    <div class="col-sm-8"> <span class="input-icon">
+        <input type="text" placeholder="{{placeHolder}}" name="{{name}}" value="{{value}}">
+        <i class="icon-{{icon}}"></i> </span> </div>
+</div>
+<div class="space-4"></div>
+{{/each}}
+{{/social}}
