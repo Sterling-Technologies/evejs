@@ -53,12 +53,12 @@ define(function() {
         'text!' + controller.path('user/template') +  'form/company.html'];
 
         require(forms, function(countries, tabs, picture, basic, contact, social, required, company) {
-            
+
             //load basic form template
-            basic = Handlebars.compile(basic)({});
+            self.data.basic = Handlebars.compile(basic)({});
 
             //load company form template
-            company = Handlebars.compile(company)({
+            self.data.company = Handlebars.compile(company)({
                 user_company         : 'example company',
                 user_job_title       : 'example job title',
                 user_company_street  : 'example street',
@@ -73,18 +73,18 @@ define(function() {
             });
 
             //load contact form template
-            contact = Handlebars.compile(contact)({
-                user_website  : 'www.example.com',
+            self.data.contact = Handlebars.compile(contact)({
+                user_website  : 'www.web-example.com',
                 user_phone    : '09298888888'
             });
             
             //load picture form template
-            picture = Handlebars.compile(picture)({
+            self.data.picture = Handlebars.compile(picture)({
                 user_photo : 'example.jpg'
             });
 
             //load required form template
-            required = Handlebars.compile(required)({
+            self.data.required = Handlebars.compile(required)({
                 user_name       : 'example username',
                 user_slug       : 'example slug',
                 user_email      : 'email@example.com',
@@ -100,14 +100,14 @@ define(function() {
             });
 
             //load social form template
-            social = Handlebars.compile(social)({
+            self.data.social = Handlebars.compile(social)({
                 user_facebook : 'user facebook',
                 user_twitter  : 'user twitter',
                 user_google   : 'user google'
             });
 
             //load tabs template
-            tabs = Handlebars.compile(tabs)({
+            self.data.tabs = Handlebars.compile(tabs)({
                 request_uri : '',
                 path        : 'example/path',
                 id          : 'example_id',
@@ -118,15 +118,6 @@ define(function() {
                     }
                 }]
             });
-
-            //append form templates to page
-        	self.data.tabs = Handlebars.compile(tabs);
-        	self.data.picture = Handlebars.compile(picture);
-        	self.data.basic = Handlebars.compile(basic);
-        	self.data.contact = Handlebars.compile(contact);
-        	self.data.social = Handlebars.compile(social);
-        	self.data.required = Handlebars.compile(required);
-        	self.data.company = Handlebars.compile(company);
         });
 
 		return this;
