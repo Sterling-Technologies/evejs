@@ -174,7 +174,8 @@ define(function() {
         _api = _api + _id;
         var data = $('.package-user-form').serialize();
         $.post(_api, data, function(response){
-            $('.package-user-form').append('<span> Record successfully updated </span>');
+            $('.msg').remove();
+            $('.package-user-form').append('<span class=msg> Record successfully updated </span>').show('slow');
         });
     };
 
