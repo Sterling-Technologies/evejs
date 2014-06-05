@@ -45,11 +45,6 @@ define(function() {
 
     public.output = function(callback) {
 
-    	$(document).click( function(event) {
-    		console.log(event);
-    	});
-
-
     	callback();
     	return this;
     };
