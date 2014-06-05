@@ -160,9 +160,15 @@ define(function() {
         $.post(_api, data, function(response) {
             //if error response
             if(response.error) {
-                alert('User create failed!')
+                alert('User create failed!');
+                return;
             }
+            $('.msg').empty();
+            $(".package-user-form").append('<span class=msg> Record Successfully added. </span>');
         });
+
+
+
 
 	};
 	
