@@ -155,21 +155,21 @@ define(function() {
         //to able to post to api      
         e.preventDefault();
 
+        //serialize form data
         var data = $(".package-user-form").serialize();
 
+        //save data to database
         $.post(_api, data, function(response) {
             //if error response
             if(response.error) {
                 alert('User create failed!');
                 return;
             }
+
+            //display message
             $('.msg').empty();
             $(".package-user-form").append('<span class=msg> Record Successfully added. </span>');
         });
-
-
-
-
 	};
 	
 	/* Adaptor
