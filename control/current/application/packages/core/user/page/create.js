@@ -151,7 +151,6 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processSaveData = function(e) {
-        console.log('saving data');    
         //prevent page from reloading
         e.preventDefault();
 
@@ -165,7 +164,7 @@ define(function() {
             cache: false,
             dataType: 'json',
             data: data,
-            success: function(response){
+            success: function(response){                
                 //clear post status if any
                 $('.msg').empty().remove();
                 //display post status
