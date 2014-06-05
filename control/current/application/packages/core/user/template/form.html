@@ -8,7 +8,7 @@
             {{/when}}
             <div class="tab-content profile-edit-tab-content">
                 <div class="tab-pane active">
-                    <form class="form-horizontal" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal " method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-xs-12 col-sm-4">
                                 {{{picture}}}
@@ -28,16 +28,21 @@
                         </div>
                         <div class="clearfix form-actions">
                             <div class="col-md-12">
-                                <button class="btn btn-info" type="submit"
+                                <button 
                                 {{#if update}} 
                                     id="update"
                                     name="update"
+                                    value="Update"
                                 {{else}}
                                     id="save"
                                     name="save"
+                                {{/if}} class="btn btn-info" type="submit" ><i class="icon-ok bigger-110"></i>
+                                {{#if update}}  
+                                    Update 
+                                {{else}} 
+                                    Save 
                                 {{/if}}
-                                > 
-                                <i class="icon-ok bigger-110"></i>{{#if update}}  Update {{else}} Save {{/if}}  </button>
+                                </button>
                             </div>
                         </div>
                     </form>

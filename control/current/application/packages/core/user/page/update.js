@@ -17,7 +17,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $       = jQuery;
-    var _api    = 'http://api.eve.dev:8082/user/' + window.location.pathname.split('/')[3];
+    var _api    = 'http://api.eve.dev:8082/user/detail/';
     
     /* Loader
     -------------------------------*/
@@ -39,18 +39,24 @@ define(function() {
     
      public.getData = function(callback) {
         var self = this;
+        
+        //set button to update
         self.data.update = { update : 'update'};
-        $.getJSON(_api, function(response) {
+
+        //get resquested value
+        var _id =  _api + window.location.pathname.split('/')[3];
+        
+        $.getJSON(_id, function(response) {
             //check if there's a response
             if(response.error) {
-                //end it not.
+                //end if not.
                 return;
             }
 
-            //store user details in a variable for ease of access
+            //store requested details in a variable for ease of access
             var user = response.results;
+            
             //prepare all form templates
-            console.log(user.company[0].name);
             var forms = [
             controller.path('config') + '/countries.js',
             'text!' + controller.path('user/template') +  'form/basic.html',
@@ -62,10 +68,10 @@ define(function() {
             'text!' + controller.path('user/template') +  'form/social.html'];
 
             //inlcude form templates to page
+            //load templates and assign user details to its respective fields
             require(forms, function(countries, basic, company, contact, picture,
             required, tabs, social) {
 
-                //load templates and assign user data to its respective fields
                 //basic form
                 self.data.basic = Handlebars.compile(basic)({
                     user_birthdate : user.birthdate,
@@ -134,7 +140,6 @@ define(function() {
                     user_google   : user.google,
                     user_linkedin : user.linkedin
                 });
-
             });
             
             callback(); 
@@ -153,12 +158,14 @@ define(function() {
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
 
-        $('#body').on('submit', 'form.package-user-form', { scope: self }, _process);               
+        $('#body').on('submit', '.package-user-form', { scope: self }, _process);
+
+        console.log(_api);
         callback();
 
         return this;
     };
-    
+
     /* Private Methods
     -------------------------------*/
     var _process = function(e) {
