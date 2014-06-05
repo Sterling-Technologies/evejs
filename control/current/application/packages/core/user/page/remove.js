@@ -39,7 +39,7 @@ define(function() {
 
     		callback();
     	});
-    	
+
     	return this;
     };
 
