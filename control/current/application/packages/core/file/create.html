@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/assets/Eve/Package/Core/File/Back/assets/index.css" />
 <div id="dropzone">
-    <form action="<?php echo isset($formAction) ? $formAction : $_SERVER['REQUEST_URI']; ?>" class="dropzone">
+    <form action="{{#if form_action}} {{form_action}} {{else}} {{request_uri}} {{/if}}" class="dropzone">
         <div class="fallback">
             <input name="file" type="file" multiple />
         </div>
