@@ -39,6 +39,7 @@ define(function() {
     
      public.getData = function(callback) {
         var self = this;
+        self.data.update = { update : 'update'};
         $.getJSON(_api, function(response) {
             //check if there's a response
             if(response.error) {
@@ -133,6 +134,7 @@ define(function() {
                     user_google   : user.google,
                     user_linkedin : user.linkedin
                 });
+
             });
             
             callback(); 

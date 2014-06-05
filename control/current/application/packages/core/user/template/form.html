@@ -28,8 +28,16 @@
                         </div>
                         <div class="clearfix form-actions">
                             <div class="col-md-12">
-                                <button class="btn btn-info" type="submit"> 
-                                <i class="icon-ok bigger-110"></i> Save </button>
+                                <button class="btn btn-info" type="submit"
+                                {{#if update}} 
+                                    id="update"
+                                    name="update"
+                                {{else}}
+                                    id="save"
+                                    name="save"
+                                {{/if}}
+                                > 
+                                <i class="icon-ok bigger-110"></i>{{#if update}}  Update {{else}} Save {{/if}}  </button>
                             </div>
                         </div>
                     </form>
