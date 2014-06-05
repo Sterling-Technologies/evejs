@@ -67,11 +67,14 @@ controller
 	
 	//router -> action
 	var page = 'index';
-	switch(window.location.pathname) {
-		case '/user/create':
-			page = 'create';
-			break;
-	}
+	switch(window.location.pathname.split('/')[2]) {
+        case 'create':
+            page = 'create';
+            break;
+        case 'update':
+            page = 'update';
+            break;
+    }
 	
 	page = controller.path('user/page') + page + '.js';
 	

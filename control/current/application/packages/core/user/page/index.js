@@ -48,7 +48,7 @@ define(function() {
 			for(i in response.results) {
 				var updated = new Date(response.results[i].updated);
 				var format = controller.timeToDate(updated.getTime(), true, true);
-
+                
 				rows.push({
 					id              : response.results[i]._id,
 					name            : response.results[i].name,
@@ -77,7 +77,6 @@ define(function() {
 					updated: format });
  
             }
-
 			
 			self.data = {
 				showing : 'Now Showing',

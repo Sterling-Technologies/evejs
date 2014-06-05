@@ -39,6 +39,7 @@ define(function() {
 	};
 	
 	public.getData = function(callback) {
+        
 		var self = this,
 
         //store form templates path to array
