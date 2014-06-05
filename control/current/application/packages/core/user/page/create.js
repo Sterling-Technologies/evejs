@@ -1,6 +1,6 @@
 define(function() {
 	var c = function() {}, public = c.prototype;
-	
+    
 	/* Public Properties 
 	-------------------------------*/
 	public.title 		= 'Create User';
@@ -18,7 +18,7 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ 		= jQuery;
-	var _api 	= 'http://api.eve.dev:8082/user';
+	var _api 	= 'http://api.eve.dev:8082/user/create';
 	
 	/* Loader
 	-------------------------------*/
@@ -81,7 +81,7 @@ define(function() {
 
             //load contact form template
             self.data.contact = Handlebars.compile(contact)({
-                user_website  : 'www.web-example.com',
+                user_website  : 'http://www.web-example.com',
                 user_phone    : '09298888888'
             });
             
@@ -151,8 +151,19 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _process = function(e) {
-		e.preventDefault();
-		console.log(this, e.data.scope.title);
+        //TODO: get data from corresponding field, then throw to json. 
+        //to able to post to api      
+        e.preventDefault();
+
+        var data = $(".package-user-form").serialize();
+
+        $.post(_api, data, function(response) {
+            //if error response
+            if(response.error) {
+                alert('User create failed!')
+            }
+        });
+
 	};
 	
 	/* Adaptor

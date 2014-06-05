@@ -39,11 +39,16 @@ define(function() {
 
     		callback();
     	});
-    	
+
     	return this;
     };
 
     public.output = function(callback) {
+
+    	$(document).click( function(event) {
+    		console.log(event);
+    	});
+
 
     	callback();
     	return this;
