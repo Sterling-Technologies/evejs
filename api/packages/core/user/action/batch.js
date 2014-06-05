@@ -5,7 +5,7 @@ module.exports = function(controller, request, response) {
     var batch = JSON.parse(request.message);
     //Loop the all the batch request
     for(var i = 0; i < batch.length; i++){
-        //Check for the batch method
+        //Check for the batch method 
         switch(batch[i].method.toLowerCase()){
             case 'create':
                 require('./create')(controller, request, response);

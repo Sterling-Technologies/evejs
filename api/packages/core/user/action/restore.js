@@ -21,7 +21,7 @@ module.exports = function(controller, request, response) {
 				error: true, 
 				message: error.message });
 			
-			//trigger that a response has been made
+			//trigger that a response has been made 
 			controller.trigger('user-action-response', request, response);
 		})
 		//when it is successfull

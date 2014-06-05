@@ -6,7 +6,7 @@ module.exports = function(controller, request, response) {
 		.queryToHash().get();
 	//2. TRIGGER
 	controller
-		//when there is an error
+		//when there is an error 
 		.once('user-create-error', function(error) {
 			//setup an error response
 			response.message = JSON.stringify({ 

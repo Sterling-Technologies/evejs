@@ -34,7 +34,7 @@ module.exports = function(controller, request, response) {
 		.once('user-update-success', function() {
 			//set up a success response
 			response.message = JSON.stringify({ error: false });
-			
+			 
 			//trigger that a response has been made
 			controller.trigger('user-action-response', request, response);
 		})

@@ -139,7 +139,7 @@ results, query, start, range, order, count) {
 /**
  * Main action method
  *
- * @param object
+ * @param object 
  * @param object
  * @param object
  * @return void

@@ -1,6 +1,6 @@
 module.exports = function(controller, request, response) {
 	//1. VALIDATE
-	//if no id was set 
+	//if no id was set  
 	if(!request.variables[0]) {
 		//setup an error response
 		response.message = JSON.stringify({ 
