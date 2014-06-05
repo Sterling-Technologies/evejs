@@ -157,7 +157,7 @@ define(function() {
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
-        $('#body').on('submit', '.package-user-form', { scope: self }, _process);
+        $('#body').on('submit', '.package-user-form', { scope: self }, _processUpdate);
         callback();
 
         return this;
@@ -165,7 +165,7 @@ define(function() {
 
     /* Private Methods
     -------------------------------*/
-    var _process = function(e) {
+    var _processUpdate = function(e) {
         e.preventDefault();
         //set api to update.
         _api = 'http://api.eve.dev:8082/user/update/';
@@ -174,7 +174,9 @@ define(function() {
         _api = _api + _id;
         var data = $('.package-user-form').serialize();
         $.post(_api, data, function(response){
-            $('.msg').remove();
+            //remove span message
+            $('.msg').empty();
+            //display message
             $('.package-user-form').append('<span class=msg> Record successfully updated </span>').show('slow');
         });
     };
