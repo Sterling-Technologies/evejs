@@ -74,6 +74,9 @@ controller
         case 'update':
             page = 'update';
             break;
+        case 'remove':
+            page = 'remove';
+            break;
     }
 	
 	page = controller.path('user/page') + page + '.js';
