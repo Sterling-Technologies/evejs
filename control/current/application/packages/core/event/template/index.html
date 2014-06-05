@@ -2,91 +2,105 @@
 <!-- START: BULK FORM -->
 <form method="post" class="form-inline bulk-form">
 	<div class="view-action clearfix">
-    	<a href="/event/<?php echo $action; ?>?view=calendar"><i class="icon-calendar"></i></a>
-    	<a href="/event/<?php echo $action; ?>"><i class="icon-list"></i></a>
+    	<a href="/event/{{action}}?view=calendar"><i class="icon-calendar"></i></a>
+    	<a href="/event/{{action}}"><i class="icon-list"></i></a>
     </div>
 	<div class="table-responsive">
     	<div class="dataTables_wrapper table-filters" role="grid">
         	<div class="row">
             	<div class="col-sm-12">
-                    <?php if(!empty($rows)): ?>
+                    {{#if rows}}
     				<!-- START: BULK ACTION -->
-                    <?php echo control()
-					->block()->field()
-                    ->select('action', NULL, array(
-                    ''			=> 'Bulk Actions',
-                    'remove' 	=> 'Remove',
-                    'restore' 	=> 'Restore'))
-                    ->setAttributes('style', 'width:auto;'); ?>
-                    <?php echo control()
-					->block()->field()
-					->button('Apply')
-                    ->setAttributes('class', 'btn-primary btn-sm'); ?>
-                    <?php endif; ?>
+                    <select name="action" class="form-control" style="width:auto;">
+                        <option value="" selected="selected">Bulk Actions</option>
+                        <option value="remove">Remove</option>
+                        <option value="restore">Restore</option>
+                    </select>
+                    <button class="btn-primary btn-sm">Apply</button>
+                    {{/if}}
     				<!-- END: BULK ACTION -->
                     
                     <!-- START: FILTER BUTTONS -->
                     <span class="filter">
-                        <?php if($action == 'active'): ?>
+                        {{#when action '==' 'active'}}
                         <a class="btn btn-sm btn-light" 
-                        href="/event/active?<?php echo http_build_query($_GET); ?>">
+                        href="/event/active?{{get}}">
                         <i class="icon-circle"></i> 
-						<?php $_('Active'); ?> &nbsp;
-                        <span class="badge badge-grey"><?php echo $totalActive; ?></span></a>
-                        <?php else: ?>
+						Active &nbsp;
+                        <span class="badge badge-grey">{{total_active}}</span></a>
+                        {{/when}}
+                        {{#when action '!=' 'active'}}
                         <a class="btn btn-sm btn-success"
-                        href="/event/active?<?php echo http_build_query($_GET); ?>">
+                        href="/event/active?{{get}}">
                         <i class="icon-circle"></i> 
-						<?php $_('Active'); ?> &nbsp;
-                        <span class="badge badge-yellow"><?php echo $totalActive; ?></span></a>
-                        <?php endif; ?>
+						Active &nbsp;
+                        <span class="badge badge-yellow">{{total_active}}</span></a>
+                        {{/when}}
                         
-                        <?php if($action == 'inactive'): ?>
+                        {{#when action '==' 'inactive'}}
                         <a class="btn btn-sm btn-light" 
-                        href="/event/inactive?<?php echo http_build_query($_GET); ?>">
+                        href="/event/inactive?{{get}}">
                         <i class="icon-circle-blank"></i> 
-						<?php $_('Inactive'); ?> &nbsp;
-                        <span class="badge badge-grey"><?php echo $totalInactive; ?></span></a>
-                        <?php else: ?>
+						Inactive &nbsp;
+                        <span class="badge badge-grey">{{total_inactive}}</span></a>
+                        {{/when}}
+                        {{#when action '!=' 'inactive'}}
                         <a class="btn btn-sm btn-danger"
-                        href="/event/inactive?<?php echo http_build_query($_GET); ?>">
+                        href="/event/inactive?{{get}}">
                         <i class="icon-circle-blank"></i> 
-						<?php $_('Inactive'); ?> &nbsp;
-                        <span class="badge badge-warning"><?php echo $totalInactive; ?></span></a>
-                        <?php endif; ?>
+						Inactive &nbsp;
+                        <span class="badge badge-warning">{{total_inactive}}</span></a>
+                        {{/when}}
                         
-                        <?php if($action == 'trash'): ?>
+                        {{#when action '==' 'trash'}}
                         <a class="btn btn-sm btn-light" 
-                        href="/event/trash?<?php echo http_build_query($_GET); ?>">
+                        href="/event/trash?{{get}}">
                         <i class="icon-trash"></i> 
-						<?php $_('Trash'); ?> &nbsp;
-                        <span class="badge badge-grey"><?php echo $totalTrash; ?></span></a>
-                        <?php else: ?>
+						Trash &nbsp;
+                        <span class="badge badge-grey">{{total_trash}}</span></a>
+                        {{/when}}
+                        {{#when action '!=' 'trash'}}
                         <a class="btn btn-sm btn-danger"
-                        href="/event/trash?<?php echo http_build_query($_GET); ?>">
+                        href="/event/trash?{{get}}">
                         <i class="icon-trash"></i> 
-						<?php $_('Trash'); ?> &nbsp;
-                        <span class="badge badge-warning"><?php echo $totalTrash; ?></span></a>
-                        <?php endif; ?>
+						Trash &nbsp;
+                        <span class="badge badge-warning">{{total_trash}}</span></a>
+                        {{/when}}
                     </span>
     				<!-- END: FILTER BUTTONS -->
                 </div>
             </div>
         </div>
-        <?php if($view == 'calendar') : ?>
-        <?php include(__DIR__.'/index/calendar.php'); ?>
-        <?php else : ?>
-        <?php include(__DIR__.'/index/table.php'); ?>
-        <?php endif; ?>
+        {{#when view '==' 'calendar'}}
+            {{{calendar}}}
+        {{/when}}
+        {{#when view '!=' 'calendar'}}
+            {{{table}}}
+        {{/when}}
 	</div>
     
-    <?php if($action == 'active'): ?>
-	<?php echo control()->block()->component()->pagination($totalActive)->setRange($range); ?>
-    <?php elseif($action == 'inactive'): ?>
-	<?php echo control()->block()->component()->pagination($totalInactive)->setRange($range); ?>
-    <?php elseif($action == 'trash'): ?>
-    <?php echo control()->block()->component()->pagination($totalTrash)->setRange($range); ?>
-	<?php endif; ?>
+    {{#when action '==' 'active'}}
+    <ul class="pagination">
+        {{#pagination active range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    {{#when action '==' 'inactive'}}
+    <ul class="pagination">
+        {{#pagination inactive range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    {{#when action '==' 'trash'}}
+    <ul class="pagination">
+        {{#pagination trash range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    
 </form>
 <!-- END: BULK FORM -->
 <script src="/assets/Eve/Package/Core/File/Back/assets/checkall.js"></script>
