@@ -1,15 +1,16 @@
 module.exports = (function() { 
-	//Index file called
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  = null;
-    public.request   = null;
-    public.response  = null;
-         
+    public.controller  	= null;
+    public.request   	= null;
+    public.response  	= null;
+    
+	/* Private Properties
+    -------------------------------*/
     /* Loader
     -------------------------------*/
     public.__load = c.load = function(controller, request, response) {
@@ -21,39 +22,45 @@ module.exports = (function() {
 	public.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
-		this.request  = request;
-		this.response  = response;
+		this.request  	= request;
+		this.response  	= response;
 	};
-
+	
+	/* Public Methods
+    -------------------------------*/
 	public.render = function() {
-		var rest = this.request, resp = this.response;
 		//1. SETUP: change the string into a native object
-		var query = controller.eden
-			.load('string', rest.message)
+		var query = this.controller.eden
+			.load('string', this.request.message)
 			.queryToHash().get();
+			
 		//2. TRIGGER
+		var self = this;
 		this.controller
 			//when there is an error 
 			.once('user-create-error', function(error) {
 				//setup an error response
-				resp.message = JSON.stringify({ 
+				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//trigger that a response has been made
-				this.controller.trigger('user-action-response', this.request, this.response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('user-create-success', function() {
 				//set up a success response
-				resp.message = JSON.stringify({ error: false });
+				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				this.controller.trigger('user-action-response', this.request, this.response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//Now call to remove the user
 			.trigger('user-create', this.controller, query);
-	}
+	};
+	
+	/* Private Methods
+    -------------------------------*/
 	/* Adaptor
 	-------------------------------*/
 	return c; 

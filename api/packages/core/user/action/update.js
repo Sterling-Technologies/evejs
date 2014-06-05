@@ -1,5 +1,4 @@
 module.exports = (function() {
-	//Index file called 
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -9,7 +8,9 @@ module.exports = (function() {
     public.controller  = null;
     public.request   = null;
     public.response  = null;
-         
+    
+	/* Private Properties
+    -------------------------------*/
     /* Loader
     -------------------------------*/
     public.__load = c.load = function(controller, request, response) {
@@ -24,22 +25,25 @@ module.exports = (function() {
 		this.request  = request;
 		this.response  = response;
 	};
-
+	
+	/* Public Methods
+    -------------------------------*/
 	public.render = function() {
-		if(!request.variables[0]) {
+		//if no ID
+		if(!this.request.variables[0]) {
 			//setup an error response
-			response.message = JSON.stringify({ 
+			this.response.message = JSON.stringify({ 
 				error: true, 
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			controller.trigger('user-action-response', request, response);
-
+			this.controller.trigger('user-action-response', this.request, this.response);
+			
 			return;
 		}
-
-		var query = controller.eden
-			.load('string', request.message)
+		
+		var self = this, query = this.controller.eden
+			.load('string', this.request.message)
 			.queryToHash().get();
 		
 		//3. TRIGGER
@@ -47,28 +51,27 @@ module.exports = (function() {
 			//when there is an error
 			.once('user-update-error', function(error) {
 				//setup an error response
-				response.message = JSON.stringify({ 
+				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//trigger that a response has been made
-				controller.trigger('user-action-response', request, response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('user-update-success', function() {
 				//set up a success response
-				response.message = JSON.stringify({ error: false });
-				 
+				self.response.message = JSON.stringify({ error: false });
+				
 				//trigger that a response has been made
-				controller.trigger('user-action-response', request, response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//Now call to update the user
-			.trigger(
-				'user-update', 
-				controller, 
-				request.variables[0], 
-				query);
-	}
+			.trigger('user-update', this.controller, this.request.variables[0], query);
+	};
+	
+	/* Private Methods
+    -------------------------------*/
 	/* Adaptor
 	-------------------------------*/
 	return c; 

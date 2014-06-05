@@ -74,7 +74,6 @@ module.exports = function() {
 		request.variables = variables;
 		//listen for response
 		control.once('user-action-response', function(request, response) {
-			console.log("response "+response);
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response
@@ -86,7 +85,6 @@ module.exports = function() {
 		}); 
 		
 		//call it
-		require(action).load(this, control, request, response).render();
-
+		require(action).load(control, request, response).render();
 	}, this));
 };
