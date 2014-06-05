@@ -17,7 +17,7 @@ module.exports = function(controller, request, response) {
 			//is it an update ?
 			if(request.method.toUpperCase() == 'PUT') {
 				require('./update')(controller, request, response);
-				return this;
+				return;
 			}
 			
 			//is it an removal ?

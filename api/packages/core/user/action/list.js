@@ -145,39 +145,59 @@ results, query, start, range, order, count) {
  * @return void
  */
 module.exports = function(controller, request, response) {
-	//there will be a group of results
-	var results = [], 
-		//gather all the request data
-		requestData = _getRequestData(request),
-		//load sequence
-		sequence = controller.eden.load('sequence');
-	
-	for(var i = 0; i < requestData.max; i++) {
-		sequence.then(controller.eden.alter(
-			_getResults, this, 
-			controller, results,
-			requestData.queries[i] || {}, 
-			requestData.starts[i] || 0, 
-			requestData.ranges[i] || 50, 
-			requestData.orders[i] || {}, 
-			requestData.counts[i] == 1));
+	var c = function() {
+		this.render.call();
+	}, public = c.prototype;
+	/* Loader
+	-------------------------------*/
+	public.__load = c.load = function() {
+		if(!this.__instance) {
+			this.__instance = new c();
+		}
+		return this.__instance;
+	};
+	/* Construct
+	-------------------------------*/
+	public.render = function() {
+		//there will be a group of results
+		var results = [], 
+			//gather all the request data
+			requestData = _getRequestData(request),
+			//load sequence
+			sequence = controller.eden.load('sequence');
+
+		for(var i = 0; i < requestData.max; i++) {
+			sequence.then(controller.eden.alter(
+				_getResults, this, 
+				controller, results,
+				requestData.queries[i] || {}, 
+				requestData.starts[i] || 0, 
+				requestData.ranges[i] || 50, 
+				requestData.orders[i] || {}, 
+				requestData.counts[i] == 1));
+		}
+		
+		sequence.then(function(next) {
+			if(response.message) {
+				next();
+				return;
+			}
+			
+			//declare a wrapper
+			response.message = JSON.stringify({ batch: results });
+			
+			if(results.length === 1) {
+				//prepare the package
+				response.message = JSON.stringify(results[0]);
+			}
+			
+			//trigger that a response has been made
+			controller.trigger('user-action-response', request, response);
+		});
 	}
-	
-	sequence.then(function(next) {
-		if(response.message) {
-			next();
-			return;
-		}
-		
-		//declare a wrapper
-		response.message = JSON.stringify({ batch: results });
-		
-		if(results.length === 1) {
-			//prepare the package
-			response.message = JSON.stringify(results[0]);
-		}
-		
-		//trigger that a response has been made
-		controller.trigger('user-action-response', request, response);
-	});
+	/* Private Methods
+	-------------------------------*/
+	/* Adaptor
+	-------------------------------*/
+	return c.load(); 
 };
