@@ -166,7 +166,6 @@ define(function() {
             dataType: 'json',
             data: data,
             success: function(response){
-                data = null;
                 //clear post status if any
                 $('.msg').empty().remove();
                 //display post status
