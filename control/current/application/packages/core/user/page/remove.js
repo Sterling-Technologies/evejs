@@ -39,17 +39,12 @@ define(function() {
 
     		callback();
     	});
-
+    	
     	return this;
     };
 
-    public.output = function(callback) { 
-    	//TODO: reload function
-    	// $('.icon-remove').click(function() {
-    	// 	console.log('reload');
-    	// 	location.reload();
+    public.output = function(callback) {
 
-    	// });
     	callback();
     	return this;
     };
