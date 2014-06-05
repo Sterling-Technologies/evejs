@@ -80,23 +80,23 @@ define(function() {
 
                 //company form
                 self.data.company = Handlebars.compile(company)({
-                    user_company         : user.company[0].name,
-                    user_job_title       : user.company[0].title,
-                    user_company_street  : user.company[0].street,
-                    user_company_city    : user.company[0].city,
-                    user_company_state   : user.company[0].state,
+                    user_company         : user.company.name,
+                    user_job_title       : user.company.title,
+                    user_company_street  : user.company.street,
+                    user_company_city    : user.company.city,
+                    user_company_state   : user.company.state,
                     //We need an array for country code and country name
                     //lets create an array inside company and store all country data on it
                     country              : countries,
-                    user_company_postal  : user.company[0].postal,
-                    user_company_phone   : user.company[0].phone,
-                    user_company_email   : user.company[0].email
+                    user_company_postal  : user.company.postal,
+                    user_company_phone   : user.company.phone,
+                    user_company_email   : user.company.email
                 });
 
                 //contact form
                 self.data.contact = Handlebars.compile(contact)({
                     user_website  : user.website,
-                    user_phone    : user.phone[0].value
+                    user_phone    : user.phone.value
                 });
                 
                 //picture form
@@ -167,19 +167,15 @@ define(function() {
     -------------------------------*/
     var _process = function(e) {
         e.preventDefault();
-        //console.log('test');
-        _api = 'http://api.eve.dev:8082/user/update';
+        //set api to update
+        _api = 'http://api.eve.dev:8082/user/update/';
+        //get id
         _id  =  window.location.pathname.split('/')[3];
-
-        console.log(_api + _id + '/' + self);
-        //console.log(this, e.data.scope.title);
-        $.getJSON(self, function(response) {
-            console.log(response.result);
-            //if error
-            if(response.error) {
-                return;
-            }
-        }); 
+        _api = _api + _id;
+        var data = $('.package-user-form').serialize();
+        $.post(_api, data, function(response){
+            console.log(response);
+        });
     };
 
     /* A-aptor
