@@ -167,14 +167,14 @@ define(function() {
     -------------------------------*/
     var _process = function(e) {
         e.preventDefault();
-        //set api to update
+        //set api to update.
         _api = 'http://api.eve.dev:8082/user/update/';
-        //get id
         _id  =  window.location.pathname.split('/')[3];
+        //join update and query.
         _api = _api + _id;
         var data = $('.package-user-form').serialize();
         $.post(_api, data, function(response){
-            console.log(response);
+            $('.package-user-form').append('<span> Record successfully updated </span>');
         });
     };
 
