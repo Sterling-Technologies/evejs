@@ -70,11 +70,39 @@
 
         {{#if rows}}
         <!-- START: POST TABLE -->
+
         <table class="table table-striped">
-            <thead>{{dir.head}}{{dir.file-head}}</thead>
+            <thead>
+                <tr>
+                    <th><input class="checkall" type="checkbox"></th>
+                    <th class="center">Image</th>
+                    <th>Name</th>
+                    <th>Mime Type</th>
+                    <th>Size</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
             <tbody>
-                {{#each row}}
-                {{dir.row}}{{row}}{{dir.file-row}}
+                {{#each rows}}
+                <tr id="{{id}}">
+                    <td><input name="file_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
+                    <td class="thumb"><i class="icon-file-text file-thumb"></i></td>
+                    <td>{{name}}</td>
+                    <td>{{mime_type}}</td>
+                    <td valign="middle">{{size}}</td>
+                    <td>
+                        {{if active}}
+                        <a title="Remove" href="/file/remove/{{id}}?redirect={{request_uri}}" class="text-danger">
+                        <i class="icon-remove" value="{{id}}"></i></a>&nbsp;
+                        <a class="blue" href="/file/preview/{{id}}/{{path}}" target="_blank">
+                        <i class="icon-zoom-in"></i></a>
+                        {{else}}
+                        <a title="Restore" href="/file/restore/{{id}}?redirect={{request_uri}}"
+                        class="text-success">
+                        <i class="icon-external-link"></i></a>
+                        {{/if}}
+                    </td>
+                </tr>
                 {{/each}}
             </tbody>    
         </table>
