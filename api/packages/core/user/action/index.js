@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function(controller, request, response) {
 	var c = function() {}, public = c.prototype,
 	/* Loader
 	-------------------------------*/
@@ -9,8 +9,6 @@ module.exports = function() {
 	-------------------------------*/
 	/* Public Methods
 	-------------------------------*/
-	//when a server request has been made
-	this.listen('server-request', this.eden.alter(function(controller, request, response) {
 		if(request.variables[0]) {
 			//is it an update ?
 			if(request.method.toUpperCase() == 'PUT') {
@@ -38,7 +36,6 @@ module.exports = function() {
 		//it must be a listing
 		require('./list')(controller, request, response);
 		return this;
-	},this))
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor
