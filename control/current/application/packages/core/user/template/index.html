@@ -72,7 +72,7 @@
 			</thead>
 			<tbody>
 				{{#each rows}}
-                <tr>
+                <tr id="{{id}}">
                     <td><input name="user_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
                         {{#if active}}
@@ -80,7 +80,7 @@
                         <i class="icon-edit"></i></a> &nbsp; 
                         
                         <a title="Remove" href="/user/remove/{{id}}"
-                        class="text-danger"><i class="icon-remove"></i></a>
+                        class="text-danger"><i class="icon-remove" value="{{id}}"></i></a>
                         
                         {{else}}
                         

@@ -36,10 +36,8 @@ define(function() {
     		if(response.error) {
     			return;
     		}
-
     		callback();
     	});
-
     	return this;
     };
 
