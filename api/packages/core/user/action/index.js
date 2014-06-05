@@ -1,16 +1,16 @@
-module.exports = function(controller, request, response) {
+module.exports = function() {
 	var c = function() {}, public = c.prototype,
 	/* Loader
 	-------------------------------*/
 	public.__load = c.load = function() {
-		public.render();
 		return new c();
 	};	
 	/* Construct
 	-------------------------------*/
 	/* Public Methods
 	-------------------------------*/
-	public.render = function() {
+	//when a server request has been made
+	this.listen('server-request', this.eden.alter(function(controller, request, response) {
 		if(request.variables[0]) {
 			//is it an update ?
 			if(request.method.toUpperCase() == 'PUT') {
@@ -38,7 +38,7 @@ module.exports = function(controller, request, response) {
 		//it must be a listing
 		require('./list')(controller, request, response);
 		return this;
-	}
+	},this))
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor
