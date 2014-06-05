@@ -142,7 +142,7 @@ define(function() {
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
 
-        $('#body').on('submit', 'form.package-user-form', { scope: self }, _process);               
+        $('#body').on('submit', 'form.package-user-form', { scope: self }, _processSaveData);               
         callback();
 
         return this;
@@ -150,7 +150,7 @@ define(function() {
 	
 	/* Private Methods
 	-------------------------------*/
-	var _process = function(e) {
+	var _processSaveData = function(e) {
         //TODO: get data from corresponding field, then throw to json. 
         //to able to post to api      
         e.preventDefault();
