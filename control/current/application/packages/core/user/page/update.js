@@ -1,6 +1,5 @@
 define(function() {
-    var c = function() {}, public = c.prototype,
-    id = window.location.pathname.split('/')[3];
+    var c = function() {}, public = c.prototype;
     /* Public Properties 
     -------------------------------*/
     public.title        = 'Update User';
@@ -18,7 +17,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $       = jQuery;
-    var _api    = 'http://api.eve.dev:8082/user/detail/' + id;
+    var _api    = 'http://api.eve.dev:8082/user/' + window.location.pathname.split('/')[3];
     
     /* Loader
     -------------------------------*/
@@ -38,7 +37,7 @@ define(function() {
         return this;
     };
     
-    public.getData = function(callback) {
+     public.getData = function(callback) {
         var self = this;
         $.getJSON(_api, function(response) {
             //check if there's a response
@@ -49,8 +48,8 @@ define(function() {
 
             //store user details in a variable for ease of access
             var user = response.results;
-            //console.log(user.company[0].email);
             //prepare all form templates
+            console.log(user.company[0].name);
             var forms = [
             controller.path('config') + '/countries.js',
             'text!' + controller.path('user/template') +  'form/basic.html',
@@ -138,8 +137,6 @@ define(function() {
             
             callback(); 
         });
-
-               
 
         return this;
     };
