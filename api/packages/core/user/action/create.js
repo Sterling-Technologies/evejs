@@ -4,7 +4,6 @@ module.exports = function(controller, request, response) {
 	var query = controller.eden
 		.load('string', request.message)
 		.queryToHash().get();
-	
 	//2. TRIGGER
 	controller
 		//when there is an error

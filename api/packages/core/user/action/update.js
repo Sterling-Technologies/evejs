@@ -12,7 +12,6 @@ module.exports = function(controller, request, response) {
 		
 		return;
 	}
-	
 	//2. SETUP
 	//change the string into a native object
 	var query = controller.eden

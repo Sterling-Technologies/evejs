@@ -136,7 +136,6 @@ results, query, start, range, order, count) {
 		next();
 	});
 };
-
 /**
  * Main action method
  *

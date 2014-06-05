@@ -11,7 +11,7 @@ module.exports = function(controller, request, response) {
 		
 		return;
 	}
-	
+	//2. TRIGGER
 	controller.user().store()
 	.findOne({ 
 		_id: request.variables[0], 

@@ -18,7 +18,7 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ 		= jQuery;
-	var _api 	= 'http://api.lbc.dev:8082/user';
+	var _api 	= 'http://api.eve.dev:8082/user';
 	
 	/* Loader
 	-------------------------------*/

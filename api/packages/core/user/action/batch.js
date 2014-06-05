@@ -34,7 +34,6 @@ module.exports = function(controller, request, response) {
 
         }
     }
-
     //Array that will contain the request message
     var results = [];
     controller.once('user-action-response', function(request, response) {

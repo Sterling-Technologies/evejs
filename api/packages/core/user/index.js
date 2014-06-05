@@ -82,7 +82,7 @@ module.exports = function() {
 			}
 
 			//trigger that a response has been made
-			control.server.trigger('response', request, response);
+			control.trigger('response', request, response);
 		});
 		
 		//call it
