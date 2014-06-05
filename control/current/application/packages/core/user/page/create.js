@@ -158,21 +158,12 @@ define(function() {
         var data = $(".package-user-form").serialize();
 
         //save data to database
-        $.ajax({
-            url: _api,
-            type: 'POST',
-            cache: false,
-            dataType: 'json',
-            data: data,
-            success: function(response){                
-                //clear post status if any
-                $('.msg').empty().remove();
-                //display post status
-                $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
-            }    
-        }).fail(function() {
-            $('.package-user-form').append('<span class="msg alert alert-danger"> Error in saving of data. </span>').show('slow');
-        });
+        $.post(_api, data, function(response) {
+            //clear message status
+             $('.msg').empty().remove();
+            //display message status
+            $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
+       });
     };
     
     /* Adaptor

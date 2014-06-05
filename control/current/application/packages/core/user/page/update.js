@@ -166,7 +166,6 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processUpdate = function(e) {
-        console.log('updating data');   
         //prevent page from reloading
         e.preventDefault();
 
@@ -182,24 +181,13 @@ define(function() {
         //join update and query.
         _api = _api + _id;
        
-       console.log(_api);
-        $.ajax({
-            url: _api,
-            type: 'POST',
-            cache: false,
-            dataType: 'json',
-            data: data,
-            success : function (response) {
-                console.log('success');
-                //clear message status
-                 $('.msg').empty().remove();
-                //display message status
-                $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
-            }
-        }).fail(function() {
-            $('.package-user-form').append('<span class="msg alert alert-danger"> Error in updating of data. </span>').show('slow');
-        });
-        
+       //update data on database
+       $.post(_api, data, function(response) {
+            //clear message status
+             $('.msg').empty().remove();
+            //display message status
+            $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
+       });
     };
 
     /* A-aptor
