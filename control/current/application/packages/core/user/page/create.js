@@ -1,46 +1,46 @@
 define(function() {
-	var c = function() {}, public = c.prototype;
+    var c = function() {}, public = c.prototype;
     
-	/* Public Properties 
-	-------------------------------*/
-	public.title 		= 'Create User';
-	public.header 		= 'Create User';
-	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ 
-		path: '/user',
-		icon: 'user', 
-		label: 'Users' 
-	}, {  label: 'Create User' }];
-	
-	public.data 	= {};
-	public.template = controller.path('user/template') + '/form.html';
-	
-	/* Private Properties
-	-------------------------------*/
-	var $ 		= jQuery;
-	var _api 	= 'http://api.eve.dev:8082/user/create';
-	
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
-	};
-	
-	/* Construct
-	-------------------------------*/
-	/* Public Methods
-	-------------------------------*/
-	public.render = function() {
-		$.sequence().setScope(this)
-		.then(this.getData)
-		.then(this.output);
-		
-		return this;
-	};
-	
-	public.getData = function(callback) {
+    /* Public Properties 
+    -------------------------------*/
+    public.title        = 'Create User';
+    public.header       = 'Create User';
+    public.subheader    = 'CRM';
+    public.crumbs       = [{ 
+        path: '/user',
+        icon: 'user', 
+        label: 'Users' 
+    }, {  label: 'Create User' }];
+    
+    public.data     = {};
+    public.template = controller.path('user/template') + '/form.html';
+    
+    /* Private Properties
+    -------------------------------*/
+    var $       = jQuery;
+    var _api    = 'http://api.eve.dev:8082/user/create';
+    
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function() {
+        return new c();
+    };
+    
+    /* Construct
+    -------------------------------*/
+    /* Public Methods
+    -------------------------------*/
+    public.render = function() {
+        $.sequence().setScope(this)
+        .then(this.getData)
+        .then(this.output);
         
-		var self = this,
+        return this;
+    };
+    
+    public.getData = function(callback) {
+        
+        var self = this,
 
         //store form templates path to array
         forms = [
@@ -129,10 +129,10 @@ define(function() {
 
         callback();
         
-		return this;
-	};
-	
-	public.output = function(callback) {
+        return this;
+    };
+    
+    public.output = function(callback) {
         var self = this;
    
         controller
@@ -147,32 +147,37 @@ define(function() {
 
         return this;
     };
-	
-	/* Private Methods
-	-------------------------------*/
-	var _processSaveData = function(e) {
-        //TODO: get data from corresponding field, then throw to json. 
-        //to able to post to api      
+    
+    /* Private Methods
+    -------------------------------*/
+    var _processSaveData = function(e) {
+        console.log('saving data');    
+        //prevent page from reloading
         e.preventDefault();
 
-        //serialize form data
+        //prepare form data
         var data = $(".package-user-form").serialize();
 
         //save data to database
-        $.post(_api, data, function(response) {
-            //if error response
-            if(response.error) {
-                alert('User create failed!');
-                return;
-            }
-
-            //display message
-            $('.msg').empty();
-            $(".package-user-form").append('<span class="msg label label-success arrowed"> Record successfully added. </span>').show('slow');
+        $.ajax({
+            url: _api,
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            data: data,
+            success: function(response){
+                data = null;
+                //clear post status if any
+                $('.msg').empty().remove();
+                //display post status
+                $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
+            }    
+        }).fail(function() {
+            $('.package-user-form').append('<span class="msg alert alert-danger"> Error in saving of data. </span>').show('slow');
         });
-	};
-	
-	/* Adaptor
-	-------------------------------*/
-	return c.load(); 
+    };
+    
+    /* Adaptor
+    -------------------------------*/
+    return c.load(); 
 });
