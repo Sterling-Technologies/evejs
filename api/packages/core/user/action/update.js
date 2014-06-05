@@ -5,9 +5,9 @@ module.exports = (function() {
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  = null;
-    public.request   = null;
-    public.response  = null;
+    public.controller  	= null;
+    public.request   	= null;
+    public.response  	= null;
     
 	/* Private Properties
     -------------------------------*/
@@ -22,8 +22,8 @@ module.exports = (function() {
 	public.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
-		this.request  = request;
-		this.response  = response;
+		this.request  	= request;
+		this.response  	= response;
 	};
 	
 	/* Public Methods
@@ -46,8 +46,8 @@ module.exports = (function() {
 			.load('string', this.request.message)
 			.queryToHash().get();
 		
-		//3. TRIGGER
-		controller
+		//TRIGGER
+		this.controller
 			//when there is an error
 			.once('user-update-error', function(error) {
 				//setup an error response
