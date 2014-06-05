@@ -14,15 +14,16 @@ module.exports = function(controller, request, response) {
 	/* Construct
 	-------------------------------*/
 	public.render = function() {
-		sequence.then(function(next) { this.validate })
-		.then(function(next) { this.setup });
+		sequence().setScope(this)
+		.then(this.validate)
+		.then(this.setup);
 
 		return this;
 	}
 	/* Public Methods
 	-------------------------------*/
 	//1. VALIDATE: if no id was set
-	public.validate = function() {
+	public.validate = function(callback) {
 		if(!request.variables[0]) {
 			//setup an error response
 			response.message = JSON.stringify({ 
@@ -31,12 +32,14 @@ module.exports = function(controller, request, response) {
 			
 			//trigger that a response has been made
 			controller.trigger('user-action-response', request, response);
+			
+			callback();
 
-			return;
+			return this;
 		}
 	}
 	//2. SETUP: change the string into a native object
-	public.setup = function() {
+	public.setup = function(callback) {
 		var query = controller.eden
 			.load('string', request.message)
 			.queryToHash().get();
@@ -67,6 +70,10 @@ module.exports = function(controller, request, response) {
 				controller, 
 				request.variables[0], 
 				query);
+
+			callback();
+
+			return this;
 	}
 	/* Private Methods
 	-------------------------------*/

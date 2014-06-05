@@ -47,9 +47,9 @@ define(function() {
         var _id =  _api + window.location.pathname.split('/')[3];
         
         $.getJSON(_id, function(response) {
-            //check if there's a response
+            
+            //if error
             if(response.error) {
-                //end if there's an error.
                 return;
             }
 
@@ -157,8 +157,7 @@ define(function() {
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
-
-        $('#body').on('submit', '.package-user-form', { scope: self }, _process);        
+        $('#body').on('submit', '.package-user-form', { scope: self }, _process);
         callback();
 
         return this;
@@ -168,11 +167,21 @@ define(function() {
     -------------------------------*/
     var _process = function(e) {
         e.preventDefault();
-        console.log(this, e.data.scope.title);
-        
+        //console.log('test');
+        _api = 'http://api.eve.dev:8082/user/update';
+        _id  =  window.location.pathname.split('/')[3];
+
+        console.log(_api + _id + '/' + self);
+        //console.log(this, e.data.scope.title);
+        $.getJSON(self, function(response) {
+            console.log(response.result);
+            //if error
+            if(response.error) {
+                return;
+            }
+        }); 
     };
-    
-    console.log(this.body);
+
     /* A-aptor
     -------------------------------*/
     return c.load();
