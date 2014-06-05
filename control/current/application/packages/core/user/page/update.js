@@ -187,7 +187,7 @@ define(function() {
             $('.msg').empty();
 
             //display message status
-            $('.package-user-form').append('<span class=msg> Record successfully updated </span>').show('slow');
+            $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
         });
     };
 

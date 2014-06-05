@@ -168,7 +168,7 @@ define(function() {
 
             //display message
             $('.msg').empty();
-            $(".package-user-form").append('<span class=msg> Record Successfully added. </span>');
+            $(".package-user-form").append('<span class="msg label label-success arrowed"> Record successfully added. </span>').show('slow');
         });
 	};
 	
