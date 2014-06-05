@@ -167,16 +167,26 @@ define(function() {
     -------------------------------*/
     var _processUpdate = function(e) {
         e.preventDefault();
+
         //set api to update.
         _api = 'http://api.eve.dev:8082/user/update/';
+        
+        //get requested id
         _id  =  window.location.pathname.split('/')[3];
+
         //join update and query.
         _api = _api + _id;
+
+        //prepare form data
         var data = $('.package-user-form').serialize();
+
+        //execute update.
         $.post(_api, data, function(response){
-            //remove span message
+            
+            //clear message status
             $('.msg').empty();
-            //display message
+
+            //display message status
             $('.package-user-form').append('<span class=msg> Record successfully updated </span>').show('slow');
         });
     };
