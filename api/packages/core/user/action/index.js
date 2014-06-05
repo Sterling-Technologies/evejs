@@ -1,41 +1,44 @@
 module.exports = function(controller, request, response) {
-	var c = function() {}, public = c.prototype,
+	var c = function() {
+		this.render.call();
+	}, public = c.prototype;
 	/* Loader
 	-------------------------------*/
 	public.__load = c.load = function() {
-		return new c();
-	};	
+		(!this.__instance ? this.__instance = new c() : this.__instance);
+
+		return this.__instance;
+	};
 	/* Construct
 	-------------------------------*/
-	/* Public Methods
-	-------------------------------*/
+	public.render = function() {
 		if(request.variables[0]) {
 			//is it an update ?
 			if(request.method.toUpperCase() == 'PUT') {
 				require('./update')(controller, request, response);
-				return this;
+				return;
 			}
 			
 			//is it an removal ?
 			if(request.method.toUpperCase() == 'DELETE') {
 				require('./remove')(controller, request, response);
-				return this;
+				return;
 			}
 			
 			//it must be a detail
 			require('./detail')(controller, request, response);
-			return this;
+			return;
 		}
 		
 		//is it a create ?
 		if(request.method.toUpperCase() == 'POST') {
 			require('./create')(controller, request, response);
-			return this;
+			return;
 		}
 		
 		//it must be a listing
 		require('./list')(controller, request, response);
-		return this;
+	}
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor
