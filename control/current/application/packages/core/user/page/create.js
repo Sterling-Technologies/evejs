@@ -151,24 +151,29 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _processSaveData = function(e) {
-        //TODO: get data from corresponding field, then throw to json. 
-        //to able to post to api      
+        console.log('saving data');    
+        //prevent page from reloading
         e.preventDefault();
 
-        //serialize form data
+        //prepare form data
         var data = $(".package-user-form").serialize();
 
         //save data to database
-        $.post(_api, data, function(response) {
-            //if error response
-            if(response.error) {
-                alert('User create failed!');
-                return;
-            }
-
-            //display message
-            $('.msg').empty();
-            $(".package-user-form").append('<span class="msg label label-success arrowed"> Record successfully added. </span>').show('slow');
+        $.ajax({
+            url: _api,
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            data: data,
+            success: function(response){
+                data = null;
+                //clear post status if any
+                $('.msg').empty().remove();
+                //display post status
+                $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
+            }    
+        }).fail(function() {
+            $('.package-user-form').append('<span class="msg alert alert-danger"> Error in saving of data. </span>').show('slow');
         });
 	};
 	

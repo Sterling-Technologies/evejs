@@ -29,7 +29,7 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		//if no ID
+		//if no id
 		if(!this.request.variables[0]) {
 			//setup an error response
 			this.response.message = JSON.stringify({ 
@@ -47,7 +47,7 @@ module.exports = (function() {
 			.queryToHash().get();
 		
 		//3. TRIGGER
-		controller
+		self.controller
 			//when there is an error
 			.once('user-update-error', function(error) {
 				//setup an error response
