@@ -43,13 +43,13 @@ define(function() {
         //set button to update
         self.data.update = { update : 'update'};
 
-        //get resquested value
+        //get user id
         var _id =  _api + window.location.pathname.split('/')[3];
         
         $.getJSON(_id, function(response) {
             //check if there's a response
             if(response.error) {
-                //end if not.
+                //end if there's an error.
                 return;
             }
 
@@ -158,9 +158,7 @@ define(function() {
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
 
-        $('#body').on('submit', '.package-user-form', { scope: self }, _process);
-
-        console.log(_api);
+        $('#body').on('submit', '.package-user-form', { scope: self }, _process);        
         callback();
 
         return this;
@@ -171,9 +169,11 @@ define(function() {
     var _process = function(e) {
         e.preventDefault();
         console.log(this, e.data.scope.title);
+        
     };
     
-    /* Adaptor
+    console.log(this.body);
+    /* A-aptor
     -------------------------------*/
-    return c.load(); 
+    return c.load();
 });
