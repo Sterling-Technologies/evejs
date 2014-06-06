@@ -1,4 +1,3 @@
-<link rel="stylesheet" type="text/css" href="/assets/Eve/Package/Core/Post/Back/assets/index.css" />
 <!-- START: SEARCH FORM -->
 <form class="pull-right search form-inline" method="get">
     <div class="form-group">
@@ -75,7 +74,7 @@
             </thead>
             <tbody>
                 {{#each rows}}
-                <tr>
+                <tr id="{{id}}">
                     <td><input name="post_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
 
@@ -83,7 +82,7 @@
                         <a title="Edit" href="/post/update/{{id}}">
                         <i class="icon-edit"></i></a> &nbsp; 
                         <a title="Remove" href="/post/remove/{{id}}"
-                        class="text-danger"><i class="icon-remove"></i></a>
+                        class="text-danger"><i class="icon-remove" value="{{id}}"></i></a>
                         {{else}}
                         <a title="Restore" href="/post/restore/{{id}}" class="text-success">
                         <i class="icon-external-link"></i></a>
@@ -137,5 +136,5 @@
     </ul>
     {{/when}}
 </form>
+<script type="text/javascript" src="/application/packages/core/post/assets/postremove.js"></script>
 <!-- END: BULK FORM -->
-<!-- <script type="text/javascript" src="/assets/Eve/Package/Core/Post/Back/assets/checkall.js"></script> -->
