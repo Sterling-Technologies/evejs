@@ -30,11 +30,6 @@ define(function() {
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
-    /**
-     * Render
-     *
-     * @return this
-     */
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
@@ -182,7 +177,8 @@ define(function() {
     };
 
     /** 
-     * check if we are listening
+     * Check if we are listening
+     *
      * @param function
      * return this
      */
@@ -227,7 +223,7 @@ define(function() {
        });
     };
 
-    /* A-aptor
+    /* Adaptor
     -------------------------------*/
     return c.load();
 });

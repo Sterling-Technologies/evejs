@@ -20,11 +20,6 @@ define(function() {
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
-    /**
-     * Render
-     *
-     * @return this
-     */
 	public.render = function() { 
         $.sequence().setScope(this)
         .then(this.removeData);

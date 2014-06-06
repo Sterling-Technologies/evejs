@@ -64,6 +64,7 @@ define(function() {
 
             }
             
+            //TODO: default data for now.
             self.data = {
                 showing : 'Showing All',
                 rows    : rows,

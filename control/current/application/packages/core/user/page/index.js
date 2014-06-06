@@ -34,7 +34,12 @@ define(function() {
 		return this;
 	};
 	
-	//TODO: GET JSON, PREPARE SET CALLBACK from Schema.
+	/** 
+     * Get data
+     *
+     * @param function callback
+     * return this
+     */
 	public.getData = function(callback) {
 		var self = this;
 		$.getJSON(_api, function(response) {
@@ -59,6 +64,7 @@ define(function() {
 					updated: format });
                 }
 			
+			//TODO: default data for now.
 			self.data = {
 				showing : 'Now Showing',
 				rows	: rows,
@@ -75,7 +81,13 @@ define(function() {
 		
 		return this;
 	};
-	
+
+	/** 
+     * Output
+     *
+     * @param function callback
+     * return this
+     */
 	public.output = function(callback) {
 
 		controller
