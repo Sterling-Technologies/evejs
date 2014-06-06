@@ -66,7 +66,7 @@ module.exports = (function() {
 			})
 			//Now call to remove the post
 			.trigger('post-remove', this.controller, this.request.variables[0]);
-	}
+	};
 	
 	/* Private Methods
     -------------------------------*/

@@ -20,12 +20,12 @@ module.exports = (function() {
     
     /* Construct
     -------------------------------*/
-     public.__construct = function(controller, request, response) {
+    public.__construct = function(controller, request, response) {
         //set request and other usefull data
         this.controller = controller;
         this.request    = request;
         this.response   = response;
-     };
+    };
      
     /* Public Methods
     -------------------------------*/

@@ -63,7 +63,7 @@ module.exports = (function() {
 				//trigger that a response has been made
 				self.controller.server.trigger('response', self.request, self.response);
 			});
-	}
+	};
 	
 	/* Private Methods
     -------------------------------*/

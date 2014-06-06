@@ -66,7 +66,7 @@ module.exports = (function() {
 			})
 			//Now call to remove the post
 			.trigger('post-restore', self.controller, self.request.variables[0]);
-	}
+	};
 	
 	/* Private Methods
     -------------------------------*/
