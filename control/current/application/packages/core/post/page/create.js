@@ -82,10 +82,10 @@ define(function() {
                     { value : 'private', name: 'Private' }]
             });
 
-            // //load revision form template
-            // self.data.revision = Handlebars.compile(revision)({
-            //     data : 'data'
-            // });
+            //load revision form template
+            self.data.revision = Handlebars.compile(revision)({
+                row : [ {id: 'id name', created: '10/10/2014'}]
+            });
 
             // //load tags template
             // self.data.tags = Handlebars.compile(tags)({
