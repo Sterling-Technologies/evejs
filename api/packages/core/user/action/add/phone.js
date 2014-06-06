@@ -82,7 +82,7 @@ module.exports = (function() {
 			})
 			//Now call to remove the user
 			.trigger( 'user-add-phone', this.controller, this.request.variables[0], query);
-	}
+	};
 
 	/* Private Methods
     -------------------------------*/

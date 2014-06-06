@@ -37,7 +37,7 @@ module.exports = (function() {
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			this.controller.server.trigger('response', this.request, this.response);
+			this.controller.server.trigger('post-action-response', this.request, this.response);
 			
 			return;
 		}
@@ -50,25 +50,25 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('comment-update-error', function(error) {
+			.once('post-comment-update-error', function(error) {
 				//setup an error response
 				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.server.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
-			.once('comment-update-success', function() {
+			.once('post-comment-update-success', function() {
 				//set up a success response
 				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.server.trigger('post-action-response', self.request, self.response);
 			})
 			//Now call to update the comment
-			.trigger('comment-update', self.controller, self.request.variables[0], query);
+			.trigger('post-comment-update', self.controller, self.request.variables[0], query);
 	};
 	
 	/* Private Methods

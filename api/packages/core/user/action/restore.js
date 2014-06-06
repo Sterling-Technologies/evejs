@@ -65,7 +65,7 @@ module.exports = (function() {
 			})
 			//Now call to remove the user
 			.trigger('user-restore', this.controller, this.request.variables[0]);
-	}
+	};
 	
 	/* Private Methods
     -------------------------------*/

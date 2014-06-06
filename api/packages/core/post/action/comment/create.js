@@ -37,25 +37,25 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('comment-create-error', function(error) {
+			.once('post-comment-create-error', function(error) {
 				//setup an error response
 				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.server.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
-			.once('comment-create-success', function() {
+			.once('post-comment-create-success', function() {
 				//set up a success response
 				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.server.trigger('post-action-response', self.request, self.response);
 			})
 			//Now call to remove the comment
-			.trigger('comment-create', self.controller, query);
+			.trigger('post-comment-create', self.controller, query);
 	};
 	
 	/* Private Methods

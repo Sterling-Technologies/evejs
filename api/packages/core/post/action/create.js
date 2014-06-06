@@ -56,7 +56,7 @@ module.exports = (function() {
 			})
 			//Now call to remove the post
 			.trigger('post-create', this.controller, query);
-	}
+	};
 	
 	/* Private Methods
     -------------------------------*/
