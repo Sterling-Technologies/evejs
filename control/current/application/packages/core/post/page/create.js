@@ -61,14 +61,7 @@ define(function() {
                 field : [
                     { name : 'name', value : 'value' } ]
             });
-
-            //load categories form template
-            self.data.categories = Handlebars.compile(categories)({
-                name     : 'name',
-                children : 'child',
-                template : 'template'
-            });
-
+            
             //load copy form template
             self.data.copy = Handlebars.compile(copy)({
                 create : 'create',
@@ -80,8 +73,7 @@ define(function() {
                     },
                 url    : 'test url',
                 detail : 'test detail',
-                active : 'yes',
-
+                active : 'true'
 
             });
             
@@ -94,16 +86,6 @@ define(function() {
                 visibility : [
                     { value : 'public',  name: 'Public' },
                     { value : 'private', name: 'Private' }]
-            });
-
-            //load revision form template
-            self.data.revision = Handlebars.compile(revision)({
-                row : [ {id: '_id', created: '10/10/2014'}]
-            });
-
-            //load tags template
-            self.data.tags = Handlebars.compile(tags)({
-                field : 'tag'
             });
 
         });
