@@ -1,6 +1,6 @@
 <div class="widget-box">
     <div class="widget-header header-color-grey">
-        <h5>Revisions</h5>
+        <h5><?php $_('Revisions'); ?></h5>
     </div>
     <div class="widget-body">
     	<div class="widget-main">
@@ -13,13 +13,13 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each revision}}
+            	<?php foreach($revisions as $row): ?>
             	<tr>
-                	<td>{{id}}</td>
-                	<td>{{created}}</td>
-                    <td><a href="/post/update/{{id}}?revision={{id}}">Restore</a></td>
+                	<td><?php echo $row['post_id']; ?></td>
+                	<td><?php echo date('F d, Y h:i:s A', strtotime($row['post_created'])); ?></td>
+                    <td><a href="/post/update/<?php echo $id; ?>?revision=<?php echo $row['post_id']; ?>">Restore</a></td>
                 </tr>
-                {{/each}}
+                <?php endforeach; ?>
             </tbody>
         </table> 
         </div>
