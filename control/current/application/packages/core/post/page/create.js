@@ -87,22 +87,6 @@ define(function() {
                     { value : 'public',  name: 'Public' },
                     { value : 'private', name: 'Private' }]
             });
-
-            //other forms
-            //load categories form template
-            self.data.categories = Handlebars.compile(categories)({
-                name     : 'name',
-                children : 'child',
-                template : 'template'
-            });
-            //load revision form template
-            self.data.revision = Handlebars.compile(revision)({
-                row : [ {id: '_id', created: '10/10/2014'}]
-            });
-            //load tags template
-            self.data.tags = Handlebars.compile(tags)({
-                field : 'tag'
-            });
         });
 
         callback();
@@ -129,6 +113,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processSaveData = function(e) {
+        console.log('post created');
         //prevent page from reloading
         e.preventDefault();
 
