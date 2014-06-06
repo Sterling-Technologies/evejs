@@ -1,52 +1,79 @@
-module.exports = function(controller, request, response) {
+module.exports = (function() { 
     //Batch file called
-    response.batch = true;
-    //Converting request messages to JSON
-    var batch = JSON.parse(request.message);
-    //Loop the all the batch request
-    for(var i = 0; i < batch.length; i++){
-        //Check for the batch method 
-        switch(batch[i].method.toLowerCase()){
-            case 'create':
-                require('./create')(controller, request, response);
-                break;
-            case 'remove':
-                require('./remove')(controller, request, response);
-                break;
-            case 'update':
-                require('./update')(controller, request, response);
-                break;
-            case 'detail':
-                require('./detail')(controller, request, response);
-                break;
-            case 'list':
-                require('./list')(controller, request, response);
-                break;
-            case 'address':
-                require('./address')(controller, request, response);
-                break;
-            case 'phone':
-                require('./phone')(controller, request, response);
-                break;
-            case 'photo':
-                require('./photo')(controller, request, response);
-                break;
+    var c = function(controller, request, response) {
+        this.__construct.call(this, controller, request, response);
+    }, public = c.prototype;
+    
+    /* Public Properties
+    -------------------------------*/
+    public.controller  = null;
+    public.request   = null;
+    public.response  = null;
+    public.results   = [];
+         
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function(controller, request, response) {
+        return new c(controller, request, response);
+    };
+    
+    /* Construct
+    -------------------------------*/
+     public.__construct = function(controller, request, response) {
+        //set request and other usefull data
+        this.controller = controller;
+        this.request  = request;
+        this.response  = response;
+     };
+     
+    /* Public Methods
+    -------------------------------*/
+    public.render = function() {
+        //set batch to true
+        public.response.batch = true;
 
+        //listen for a user action
+        var setResults = this.controller.eden.alter(_setResults, this);
+        this.controller.once('user-action-response', setResults);
+
+        //get the batch of requests
+        var batch = JSON.parse(this.request.message);
+
+        //Loop the all the batch request
+        for(var action, i = 0; i < batch.length; i++) {
+            //now call the actions based on the method
+            switch(batch[i].method.toLowerCase()) {
+                case 'create':  action = require('./create');  break;
+                case 'remove':  action = require('./remove');  break;
+                case 'update':  action = require('./update');  break;
+                case 'detail':  action = require('./detail');  break;
+                case 'list':  action = require('./list');   break;
+                case 'add/address': action = require('./add/address'); break;
+                case 'add/phone': action = require('./add/phone'); break;
+                case 'add/photo': action = require('./add/photo'); break;
+            }
+
+            action.load(this.controller, request, response).render();
         }
-    }
-    //Array that will contain the request message
-    var results = [];
-    controller.once('user-action-response', function(request, response) {
+    };
+     
+    /* Private Methods
+    -------------------------------*/
+    var _setResults = function(request, response) {
         //All results will be push to the array results
-        results.push(response.message);
+        this.results.push(response.message);
 
         //If results is equal to request query
-        if(results.length == request.query.batch.length){
+        if(this.results.length == request.query.batch.length) {
             //All batch results will be JSON stringify
-            response.message = JSON.stringify({ batch:results })
+            response.message = JSON.stringify({ batch:results });
 
             //Been trigger to the user action
-            controller.trigger('user-action-response', request, response);
+            this.controller.server.trigger('response', request, response);
         }
-    });
-}
+    };
+     
+    /* Adaptor
+    -------------------------------*/
+     return c;
+})();

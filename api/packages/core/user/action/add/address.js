@@ -1,24 +1,30 @@
-module.exports = function(controller, request, response) {
-	var sequence = controller.eden.load('sequence');
+module.exports = (function() {
+	//Index file called 
+	var c = function(controller, request, response) {
+        this.__construct.call(this, controller, request, response);
+    }, public = c.prototype;
 
-	//change the string into a native object
-	var query = controller.eden
-		.load('string', request.message)
-		.queryToHash().get();
-
-	var c = function() {
-		this.render.call();
-	}, public = c.prototype;
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		if(!this.__instance) {
-			this.__instance = new c();
-		}
-		return this.__instance;
-	};
+	/* Public Properties
+    -------------------------------*/
+    public.controller  = null;
+    public.request   = null;
+    public.response  = null;
+         
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function(controller, request, response) {
+        return new c(controller, request, response);
+    };
+    
 	/* Construct
-	-------------------------------*/
+    -------------------------------*/
+	public.__construct = function(controller, request, response) {
+		//set request and other usefull data
+		this.controller = controller;
+		this.request  = request;
+		this.response  = response;
+	};
+
 	public.render = function() {
 		sequence.then(function(next) { this.validate })
 		.then(function(next) { this.setup });
@@ -53,10 +59,7 @@ module.exports = function(controller, request, response) {
 			
 			return;
 		}
-	}
-	
-	public.setup = function() {
-		//2. TRIGGER
+
 		controller
 			//when there is an error
 			.once('user-add-address-error', function(error) {
@@ -83,9 +86,7 @@ module.exports = function(controller, request, response) {
 				request.variables[0], 
 				query);
 	}
-	/* Private Methods
-	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
-};
+	return c; 
+})();

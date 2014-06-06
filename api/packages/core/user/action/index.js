@@ -1,48 +1,61 @@
-module.exports = function(controller, request, response) {
-	var c = function() {
-		this.render.call();
-	}, public = c.prototype;
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		if(!this.__instance) {
-			this.__instance = new c();
-		}
-		return this.__instance;
-	};
+module.exports = (function() { 
+	//Index file called
+	var c = function(controller, request, response) {
+        this.__construct.call(this, controller, request, response);
+    }, public = c.prototype;
+
+	/* Public Properties
+    -------------------------------*/
+    public.controller  = null;
+    public.request   = null;
+    public.response  = null;
+         
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function(controller, request, response) {
+        return new c(controller, request, response);
+    };
+    
 	/* Construct
-	-------------------------------*/
+    -------------------------------*/
+	public.__construct = function(controller, request, response) {
+		//set request and other usefull data
+		this.controller = controller;
+		this.request  = request;
+		this.response  = response;
+	};
+
 	public.render = function() {
-		if(request.variables[0]) {
-			//is it an update ?
-			if(request.method.toUpperCase() == 'PUT') {
-				require('./update')(controller, request, response);
-				return;
+		var action, 
+			respMethod = this.response
+			rest 	   = this.request;
+		if(respMethod.variables[0]) {
+			if(respMethod.method.toUpperCase() == 'PUT') {
+				//it must be an update
+				action = require('./update');
+
+			} else if(respMethod.method.toUpperCase() == 'DELETE') {
+				//it must be an removal
+				action = require('./remove');
+
 			}
-			
-			//is it an removal ?
-			if(request.method.toUpperCase() == 'DELETE') {
-				require('./remove')(controller, request, response);
-				return;
-			}
-			
 			//it must be a detail
-			require('./detail')(controller, request, response);
-			return;
+			action = require('./detail');
+
+		} else if(respMethod.method.toUpperCase() == 'POST') {
+			//it must be a create
+			action = require('./create');
+
+		} else {
+			//it must be a listing
+			action = require('./list');
+
 		}
-		
-		//is it a create ?
-		if(request.method.toUpperCase() == 'POST') {
-			require('./create')(controller, request, response);
-			return;
-		}
-		
-		//it must be a listing
-		require('./list')(controller, request, response);
+
+		action.load(this.controller, this.request, this.response).render();
+		return;
 	}
-	/* Private Methods
-	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
-}
+	return c; 
+})();

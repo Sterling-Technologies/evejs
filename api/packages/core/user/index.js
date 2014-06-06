@@ -12,7 +12,7 @@ module.exports = function() {
 			.path('user/event', __dirname + '/event');
 	
 	}, this))
-	
+	 
 	//when the server starts listen to file events
 	.listen('start', this.eden.alter(function() {
 		//get event path
@@ -72,9 +72,9 @@ module.exports = function() {
 		
 		//set the variables
 		request.variables = variables;
-
 		//listen for response
 		control.once('user-action-response', function(request, response) {
+			console.log("response "+response);
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response
@@ -83,9 +83,10 @@ module.exports = function() {
 
 			//trigger that a response has been made
 			control.server.trigger('response', request, response);
-		});
+		}); 
 		
 		//call it
-		require(action).call(this, control, request, response);
+		require(action).load(this, control, request, response).render();
+
 	}, this));
 };

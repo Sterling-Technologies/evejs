@@ -1,5 +1,5 @@
 module.exports = function(controller, request, response) {
-	var sequence = controller.eden.load('sequence');
+	var sequence = controller.eden.load('sequence'); 
 
 	//change the string into a native object
 	var query = controller.eden

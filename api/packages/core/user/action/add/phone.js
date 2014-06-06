@@ -1,4 +1,4 @@
-module.exports = function(controller, request, response) {
+module.exports = function(controller, request, response) { 
 	var sequence = controller.eden.load('sequence');
 
 	//change the string into a native object
