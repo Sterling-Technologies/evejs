@@ -4,8 +4,8 @@ module.exports = function(controller, id, query) {
 		.post()
 		.store()
 		.store
-		//first find the id
-		.findByIdAndUpdate(id, { $set: { comment : query } }, function(error) {
+		//first find the comment id
+		.findByIdAndUpdate({id, comment.id},  { $set: { comment : query } }, function(error) {
 			//if there are errors
 			if(error) {
 				//trigger an error
