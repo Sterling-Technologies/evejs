@@ -1,91 +1,93 @@
-module.exports = function(controller, request, response) { 
-	var sequence = controller.eden.load('sequence');
+module.exports = (function() {
+	//Index file called 
+	var c = function(controller, request, response) {
+        this.__construct.call(this, controller, request, response);
+    }, public = c.prototype;
 
-	//change the string into a native object
-	var query = controller.eden
-		.load('string', request.message)
-		.queryToHash().get();
-
-	var c = function() {
-		this.render.call();
-	}, public = c.prototype;
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		if(!this.__instance) {
-			this.__instance = new c();
-		}
-		return this.__instance;
-	};
+	/* Public Properties
+    -------------------------------*/
+    public.controller  	= null;
+    public.request   	= null;
+    public.response  	= null;
+    
+    /* Private Properties
+    -------------------------------*/
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function(controller, request, response) {
+        return new c(controller, request, response);
+    };
+    
 	/* Construct
-	-------------------------------*/
-	public.render = function() {
-		sequence.then(function(next) { this.validate })
-		.then(function(next) { this.setup });
+    -------------------------------*/
+	public.__construct = function(controller, request, response) {
+		//set request and other usefull data
+		this.controller = controller;
+		this.request  	= request;
+		this.response  	= response;
+	};
 
-		return this;
-	}
 	/* Public Methods
-	-------------------------------*/
-	//1. VALIDATE: if no id was set
-	public.validate = function() {
-		if(!request.variables[0]) {
-			//setup an error response 
-			response.message = JSON.stringify({ 
+    -------------------------------*/
+	public.render = function() {
+		//if no ID
+		if(!this.request.variables[0]) {
+			//setup an error response
+			this.response.message = JSON.stringify({ 
 				error: true, 
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			controller.trigger('user-action-response', request, response);
+			this.controller.trigger('user-action-response', this.request, this.response);
 			
 			return;
-		} 
+		}
+
+		var query = this.controller.eden
+			.load('string', this.request.message)
+			.queryToHash().get();
 
 		//if no query
 		if(JSON.stringify(query) == '{}') {
 			//setup an error response
-			response.message = JSON.stringify({ 
+			this.response.message = JSON.stringify({ 
 				error: true, 
 				message: 'No Parameters Defined' });
 				
 			//trigger that a response has been made
-			controller.trigger('user-action-response', request, response);
+			this.controller.trigger('user-action-response', this.request, this.response);
 			
 			return;
 		}
-	}
-	
-	public.setup = function() {
-		//2. TRIGGER
-		controller
+
+		var self = this;
+		//TRIGGER
+		this.controller
 			//when there is an error
 			.once('user-add-phone-error', function(error) {
 				//setup an error response
-				response.message = JSON.stringify({ 
+				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//trigger that a response has been made
-				controller.trigger('user-action-response', request, response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('user-add-phone-success', function() {
 				//set up a success response
-				response.message = JSON.stringify({ error: false });
+				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				controller.trigger('user-action-response', request, response);
+				self.controller.trigger('user-action-response', self.request, self.response);
 			})
 			//Now call to remove the user
-			.trigger(
-				'user-add-phone', 
-				controller, 
-				request.variables[0], 
-				query);
+			.trigger( 'user-add-phone', this.controller, this.request.variables[0], query);
 	}
+
 	/* Private Methods
-	-------------------------------*/
+    -------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
-};
+	return c; 
+})();
