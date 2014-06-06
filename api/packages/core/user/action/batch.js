@@ -1,16 +1,17 @@
 module.exports = (function() { 
-    //Batch file called
     var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
     
     /* Public Properties
     -------------------------------*/
-    public.controller  = null;
-    public.request   = null;
-    public.response  = null;
-    public.results   = [];
-         
+    public.controller   = null;
+    public.request      = null;
+    public.response     = null;
+    public.results      = [];
+
+    /* Private Properties
+    -------------------------------*/
     /* Loader
     -------------------------------*/
     public.__load = c.load = function(controller, request, response) {
@@ -22,8 +23,8 @@ module.exports = (function() {
      public.__construct = function(controller, request, response) {
         //set request and other usefull data
         this.controller = controller;
-        this.request  = request;
-        this.response  = response;
+        this.request    = request;
+        this.response   = response;
      };
      
     /* Public Methods

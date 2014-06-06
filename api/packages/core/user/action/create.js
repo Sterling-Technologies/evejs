@@ -30,12 +30,11 @@ module.exports = (function() {
     -------------------------------*/
 	public.render = function() {
 		//1. SETUP: change the string into a native object
-		var query = this.controller.eden
-			.load('string', this.request.message)
+		var self = this, query = self.controller.eden
+			.load('string', self.request.message)
 			.queryToHash().get();
 			
 		//2. TRIGGER
-		var self = this;
 		this.controller
 			//when there is an error 
 			.once('user-create-error', function(error) {

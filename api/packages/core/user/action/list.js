@@ -22,8 +22,8 @@ module.exports = (function() {
 	public.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
-		this.request  = request;
-		this.response  = response;
+		this.request  	= request;
+		this.response  	= response;
 	};
 
 	/* Public Methods
@@ -31,10 +31,10 @@ module.exports = (function() {
 	public.render = function() {
 		//figure out the query and stuffs
 		var query 	= this.request.query.filter || {},
-			range 	= this.request.query.range || 50,
-			start 	= this.request.query.start || 0,
-			order 	= this.request.query.order || {},
-			count	= this.request.query.count || 0;
+			range 	= this.request.query.range 	|| 50,
+			start 	= this.request.query.start 	|| 0,
+			order 	= this.request.query.order 	|| {},
+			count	= this.request.query.count 	|| 0;
 		
 		//fix query
 		query.active = query.active != 0;
