@@ -1,4 +1,4 @@
-module.exports = function(controller, id) {
+module.exports = function(controller, id) { console.log('remove');
 	//remove
 	controller
 	.post()

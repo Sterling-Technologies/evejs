@@ -1,4 +1,4 @@
-module.exports = (function() { 
+module.exports = (function() {
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -28,7 +28,7 @@ module.exports = (function() {
 	
 	/* Public Methods
     -------------------------------*/
-	public.render = function() {
+	public.render = function() { 
 		//if no id was set
 		if(!this.request.variables[0]) {
 			//setup an error response
@@ -37,7 +37,7 @@ module.exports = (function() {
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			this.controller.server.trigger('post-action-response', this.request, this.response);
+			this.controller.trigger('post-action-response', this.request, this.response);
 			
 			return;
 		}
@@ -54,7 +54,7 @@ module.exports = (function() {
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('post-action-response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('post-remove-success', function() {
@@ -62,7 +62,7 @@ module.exports = (function() {
 				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('post-action-response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//Now call to remove the post
 			.trigger('post-remove', this.controller, this.request.variables[0]);

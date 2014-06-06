@@ -56,7 +56,7 @@ module.exports = (function() {
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('post-action-response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('post-update-success', function() {
