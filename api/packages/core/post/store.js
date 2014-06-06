@@ -10,95 +10,39 @@ module.exports = function() {
 	var mongoose 	= require('mongoose');
 	
 	var _schema = {
-		title: String,
-		detail: String,
+		title	: String,
+		path	: String,
+		detail	: String,
+		active  : Boolean,
+
 		user: {
 			name	: String,
 			email	: String,
-			photo	: {
-				name		: String,
-				source		: String,
-				mime		: String,
-				size		: String,
-				date		: { type: Date, default: Date.now }
-			},
-			
-			facebook	: String,
-			twitter		: String,
-			google		: String,
-			linkedin	: String
 		},
-		
-		comments: [{
-			title: String,
-			detail: String,
-			user: {
-				name	: String,
-				email	: String,
-				photo	: {
-					name		: String,
-					source		: String,
-					mime		: String,
-					size		: String,
-					date		: { type: Date, default: Date.now }
-				},
-				
-				facebook	: String,
-				twitter		: String,
-				google		: String,
-				linkedin	: String
-			},
-			
-			active: { type: Boolean, default: true },
-			created: { type: Date, default: Date.now },
-			updated: { type: Date, default: Date.now }
-		}],
-		
-		active: { type: Boolean, default: true },
-		created: { type: Date, default: Date.now },
-		updated: { type: Date, default: Date.now }
+
+		publish: {
+			status		 : String,
+			visibility	 : 'Public',
+			publish_date : { type: Date, default: Date.now }
+		},	
 	};
 	
 	var _sample = {
-		title: 'Hello World!!',
-		detail: 'Beginner program, simplest program created',
+		title	: 'Hello World!!',
+		path	: 'http://urlpath.com/',
+		detail  : 'Beginner program, Simplest program created',
+		active  : true,
+
 		user: {
 			name	: 'Dennis Richie',
-			email	: 'dennisrichie@yahoo.com',
-			photo	: {
-				name		: String,
-				source		: String,
-				mime		: String,
-				size		: String,
-				date		: { type: Date, default: Date.now }
-			},
-			
-			facebook	: 'facebook_url',
-			twitter		: 'twitter_url',
-			google		: 'google_url',
-			linkedin	: 'linkedin'
+			email	: 'dennisrichie@yahoo.com'
 		},
-		
-		comments: [{
-			title: String,
-			detail: String,
-			user: {
-				name	: String,
-				email	: String,
-				photo	: {
-					name		: String,
-					source		: String,
-					mime		: String,
-					size		: String,
-					date		: { type: Date, default: Date.now }
-				},
-				
-				facebook	: String,
-				twitter		: String,
-				google		: String,
-				linkedin	: String
-			},
-		}],
+
+		publish: {
+			status		 : 'Publish',
+			visibility	 : 'Public',
+			publish_date : { type: Date, default: Date.now }
+		},
 	};
 	
 	/* Loader
