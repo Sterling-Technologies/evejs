@@ -4,7 +4,9 @@
     </div>
     <div class="widget-body category-tree">
     	<div class="widget-main">
-		<?php $e($b('field')->tag('tag')); ?>
+		{{#each field}}
+            {{tag}}
+        {{/each}}
         </div>
 	</div>
 </div>
