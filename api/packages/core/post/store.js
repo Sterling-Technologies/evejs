@@ -64,21 +64,16 @@ module.exports = function() {
 	};
 
 	var _sample = {
-		title	: 'Hello World!!',
-		path	: 'http://urlpath.com/',
-		detail  : 'Beginner program, Simplest program created',
-		active  : true,
+		title	  : 'Hello World!!',
+		path	  : 'http://urlpath.com/',
+		detail    : 'Beginner program, Simplest program created',
+		active    : true,
+		status    : 'published',
+        visibility: 'public',
+        published : 'Date',
 
-		user: {
-			name	: 'Dennis Richie',
-			email	: 'dennisrichie@yahoo.com'
-		},
-
-		publish: {
-			status		 : 'Publish',
-			visibility	 : 'Public',
-			publish_date : { type: Date, default: Date.now }
-		},
+        updated		: '2014-06-06T10:29:58.859Z',
+        created		: '2014-06-06T10:29:58.859Z'
 	};
 	
 	/* Loader
