@@ -113,6 +113,7 @@ define(function() {
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
+        callback();
 
         return this;
     };
@@ -132,7 +133,7 @@ define(function() {
         //if not listening, submit form
         $('#body').on('submit', 'form.package-post-form', { scope: self }, _processSaveData);               
         //set listening to true
-        _listen = true;
+        _listening = true;
         callback();
 
         return this;

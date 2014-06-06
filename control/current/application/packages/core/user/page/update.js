@@ -195,7 +195,7 @@ define(function() {
         //if not listening, submit form
         $('#body').on('submit', 'form.package-post-form', { scope: self }, _processUpdate);               
         //set listening to true
-        _listen = true;
+        _listening = true;
         callback();
 
         return this;
