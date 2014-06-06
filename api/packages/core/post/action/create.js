@@ -29,8 +29,7 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
     public.render = function() {
-		//1. SETUP
-		//change the string into a native object
+		//1. SETUP change the string into a native object
 		var self = this, query = this.controller.eden
 			.load('string', this.request.message)
 			.queryToHash().get();
