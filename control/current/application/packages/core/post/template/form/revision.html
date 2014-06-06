@@ -15,11 +15,11 @@
             <tbody>
                 {{#each row}}
             	<tr>
-                    <td>{{row.post_id}}</td>
-                    <td>{{row.post_created}}</td>
-                    <td><a href="/post/update/{{id}}?revision={{row.post_id}}">Restore</a></td>
+                    <td>{{post_id}}</td>
+                    <td>{{post_created}}</td>
+                    <td><a href="/post/update/{{id}}?revision={{post_id}}">Restore</a></td>
                 </tr>
-                {{/row}}
+                {{/each}}
             </tbody>
         </table> 
         </div>

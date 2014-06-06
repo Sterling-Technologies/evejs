@@ -26,27 +26,24 @@
         </div>
         <div>
             <h6>Publish Date</h6>
-            <div>
-                <select name="post_published" class="form-control">
-                    {{#each published}}
-                    <option value="{{value}}">{{name}}</option>
-                    {{/each}}
-                </select>
-
-                {{#if errors.post_published}}
-                <span class="text-danger">{{errors.post_published}}</span>
-                {{/if}}
+            <div class="input-group date eden-field-datetime eden-field-loaded">
+                <input name="post_published" value="06/06/2014" class="form-control" type="text">
+                <span class="input-group-addon">
+                    <i class="icon-calendar"></i>
+                </span>
             </div>
         </div>
         <hr />
         <button class="pull-right btn btn-success">Save</button>
-        {{#if mode == 'update'}}
-        <a class="btn-danger btn btn-default" href="/post/remove/{{id}}">
-        <i class="icon-trash"></i> Trash</a>
-        {{else}}
-        <a class="btn-danger btn btn-default" href="/post">
-        <i class="icon-minus"></i> Cancel</a>
-        {{/if}}
+        {{#when mode '==' 'update'}}
+            <a class="btn-danger btn btn-default" href="/post/remove/{{id}}">
+            <i class="icon-trash"></i> Trash</a>
+        {{/when}}
+        {{#when mode '!=' 'update'}}
+            <a class="btn-danger btn btn-default" href="/post">
+            <i class="icon-minus"></i> Cancel</a>
+        {{/when}}
+            
         </div>
     </div>
 </div>

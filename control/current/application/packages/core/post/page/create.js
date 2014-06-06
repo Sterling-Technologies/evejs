@@ -56,35 +56,41 @@ define(function() {
         require(forms, function(attributes, categories, copy, publish, revision,
         tags) {
 
-            //load attributes form template
-            self.data.attributes = Handlebars.compile(attributes)({
-                data : 'data'
-            });
+            // //load attributes form template
+            // self.data.attributes = Handlebars.compile(attributes)({
+            //     data : 'data'
+            // });
 
-            //load categories form template
-            self.data.categories = Handlebars.compile(categories)({
-                data : 'data'
-            });
+            // //load categories form template
+            // self.data.categories = Handlebars.compile(categories)({
+            //     data : 'data'
+            // });
 
-            //load copy form template
-            self.data.copy = Handlebars.compile(copy)({
-                data : 'data'
-            });
+            // //load copy form template
+            // self.data.copy = Handlebars.compile(copy)({
+            //     data : 'data'
+            // });
             
             //load publish form template
             self.data.publish = Handlebars.compile(publish)({
-                data : 'data'
+                status : [
+                    { value : 'publish', name: 'Publish' },
+                    { value : 'draft',   name: 'Draft' },
+                    { value : 'review',  name: 'Review' }],
+                visibility:[
+                    { value : 'public',  name: 'Public' },
+                    { value : 'private', name: 'Private' }]
             });
 
-            //load revision form template
-            self.data.revision = Handlebars.compile(revision)({
-                data : 'data'
-            });
+            // //load revision form template
+            // self.data.revision = Handlebars.compile(revision)({
+            //     data : 'data'
+            // });
 
-            //load tags template
-            self.data.tags = Handlebars.compile(tags)({
-                data : 'data'
-            });
+            // //load tags template
+            // self.data.tags = Handlebars.compile(tags)({
+            //     data : 'data'
+            // });
 
         });
 
