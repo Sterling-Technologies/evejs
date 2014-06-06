@@ -1,25 +1,5 @@
 <link rel="stylesheet" type="text/css" href="/assets/Eve/Package/Core/Post/Back/assets/index.css" />
 <!-- START: SEARCH FORM -->
-<<<<<<< HEAD
-{{#if rows}}
-    <form class="pull-right search form-inline" method="get">
-        <div class="form-group">
-            <input type="text" name="q" class="form-control" placeholder="Search Posts"
-            value="{{#if keyword}} {{keyword}} {{/if}}"/>
-        </div>
-        <button class="btn"><i class="icon-search"></i></button>
-    </form>
-{{else}}
-{{#if keyword}}
-    <form class="pull-right search form-inline" method="get">
-        <div class="form-group">
-            <input type="text" name="q" class="form-control" placeholder="Search Posts"
-            value="{{#if keyword}} {{keyword}} {{/if}}"/>
-        </div>
-        <button class="btn"><i class="icon-search"></i></button>
-    </form>
-{{/if}}
-=======
 <form class="pull-right search form-inline" method="get">
     <div class="form-group">
         <input name="q" placeholder="Search posts" 
@@ -27,33 +7,13 @@
     </div>
     <button class="btn"><i class="icon-search"></i></button>    
 </form>
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
 <!-- END: SEARCH FORM -->
 
 <!-- START: BULK FORM -->
 <form method="post" class="form-inline bulk-form">
     <!-- START: i18n HEADER TITLE -->
-<<<<<<< HEAD
-	<div class="table-header">
-        {{#if keyword}}
-            {{#when page '==' '1'}}
-            <span>Showing results for &quot;{{keyword}}&quot; in {{action}}</span>
-            {{/when}}
-            {{#when page '!=' '1'}}
-            <span>Showing results for &quot;{{keyword}}&quot; in {{action}}, Page {{page}}</span>
-            {{/when}}
-        {{else}}
-            {{#when page '==' '1'}}
-            <span>Showing {{action}}</span>
-            {{/when}}
-            {{#when page '!=' '1'}}
-            <span>Showing {{action}}, Page {{page}}</span>
-            {{/when}}
-        {{/if}}
-=======
     <div class="table-header">
        {{showing}}
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
     </div>
     <!-- END: i18n HEADER TITLE -->
     <div class="table-responsive">
@@ -62,80 +22,6 @@
                 <div class="col-sm-12">
                     <!-- START: ADD NEW POST -->
                     <div class="pull-right create"><a class="btn btn-info btn-sm" 
-<<<<<<< HEAD
-                    href="/post/create">Add New</a></div>
-    				<!-- END: ADD NEW POST -->
-                    
-                    {{#if rows}}
-                    <!-- START: BULK ACTION -->
-                     <select name="action" style="width:auto;" class="form-control">
-                        <option value="" selected="selected">Bulk Actions</option>
-                        <option value="remove">Remove</option>
-                        <option value="restore">Restore</option>
-                        <option value="draft">Set to Draft</option>
-                        <option value="publish">Publish All</option>
-                    </select>
-                    <button class="btn-primary btn-sm btn">Apply</button>
-                    {{/if}}
-    				<!-- END: BULK ACTION -->
-                    
-    				<!-- START: FILTER BUTTONS -->
-                    <span class="filter">
-                        {{#when action '==' 'all'}}
-                        <a class="btn btn-sm btn-light" href="/post{{#if keyword}}?q={{keyword}}{{/if}}">
-                        All &nbsp; <span class="badge badge-grey">{{all}}</span></a> 
-                        {{/when}}
-                        {{#when action '!=' 'all'}}
-                        <a class="btn btn-sm" href="/post{{#if keyword}}?q={{keyword}}{{/if}}">
-                        All &nbsp; <span class="badge badge-grey">{{all}}</span></a> 
-                        {{/when}}
-                        
-                        {{#when action '==' 'published'}}
-                        <a class="btn btn-sm btn-light" 
-                        href="/post/published{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Published &nbsp; <span class="badge badge-grey">{{published}}</span></a>
-                        {{/when}}
-                        {{#when action '!=' 'published'}}
-                        <a class="btn btn-sm"
-                        href="/post/published{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Published &nbsp; <span class="badge badge-grey">{{published}}</span></a>
-                        {{/when}}
-                        
-                        {{#when action '==' 'draft'}}
-                        <a class="btn btn-sm btn-light" 
-                        href="/post/draft{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Draft &nbsp; <span class="badge badge-grey">{{draft}}</span></a>
-                        {{/when}}
-                        {{#when action '!=' 'draft'}}
-                        <a class="btn btn-sm"
-                        href="/post/draft{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Draft &nbsp; <span class="badge badge-grey">{{draft}}</span></a>
-                        {{/when}}
-                        
-                        {{#when action '==' 'review'}}
-                        <a class="btn btn-sm btn-light" 
-                        href="/post/review{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Review &nbsp; <span class="badge badge-grey">{{review}}</span></a>
-                        {{/when}}
-                        {{#when action '!=' 'review'}}
-                        <a class="btn btn-sm"
-                        href="/post/review{{#if keyword}}?q={{keyword}}{{/if}}">
-                        Review &nbsp; <span class="badge badge-grey">{{review}}</span></a>
-                        {{/when}}
-                        
-                        {{#when action '==' 'trash'}}
-                        <a class="btn btn-sm btn-light" 
-                        href="/post/trash{{#if keyword}}?q={{keyword}}{{/if}}">
-                        <i class="icon-trash"></i> Trash &nbsp;
-                        <span class="badge badge-grey">{{trash}}</span></a>
-                        {{/when}}
-                        {{#when action '!=' 'trash'}}
-                        <a class="btn btn-sm btn-danger"
-                        href="/post/trash{{#if keyword}}?q={{keyword}}{{/if}}">
-                        <i class="icon-trash"></i> Trash &nbsp;
-                        <span class="badge badge-warning">{{trash}}</span></a>
-                        {{/when}}
-=======
                     href="/post/create">Create New post</a></div>
                     <!-- END: ADD NEW POST -->
                     {{#if rows}}
@@ -165,7 +51,6 @@
                         <a class="btn btn-sm{{#when action '==' 'trash'}} btn-light{{/when}}" 
                         href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Trash &nbsp;
                         <span class="badge badge-grey">{{trash}}</span></a> 
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
                     </span>
                     <!-- END: FILTER BUTTONS -->
                 </div>
@@ -179,34 +64,13 @@
                     <th><input class="checkall" type="checkbox"></th>
                     <th>Action</th>
                     <th>ID</th>
-<<<<<<< HEAD
-                    <th>Title</th>
-                    <th>Status</th>
-=======
                     <th>Name</th>
                     <th>Email</th>
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
                     <th>Updated</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each rows}}
-<<<<<<< HEAD
-                <tr id='{{id}}'>
-                    <td><input name="post_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
-                    <td>
-                        <a title="Edit" href="/post/update/{{id}}">
-                        <i class="icon-edit"></i></a> &nbsp; 
-                        <a title="Remove" href="/post/remove/{{id}}?redirect=/post" class="text-danger"><i class="icon-remove" value="{{id}}"></i></a>
-                    </td>
-                    <td>{{id}}</td>
-                    <td>{{title}}</td>
-                    <td>{{status}}</td>
-                    <td valign="middle">{{updated}}</td>
-                </tr>
-                {{/each}}
-            </tbody>        
-=======
                 <tr>
                     <td><input name="post_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
@@ -230,24 +94,15 @@
                 </tr>   
                 {{/each}}
             </tbody>    
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
         </table>
         <!-- END: POST TABLE -->
         {{else}}
         <!-- START: NO RESULTS -->
-<<<<<<< HEAD
-        <div class="well no-results">No Users Found.</div>
-        <!-- END: NO RESULTS -->
-        {{/if}}
-	</div>
-
-=======
         <div class="well no-results">No posts Found</div>
         <!-- END: NO RESULTS -->
         {{/if}}
     </div> <!-- awdadawdawd -->
     
->>>>>>> 933b234cac057b80f2cee1594608923e588b009b
     {{#when action '==' 'all'}}
     <ul class="pagination">
         {{#pagination all range}}
