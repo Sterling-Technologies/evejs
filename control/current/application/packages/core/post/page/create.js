@@ -39,7 +39,6 @@ define(function() {
     };
     
     public.getData = function(callback) {
-        
         var self = this;
            
         //store form templates path to array
@@ -107,7 +106,6 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processSaveData = function(e) {
-        console.log('post created');
         //prevent page from reloading
         e.preventDefault();
 
