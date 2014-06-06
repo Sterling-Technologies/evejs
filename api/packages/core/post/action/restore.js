@@ -37,7 +37,7 @@ module.exports = (function() {
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			this.controller.server.trigger('response', this.request, this.response);
+			this.controller.trigger('post-action-response', this.request, this.response);
 			
 			return;
 		}
