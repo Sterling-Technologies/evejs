@@ -66,11 +66,11 @@
             <thead>
                 <tr>
                     <th><input class="checkall" type="checkbox"></th>
-                    <th>Action</th>
+                    <th>Action </th>
                     <th>ID</th>
                     <th>Title</th>
                     <th>Status</th>
-                    <th>Updated</th>
+                    <th>Updated {{main}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,7 +78,8 @@
                 <tr>
                     <td><input name="post_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
-                        {{#if active}}
+
+                        {{#if main}}
                         <a title="Edit" href="/post/update/{{id}}">
                         <i class="icon-edit"></i></a> &nbsp; 
                         <a title="Remove" href="/post/remove/{{id}}"

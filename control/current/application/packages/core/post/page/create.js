@@ -40,8 +40,8 @@ define(function() {
     
     public.getData = function(callback) {
         
-        var self = this,
-
+        var self = this;
+           
         //store form templates path to array
         forms = [
         'text!' + controller.path('post/template') +  'form/attributes.html',
