@@ -22,9 +22,9 @@
                 <div class="col-sm-12">
                     <!-- START: ADD NEW POST -->
                     <div class="pull-right create"><a class="btn btn-info btn-sm" 
-                    href="/post/create">Create New post</a></div>
+                    href="/post/create">Add New</a></div>
                     <!-- END: ADD NEW POST -->
-                    {{#if rows}}
+                    {{#if rows}}    
                     <!-- START: BULK ACTION -->
                     <select name="action" style="width:auto;" class="form-control">
                         <option value="" selected="selected">Bulk Actions</option>
@@ -64,8 +64,8 @@
                     <th><input class="checkall" type="checkbox"></th>
                     <th>Action</th>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
+                    <th>Title</th>
+                    <th>Status</th>
                     <th>Updated</th>
                 </tr>
             </thead>
@@ -77,12 +77,9 @@
                         {{#if active}}
                         <a title="Edit" href="/post/update/{{id}}">
                         <i class="icon-edit"></i></a> &nbsp; 
-                        
                         <a title="Remove" href="/post/remove/{{id}}"
                         class="text-danger"><i class="icon-remove"></i></a>
-                        
                         {{else}}
-                        
                         <a title="Restore" href="/post/restore/{{id}}" class="text-success">
                         <i class="icon-external-link"></i></a>
                         {{/if}}
