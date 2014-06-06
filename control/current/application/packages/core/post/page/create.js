@@ -69,10 +69,21 @@ define(function() {
                 template : 'template'
             });
 
-            // //load copy form template
-            // self.data.copy = Handlebars.compile(copy)({
-            //     data : 'data'
-            // });
+            //load copy form template
+            self.data.copy = Handlebars.compile(copy)({
+                create : 'create',
+                revision : {
+                    detail  : 'detail',
+                    created : 'created' },
+                    errors : {
+                        title : 'title error'
+                    },
+                url    : 'test url',
+                detail : 'test detail',
+                active : 'yes',
+
+
+            });
             
             //load publish form template
             self.data.publish = Handlebars.compile(publish)({
