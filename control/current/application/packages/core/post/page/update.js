@@ -86,7 +86,7 @@ define(function() {
                     title  : post.title,
                     path   : post.path,
                     detail : post.detail,
-                    active : post.active
+                    state : post.state
 
                 });
 
