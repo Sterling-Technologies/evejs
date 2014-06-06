@@ -4,3 +4,4 @@
 input[type=checkbox] { height: auto; }
 .bulk-form { clear: right; padding-top: 10px; }
 table h5 { margin-top: 0; }
+table th:first-child{ text-align: center; }
