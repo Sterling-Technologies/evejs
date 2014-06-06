@@ -176,6 +176,7 @@ define(function() {
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);       
+        callback();
 
         return this;
     };
@@ -208,7 +209,7 @@ define(function() {
         e.preventDefault();
 
         //prepare form data
-        var data = $('.package-user-form').serialize();
+        var data = $('form.package-user-form').serialize();
 
         //set api to update.
         _api = 'http://api.eve.dev:8082/user/update/';
@@ -218,13 +219,12 @@ define(function() {
 
         //join update and query.
         _api = _api + _id;
-       
        //update data on database
        $.post(_api, data, function(response) {
             //clear message status
-             $('.msg').empty().remove();
+             $('form.msg').empty().remove();
             //display message status
-            $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
+            $('form.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
        });
     };
 

@@ -67,7 +67,7 @@ define(function() {
         require(forms, function(attributes, categories, copy, publish, revision,
         tags) {
 
-            //load attributes form template
+            //load attributes form template 
             self.data.attributes = Handlebars.compile(attributes)({
                 field : [
                     { name : 'name', value : 'value' } ]
