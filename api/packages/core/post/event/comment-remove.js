@@ -5,15 +5,15 @@ module.exports = function(controller, id, query) {
 		.store()
 		.store
 		//first find the id
-		.findByIdAndUpdate({ 'comments._id': id  }, { $set: { 'comments.active' : false } }, function(error) {
+		.findByIdAndUpdate({ 'comments._id': id  }, { $set: { 'comments.$.active' : false } }, function(error) {
 			//if there are errors
 			if(error) {
 				//trigger an error
-				controller.trigger('post-remove-comment-error', error);
+				controller.trigger('post-comment-remove-error', error);
 				return;
 			}
 			
 			//trigger that we are good
-			controller.trigger('post-remove-comment-success');
+			controller.trigger('post-comment-remove-success');
 		});
 };
