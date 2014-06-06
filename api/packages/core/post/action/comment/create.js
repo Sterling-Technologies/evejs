@@ -55,7 +55,7 @@ module.exports = (function() {
 				self.controller.server.trigger('post-action-response', self.request, self.response);
 			})
 			//Now call to remove the comment
-			.trigger('post-comment-create', self.controller, query);
+			.trigger('comment-create', self.controller, query);
 	};
 	
 	/* Private Methods
