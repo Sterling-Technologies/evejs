@@ -12,6 +12,7 @@ module.exports = function() {
 	var _schema = {
 		title: String,
 		detail: String,
+		status: String,
 		user: {
 			name	: String,
 			email	: String,
