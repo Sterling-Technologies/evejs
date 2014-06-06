@@ -28,6 +28,12 @@ define(function() {
         return this;
     };
 
+    /** 
+     * Remove data
+     *
+     * @param function callback
+     * return this
+     */
     public.removeData = function(callback) {
     	var _id = _api + window.location.pathname.split('/')[3];
     	
@@ -41,6 +47,12 @@ define(function() {
     	return this;
     };
 
+    /** 
+     * Output
+     *
+     * @param function callback
+     * return this
+     */
     public.output = function(callback) {
 
     	callback();

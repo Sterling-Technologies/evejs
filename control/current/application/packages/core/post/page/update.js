@@ -17,7 +17,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $           = jQuery;
-    var _api        = 'http://api.eve.dev:8082/post/';
+    var _api        = 'http://api.eve.dev:8082/post/update/';
     var _listening  = false;
     
     /* Loader
@@ -38,12 +38,16 @@ define(function() {
         
         return this;
     };
-    
+
+    /** 
+     * Get data
+     *
+     * @param function callback
+     * return this
+     */
      public.getData = function(callback) {
         var self = this;
         
-        //set button to update
-
         //get post id
         var _id =  _api + window.location.pathname.split('/')[3];
         
@@ -107,7 +111,13 @@ define(function() {
 
         return this;
     };
-    
+
+    /** 
+     * Output
+     *
+     * @param function callback
+     * return this
+     */
     public.output = function(callback) {
         var self = this;
    
@@ -123,8 +133,9 @@ define(function() {
     };
 
     /** 
-     * check if we are listening
-     * @param function
+     * Check if we are listening
+     *
+     * @param function callback
      * return this
      */
     public.listen = function(callback) {
@@ -153,8 +164,7 @@ define(function() {
         //prepare form data
         var data = $('.package-post-form').serialize();
 
-        //set api to update.
-        _api = 'http://api.eve.dev:8082/post/update/';
+        
         
         //get requested id
         _id  =  window.location.pathname.split('/')[3];
@@ -164,14 +174,13 @@ define(function() {
        
        //update data on database
        $.post(_api, data, function(response) {
-            //clear message status
-             $('.msg').empty().remove();
+            
             //display message status
-            $('.package-post-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
+            controller.addMessage('Record successfully updated!');
        });
     };
 
-    /* A-aptor
+    /* Adaptor
     -------------------------------*/
     return c.load();
 });

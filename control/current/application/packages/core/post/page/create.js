@@ -30,11 +30,6 @@ define(function() {
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
-    /**
-     * Render function
-     *
-     * @return this
-     */
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
@@ -119,7 +114,8 @@ define(function() {
     };
 
     /** 
-     * check if we are listening
+     * Check if we  are listening
+     *
      * @param function
      * return this
      */
@@ -149,10 +145,9 @@ define(function() {
         var data = $('form.package-post-form').serialize();
         //save data to database
         $.post(_api, data, function(response) {
-            //clear message status
-             $('form.msg').empty().remove();
+            
             //display message status
-            $('.package-post-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
+            controller.addMessage('Record successfully updated!');
        });
     };
     

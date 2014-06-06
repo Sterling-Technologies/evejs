@@ -34,7 +34,12 @@ define(function() {
         return this;
     };
     
-    //TODO: GET JSON, PREPARE SET CALLBACK from Schema.
+    /** 
+     * Get data
+     *
+     * @param function callback
+     * return this
+     */
     public.getData = function(callback) {
         var self = this;
 
@@ -51,13 +56,12 @@ define(function() {
                 var format = controller.timeToDate(updated.getTime(), true, true);
                 
                 rows.push({
-                    
                     id      : response.results[i]._id,
                     title   : response.results[i].title,
                     status  : response.results[i].status,
                     main    : true,
                     updated : format });
- 
+
             }
             
             self.data = {
@@ -76,7 +80,13 @@ define(function() {
         
         return this;
     };
-    
+
+    /** 
+     * Output
+     *
+     * @param function callback
+     * return this
+     */
     public.output = function(callback) {
 
         controller
