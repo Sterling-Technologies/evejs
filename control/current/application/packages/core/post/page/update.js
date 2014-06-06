@@ -17,7 +17,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $           = jQuery;
-    var _api        = 'http://api.eve.dev:8082/post/update/';
+    var _api        = 'http://api.eve.dev:8082/post/';
     var _listening  = false;
     
     /* Loader
@@ -164,8 +164,7 @@ define(function() {
         //prepare form data
         var data = $('.package-post-form').serialize();
 
-        
-        
+        _api = 'http://api.eve.dev:8082/post/update/';
         //get requested id
         _id  =  window.location.pathname.split('/')[3];
 
