@@ -32,7 +32,8 @@ module.exports = (function() {
 		controller
 			.user()
 			.store()
-			.remove(query, function(error) {
+			.model(query)
+			.save(function(error) {
 				//if there are errors
 				if(error) {
 					//trigger an error
