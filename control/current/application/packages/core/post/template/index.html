@@ -40,14 +40,18 @@
                         href="/post{{#if keyword}}?q={{keyword}}{{/if}}">All &nbsp;
                         <span class="badge badge-grey">{{all}}</span></a> 
                         
-                        <a class="btn btn-sm{{#when action '==' 'active'}} btn-light{{/when}}" 
-                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Active &nbsp;
+                        <a class="btn btn-sm{{#when action '==' 'published'}} btn-light{{/when}}" 
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Published &nbsp;
                         <span class="badge badge-grey">{{active}}</span></a> 
                         
-                        <a class="btn btn-sm{{#when action '==' 'guests'}} btn-light{{/when}}" 
-                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Guests &nbsp;
+                        <a class="btn btn-sm{{#when action '==' 'draft'}} btn-light{{/when}}" 
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Draft &nbsp;
                         <span class="badge badge-grey">{{guests}}</span></a> 
                         
+                        <a class="btn btn-sm{{#when action '==' 'review'}} btn-light{{/when}}" 
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Review &nbsp;
+                        <span class="badge badge-grey">{{review}}</span></a> 
+
                         <a class="btn btn-sm{{#when action '==' 'trash'}} btn-light{{/when}}" 
                         href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Trash &nbsp;
                         <span class="badge badge-grey">{{trash}}</span></a> 
