@@ -221,10 +221,9 @@ define(function() {
         _api = _api + _id;
        //update data on database
        $.post(_api, data, function(response) {
-            //clear message status
-             $('form.msg').empty().remove();
+
             //display message status
-            $('form.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
+            controller.addMessage('Record successfully updated!');
        });
     };
 

@@ -153,7 +153,7 @@ define(function() {
         .setHeader(this.header)
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
-        .setBody(self.template, self.data);             
+        .setBody(self.template, self.data);            
         callback();
 
         return this;
@@ -191,10 +191,9 @@ define(function() {
 
         //save data to database
         $.post(_api, data, function(response) {
-            //clear message status
-             $('form.msg').empty().remove();
+            
             //display message status
-            $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
+            controller.addMessage('Record successfully saved!');
        });
     };
     
