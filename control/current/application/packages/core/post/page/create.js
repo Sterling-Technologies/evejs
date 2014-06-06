@@ -147,7 +147,7 @@ define(function() {
         $.post(_api, data, function(response) {
             
             //display message status
-            controller.addMessage('Record successfully updated!');
+            controller.addMessage('Record successfully saved!');
        });
     };
     
