@@ -52,6 +52,8 @@ define(function() {
                 rows.push({
                     
                     id      : response.results[i]._id,
+                    title   : response.results[i].title,
+                    status  : response.results[i].status,
                     updated : format });
  
             }
