@@ -57,7 +57,7 @@ define(function() {
             }
             
             self.data = {
-                showing : 'Now Showing',
+                showing : 'Showing All',
                 rows    : rows,
                 action  : 'active',
                 all     : 76,

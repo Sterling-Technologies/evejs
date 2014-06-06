@@ -2,8 +2,8 @@
 <!-- START: SEARCH FORM -->
 <form class="pull-right search form-inline" method="get">
     <div class="form-group">
-        <input name="q" placeholder="Search Users" 
-            value="{{search_users}}" type="text" class="form-control" />   
+        <input name="q" placeholder="Search posts" 
+            value="{{search_posts}}" type="text" class="form-control" />   
     </div>
     <button class="btn"><i class="icon-search"></i></button>    
 </form>
@@ -22,7 +22,7 @@
                 <div class="col-sm-12">
                     <!-- START: ADD NEW POST -->
                     <div class="pull-right create"><a class="btn btn-info btn-sm" 
-                    href="/user/create">Create New User</a></div>
+                    href="/post/create">Create New post</a></div>
                     <!-- END: ADD NEW POST -->
                     {{#if rows}}
                     <!-- START: BULK ACTION -->
@@ -37,19 +37,19 @@
                     <!-- START: FILTER BUTTONS -->
                     <span class="filter">
                         <a class="btn btn-sm{{#when action '==' 'all'}} btn-light{{/when}}" 
-                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">All &nbsp;
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">All &nbsp;
                         <span class="badge badge-grey">{{all}}</span></a> 
                         
                         <a class="btn btn-sm{{#when action '==' 'active'}} btn-light{{/when}}" 
-                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Active &nbsp;
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Active &nbsp;
                         <span class="badge badge-grey">{{active}}</span></a> 
                         
                         <a class="btn btn-sm{{#when action '==' 'guests'}} btn-light{{/when}}" 
-                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Guests &nbsp;
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Guests &nbsp;
                         <span class="badge badge-grey">{{guests}}</span></a> 
                         
                         <a class="btn btn-sm{{#when action '==' 'trash'}} btn-light{{/when}}" 
-                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Trash &nbsp;
+                        href="/post{{#if keyword}}?q={{keyword}}{{/if}}">Trash &nbsp;
                         <span class="badge badge-grey">{{trash}}</span></a> 
                     </span>
                     <!-- END: FILTER BUTTONS -->
@@ -72,18 +72,18 @@
             <tbody>
                 {{#each rows}}
                 <tr>
-                    <td><input name="user_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
+                    <td><input name="post_id[]" value="{{id}}" type="checkbox" class="form-control"></td>
                     <td>
                         {{#if active}}
-                        <a title="Edit" href="/user/update/{{id}}">
+                        <a title="Edit" href="/post/update/{{id}}">
                         <i class="icon-edit"></i></a> &nbsp; 
                         
-                        <a title="Remove" href="/user/remove/{{id}}"
+                        <a title="Remove" href="/post/remove/{{id}}"
                         class="text-danger"><i class="icon-remove"></i></a>
                         
                         {{else}}
                         
-                        <a title="Restore" href="/user/restore/{{id}}" class="text-success">
+                        <a title="Restore" href="/post/restore/{{id}}" class="text-success">
                         <i class="icon-external-link"></i></a>
                         {{/if}}
                     </td>
@@ -98,7 +98,7 @@
         <!-- END: POST TABLE -->
         {{else}}
         <!-- START: NO RESULTS -->
-        <div class="well no-results">No Users Found</div>
+        <div class="well no-results">No posts Found</div>
         <!-- END: NO RESULTS -->
         {{/if}}
     </div> <!-- awdadawdawd -->
