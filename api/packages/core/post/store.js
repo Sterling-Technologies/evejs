@@ -10,9 +10,12 @@ module.exports = function() {
 	var mongoose 	= require('mongoose');
 	
 	var _schema = {
-		title: String,
-		detail: String,
-		status: String,
+		title     : String,
+        path      : String,
+		detail    : String,
+		status    : String,
+        visibility: String,
+        published : Date,
 		user: {
 			name	: String,
 			email	: String,

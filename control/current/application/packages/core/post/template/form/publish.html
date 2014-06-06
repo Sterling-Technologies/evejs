@@ -7,7 +7,7 @@
         <div>
             <h6>Status</h6>
             <div>
-                <select name="post_status" class="form-control">
+                <select name="status" class="form-control">
                     {{#each status}}
                     <option value="{{value}}">{{name}}</option>
                     {{/each}}
@@ -17,7 +17,7 @@
         <div>
             <h6>Visibility</h6>
             <div>
-                <select name="post_visibility" class="form-control">
+                <select name="visibility" class="form-control">
                     {{#each visibility}}
                     <option value="{{value}}">{{name}}</option>
                     {{/each}}
@@ -27,7 +27,7 @@
         <div>
             <h6>Publish Date</h6>
             <div class="input-group date eden-field-datetime eden-field-loaded">
-                <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy">
+                <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy" name="published" />
                 <span class="input-group-addon">
                     <i class="icon-calendar"></i>
                 </span>
@@ -43,7 +43,6 @@
             <a class="btn-danger btn btn-default" href="/post">
             <i class="icon-minus"></i> Cancel</a>
         {{/when}}
-            
         </div>
     </div>
 </div>

@@ -39,7 +39,6 @@ define(function() {
     };
     
     public.getData = function(callback) {
-        
         var self = this;
            
         //store form templates path to array
@@ -64,14 +63,8 @@ define(function() {
             
             //load copy form template
             self.data.copy = Handlebars.compile(copy)({
-                create : 'create',
-                revision : {
-                    detail  : 'detail',
-                    created : 'created' },
-                    errors : {
-                        title : 'title error'
-                    },
-                url    : 'test url',
+                title  : 'create',
+                path   : 'test url',
                 detail : 'test detail',
                 active : 'true'
 
@@ -113,13 +106,12 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processSaveData = function(e) {
-        console.log('post created');
         //prevent page from reloading
         e.preventDefault();
 
         //prepare form data
         var data = $(".package-post-form").serialize();
-
+        console.log(data);
         //save data to database
         $.post(_api, data, function(response) {
             //clear message status
