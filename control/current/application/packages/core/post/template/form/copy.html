@@ -16,7 +16,7 @@
                     Title <span>*</span></label>
                 <div class="col-lg-10">
                     <input name="title" required="required" value="{{title}}" 
-                    placeholder="Enter Title" type="text" class="form-control" name="title"/>
+                    placeholder="Enter Title" type="text" class="form-control" name="title" />
                     {{#if errors.title}}        
                     <span class="help-block">{{title}}</span>
                     {{/if}}
@@ -106,7 +106,7 @@
                                     
                                     <div class="dropdown-menu dropdown-caret pull-right">
                                         <div class="input-group">
-                                            <input class="form-control" placeholder="URL" data-edit="createLink" type="text">
+                                            <input class="form-control" placeholder="URL" data-edit="createLink" type="text" />
                                             <span class="input-group-btn">
                                             <button class="btn btn-primary" type="button">Add</button>
                                             </span> 
@@ -121,7 +121,7 @@
                                 
                                 <div class="dropdown-menu dropdown-caret pull-right">
                                     <div class="input-group">
-                                        <input class="form-control" placeholder="Image URL" data-edit="insertImage" type="text">
+                                        <input class="form-control" placeholder="Image URL" data-edit="insertImage" type="text" />
                                         <span class="input-group-btn">
                                         <button class="btn btn-primary" type="button">Insert</button>
                                         </span> 
@@ -129,7 +129,7 @@
                                     <div class="space-2"></div>
                                     <div class="center">
                                         <button class="btn btn-success wysiwyg-choose-file" type="button"><i class="icon-file"></i> Choose Image …</button>
-                                        <input data-edit="insertImage" type="file">
+                                        <input data-edit="insertImage" type="file" />
                                     </div>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@
                                         <li><a class="colorpick-btn" href="#" style="background-color:#444444;" data-color="#444444"></a></li>
                                     </ul>
                                 </div>
-                                <input disabled="" class="hide" data-edit="foreColor" type="text">
+                                <input disabled="" class="hide" data-edit="foreColor" type="text" />
                             </div>
                             
                             <div class="btn-group">
@@ -205,9 +205,9 @@
                                 <i class="icon-repeat"></i></a> 
                             </div>
                             
-                            <input data-edit="inserttext" x-webkit-speech="" class="wysiwyg-speech-input" type="text">
+                            <input data-edit="inserttext" class="wysiwyg-speech-input" type="text" />
                         </div>
-                        <div class="eden-wysiwyg-editor" contenteditable="true"></div><textarea style="display: none;" name="detail" rows="10" class="eden-field-wysiwyg form-control eden-field-loaded">{{detail}}</textarea><script type="text/javascript" src="/assets/Eden/Block/assets/scripts/wysiwyg.js"></script>             
+                        <div class="eden-wysiwyg-editor" contenteditable="true"></div><textarea style="display: none;" name="detail" rows="10" class="eden-field-wysiwyg form-control eden-field-loaded">{{detail}}</textarea>             
                     </div>
             </div>  
             <div class="form-group">
