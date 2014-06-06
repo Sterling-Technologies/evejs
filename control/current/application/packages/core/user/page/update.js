@@ -16,8 +16,9 @@ define(function() {
     
     /* Private Properties
     -------------------------------*/
-    var $       = jQuery;
-    var _api    = 'http://api.eve.dev:8082/user/';
+    var $           = jQuery;
+    var _api        = 'http://api.eve.dev:8082/user/';
+    var _listening  = false;
     
     /* Loader
     -------------------------------*/
@@ -37,7 +38,8 @@ define(function() {
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
-        .then(this.output);
+        .then(this.output)
+        .then(this.listen);
         
         return this;
     };
@@ -173,8 +175,27 @@ define(function() {
         .setHeader(this.header)
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
-        .setBody(self.template, self.data);
-        $('#body').on('submit', '.package-user-form', { scope: self }, _processUpdate);
+        .setBody(self.template, self.data);       
+
+        return this;
+    };
+
+    /** 
+     * check if we are listening
+     * @param function
+     * return this
+     */
+    public.listen = function(callback) {
+        // if we are listening, we cant send data
+        if(_listening){
+            callback();
+            return this;
+        }
+
+        //if not listening, submit form
+        $('#body').on('submit', 'form.package-post-form', { scope: self }, _processUpdate);               
+        //set listening to true
+        _listen = true;
         callback();
 
         return this;

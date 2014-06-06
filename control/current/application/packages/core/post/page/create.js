@@ -17,9 +17,9 @@ define(function() {
     
     /* Private Properties
     -------------------------------*/
-    var $       = jQuery;
-    var _api    = 'http://api.eve.dev:8082/post/create';
-    
+    var $           = jQuery;
+    var _api        = 'http://api.eve.dev:8082/post/create';
+    var _listening  =  false; 
     /* Loader
     -------------------------------*/
     public.__load = c.load = function() {
@@ -38,7 +38,8 @@ define(function() {
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
-        .then(this.output);
+        .then(this.output)
+        .then(this.listen);
         
         return this;
     };
@@ -113,12 +114,30 @@ define(function() {
         .setCrumbs(this.crumbs)
         .setBody(self.template, self.data);
 
+        return this;
+    };
+
+    /** 
+     * check if we are listening
+     * @param function
+     * return this
+     */
+    public.listen = function(callback) {
+        // if we are listening, we cant send data
+        if(_listening) {
+            callback();
+            return this;
+        }
+
+        //if not listening, submit form
         $('#body').on('submit', 'form.package-post-form', { scope: self }, _processSaveData);               
+        //set listening to true
+        _listen = true;
         callback();
 
         return this;
     };
-    
+
     /* Private Methods
     -------------------------------*/
     var _processSaveData = function(e) {
@@ -126,12 +145,11 @@ define(function() {
         e.preventDefault();
 
         //prepare form data
-        var data = $(".package-post-form").serialize();
-        console.log(data);
+        var data = $('form.package-post-form').serialize();
         //save data to database
         $.post(_api, data, function(response) {
             //clear message status
-             $('.msg').empty().remove();
+             $('form.msg').empty().remove();
             //display message status
             $('.package-post-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
        });

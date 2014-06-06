@@ -19,6 +19,7 @@ define(function() {
     -------------------------------*/
     var $       = jQuery;
     var _api    = 'http://api.eve.dev:8082/user/create';
+    var _listening = false;
     
     /* Loader
     -------------------------------*/
@@ -33,7 +34,8 @@ define(function() {
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
-        .then(this.output);
+        .then(this.output)
+        .then(this.listen);
         
         return this;
     };
@@ -151,9 +153,28 @@ define(function() {
         .setHeader(this.header)
         .setSubheader(this.subheader)
         .setCrumbs(this.crumbs)
-        .setBody(self.template, self.data);
+        .setBody(self.template, self.data);             
+        callback();
 
+        return this;
+    };
+
+    /** 
+     * check if we are listening
+     * @param function
+     * return this
+     */
+    public.listen = function(callback) {
+        // if we are listening, we cant send data
+        if(_listening) {
+            callback();
+            return this;
+        }
+        
+        //if not listening, submit form
         $('#body').on('submit', 'form.package-user-form', { scope: self }, _processSaveData);               
+        //set listening to true
+        _listening = true;
         callback();
 
         return this;
@@ -166,12 +187,12 @@ define(function() {
         e.preventDefault();
 
         //prepare form data
-        var data = $(".package-user-form").serialize();
+        var data = $('form.package-user-form').serialize();
 
         //save data to database
         $.post(_api, data, function(response) {
             //clear message status
-             $('.msg').empty().remove();
+             $('form.msg').empty().remove();
             //display message status
             $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully saved. </span>').show('slow');
        });
