@@ -1,4 +1,4 @@
-module.exports = (function() { 
+module.exports = (function() {
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;

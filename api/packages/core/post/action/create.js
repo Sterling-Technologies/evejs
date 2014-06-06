@@ -1,4 +1,4 @@
-module.exports = (function() { 
+module.exports = (function() {
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -30,12 +30,12 @@ module.exports = (function() {
     -------------------------------*/
     public.render = function() {
 		//1. SETUP change the string into a native object
-		var self = this, query = this.controller.eden
-			.load('string', this.request.message)
+		var self = this, query = self.controller.eden
+			.load('string', self.request.message)
 			.queryToHash().get();
 		
 		//2. TRIGGER
-		self.controller
+		this.controller
 			//when there is an error
 			.once('post-create-error', function(error) {
 				//setup an error response
@@ -44,7 +44,7 @@ module.exports = (function() {
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('post-create-success', function() {
@@ -52,10 +52,10 @@ module.exports = (function() {
 				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				self.controller.server.trigger('response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//Now call to remove the post
-			.trigger('post-create', self.controller, query);
+			.trigger('post-create', this.controller, query);
 	}
 	
 	/* Private Methods

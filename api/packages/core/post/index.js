@@ -72,6 +72,17 @@ module.exports = function() {
 		
 		//set the variables
 		request.variables = variables;
+		//listen for response
+		control.once('post-action-response', function(request, response) {
+			//if it is a batch process
+			if(response.batch) {
+				//the batch will trigger the response
+				return;
+			}
+
+			//trigger that a response has been made
+			control.server.trigger('response', request, response);
+		}); 
 		
 		//call it
 		require(action).load(control, request, response).render();
