@@ -41,7 +41,6 @@ define(function() {
         var self = this;
         
         //set button to update
-        self.data.update = { update : 'update' };
 
         //get post id
         var _id =  _api + window.location.pathname.split('/')[3];
@@ -78,26 +77,24 @@ define(function() {
                 
                 //load copy form template
                 self.data.copy = Handlebars.compile(copy)({
-                    create : 'create',
-                    revision : {
-                        detail  : 'detail',
-                        created : 'created' },
-                        errors : {
-                            title : 'title error'
-                        },
-                    url    : 'test url',
-                    detail : 'test detail',
-                    active : 'true'
+                    title  : post.title,
+                    path   : post.path,
+                    detail : post.detail,
+                    active : post.active
 
                 });
-                
+
                 //load publish form template
                 self.data.publish = Handlebars.compile(publish)({
-                    status : [
+                    update        : 'update',
+                    mode          : 'update',
+                    status        : post.status,
+                    visibility    : post.visibility,
+                    status_option : [
                         { value : 'publish', name: 'Publish' },
                         { value : 'draft',   name: 'Draft' },
                         { value : 'review',  name: 'Review' }],
-                    visibility : [
+                    visibility_option : [
                         { value : 'public',  name: 'Public' },
                         { value : 'private', name: 'Private' }]
                 });
@@ -127,6 +124,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processUpdate = function(e) {
+        console.log('updating');
         //prevent page from reloading
         e.preventDefault();
 

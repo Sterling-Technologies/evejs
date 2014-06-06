@@ -13,7 +13,8 @@ module.exports = function() {
 		title     : String,
         path      : String,
 		detail    : String,
-		status    : String,
+		active    : Boolean,
+        status    : String,
         visibility: String,
         published : Date,
 		user: {
@@ -58,7 +59,6 @@ module.exports = function() {
 			updated: { type: Date, default: Date.now }
 		}],
 
-		active: { type: Boolean, default: true },
 		created: { type: Date, default: Date.now },
 		updated: { type: Date, default: Date.now }
 	};

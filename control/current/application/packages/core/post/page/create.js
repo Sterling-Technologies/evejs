@@ -67,16 +67,15 @@ define(function() {
                 path   : 'test url',
                 detail : 'test detail',
                 active : 'true'
-
             });
             
             //load publish form template
             self.data.publish = Handlebars.compile(publish)({
-                status : [
-                    { value : 'publish', name: 'Publish' },
+                status_option : [
+                    { value : 'published', name: 'Publish' },
                     { value : 'draft',   name: 'Draft' },
                     { value : 'review',  name: 'Review' }],
-                visibility : [
+                visibility_option : [
                     { value : 'public',  name: 'Public' },
                     { value : 'private', name: 'Private' }]
             });

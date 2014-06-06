@@ -8,8 +8,8 @@
             <h6>Status</h6>
             <div>
                 <select name="status" class="form-control">
-                    {{#each status}}
-                    <option value="{{value}}">{{name}}</option>
+                    {{#each status_option}}
+                    <option value="{{value}}">{{name}} </option>
                     {{/each}}
                 </select>
             </div>
@@ -18,14 +18,14 @@
             <h6>Visibility</h6>
             <div>
                 <select name="visibility" class="form-control">
-                    {{#each visibility}}
+                    {{#each visibility_option}}
                     <option value="{{value}}">{{name}}</option>
                     {{/each}}
                 </select>
             </div>
         </div>
         <div>
-            <h6>Publish Date</h6>
+            <h6>Publish Date {{update}}</h6>
             <div class="input-group date eden-field-datetime eden-field-loaded">
                 <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy" name="published" />
                 <span class="input-group-addon">
@@ -34,7 +34,13 @@
             </div>
         </div>
         <hr />
-        <button class="pull-right btn btn-success">Save</button>
+        <button class="pull-right btn btn-success" >
+        {{#if update}}  
+            Update 
+        {{else}} 
+            Save 
+        {{/if}}
+        </button>
         {{#when mode '==' 'update'}}
             <a class="btn-danger btn btn-default" href="/post/remove/{{id}}">
             <i class="icon-trash"></i> Trash</a>
