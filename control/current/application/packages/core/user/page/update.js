@@ -29,6 +29,11 @@ define(function() {
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
+    /**
+     * Render
+     *
+     * @return this
+     */
     public.render = function() {
         $.sequence().setScope(this)
         .then(this.getData)
@@ -36,7 +41,13 @@ define(function() {
         
         return this;
     };
-    
+
+    /**
+     * Get data
+     *
+     * @param function callback
+     * @return this
+     */
      public.getData = function(callback) {
         var self = this;
         
@@ -147,7 +158,13 @@ define(function() {
 
         return this;
     };
-    
+
+    /**
+     * Output
+     *
+     * @param function callback
+     * @return this
+     */
     public.output = function(callback) {
         var self = this;
    

@@ -37,9 +37,14 @@ define(function() {
         
         return this;
     };
-    
+
+    /**
+     * Get Data
+     *
+     * @param function callback
+     * @return this
+     */
     public.getData = function(callback) {
-        
         var self = this,
 
         //store form templates path to array
@@ -132,6 +137,12 @@ define(function() {
         return this;
     };
     
+    /**
+     * Output
+     *
+     * @param function callback
+     * @return this
+     */
     public.output = function(callback) {
         var self = this;
    
