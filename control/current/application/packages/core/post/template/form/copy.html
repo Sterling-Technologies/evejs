@@ -212,16 +212,16 @@
             </div>  
             <div class="form-group">
             <label for="post_active" class="col-lg-2 control-label">
-                Active {{active}}<span>*</span></label>
+                Active <span>*</span></label>
             <div class="col-lg-10">
                 <label>                
                 <input name="active" type="radio" value="true"
-                    {{#when active '==' 'true'}} checked="true" {{/when}} />
+                    {{#when active '==' true}} checked="true" {{/when}} />
                 <span>Yes</span>
                 </label>
                 <label>
                 <input name="active" type="radio" value="false"
-                    {{#when active '==' 'false'}} checked="true" {{/when}} />
+                    {{#when active '==' false}} checked="true" {{/when}} />
                 <span>No</span>
                 </label>
             </div>
