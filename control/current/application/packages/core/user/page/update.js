@@ -17,7 +17,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $       = jQuery;
-    var _api    = 'http://api.eve.dev:8082/user/detail/';
+    var _api    = 'http://api.eve.dev:8082/user/';
     
     /* Loader
     -------------------------------*/
@@ -41,7 +41,7 @@ define(function() {
         var self = this;
         
         //set button to update
-        self.data.update = { update : 'update'};
+        self.data.update = { update : 'update' };
 
         //get user id
         var _id =  _api + window.location.pathname.split('/')[3];
@@ -166,7 +166,11 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _processUpdate = function(e) {
+        //prevent page from reloading
         e.preventDefault();
+
+        //prepare form data
+        var data = $('.package-user-form').serialize();
 
         //set api to update.
         _api = 'http://api.eve.dev:8082/user/update/';
@@ -176,19 +180,14 @@ define(function() {
 
         //join update and query.
         _api = _api + _id;
-
-        //prepare form data
-        var data = $('.package-user-form').serialize();
-
-        //execute update.
-        $.post(_api, data, function(response){
-            
+       
+       //update data on database
+       $.post(_api, data, function(response) {
             //clear message status
-            $('.msg').empty();
-
+             $('.msg').empty().remove();
             //display message status
             $('.package-user-form').append('<span class="msg label label-success arrowed"> Record successfully updated. </span>').show('slow');
-        });
+       });
     };
 
     /* A-aptor

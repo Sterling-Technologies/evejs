@@ -7,24 +7,24 @@
             {{{copy}}}
             
         	{{#if left}}
-        	<?php echo implode('', $left); ?>
+        	{{#each left}}{{/each}}
             {{/if}}
             
-			<?php if(isset($revisions) && !empty($revisions)): ?>
-            <?php $t(__DIR__.'/form/revisions.php', $this->data, 'post-form-revisions'); ?>
-            <?php endif; ?>
+            {{#if revision}}
+            {{{revision}}}
+            {{/if}}
         </section>
         <aside class="col col-md-3 widget-container-span">
-			<?php $t(__DIR__.'/form/publish.php', $this->data, 'post-form-publish'); ?>
+			{{{publish}}}
         	
-			<?php if(isset($right)): ?>
-        	<?php echo implode('', $right); ?>
-            <?php endif; ?>
+            {{#if right}}
+            {{#each right}}{{/each}}
+            {{/if}}
             
-            <?php if(control()->installed('Core', 'Category')): ?>
-            <?php //$t(__DIR__.'/form/categories.php', $this->data, 'post-form-categories'); ?>
-            <?php //$t(__DIR__.'/form/tags.php', $this->data, 'post-form-tags'); ?>
-            <?php endif; ?>
+            {{#if core.category}}
+            {{{categories}}}
+            {{{tags}}}
+            {{/if}}
         </aside>
     </div>
 </form>

@@ -3,51 +3,50 @@
         <h5>Publish</h5>
     </div>
     <div class="widget-body">
-    	<div class="widget-main">
+        <div class="widget-main">
         <div>
             <h6>Status</h6>
             <div>
-                <?php echo control()
-				->block()->field()
-                ->select('post_status', $item['post_status'] ? 
-				$item['post_status']: 'published', array(
-                'draft' 	=> 'Draft',
-                'review'	=> 'Review',
-                'published'	=> 'Publish' )); ?>
+                <select name="post_status" class="form-control">
+                    {{#each status}}
+                    <option value="{{value}}">{{name}}</option>
+                    {{/each}}
+                </select>
             </div>
         </div>
         <div>
             <h6>Visibility</h6>
             <div>
-                <?php echo control()
-				->block()->field()
-                ->select('post_visibility', $item['post_visibility'] ? 
-				$item['post_visibility']: 'public', array(
-                'public' 	=> 'Public',
-                'private'	=> 'Private' )); ?>
+                <select name="post_visibility" class="form-control">
+                    {{#each visibility}}
+                    <option value="{{value}}">{{name}}</option>
+                    {{/each}}
+                </select>
             </div>
         </div>
         <div>
             <h6>Publish Date</h6>
             <div>
-                <?php echo control()
-				->block()->field()
-                ->date('post_published', $item['post_published'] ? 
-				$item['post_published']: date('m/d/Y')); ?>
-                <?php if(isset($errors['post_published'])): ?>
-                <span class="text-danger"><?php echo $errors['post_published']; ?></span>
-				<?php endif; ?>
+                <select name="post_published" class="form-control">
+                    {{#each published}}
+                    <option value="{{value}}">{{name}}</option>
+                    {{/each}}
+                </select>
+
+                {{#if errors.post_published}}
+                <span class="text-danger">{{errors.post_published}}</span>
+                {{/if}}
             </div>
         </div>
         <hr />
         <button class="pull-right btn btn-success">Save</button>
-        <?php if($mode == 'update'): ?>
-        <a class="btn-danger btn btn-default" href="/post/remove/<?php echo $id; ?>">
+        {{#if mode == 'update'}}
+        <a class="btn-danger btn btn-default" href="/post/remove/{{id}}">
         <i class="icon-trash"></i> Trash</a>
-        <?php else: ?>
+        {{else}}
         <a class="btn-danger btn btn-default" href="/post">
         <i class="icon-minus"></i> Cancel</a>
-        <?php endif; ?>
-     	</div>
+        {{/if}}
+        </div>
     </div>
 </div>

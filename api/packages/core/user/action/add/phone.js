@@ -1,5 +1,4 @@
 module.exports = (function() {
-	//Index file called 
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;

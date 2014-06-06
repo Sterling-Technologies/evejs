@@ -60,35 +60,45 @@ module.exports = function() {
 	};
 	
 	var _sample = {
-		name		: 'John Doe', 
-		email		: 'john@doe.com',
-		phone		: [
-			{ label: 'Home', value: '1 (415) 555-2424' },
-			{ label: 'Work', value: '1 (415) 555-2323' }
-		],
-		address		: [{
-			label		: 'Home',
-			contact		: 'Jane Doe', 
-			street		: '15415 Overlea Court', 
-			neighborhood: 'Pulte Homes', 
-			city		: 'Accokeek', 
-			state		: 'Maryland', 
-			region		: '', 
-			country		: 'United States', 
-			postal		: '20607', 
-			phone		: '1 (301) 203-5535'
-		}, {
-			label		: 'Work',
-			contact		: 'Bossing Doe', 
-			street		: '15415 Overlea Court', 
-			neighborhood: 'Pulte Homes', 
-			city		: 'Accokeek', 
-			state		: 'Maryland', 
-			region		: '', 
-			country		: 'United States', 
-			postal		: '20607', 
-			phone		: '1 (301) 203-5535'
-		}]
+		title: 'Hello World!!',
+		detail: 'Beginner program, simplest program created',
+		user: {
+			name	: 'Dennis Richie',
+			email	: 'dennisrichie@yahoo.com',
+			photo	: {
+				name		: String,
+				source		: String,
+				mime		: String,
+				size		: String,
+				date		: { type: Date, default: Date.now }
+			},
+			
+			facebook	: 'facebook_url',
+			twitter		: 'twitter_url',
+			google		: 'google_url',
+			linkedin	: 'linkedin'
+		},
+		
+		comments: [{
+			title: String,
+			detail: String,
+			user: {
+				name	: String,
+				email	: String,
+				photo	: {
+					name		: String,
+					source		: String,
+					mime		: String,
+					size		: String,
+					date		: { type: Date, default: Date.now }
+				},
+				
+				facebook	: String,
+				twitter		: String,
+				google		: String,
+				linkedin	: String
+			},
+		}],
 	};
 	
 	/* Loader

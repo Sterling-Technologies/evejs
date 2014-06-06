@@ -44,39 +44,20 @@ define(function() {
 			if(response.error) {
 				return;
 			}
-			//prepare template variables
+
+			//loop through data
 			for(i in response.results) {
 				var updated = new Date(response.results[i].updated);
 				var format = controller.timeToDate(updated.getTime(), true, true);
                 
+                //add it to row
 				rows.push({
 					id              : response.results[i]._id,
 					name            : response.results[i].name,
 					email           : response.results[i].email, 
 					active          : response.results[i].active,
-                    username        : response.results[i].username,
-                    birthdate       : response.results[i].birthdate,
-                    //data for basic
-                    gender          : response.results[i].gender,
-                    website         : response.results[i].website,
-                    //data for social
-                    facebook        : response.results[i].facebook,
-                    twitter         : response.results[i].twitter,
-                    google          : response.results[i].google,
-                    //data for company
-                    company_name    : response.results[i].name,
-                    company_title   : response.results[i].title,
-                    company_street  : response.results[i].street,
-                    company_city    : response.results[i].city,
-                    company_state   : response.results[i].state,
-                    company_postal  : response.results[i].postal,
-                    company_phone   : response.results[i].phone,
-                    company_email   : response.results[i].email,
-                    phone_label     : response.results[i].label,
-                    phone_value     : response.results[i].value,
 					updated: format });
- 
-            }
+                }
 			
 			self.data = {
 				showing : 'Now Showing',

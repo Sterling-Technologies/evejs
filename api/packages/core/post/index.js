@@ -74,6 +74,6 @@ module.exports = function() {
 		request.variables = variables;
 		
 		//call it
-		require(action).call(this, control, request, response);
+		require(action).load(control, request, response).render();
 	}, this));
 };

@@ -1,3 +1,3 @@
 define(function() {
-	return ['core/user'];
+	return ['core/user', 'core/post'];
 });

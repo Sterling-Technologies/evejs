@@ -1,6 +1,6 @@
 <div class="widget-box">
     <div class="widget-header header-color-grey">
-        <h5><?php $_('Attributes'); ?></h5>
+        <h5>Attributes</h5>
     </div>
     <div class="widget-body">
     	<div class="widget-main">
@@ -13,17 +13,16 @@
                 </tr>
             </thead>
             <tbody>
+                {{#each field}}
             	<tr>
-                	<td><?php $e($b('field')->text('attribute[name][]')); ?></td>
-                	<td><?php $e($b('field')->textarea('attribute[value][]')); ?></td>
+                	<td>{{field.name}}</td>
+                	<td>{{field.value}}</td>
                     <td>&nbsp;</td>
                 </tr>
+                {{/field}}
             </tbody>
-        </table> 
-        <?php $e($b('field')
-		->button('Add Attribute')
-		->setAttributes('type', 'button')
-		->setAttributes('class', 'btn-default add-attribute')); ?>
+        </table>
+        <button type="button" class="btn-default add-attribute">Add Attribute</button> 
         </div>
     </div>
 </div>
