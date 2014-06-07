@@ -5,7 +5,7 @@ module.exports = function(controller, id, query) {
 		.store()
 		.store
 		//first find the id
-		.findByIdAndUpdate(id { $set: { active : false } }, function(error) {
+		.findByIdAndUpdate(id, { { '_id' : ObjectId }, $set: { 'comment.$.active' : false } }, function(error) {
 			//if there are errors
 			if(error) {
 				//trigger an error
