@@ -5,7 +5,7 @@ module.exports = function(controller, id, query) {
 		.store()
 		.store
 		//first find the id
-		.findByIdAndRestore(id, { $restore: { comment: query } }, function(error) {
+		.findByIdAndRestore(id, function(error) {
 			//if there are errors
 			if(error) {
 				//trigger an error
