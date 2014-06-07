@@ -1,7 +1,7 @@
 module.exports = function(controller, id, query) {
 	//find and update
 	controller
-		.post()
+		.post() 
 		.store()
 		.store
 		//first find the id
@@ -9,11 +9,11 @@ module.exports = function(controller, id, query) {
 			//if there are errors
 			if(error) {
 				//trigger an error
-				controller.trigger('post-add-address-error', error);
+				controller.trigger('post-add-comment-error', error);
 				return;
 			}
 			
 			//trigger that we are good
-			controller.trigger('post-add-address-success');
+			controller.trigger('post-add-comment-success');
 		});
 };
