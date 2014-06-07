@@ -13,7 +13,7 @@ module.exports = function() {
 		title     : String,
         path      : String,
 		detail    : String,
-		active    : Boolean,
+		state     : String,
         status    : String,
         visibility: String,
         published : Date,
