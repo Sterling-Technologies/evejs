@@ -13,7 +13,7 @@ module.exports = (function() {
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
+    public.__load = c.load = function(controller, request, response) {z
         return new c(controller, request, response);
     };
     
