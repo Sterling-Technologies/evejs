@@ -44,7 +44,7 @@ module.exports = (function() {
 					message: error.message });
 				
 				//trigger that a response has been made
-				self.controller.trigger('post-action-response', self.request, self.response);
+				self.controller.trigger('response', self.request, self.response);
 			})
 			//when it is successfull
 			.once('post-create-success', function() {
@@ -52,7 +52,7 @@ module.exports = (function() {
 				self.response.message = JSON.stringify({ error: false });
 				
 				//trigger that a response has been made
-				self.controller.trigger('post-action-response', self.request, self.response);
+				self.controller.trigger('response', self.request, self.response);
 			})
 			//Now call to remove the post
 			.trigger('post-create', this.controller, query);

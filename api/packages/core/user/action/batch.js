@@ -48,6 +48,7 @@ module.exports = (function() {
                 case 'remove':  action = require('./remove');  break;
                 case 'update':  action = require('./update');  break;
                 case 'detail':  action = require('./detail');  break;
+                case 'restore':  action = require('./restore');  break;
                 case 'list':  action = require('./list');   break;
                 case 'add/address': action = require('./add/address'); break;
                 case 'add/phone': action = require('./add/phone'); break;
