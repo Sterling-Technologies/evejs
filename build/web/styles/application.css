@@ -1,0 +1,93 @@
+html, body { 
+	background-color: #EDE7D9;
+	font-family: 'Open Sans', Arial; 
+}
+
+header {
+	background: url(/images/header-bg.png) repeat center 0 transparent;
+	height: 137px;
+}
+
+header .container { width: 840px; }
+
+header h1 { margin-top: 26px; }
+
+@media (max-width: 840px) {
+	header h1 { overflow: hidden; width: 80px; }
+}
+
+header h1 a {}
+
+footer .container { color: #FFFFFF; width: 840px; }
+
+footer.red { background-color: #E5281C; height: 40px; }
+footer.red .item { float: left; margin-right: 20px; }
+footer.red .item .label { 
+	display: inline-block;
+	font-size: 15px;
+	font-weight: normal;
+	margin-top: 9px;
+}
+
+footer.red .contact a { 
+	color: #FFFFFF; 
+	font-size: 18px; 
+	margin-right: 10px; 
+}
+
+footer.red .phone .label { 
+	font-size: 30px;
+	float: left;
+	margin-top: 0px;
+	padding: 6px;
+}
+
+footer.red .phone ul { 
+	color: #FFFFFF;
+	display: inline-block;
+	font-size: 9px;
+	list-style: none;
+	margin-top: 2px; 
+	padding: 0; 
+}
+
+footer.red .download {}
+
+footer.red .download .label {
+	float: left; 
+	margin-top: 9px;
+}
+
+footer.red .download a { 
+	color: #FFFFFF; 
+	float: left;
+	font-size: 30px; 
+	margin-right: 10px;
+	margin-top: -3px; 
+}
+
+footer.red .follow {}
+
+footer.red .follow .label {
+	float: left; 
+	margin-top: 9px;
+}
+
+footer.red .follow a { 
+	color: #FFFFFF; 
+	float: left;
+	font-size: 30px; 
+	margin-right: 10px;
+	margin-top: -2px; 
+}
+
+footer.orange { 
+	background-color: #EE6729; 
+	clear: both;
+	height: 40px; 
+	margin-top: 3px; 
+}
+
+footer.orange .copy { float: right; font-size: 12px; margin-top: 12px; }
+footer.orange .sitemap { display: inline-block; margin-top: 9px; }
+footer.orange .sitemap a { color: #FFFFFF; font-size: 12px; }

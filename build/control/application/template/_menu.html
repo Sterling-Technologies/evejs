@@ -1,0 +1,50 @@
+<a class="menu-toggler" id="menu-toggler" href="#">
+    <span class="menu-text"></span>
+</a>
+
+<div class="sidebar" id="sidebar">
+    <ul class="nav nav-list">
+        {{#items}}
+        <li>
+        	<a href="{{path}}">
+            	{{#icon}}
+            	<i class="icon-{{icon}}"></i>
+                {{/icon}}
+        		<span class="menu-text">{{label}}</span>
+            </a>
+            {{#if children}}
+            <ul class="submenu">
+                {{#each children}}
+                <li>
+                    <a href="{{path}}">
+                        {{#icon}}
+                        <i class="icon-{{icon}}"></i>
+                        {{/icon}}
+                        <span class="menu-text">{{label}}</span>
+                    </a>
+                    {{#if children}}
+                    <ul class="submenu">
+                        {{#each children}}
+                        <li>
+                            <a href="{{path}}">
+                                {{#icon}}
+                                <i class="icon-{{icon}}"></i>
+                                {{/icon}}
+                                <span class="menu-text">{{label}}</span>
+                            </a>
+                        </li>
+                        {{/each}}
+                    </ul>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+            {{/if}}
+        </li>
+        {{/items}}
+    </ul><!-- /.nav-list -->
+
+    <div class="sidebar-collapse" id="sidebar-collapse">
+        <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+    </div>
+</div>
