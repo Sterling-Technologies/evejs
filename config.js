@@ -1,6 +1,6 @@
 module.exports = {
-	root	: '/server/public/evejs2',
+	root	: '/server/public/eve',
 	dev		: __dirname,
-	server	: '/server/public/evejs2/server/current',
-	control	: '/server/public/evejs2/control/current',
-	web		: '/server/public/evejs2/web/current' };
+	server	: '/server/public/eve/server/current',
+	control	: '/server/public/eve/control/current',
+	web		: '/server/public/eve/web/current' };
