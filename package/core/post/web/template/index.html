@@ -1,0 +1,28 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Street</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Country</th>
+            <th>Postal</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#list}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{email}}</td>
+            <td>{{street}}</td>
+            <td>{{city}}</td>
+            <td>{{state}}</td>
+            <td>{{country}}</td>
+            <td>{{postal}}</td>
+            <td>{{phone}}</td>
+        </tr>
+        {{/list}}
+    </tbody>
+</table>

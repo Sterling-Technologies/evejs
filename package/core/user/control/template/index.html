@@ -1,0 +1,140 @@
+<link rel="stylesheet" type="text/css" href="/application/packages/core/user/assets/index.css" />
+
+<!-- START: SEARCH FORM -->
+<form class="pull-right search form-inline" method="get">
+	<div class="form-group">
+  		<input name="q" placeholder="Search Users" value="" type="text" class="form-control">	
+    </div>
+	<button class="btn"><i class="icon-search"></i></button>	
+</form>
+<!-- END: SEARCH FORM -->
+
+<!-- START: BULK FORM -->
+<form method="post" class="form-inline bulk-form">
+    <!-- START: i18n HEADER TITLE -->
+	<div class="table-header">
+    	{{showing}}
+    </div>
+    <!-- END: i18n HEADER TITLE -->
+	<div class="table-responsive">
+    	<div class="dataTables_wrapper table-filters" role="grid">
+        	<div class="row">
+            	<div class="col-sm-12">
+    				<!-- START: ADD NEW POST -->
+                    <div class="pull-right create"><a class="btn btn-info btn-sm" 
+                    href="/user/create">Create New User</a></div>
+    				<!-- END: ADD NEW POST -->
+                    {{#if rows}}
+                    <!-- START: BULK ACTION -->
+                    <select name="action" style="width:auto;" class="form-control">
+						<option value="" selected="selected">Bulk Actions</option>
+						<option value="remove">Remove</option>
+						<option value="restore">Restore</option>
+					</select>
+                    <button class="btn-primary btn-sm btn">Apply</button>
+                    <!-- END: BULK ACTION -->
+                    {{/if}}
+                    
+                    <!-- START: FILTER BUTTONS -->
+                    <span class="filter">
+                        <a class="btn btn-sm{{#when action '==' 'all'}} btn-light{{/when}}" 
+                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">All &nbsp;
+                        <span class="badge badge-grey">{{all}}</span></a> 
+                        
+                        <a class="btn btn-sm{{#when action '==' 'active'}} btn-light{{/when}}" 
+                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Active &nbsp;
+                        <span class="badge badge-grey">{{active}}</span></a> 
+                        
+                        <a class="btn btn-sm{{#when action '==' 'guests'}} btn-light{{/when}}" 
+                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Guests &nbsp;
+                        <span class="badge badge-grey">{{guests}}</span></a> 
+                        
+                        <a class="btn btn-sm{{#when action '==' 'trash'}} btn-light{{/when}}" 
+                        href="/user{{#if keyword}}?q={{keyword}}{{/if}}">Trash &nbsp;
+                        <span class="badge badge-grey">{{trash}}</span></a> 
+                    </span>
+    				<!-- END: FILTER BUTTONS -->
+                </div>
+            </div>
+        </div> 
+        {{#if rows}}
+        <!-- START: POST TABLE -->
+		<table class="table table-striped">
+			<thead>
+            	<tr>
+                    <th><input class="checkall" type="checkbox"></th>
+                    <th>Action</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Updated</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each rows}}
+                <tr>
+                    <td><input name="user_id[]" value="{{_id}}" type="checkbox" class="form-control"></td>
+                    <td>
+                        {{#if active}}
+                        <a title="Edit" href="/user/update/{{_id}}">
+                        <i class="icon-edit"></i></a> &nbsp; 
+                        
+                        <a title="Remove" href="/user/remove/{{_id}}"
+                        class="text-danger"><i class="icon-remove"></i></a>
+                        
+                        {{else}}
+                        
+                        <a title="Restore" href="/user/restore/{{_id}}" class="text-success">
+                        <i class="icon-external-link"></i></a>
+                        {{/if}}
+                    </td>
+                    <td>{{_id}}</td>
+                    <td>{{name}}</td>
+                    <td>{{email}}</td>
+                    <td valign="middle">{{updated}}</td>
+                </tr>	
+                {{/each}}
+			</tbody>	
+		</table>
+    	<!-- END: POST TABLE -->
+        {{else}}
+        <!-- START: NO RESULTS -->
+        <div class="well no-results">No Users Found</div>
+    	<!-- END: NO RESULTS -->
+        {{/if}}
+	</div>
+    
+    {{#when action '==' 'all'}}
+    <ul class="pagination">
+        {{#pagination all range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    
+    {{#when action '==' 'active'}}
+    <ul class="pagination">
+        {{#pagination active range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    
+    {{#when action '==' 'guests'}}
+    <ul class="pagination">
+        {{#pagination guests range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+    
+    {{#when action '==' 'trash'}}
+    <ul class="pagination">
+        {{#pagination trash range}}
+        <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+        {{/pagination}}
+    </ul>
+    {{/when}}
+</form>
+<!-- END: BULK FORM -->
+<script type="text/javascript" src="/application/packages/core/user/assets/checkall.js"></script>
