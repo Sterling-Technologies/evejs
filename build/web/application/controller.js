@@ -190,7 +190,7 @@ var controller = function() {
 			//for each package
 			for(var i = 0; i < packages.length; i++) {
 				//create the path and push it into the list
-				list.push(self.path('packages') + '/' + packages[i] + '/index');
+				list.push(self.path('package') + '/' + packages[i] + '/index');
 			}
 			
 			//now we can bulk require all the packages
@@ -243,7 +243,7 @@ var controller = function() {
 			.path('root'	, this.cdn + '/application')
 			.path('config'	, this.cdn + '/application/config')
 			.path('template', this.cdn + '/application/template')
-			.path('packages', this.cdn + '/application/packages');
+			.path('package'	, this.cdn + '/application/package');
 		
 		//if sequence
 		if(typeof arguments[0] == 'function') {

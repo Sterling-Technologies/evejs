@@ -112,7 +112,7 @@ module.exports = function() {
 		var packages = this.config('packages');
 		
 		for(var i = 0; i < packages.length; i++) {
-			require(_paths.packages + '/' + packages[i] + '/index.js').call(this);
+			require(_paths.package + '/' + packages[i] + '/index.js').call(this);
 		}
 		
 		return this;
@@ -126,7 +126,7 @@ module.exports = function() {
 	public.setPaths = function() {
 		this.path('root'	, __dirname)
 			.path('config'	, __dirname + '/config')
-			.path('packages', __dirname + '/packages');
+			.path('package'	, __dirname + '/package');
 		
 		return this;
 	};

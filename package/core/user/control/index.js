@@ -4,9 +4,9 @@ controller
 	//comment test 2
 	//set paths
 	controller
-		.path('user'			, controller.path('packages') + '/core/user/')
-		.path('user/page'		, controller.path('packages') + '/core/user/page/')
-		.path('user/template'	, controller.path('packages') + '/core/user/template/');
+		.path('user'			, controller.path('package') + '/core/user/')
+		.path('user/page'		, controller.path('package') + '/core/user/page/')
+		.path('user/template'	, controller.path('package') + '/core/user/template/');
 })
 //add template helpers
 .listen('engine', function() {
