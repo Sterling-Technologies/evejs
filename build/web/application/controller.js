@@ -3,7 +3,7 @@ var controller = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.cdn		= 'http://cdn.eve.dev';
+	public.cdn		= 'http://web.eve.dev';
 	
 	/* Private Properties
 	-------------------------------*/

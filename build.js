@@ -16,6 +16,7 @@ eden('sequence')
 
 // 1. Remove folders and files in [SERVER]/config
 .then(function(next) {
+	console.log('Removing Server Config ...');
 	eden('folder', paths.server + '/config')
 	.truncate(function() {
 		next();
@@ -24,6 +25,7 @@ eden('sequence')
 
 // 2. Remove folders and files in [CONTROL]/application/config
 .then(function(next) {
+	console.log('Removing Control Config ...');
 	eden('folder', paths.control + '/application/config')
 	.truncate(function() {
 		next();
@@ -32,6 +34,7 @@ eden('sequence')
 
 // 3. Remove folders and files in [WEB]/application/config
 .then(function(next) {
+	console.log('Removing Web Config ...');
 	eden('folder', paths.web + '/application/config')
 	.truncate(function() {
 		next();
@@ -40,6 +43,7 @@ eden('sequence')
 
 // 4. Remove folders and files in [SERVER]/package
 .then(function(next) {
+	console.log('Removing Server Packages ...');
 	eden('folder', paths.server + '/package')
 	.truncate(function() {
 		next();
@@ -48,6 +52,7 @@ eden('sequence')
 
 // 5. Remove folders and files in [CONTROL]/application/package
 .then(function(next) {
+	console.log('Removing Control Packages ...');
 	eden('folder', paths.control + '/application/package')
 	.truncate(function() {
 		next();
@@ -56,6 +61,7 @@ eden('sequence')
 
 // 6. Remove folders and files in [WEB]/application/package
 .then(function(next) {
+	console.log('Removing Web Packages ...');
 	eden('folder', paths.web + '/application/package')
 	.truncate(function() {
 		next();
@@ -64,6 +70,7 @@ eden('sequence')
 
 // 7. Copy [DEV]/config/server folder to [SERVER]/config
 .then(function(next) {
+	console.log('Copying Server Config ...');
 	eden('folder', paths.dev + '/config/server')
 	.copy(paths.server + '/config', function() {
 		next();
@@ -72,6 +79,7 @@ eden('sequence')
 
 // 8. Copy [DEV]/config/control folder to [CONTROL]/application/config
 .then(function(next) {
+	console.log('Copying Control Config ...');
 	eden('folder', paths.dev + '/config/control')
 	.copy(paths.control + '/application/config', function() {
 		next();
@@ -80,6 +88,7 @@ eden('sequence')
 
 // 9. Copy [DEV]/config/web folder to [WEB]/application/config
 .then(function(next) {
+	console.log('Copying Web Config ...');
 	eden('folder', paths.dev + '/config/web')
 	.copy(paths.web + '/application/config', function() {
 		next();
@@ -88,6 +97,7 @@ eden('sequence')
 
 // 10. Loop through each vendor folder [DEV]/package/[VENDOR]
 .then(function(next) {
+	console.log('Copying Packages ...');
 	eden('folder', paths.dev + '/package')
 	.getFolders(null, false, function(folders) {
 		//make a sub sequence
@@ -152,8 +162,9 @@ eden('sequence')
 		
 		//alas
 		subSequence.then(function(subNext) {
+			console.log('Build Complete!');
 			next();
 			subNext();
 		});
 	});
-})
+});//*/

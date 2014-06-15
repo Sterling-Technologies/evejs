@@ -16,18 +16,21 @@ eden('sequence')
 
 // 1. Create Folder Structure in [ROOT] -X
 .then(function(next) {
+	console.log('Creating Server Folder ...');
 	eden('folder', paths.server)
 	.mkdir(0777, function() {
 		next();
 	});
 })
 .then(function(next) {
+	console.log('Creating Control Folder ...');
 	eden('folder', paths.control)
 	.mkdir(0777, function() {
 		next();
 	});
 })
 .then(function(next) {
+	console.log('Creating Web Folder ...');
 	eden('folder', paths.web)
 	.mkdir(0777, function() {
 		next();
@@ -36,6 +39,7 @@ eden('sequence')
 
 // 2. Copy [DEV]/build/server folder to [SERVER]
 .then(function(next) {
+	console.log('Copying Server Files ...');
 	eden('folder', paths.dev + '/build/server')
 	.copy(paths.server, function() {
 		next();
@@ -43,6 +47,7 @@ eden('sequence')
 })
 // 3. Copy [DEV]/build/control folder to [CONTROL]
 .then(function(next) {
+	console.log('Copying Control Files ...');
 	eden('folder', paths.dev + '/build/control')
 	.copy(paths.control, function() {
 		next();
@@ -50,6 +55,7 @@ eden('sequence')
 })
 // 4. Copy [DEV]/build/web folder to [WEB]
 .then(function(next) {
+	console.log('Copying Web Files ...');
 	eden('folder', paths.dev + '/build/web')
 	.copy(paths.web, function() {
 		next();
@@ -57,6 +63,7 @@ eden('sequence')
 })
 // 5. Copy [DEV]/config/server folder to [SERVER]/config
 .then(function(next) {
+	console.log('Copying Server Config ...');
 	eden('folder', paths.dev + '/config/server')
 	.copy(paths.server + '/config', function() {
 		next();
@@ -64,6 +71,7 @@ eden('sequence')
 })
 // 6. Copy [DEV]/config/control folder to [CONTROL]/application/config
 .then(function(next) {
+	console.log('Copying Control Config ...');
 	eden('folder', paths.dev + '/config/control')
 	.copy(paths.control + '/application/config', function() {
 		next();
@@ -72,6 +80,7 @@ eden('sequence')
 
 // 7. Copy [DEV]/config/web folder to [WEB]/application/config
 .then(function(next) {
+	console.log('Copying Web Config ...');
 	eden('folder', paths.dev + '/config/web')
 	.copy(paths.web + '/application/config', function() {
 		next();
@@ -80,6 +89,7 @@ eden('sequence')
 
 // 8. Loop through each vendor folder [DEV]/package/[VENDOR]
 .then(function(next) {
+	console.log('Copying Packages ...');
 	eden('folder', paths.dev + '/package')
 	.getFolders(null, false, function(folders) {
 		//make a sub sequence
@@ -93,7 +103,6 @@ eden('sequence')
 						subNext();
 					});	
 			}.bind(this, folders[i]));
-			
 			
 			// 8b. Create [VENDOR] in [CONTROL]/application/package
 			subSequence.then(function(folder, subNext) {
@@ -147,6 +156,7 @@ eden('sequence')
 		
 		//alas
 		subSequence.then(function(subNext) {
+			console.log('Installation Complete!');
 			next();
 			subNext();
 		});

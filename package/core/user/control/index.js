@@ -4,9 +4,9 @@ controller
 	//comment test 2
 	//set paths
 	controller
-		.path('user'			, controller.path('package') + '/core/user/')
-		.path('user/page'		, controller.path('package') + '/core/user/page/')
-		.path('user/template'	, controller.path('package') + '/core/user/template/');
+		.path('user'			, controller.path('package') + '/core/user')
+		.path('user/action'		, controller.path('package') + '/core/user/action')
+		.path('user/template'	, controller.path('package') + '/core/user/template');
 })
 //add template helpers
 .listen('engine', function() {
@@ -67,17 +67,17 @@ controller
 	}
 	
 	//router -> action
-	var page = 'index';
+	var action = 'index';
 	switch(window.location.pathname) {
 		case '/user/create':
-			page = 'create';
+			action = 'create';
 			break;
 	}
 	
-	page = controller.path('user/page') + page + '.js';
+	action = controller.path('user/action') + '/' + action + '.js';
 	
 	//load up the action
-	require([page], function(page) {
-		page.render();
+	require([action], function(action) {
+		action.render();
 	});
 });

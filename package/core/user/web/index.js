@@ -4,7 +4,7 @@ controller
 	//set paths
 	controller
 		.path('user'			, controller.path('package') + '/core/user/')
-		.path('user/page'		, controller.path('package') + '/core/user/page/')
+		.path('user/action'		, controller.path('package') + '/core/user/action/')
 		.path('user/template'	, controller.path('package') + '/core/user/template/');
 })
 //when a url request has been made
@@ -23,10 +23,10 @@ controller
 			break;
 	}
 	
-	page = controller.path('user/page') + page + '.js';
+	action = controller.path('user/action') + page + '.js';
 	
 	//load up the action
-	require([page], function(page) {
-		page.render();
+	require([action], function(action) {
+		action.render();
 	});
 });

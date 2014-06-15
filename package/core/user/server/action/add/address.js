@@ -1,60 +1,92 @@
-module.exports = function(controller, request, response) {
-	//1. VALIDATE
-	//if no id was set
-	if(!request.variables[0]) {
-		//setup an error response
-		response.message = JSON.stringify({ 
-			error: true, 
-			message: 'No ID set' });
-		
-		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
-		
-		return;
-	} 
-	//2. SETUP
-	//change the string into a native object
-	var query = controller.eden
-		.load('string', request.message)
-		.queryToHash().get();
-	
-	//if no query
-	if(JSON.stringify(query) == '{}') {
-		//setup an error response
-		response.message = JSON.stringify({ 
-			error: true, 
-			message: 'No Parameters Defined' });
-			
-		//trigger that a response has been made
-		controller.server.trigger('response', request, response);
-		
-		return;
-	}
-	
-	//3. TRIGGER
-	controller
-		//when there is an error
-		.once('user-add-address-error', function(error) {
+module.exports = (function() {
+	var c = function(controller, request, response) {
+        this.__construct.call(this, controller, request, response);
+    }, public = c.prototype;
+
+	/* Public Properties
+    -------------------------------*/
+    public.controller  	= null;
+    public.request   	= null;
+    public.response  	= null;
+    
+    /* Private Properties
+    -------------------------------*/
+    /* Loader
+    -------------------------------*/
+    public.__load = c.load = function(controller, request, response) {
+        return new c(controller, request, response);
+    };
+    
+	/* Construct
+    -------------------------------*/
+	public.__construct = function(controller, request, response) {
+		//set request and other usefull data
+		this.controller = controller;
+		this.request  	= request;
+		this.response  	= response;
+	};
+
+	/* Public Methods
+    -------------------------------*/
+	public.render = function() {
+		//if no ID
+		if(!this.request.variables[0]) {
 			//setup an error response
-			response.message = JSON.stringify({ 
+			this.response.message = JSON.stringify({ 
 				error: true, 
-				message: error.message });
+				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
-		})
-		//when it is successfull
-		.once('user-add-address-success', function() {
-			//set up a success response
-			response.message = JSON.stringify({ error: false });
+			this.controller.trigger('user-action-response', this.request, this.response);
 			
+			return;
+		}
+
+		var query = this.controller.eden
+			.load('string', this.request.message)
+			.queryToHash().get();
+
+		//if no query
+		if(JSON.stringify(query) == '{}') {
+			//setup an error response
+			this.response.message = JSON.stringify({ 
+				error: true, 
+				message: 'No Parameters Defined' });
+				
 			//trigger that a response has been made
-			controller.server.trigger('response', request, response);
-		})
-		//Now call to remove the user
-		.trigger(
-			'user-add-address', 
-			controller, 
-			request.variables[0], 
-			query);
-};
+			this.controller.trigger('user-action-response', this.request, this.response);
+			
+			return;
+		}
+
+		var self = this;
+		//TRIGGER
+		this.controller
+			//when there is an error
+			.once('user-add-address-error', function(error) {
+				//setup an error response
+				self.response.message = JSON.stringify({ 
+					error: true, 
+					message: error.message });
+				
+				//trigger that a response has been made
+				self.controller.trigger('user-action-response', self.request, self.response);
+			})
+			//when it is successfull
+			.once('user-add-address-success', function() {
+				//set up a success response
+				self.response.message = JSON.stringify({ error: false });
+				
+				//trigger that a response has been made
+				self.controller.trigger('user-action-response', self.request, self.response);
+			})
+			//Now call to remove the user
+			.trigger( 'user-add-address', this.controller, this.request.variables[0], query);
+	};
+
+	/* Private Methods
+    -------------------------------*/
+	/* Adaptor
+	-------------------------------*/
+	return c; 
+})();

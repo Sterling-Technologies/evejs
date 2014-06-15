@@ -11,20 +11,37 @@ module.exports = function() {
 	
 	var _schema = {
 		name		: String,
+        username    : String,
 		email		: String,
-		phone		: [{ label: String, value: String }],
+        password    : String,
+        birthdate   : Date,
+        gender      : String,
+		website     : String,
+        phone		: [{ label: String, value: String }],
 		address		: [{
-			label		: String,
-			contact		: String, 
-			street		: String, 
-			neighborhood: String, 
-			city		: String, 
-			state		: String, 
-			region		: String, 
-			country		: String, 
-			postal		: String, 
-			phone		: String
+			label		    : String,
+			contact		    : String, 
+			street		    : String, 
+			neighborhood    : String, 
+			city		    : String, 
+			state		    : String, 
+			region		    : String, 
+			country		    : String, 
+			postal		    : String, 
+			phone		    : String
 		}],
+
+        company     : {
+            name    : String,
+            title   : String,
+            street  : String,
+            city    : String,
+            state   : String,
+            country : String,
+            postal  : String,
+            phone   : String,
+            email   : String
+        },
 		
 		photo		: [{
 			name		: String,
@@ -52,27 +69,31 @@ module.exports = function() {
 			{ label: 'Work', value: '1 (415) 555-2323' }
 		],
 		address		: [{
-			label		: 'Home',
-			contact		: 'Jane Doe', 
-			street		: '15415 Overlea Court', 
-			neighborhood: 'Pulte Homes', 
-			city		: 'Accokeek', 
-			state		: 'Maryland', 
-			region		: '', 
-			country		: 'United States', 
-			postal		: '20607', 
-			phone		: '1 (301) 203-5535'
+            company_name  : 'openovate',
+			label		  : 'Home',
+			contact		  : 'Jane Doe', 
+			street		  : '15415 Overlea Court', 
+			neighborhood  : 'Pulte Homes', 
+			city		  : 'Accokeek', 
+			state		  : 'Maryland', 
+			region		  : '', 
+			country		  : 'United States', 
+			postal		  : '20607', 
+			phone		  : '1 (301) 203-5535',
+            company_email : 'email@example.com'
 		}, {
-			label		: 'Work',
-			contact		: 'Bossing Doe', 
-			street		: '15415 Overlea Court', 
-			neighborhood: 'Pulte Homes', 
-			city		: 'Accokeek', 
-			state		: 'Maryland', 
-			region		: '', 
-			country		: 'United States', 
-			postal		: '20607', 
-			phone		: '1 (301) 203-5535'
+            company_name  : 'openovate',
+			label		  : 'Work',
+			contact		  : 'Bossing Doe', 
+			street		  : '15415 Overlea Court', 
+			neighborhood  : 'Pulte Homes', 
+			city		  : 'Accokeek', 
+			state		  : 'Maryland', 
+			region		  : '', 
+			country		  : 'United States', 
+			postal		  : '20607', 
+			phone		  : '1 (301) 203-5535',
+            company_email : 'email@example.com'
 		}]
 	};
 	

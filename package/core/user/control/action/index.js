@@ -14,7 +14,7 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ 		= jQuery;
-	var _api 	= 'http://api.eve.dev:8082/user';
+	var _api 	= 'http://server.eve.dev:8082/user';
 	
 	/* Loader
 	-------------------------------*/
@@ -79,7 +79,7 @@ define(function() {
 		.setHeader(this.header)
 		.setSubheader(this.subheader)
 		.setCrumbs(this.crumbs)
-		.setBody(this.template, this.data);
+		.setBody(this.template, this.data);  
 		
 		callback();
 		
