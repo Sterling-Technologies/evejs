@@ -26,6 +26,12 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
+		//if the section is already created.
+		if($('section.user-list').length) {
+			//don't worry about it
+			return this;
+		}
+		
 		$.sequence()
 			.setScope(this)
 			.then(_setData)
