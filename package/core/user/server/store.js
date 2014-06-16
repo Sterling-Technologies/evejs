@@ -10,12 +10,11 @@ module.exports = function() {
 	var mongoose 	= require('mongoose');
 	
 	var _schema = {
-		name		: String,
-        username    : String,
-		email		: String,
+		name		: { type: String, required: true },
+		email		: { type: String, required: true },
         password    : String,
         birthdate   : Date,
-        gender      : String,
+        gender      : { type: String, enum: ['male', 'female'] },
 		website     : String,
         phone		: [{ label: String, value: String }],
 		address		: [{
@@ -59,42 +58,6 @@ module.exports = function() {
 		active: { type: Boolean, default: true },
 		created: { type: Date, default: Date.now },
 		updated: { type: Date, default: Date.now }
-	};
-	
-	var _sample = {
-		name		: 'John Doe', 
-		email		: 'john@doe.com',
-		phone		: [
-			{ label: 'Home', value: '1 (415) 555-2424' },
-			{ label: 'Work', value: '1 (415) 555-2323' }
-		],
-		address		: [{
-            company_name  : 'openovate',
-			label		  : 'Home',
-			contact		  : 'Jane Doe', 
-			street		  : '15415 Overlea Court', 
-			neighborhood  : 'Pulte Homes', 
-			city		  : 'Accokeek', 
-			state		  : 'Maryland', 
-			region		  : '', 
-			country		  : 'United States', 
-			postal		  : '20607', 
-			phone		  : '1 (301) 203-5535',
-            company_email : 'email@example.com'
-		}, {
-            company_name  : 'openovate',
-			label		  : 'Work',
-			contact		  : 'Bossing Doe', 
-			street		  : '15415 Overlea Court', 
-			neighborhood  : 'Pulte Homes', 
-			city		  : 'Accokeek', 
-			state		  : 'Maryland', 
-			region		  : '', 
-			country		  : 'United States', 
-			postal		  : '20607', 
-			phone		  : '1 (301) 203-5535',
-            company_email : 'email@example.com'
-		}]
 	};
 	
 	/* Loader

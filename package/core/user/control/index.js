@@ -6,6 +6,7 @@ controller
 	controller
 		.path('user'			, controller.path('package') + '/core/user')
 		.path('user/action'		, controller.path('package') + '/core/user/action')
+		.path('user/asset'		, controller.path('package') + '/core/user/asset')
 		.path('user/template'	, controller.path('package') + '/core/user/template');
 })
 //add template helpers

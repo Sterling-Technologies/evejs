@@ -53,7 +53,8 @@ module.exports = (function() {
 				//setup an error response
 				self.response.message = JSON.stringify({ 
 					error: true, 
-					message: error.message });
+					message: error.message,
+					validation: error.errors || [] });
 				
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);

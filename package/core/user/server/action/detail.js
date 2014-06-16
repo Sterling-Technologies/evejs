@@ -44,12 +44,9 @@ module.exports = (function() {
 		
 		var self = this;
 		
-		this.controller
-			.user()
-			.store()
+		this.controller.user().store()
 			.findOne({ _id: this.request.variables[0], active: true })
-			.lean()
-			.exec(function(error, user) {
+			.lean().exec(function(error, user) {
 				//if there are errors
 				if(error) {
 					//setup an error response
