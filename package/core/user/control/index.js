@@ -68,9 +68,12 @@ controller
 	
 	//router -> action
 	var action = 'index';
-	switch(window.location.pathname) {
-		case '/user/create':
+	switch(true) {
+		case window.location.pathname.indexOf('/user/create') === 0:
 			action = 'create';
+			break;
+		case window.location.pathname.indexOf('/user/remove') === 0:
+			action = 'remove';
 			break;
 	}
 	

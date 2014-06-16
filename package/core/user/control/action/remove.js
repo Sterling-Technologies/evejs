@@ -31,14 +31,19 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
+		console.log('call');
 		var url = controller.getServerUrl() + '/user/remove/';
 		var id 	= window.location.pathname.split('/')[3];
 		
 		$.getJSON(url + id, function(response) {
+			//window.history.back();
     		//if error
     		if(response.error) {
+    			controller.addMessage(response.message, 'danger', 'exclamation-circle');
     			return;
-    		}
+			}
+			
+    		controller.addMessage(response.error, 'danger', 'exclamation-circle');
     	});
 		
 		next();

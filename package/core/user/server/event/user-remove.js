@@ -3,7 +3,8 @@ module.exports = function(controller, id) {
 	controller
 	.user()
 	.store()
-	.remove(id, function(error) {
+	.remove(id, function(error, model) {
+		console.log(model);
 		//if there are errors
 		if(error) {
 			//trigger an error
