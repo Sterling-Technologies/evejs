@@ -1,0 +1,102 @@
+<!--START: Company Form-->
+<h4 class="header blue bolder smaller">Company</h4>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company">Company Name</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="Acme Inc." name="company[name]"
+        value="{{user_company}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_job_title">Job Title</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="CEO" name="company[title]"
+        value="{{user_job_title}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_street">Street</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="123 Sesame Street" name="company[street]"
+        value="{{user_company_street}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_city">City</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="White Plains" name="company[city]"
+        value="{{user_company_city}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_state">State/Province</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="New York" name="company[state]"
+        value="{{user_company_state}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_country">Country</label>
+    <div class="col-sm-8"> 
+        <select class="col-xs-12 col-sm-10" name="company[country]">
+            {{#each country}}
+            <option value="{{code}}">{{name}}</option>
+            {{/each}}
+        </select>
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_postal">Postal</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="54545" name="company[postal]"
+        value="{{user_company_postal}}" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_phone">Phone</label>
+    <div class="col-sm-8"> 
+       <input class="col-xs-12 col-sm-12 input-mask-phone eden-field-mask 
+        eden-field-loaded" type="text" value="{{user_company_phone}}" 
+        placeholder="(415) 555-2424" name="company[phone]" />
+    </div>
+</div>
+
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="user_company_email">Company Email</label>
+    <div class="col-sm-8"> 
+        <input class="col-xs-12 col-sm-10" type="text" 
+        placeholder="info@acme.com" name="company[email]"
+        value="{{user_company_email}}" />
+    </div>
+</div>
+<!-- END: Company Form --> 

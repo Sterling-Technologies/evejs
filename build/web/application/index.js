@@ -15,6 +15,10 @@ jQuery(function($) {
 	-------------------------------*/
 	.then(controller.setPaths)
 	
+	/* Set Settings
+	-------------------------------*/
+	.then(controller.setSettings)
+	
 	/* Trigger Init Event
 	-------------------------------*/
 	.then(controller.sequenceTrigger, 'config')

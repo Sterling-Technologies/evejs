@@ -3,8 +3,6 @@ var controller = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.cdn		= 'http://web.eve.dev';
-	
 	/* Private Properties
 	-------------------------------*/
 	var $			= jQuery;
@@ -26,40 +24,6 @@ var controller = function() {
 	/* Public Methods
 	-------------------------------*/
 	/**
-	 * Alters a function to bind 
-	 * a scope and add extra arguments
-	 *
-	 * @param function*
-	 * @param object* scope
-	 * @param [mixed[,mixed..]]
-	 * @return function
-	 */
-	public.alter = function(callback, scope) {
-		//get arguments
-		var self = this, args = public.args();
-		
-		//take the callback and the scope
-		//out of the arguments
-		callback 	= args.shift(),
-		scope 		= args.shift();
-		
-		//we are returning a function
-		return function() {
-			//get the active arguments
-			var i, original = public.args();
-			
-			//add the extra arguments to the
-			//original list of arguments
-			for(i = 0; i < args.length; i++) {
-				original.push(args[i]);
-			}
-			
-			//now call the intended function with bounded arguments
-			return callback.apply(scope || this, original);
-		};
-	};
-	
-	/**
 	 * Returns an array form of arguments
 	 *
 	 * @return array
@@ -77,6 +41,30 @@ var controller = function() {
 	public.config = function(key, callback) {
 		require([this.path('config') + '/' + key + '.js'], callback);
 		return this;
+	};
+	
+	/**
+	 * Returns formatted server 
+	 * url from config settings
+	 *
+	 * @return string
+	 */
+	public.getServerUrl = function() {
+		return this.settings.server.protocol 
+		+ '://' + this.settings.server.host 
+		+ ':'	+ this.settings.server.port;
+	};
+	
+	/**
+	 * Returns formatted server 
+	 * url from config settings
+	 *
+	 * @return string
+	 */
+	public.getSocketUrl = function() {
+		return this.settings.socket.protocol 
+		+ '://' + this.settings.socket.host 
+		+ ':'	+ this.settings.socket.port;
 	};
 	
 	/**
@@ -213,7 +201,7 @@ var controller = function() {
 	 */
 	public.setLoader = function() {
 		require.config({
-			paths: { text: this.cdn + '/scripts/text' },
+			paths: { text: '/scripts/text' },
 			config: {
 				text: {
 					useXhr: function (url, protocol, hostname, port) {
@@ -239,11 +227,10 @@ var controller = function() {
 	 * @return this
 	 */
 	public.setPaths = function() {
-		this.path('cdn'		, this.cdn)
-			.path('root'	, this.cdn + '/application')
-			.path('config'	, this.cdn + '/application/config')
-			.path('template', this.cdn + '/application/template')
-			.path('package'	, this.cdn + '/application/package');
+		this.path('root'	, '/application')
+			.path('config'	, '/application/config')
+			.path('template', '/application/template')
+			.path('package'	, '/application/package');
 		
 		//if sequence
 		if(typeof arguments[0] == 'function') {
@@ -251,6 +238,26 @@ var controller = function() {
 		}
 		
 		return this;
+	};
+	
+	/**
+	 * Set settings
+	 *
+	 * @return this
+	 */
+	public.setSettings = function() {
+		var args = this.args();
+		
+		//get settings
+		return this.config('settings', function(settings) {
+			this.settings = settings;
+			
+			//if sequence
+			if(typeof args[0] == 'function') {
+				//call next
+				args[0]();
+			}
+		}.bind(this));
 	};
 	
 	/**
@@ -338,24 +345,14 @@ var controller = function() {
 	/**
 	 * Sets page body
 	 *
-	 * @param array
+	 * @param string
 	 * @return this
 	 */
-	public.setBody = function(template, variables) {
-		var self = this, templates = ['text!' + template];
-		
-		variables 	= variables || {};
-		
-		//bulk load the templates
-		require(templates, function(template) {
-			//render the body
-			$('#body').html(Handlebars.compile(template)(variables));
+	public.setBody = function(html) {
+		$('#body').html(html);
 			
-			//trigger body event
-			self.trigger('body');
-		});
-		
-		return this;
+		//trigger body event
+		return this.trigger('body');
 	};
 	
 	/**

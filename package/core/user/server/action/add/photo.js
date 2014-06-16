@@ -42,9 +42,9 @@ module.exports = (function() {
 			return;
 		}
 
-		var query = this.controller.eden
-			.load('string', this.request.message)
-			.queryToHash().get();
+		var self = this, query = this
+			.controller.eden.load('string')
+			.queryToHash(this.request.message);
 
 		//if no query
 		if(JSON.stringify(query) == '{}') {
@@ -59,7 +59,6 @@ module.exports = (function() {
 			return;
 		}
 
-		var self = this;
 		//TRIGGER
 		this.controller
 			//when there is an error

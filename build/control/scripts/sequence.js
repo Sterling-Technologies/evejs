@@ -1,32 +1,7 @@
-$.extend({
+jQuery.extend({
 	sequence: function() {
 		var _args = function() {
 			return Array.prototype.slice.apply(arguments.callee.caller.arguments);
-		};
-		
-		var _alter = function(callback, scope) {
-			//get arguments
-			var self = this, args = _args();
-			
-			//take the callback and the scope
-			//out of the arguments
-			callback 	= args.shift(),
-			scope 		= args.shift();
-			
-			//we are returning a function
-			return function() {
-				//get the active arguments
-				var i, original = _args();
-				
-				//add the extra arguments to the
-				//original list of arguments
-				for(i = 0; i < args.length; i++) {
-					original.push(args[i]);
-				}
-				
-				//now call the intended function with bounded arguments
-				return callback.apply(scope || this, original);
-			};
 		};
 		
 		var _next = function() {
@@ -44,7 +19,7 @@ $.extend({
 				args.push(extra[i]);
 			}
 			
-			args.push(_alter(arguments.callee, this));
+			args.push(arguments.callee.bind(this));
 			
 			//async call
 			callback.apply(this.scope, args);

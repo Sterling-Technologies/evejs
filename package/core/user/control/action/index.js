@@ -13,8 +13,7 @@ define(function() {
 	
 	/* Private Properties
 	-------------------------------*/
-	var $ 		= jQuery;
-	var _api 	= 'http://server.eve.dev:8082/user';
+	var $ = jQuery;
 	
 	/* Loader
 	-------------------------------*/
@@ -27,36 +26,44 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
-		$.sequence().setScope(this)
-		.then(this.getData)
-		.then(this.output);
+		$.sequence()
+			.setScope(this)
+			.then(_setData)
+			.then(_output)
+			.then(_listen);
 		
 		return this;
 	};
 	
-	public.getData = function(callback) {
-		var self = this;
-		$.getJSON(_api, function(response) {
+	/* Private Methods
+	-------------------------------*/
+	var _setData = function(next) {
+		var url = controller.getServerUrl() + '/user';
+		
+		$.getJSON(url, function(response) {
 			var i, rows = [];
 			
 			//if error
 			if(response.error) {
 				return;
 			}
-			
-			//prepare template variables
+
+			//loop through data
 			for(i in response.results) {
 				var updated = new Date(response.results[i].updated);
-				var format = controller.timeToDate(updated.getTime(), true, true);
-				
+				var format = $.timeToDate(updated.getTime(), true, true);
+                
+                //add it to row
 				rows.push({
-					name: response.results[i].name,
-					email: response.results[i].email, 
-					active: response.results[i].active,
+					id              : response.results[i]._id,
+					name            : response.results[i].name,
+					email           : response.results[i].email, 
+					active          : response.results[i].active,
 					updated: format });
-			}
+                }
 			
-			self.data = {
+			//TODO: default data for now.
+			this.data = {
 				showing : 'Now Showing',
 				rows	: rows,
 				action	: 'active',
@@ -66,28 +73,38 @@ define(function() {
 				trash	: 4,
 				range	: 15
 			};
+            
+			next();
+		}.bind(this));
+	};
+
+	var _output = function(next) {
+		//bulk load the templates
+		require(['text!' + this.template], function(template) {
+			//render the body
+			var body = Handlebars.compile(template)(this.data);
 			
-			callback();
+			controller
+				.setTitle(this.title)
+				.setHeader(this.header)
+				.setSubheader(this.subheader)
+				.setCrumbs(this.crumbs)
+				.setBody(body);
+			
+			next();
+		}.bind(this));
+	};
+	
+	var _listen = function(next) {
+		//listen to remove
+		$('section.user-list a.remove').click(function(e) {
+			e.preventDefault();
+			$(this).parent().parent().remove();
 		});
 		
-		return this;
+		next();
 	};
 	
-	public.output = function(callback) {
-		controller
-		.setTitle(this.title)
-		.setHeader(this.header)
-		.setSubheader(this.subheader)
-		.setCrumbs(this.crumbs)
-		.setBody(this.template, this.data);  
-		
-		callback();
-		
-		return this;
-	};
-	
-	/* Private Methods
-	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
 	return c.load(); 

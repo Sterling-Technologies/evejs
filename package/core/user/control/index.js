@@ -20,7 +20,7 @@ controller
 		//if we have a query string
 		if(queryString && queryString.length) {
 			//make it into an object
-			query = controller.queryToHash(queryString);
+			query = jQuery.queryToHash(queryString);
 			//remember the current page
 			current = query.page || 1;
 		}
@@ -40,7 +40,7 @@ controller
 			html += options.fn({
 				page	: i + 1,
 				active	: current == (i + 1),
-				query	: controller.hashToQuery(query) });
+				query	: jQuery.hashToQuery(query) });
 		}
 		  
 		return html;

@@ -42,9 +42,9 @@ module.exports = (function() {
 			return;
 		}
 		
-		var self = this, query = this.controller.eden
-			.load('string', this.request.message)
-			.queryToHash().get();
+		var self = this, query = this
+			.controller.eden.load('string')
+			.queryToHash(this.request.message);
 		
 		//TRIGGER
 		this.controller

@@ -3,22 +3,14 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'Create User';
-	public.header 		= 'Create User';
-	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ 
-		path: '/user',
-		icon: 'user', 
-		label: 'Users' 
-	}, {  label: 'Create User' }];
+	public.title 		= 'Create Users';
 	
 	public.data 	= {};
 	public.template = controller.path('user/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
-	var $ 		= jQuery;
-	var _api 	= 'http://api.lbc.dev:8082/user';
+	var $ = jQuery;
 	
 	/* Loader
 	-------------------------------*/
@@ -31,28 +23,34 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
-		$.sequence().setScope(this)
-		.then(this.getData)
-		.then(this.output);
-		
-		return this;
-	};
-	
-	public.getData = function(callback) {
-		callback();
-		return this;
-	};
-	
-	public.output = function(callback) {
-		controller
-		.setTitle(this.title)
-		.setBody(this.template, this.data);
+		$.sequence()
+			.setScope(this)
+			.then(_setData)
+			.then(_output);
 		
 		return this;
 	};
 	
 	/* Private Methods
 	-------------------------------*/
+	var _setData = function(next) {
+		next();
+		return this;
+	};
+	
+	var _output = function(next) {
+		//bulk load the templates
+		require(['text!' + this.template], function(template) {
+			var body = Handlebars.compile(template)(this.data);
+			
+			controller
+				.setTitle(this.title)
+				.setBody(body);
+			
+			next();
+		}.bind(this));
+	};
+	
 	/* Adaptor
 	-------------------------------*/
 	return c.load(); 

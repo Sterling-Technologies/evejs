@@ -4,17 +4,13 @@ define(function() {
 	/* Public Properties
 	-------------------------------*/
 	public.title 		= 'Users';
-	public.header 		= 'Users';
-	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ icon: 'user', label: 'Users' }];
 	
 	public.data 	= {};
 	public.template = controller.path('user/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
-	var $ 		= jQuery;
-	var _api 	= 'http://server.eve.dev:8082/user';
+	var $ = jQuery;
 	
 	/* Loader
 	-------------------------------*/
@@ -27,16 +23,20 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
-		$.sequence().setScope(this)
-		.then(this.getData)
-		.then(this.output);
+		$.sequence()
+			.setScope(this)
+			.then(_setData)
+			.then(_output);
 		
 		return this;
 	};
 	
-	public.getData = function(callback) {
-		var self = this;
-		$.getJSON(_api, function(response) {
+	/* Private Methods
+	-------------------------------*/
+	var _setData = function(next) {
+		var url = controller.getServerUrl() + '/user';
+		
+		$.getJSON(url, function(response) {
 			var i, row, list = [];
 			
 			//if error
@@ -80,26 +80,27 @@ define(function() {
 				list.push(row);
 			}
 			
-			self.data.list = list;
+			this.data.list = list;
 			
-			callback();
-		});
+			next();
+		}.bind(this));
 		
 		return this;
 	};
 	
-	public.output = function(callback) {
-		controller
-			.setTitle(this.title)
-			.setBody(this.template, this.data);
-		
-		callback();
-		
-		return this;
+	var _output = function(next) {
+		//bulk load the templates
+		require(['text!' + this.template], function(template) {
+			var body = Handlebars.compile(template)(this.data);
+			
+			controller
+				.setTitle(this.title)
+				.setBody(body);
+			
+			next();
+		}.bind(this));
 	};
 	
-	/* Private Methods
-	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
 	return c.load(); 

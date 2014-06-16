@@ -137,7 +137,7 @@ module.exports = function() {
 	 * @return this
 	 */
 	public.startServer = function() {
-		var self = this, settings = this.config('settings').api;
+		var self = this, settings = this.config('settings').server;
 		
 		this.server = this.eden.load('server')
 			.setHost(settings.host)
