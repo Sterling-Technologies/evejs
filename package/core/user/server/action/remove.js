@@ -58,10 +58,7 @@ module.exports = (function() {
 			//when it is successfull
 			.once('user-remove-success', function(row) {
 				//set up a success response
-				self.response.message = JSON.stringify({ 
-					error: false,  
-					results: row
-				});
+				self.response.message = JSON.stringify({ error: false, results: row });
 				
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);

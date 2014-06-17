@@ -3,6 +3,24 @@ controller
 .listen('init', function() {
 	//add some useful methods to jQuery
 	jQuery.extend({
+		getUrlQuery: function(hash, addSearch) {
+			var query = window.location.href.split('?')[1];
+			
+			if(hash === false) {
+				if(query && addSearch) {
+					return '?' + query;
+				}
+				
+				return query || '';
+			}
+			
+			if(!query) {
+				return {};
+			}
+			
+			return this.queryToHash(query);
+		},
+		
 		/**
 		 * Converts hash to query string
 		 *
@@ -10,11 +28,9 @@ controller
 		 */
 		hashToQuery: function(hash, prefix) {
 			var key, value, keyValue, query = [];
+			
 			for(key in hash) {
 				value = hash[key];
-				if(!hash.hasOwnProperty(key)) {
-					continue;
-				}
 				
 				if(prefix) {
 					key = prefix + '[' + key + ']';
@@ -22,14 +38,22 @@ controller
 				
 				keyValue = encodeURIComponent(key) + '=' + encodeURIComponent(value);
 				
-				if(typeof value == 'object') {
+				if(value && typeof value == 'object') {
 					keyValue = arguments.callee(value, key);
+				} else if(value == null) {
+					keyValue = encodeURIComponent(key);
 				}
 				
 				query.push(keyValue);
 			}
 			
-			return query.join('&');
+			query = query.join('&');
+			
+			if(query.indexOf('&') === 0) {
+				query = query.substr(1);
+			}
+			
+			return query;
 		},
 		
 		/**
@@ -283,5 +307,43 @@ controller
 			
 			return this.timeToDate(time);
 		}
+	});
+})
+//add template helpers
+.listen('engine', function() {
+	//set pagination
+	Handlebars.registerHelper('pagination', function (total, range, options) {
+		//get current query
+		var query 		= {},
+			current		= 1,
+			queryString = window.location.href.split('?')[1];
+		
+		//if we have a query string
+		if(queryString && queryString.length) {
+			//make it into an object
+			query = jQuery.queryToHash(queryString);
+			//remember the current page
+			current = query.page || 1;
+		}
+		
+		//how many pages?
+		var pages = Math.ceil(total / range);
+		
+		//if there is one or less pages
+		if(pages < 2) {
+			//there is no need for pagination
+			return null;
+		}
+		
+		var html = '';
+		for(var i = 0; i < pages; i++) {
+			query.page = i + 1;
+			html += options.fn({
+				page	: i + 1,
+				active	: current == (i + 1),
+				query	: jQuery.hashToQuery(query) });
+		}
+		  
+		return html;
 	});
 });

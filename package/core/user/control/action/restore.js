@@ -30,7 +30,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/user/remove/';
+		var url = controller.getServerUrl() + '/user/restore/';
 		var id 	= window.location.pathname.split('/')[3];
 		
 		$.getJSON(url + id, function(response) {
@@ -38,7 +38,7 @@ define(function() {
     		if(response.error) {
     			controller.addMessage(response.message, 'danger', 'exclamation-sign');
 			} else {
-				controller.addMessage(response.results.name + ' has been removed!', 'success', 'check');
+				controller.addMessage(response.results.name + ' has been restored!', 'success', 'check');
 			}
 			
 			window.history.back();

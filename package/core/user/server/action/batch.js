@@ -25,25 +25,40 @@ module.exports = (function() {
         this.controller = controller;
         this.request    = request;
         this.response   = response;
+		this.results	= [];
     };
      
     /* Public Methods
     -------------------------------*/
     public.render = function() {
-        //set batch to true
+        if(!this.request.message.length) {
+			//setup an error response
+			this.response.message = JSON.stringify({ 
+				error: true, 
+				message: 'No request data found.'});
+			
+			//trigger that a response has been made
+			this.controller.trigger('user-action-response', this.request, this.response);
+			
+			return this;
+		}
+		
+		//set batch to true
         this.response.batch = true;
-
-        //get the batch of requests
+		
+		//get the batch of requests
         var batch = JSON.parse(this.request.message);
 		
 		//NOTE: Should Sequence
 		var self = this, sequence = this.controller.eden.load('sequence');
 		
 		//NOTE: Should sparse out request
-		var request = Object.create(this.request);
+		
         //Loop the all the batch request
-        for(var action, i = 0; i < batch.length; i++) {
+        for(var request, action, i = 0; i < batch.length; i++) {
 			//create default request object;
+			request 			= Object.create(this.request);
+			
 			request.url 		= batch[i].url || '/user';
 			request.path 		= this.controller.eden.load('string').toPath(request.url);
 			request.pathArray	= this.controller.eden.load('string').pathToArray(request.url);
@@ -104,12 +119,22 @@ module.exports = (function() {
 					action 	 			= null;
 					break;
             }
-			
+						
 			//queue for sequence
 			sequence.then((function(virtualAction, virtualRequest) {
 				return function(next) {
 					if(!virtualAction) {
 						self.results.push({ error: true, message: 'No Action Found' });
+						
+						//If results is equal to request query
+						if(self.results.length == JSON.parse(self.request.message).length) {
+							//All batch results will be JSON stringify
+							self.response.message = JSON.stringify({ batch: self.results });
+				
+							//Been trigger to the user action
+							self.controller.server.trigger('response', self.request, self.response);
+						}
+						
 						next();
 						return;
 					}
@@ -118,7 +143,7 @@ module.exports = (function() {
         			self.controller.once('user-action-response', function(request, response) {
 						//All results will be push to the array results
 						this.results.push(JSON.parse(response.message));
-				
+						
 						//If results is equal to request query
 						if(this.results.length == JSON.parse(this.request.message).length) {
 							//All batch results will be JSON stringify
@@ -135,6 +160,8 @@ module.exports = (function() {
 				};
 			})(action, request)); 
         }
+		
+		return this;
     };
      
     /* Private Methods

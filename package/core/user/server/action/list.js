@@ -30,22 +30,60 @@ module.exports = (function() {
     -------------------------------*/
 	public.render = function() {
 		//figure out the query and stuffs
-		var query 	= this.request.query.filter || {},
-			range 	= this.request.query.range 	|| 50,
-			start 	= this.request.query.start 	|| 0,
-			order 	= this.request.query.order 	|| {},
-			count	= this.request.query.count 	|| 0;
+		var query 	= this.request.query.filter 	|| {},
+			range 	= this.request.query.range 		|| 50,
+			start 	= this.request.query.start 		|| 0,
+			order 	= this.request.query.order 		|| {},
+			count	= this.request.query.count 		|| 0,
+			keyword	= this.request.query.keyword 	|| null;
 		
 		//fix query
-		query.active = query.active != 0;
+		if(query.active != -1) {
+			query.active = query.active != 0;
+		}
 		
-		//if null value, just test if it exists
+		var not, or = [];
+		
+		
+		//keyword search
+		if(keyword) {
+			or.push([
+				{ name	: new RegExp(keyword, 'ig') },
+				{ username: new RegExp(keyword, 'ig') },
+				{ email	: new RegExp(keyword, 'ig') } ]);
+		}
+		
+		
 		for(var key in query) {
+			//if prefixed with !, just test if it does not exist
+			//SECRET SAUCE:
+			//{ active: true, $or: [ {password: { $exists: false }}, {password: { $type: 10 }}, {password: ""} ] }
+			if(key.indexOf('!') === 0) {
+				not = [ {}, {}, {} ];
+				not[0][key.substr(1)] = { $exists: false };
+				not[1][key.substr(1)] = { $type: 10 };
+				not[2][key.substr(1)] = '';
+				
+				or.push(not);
+				continue;
+			}
+			
 			if(query[key] !== null) {
 				continue;
 			}
 			
+			//if null value, just test if it exists
+			
 			query[key] = { $exists: true };
+		}
+		
+		if(or.length == 1) {
+			query['$or'] = or[0];
+		} else if(or.length) {
+			query['$and'] = [];
+			for(var i = 0; i < or.length; i++) {
+				query['$and'].push({ '$or': or[i] });
+			}
 		}
 		
 		//remember the scope and load up the data store

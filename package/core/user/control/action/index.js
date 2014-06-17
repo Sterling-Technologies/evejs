@@ -7,9 +7,13 @@ define(function() {
 	public.header 		= 'Users';
 	public.subheader 	= 'CRM';
 	public.crumbs 		= [{ icon: 'user', label: 'Users' }];
+	public.data 		= {};
 	
-	public.data 	= {};
-	public.template = controller.path('user/template') + '/index.html';
+	public.start		= 0;
+	public.page 		= 1;
+	public.range 		= 10;
+	
+	public.template 	= controller.path('user/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -26,12 +30,6 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
-		//if the section is already created.
-		if($('section.user-list').length) {
-			//don't worry about it
-			return this;
-		}
-		
 		$.sequence()
 			.setScope(this)
 			.then(_setData)
@@ -44,41 +42,64 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _setData = function(next) {
-		var url = controller.getServerUrl() + '/user';
+		//use a batch call
+		var batch = [], query = $.getUrlQuery();
 		
-		$.getJSON(url, function(response) {
+		//1. get the list
+		batch.push({ url: _getListRequest.call(this, query) });
+		
+		//2. get the active count
+		batch.push({ url: _getActiveCountRequest.call(this, query) });
+		
+		//3. get the guest count
+		batch.push({ url: _getGuestCountRequest.call(this, query) });
+		
+		//4. get the trash count
+		batch.push({ url: _getTrashCountRequest.call(this, query) });
+		
+		//5. get all count
+		batch.push({ url: _getAllCountRequest.call(this, query) });
+		
+		$.post(
+			controller.getServerUrl() + '/user/batch', 
+			JSON.stringify(batch), function(response) { 
+			response = JSON.parse(response);
+			
 			var i, rows = [];
 			
-			//if error
-			if(response.error) {
-				return;
-			}
-
 			//loop through data
-			for(i in response.results) {
-				var updated = new Date(response.results[i].updated);
+			for(i in response.batch[0].results) {
+				var updated = new Date(response.batch[0].results[i].updated);
 				var format = $.timeToDate(updated.getTime(), true, true);
                 
                 //add it to row
 				rows.push({
-					id              : response.results[i]._id,
-					name            : response.results[i].name,
-					email           : response.results[i].email, 
-					active          : response.results[i].active,
-					updated: format });
-                }
+					id      : response.batch[0].results[i]._id,
+					name    : response.batch[0].results[i].name,
+					email   : response.batch[0].results[i].email, 
+					active	: response.batch[0].results[i].active,
+					updated	: format });
+            }
 			
-			//TODO: default data for now.
+			var showing = query.mode || 'active';
+			showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
+			
+			//1. List
+			//2. Active Count
+			//3. Guest Count
+			//4. Trash Count
+			//5. All Count
+			
 			this.data = {
-				showing : 'Now Showing',
+				showing : showing,
 				rows	: rows,
-				action	: 'active',
-				all		: 76,
-				active	: 24,
-				guests	: 12,
-				trash	: 4,
-				range	: 15
-			};
+				mode	: query.mode || 'active',
+				keyword	: query.keyword || null,
+				active	: response.batch[1].results,
+				guests	: response.batch[2].results,
+				trash	: response.batch[3].results,
+				all		: response.batch[4].results,
+				range	: this.range };
             
 			next();
 		}.bind(this));
@@ -102,13 +123,146 @@ define(function() {
 	};
 	
 	var _listen = function(next) {
-		//listen to remove
-		$('section.user-list a.remove').click(function(e) {
+		//listen to remove restore
+		$('section.user-list a.remove, section.user-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
+		//listen for bulk action
+		$('section.user-list form.bulk-form').submit(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			var data = $.queryToHash($(this).serialize());
+			
+			//if nothing was checked
+			if(!data.action || !data.id || !data.id.length) {
+				//do nothing
+				return;
+			}
+			
+			//what is the url base
+			var url =  '/user/' + data.action + '/';
+			
+			//prepare the batch query
+			for(var batch = [], i = 0; i < data.id.length; i++) {
+				batch.push({ url: url + data.id[i] });
+			}
+			
+			//call the batch remove
+			$.post(
+			controller.getServerUrl() + '/user/batch', 
+			JSON.stringify(batch), function(response) { 
+				response = JSON.parse(response);
+				for(var errors = false, i = 0; i < response.length; i++) {
+					if(response[i].error && response[i].message) {
+						errors = true;
+						controller.addMessage(response[i].message, 'danger', 'exclamation-sign');
+					}
+				}
+				
+				if(!errors) {
+					window.history.pushState({}, '', window.location.href);
+					controller.addMessage('Bulk Action ' + data.action + ' successful!', 'success', 'check');
+				}
+			});
+		});
+		
 		next();
+	};
+	
+	var _getListRequest = function(request) {
+		var query = {};
+		
+		query.filter 	= request.filter 	|| {};
+		query.range		= request.range 	|| this.range;
+		query.start 	= request.start 	|| this.start;
+		
+		if(request.page) {
+			query.start = (request.page - 1) * this.range;
+		}
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		switch(request.mode || 'active') {
+			case 'active':
+				query.filter.password = null;
+				break;
+			case 'guest':
+				query.filter['!password'] = null;
+				break;
+			case 'trash':
+				query.filter.active = 0;
+				break;
+			case 'all':
+				query.filter.active = -1;
+				break;
+		}
+		
+		return '/user/list?' + $.hashToQuery(query);
+	};
+	
+	var _getActiveCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+	
+		query.count = 1;
+		query.filter.password = null;
+		
+		return '/user/list?' + $.hashToQuery(query);
+	};
+	
+	var _getGuestCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		query.count = 1;
+		query.filter['!password'] = null;
+		
+		return '/user/list?' + $.hashToQuery(query);
+	};
+	
+	var _getTrashCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		query.count = 1;
+		query.filter.active = 0;
+		
+		return '/user/list?' + $.hashToQuery(query);
+	};
+	
+	var _getAllCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		query.count = 1;
+		query.filter.active = -1;
+		
+		return '/user/list?' + $.hashToQuery(query);
 	};
 	
 	/* Adaptor

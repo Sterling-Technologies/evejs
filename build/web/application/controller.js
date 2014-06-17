@@ -419,15 +419,28 @@ var controller = function() {
 	
 	var _hijackForms = function() {
 		//listen to form submits
-		$(document.body).on('submit', 'form', function(e) {
+		$(document).on('submit', 'form', function(e) {
 			//if the action is in the same domain
-			if(this.action.indexOf(window.location.origin) === 0) {
+			if(!$(this).attr('action') || $(this).attr('action').indexOf(window.location.origin) === 0) {
 				//stop it
 				e.preventDefault();
+				
+				var url = $(this).attr('action') || window.location.href;
+				
+				if(!$(this).attr('method') || $(this).attr('method').toUpperCase() == 'GET') {
+					//manually form the HREF
+					//if there is a ?
+					if(url.indexOf('?') != -1) {
+						url = url.split('?')[0];
+					} 
+					
+					url += '?' + $(this).serialize();
+				}
+				
 				//push the state
-				window.history.pushState({}, '', this.action);
+				window.history.pushState({}, '', url);
 			}
-		})
+		});
 	};
 	
 	/* Adaptor
