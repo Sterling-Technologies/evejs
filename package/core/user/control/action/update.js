@@ -5,8 +5,8 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Create User';
-    public.header       = 'Create User';
+    public.title        = 'Updating {USER}';
+    public.header       = 'Updating {USER}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -52,8 +52,8 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _setData = function(next) {
-		this.data.mode 		= 'create';
-		this.data.url 		= window.location.href.split('?')[0];
+		this.data.mode 		= 'update';
+		this.data.url 		= window.location.pathname;
 		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
@@ -64,7 +64,7 @@ define(function() {
 			
 			if(!_valid.call(this)) {			
 				//display message status
-				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+				controller.notify('Error', 'There was an error in the form.', 'error');
 				next();
 				
 				return;
@@ -84,6 +84,22 @@ define(function() {
 			var url = controller.getServerUrl() + '/user/detail/'+id;
 			
 			$.getJSON(url, function(response) {
+				
+				//format the birth to the HTML5 date format
+				if(response.results.birthdate 
+				&& (new Date(response.results.birthdate)).getTime() > 0) {
+					//convert date format
+					var birth 	= new Date(response.results.birthdate);
+					
+					var year 	= birth.getFullYear(),
+						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
+						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
+					
+					response.results.birthdate = [year, month, day].join('-');
+				} else {
+					response.results.birthdate = null;
+				}
+				
 				this.data.user = response.results;
 				next();
 			}.bind(this));
@@ -135,8 +151,8 @@ define(function() {
 			var body = Handlebars.compile(form)(this.data);
 			
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
@@ -207,6 +223,10 @@ define(function() {
 		//don't store the confirm
 		delete this.data.user.confirm;
 		
+		if(this.data.user.birthdate) {
+			this.data.user.birthdate += 'T00:00:00Z';
+		}
+		
 		//save data to database
 		$.post(url, this.data.user, function(response) {
 			response = JSON.parse(response);
@@ -214,7 +234,7 @@ define(function() {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.addMessage('User successfully created!', 'success', 'check')
+					.notify('Success', 'User successfully created!', 'success')
 					//go to listing
 					.redirect('/user');
 				
@@ -225,7 +245,7 @@ define(function() {
 			this.data.errors = response.validation || {};
 			
 			//display message status
-			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+			controller.notify('Error', 'There was an error in the form.', 'error');
 			
 			next();
 	   }.bind(this));

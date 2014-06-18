@@ -53,7 +53,7 @@ define(function() {
     -------------------------------*/
     var _setData = function(next) {
 		this.data.mode 		= 'create';
-		this.data.url 		= window.location.href.split('?')[0];
+		this.data.url 		= window.location.pathname;
 		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
@@ -64,7 +64,7 @@ define(function() {
 			
 			if(!_valid.call(this)) {			
 				//display message status
-				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+				controller.notify('Error', 'There was an error in the form.', 'error');
 				next();
 				
 				return;
@@ -198,7 +198,7 @@ define(function() {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.addMessage('User successfully created!', 'success', 'check')
+					.notify('Success', 'User successfully created!', 'success')
 					//go to listing
 					.redirect('/user');
 				
@@ -209,7 +209,7 @@ define(function() {
 			this.data.errors = response.validation || {};
 			
 			//display message status
-			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+			controller.notify('Error', 'There was an error in the form.', 'error');
 			
 			next();
 	   }.bind(this));

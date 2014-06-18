@@ -36,9 +36,9 @@ define(function() {
 		$.getJSON(url + id, function(response) {
     		//if error
     		if(response.error) {
-    			controller.addMessage(response.message, 'danger', 'exclamation-sign');
+				controller.notify('Error', response.message, 'error');
 			} else {
-				controller.addMessage(response.results.name + ' has been restored!', 'success', 'check');
+				controller.notify('Success', response.results.name + ' has been restored!', 'success');
 			}
 			
 			window.history.back();

@@ -17,7 +17,7 @@ module.exports = function() {
         birthdate   : Date,
         gender      : { type: String, enum: ['male', 'female', null, ''] },
 		website     : String,
-        phone		: [{ label: String, value: String }],
+        phone		: String,
 		address		: [{
 			label		    : String,
 			contact		    : String, 

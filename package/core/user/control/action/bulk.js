@@ -33,7 +33,7 @@ define(function() {
 		var post = controller.getPost();
 		
 		if(!post || !post.length) {
-			controller.addMessage('No bulk action chosen.', 'danger', 'exclamation-sign');
+			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
@@ -43,7 +43,7 @@ define(function() {
 		
 		//if nothing was checked
 		if(!post.action) {
-			controller.addMessage('No bulk action chosen.', 'danger', 'exclamation-sign');
+			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
@@ -52,7 +52,7 @@ define(function() {
 		
 		//if nothing was checked
 		if(!post.id || !post.id.length) {
-			controller.addMessage('No items were chosen.', 'danger', 'exclamation-sign');
+			controller.notify('Error', 'No items were chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
@@ -74,12 +74,12 @@ define(function() {
 			for(var errors = false, i = 0; i < response.length; i++) {
 				if(response[i].error && response[i].message) {
 					errors = true;
-					controller.addMessage(response[i].message, 'danger', 'exclamation-sign');
+					controller.notify('Error', response[i].message, 'error');
 				}
 			}
 			
 			if(!errors) {
-				controller.addMessage('Bulk Action ' + post.action + ' successful!', 'success', 'check');
+				controller.notify('Success', 'Bulk Action ' + post.action + ' successful!', 'success');
 			}
 			
 			window.history.back();

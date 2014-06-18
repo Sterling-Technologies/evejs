@@ -183,7 +183,8 @@ var controller = function() {
 				//for each link in the items
 				.find('a').each(function() {
 					//if the url starts with whats in the link
-					if(window.location.href.indexOf(this.href) === 0) {
+					if(window.location.href.indexOf(this.href) === 0
+					|| window.location.pathname.indexOf(this.href) === 0) {
 						//set the item active
 						$(this).parent('li').addClass('active');
 					}
@@ -342,6 +343,12 @@ var controller = function() {
 				case operator == '&&' 	&& (value1 && value2):
 				case operator == 'or' 	&& value1 || value2:
 				case operator == '||' 	&& (value1 || value2):
+				
+				case operator == 'startsWith' 
+				&& value1.indexOf(value2) === 0:
+				
+				case operator == 'endsWith' 
+				&& value1.indexOf(value2) === (value1.length - value2.length):
 					valid = true;
 					break;
 			}
@@ -415,6 +422,23 @@ var controller = function() {
 				icon	: icon
 			}));
 		});
+		
+		return this;
+	};
+	
+	/**
+	 * Adds a popup notification
+	 * less intrusive than message
+	 *
+	 * @param string
+	 * @param string
+	 * @param string
+	 * @return this
+	 */
+	public.notify = function(title, message, type) {
+		$.extend($.gritter.options, { position: 'bottom-right' });
+		
+		$.gritter.add({ title: title, text: message, class_name: 'gritter-'+type });
 		
 		return this;
 	};

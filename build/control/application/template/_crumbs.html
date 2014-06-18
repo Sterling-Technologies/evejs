@@ -1,12 +1,12 @@
 <ul class="breadcrumb">
     {{#crumbs}}
-    <li{{#active}} class="active"{{/active}}>
-        {{#icon}}
+    <li{{#if active}} class="active"{{/if}}>
+        {{#if icon}}
         <i class="icon-{{icon}}"></i>
-        {{/icon}}
-        {{#path}}
+        {{/if}}
+        {{#if path}}
         <a href="{{path}}">{{label}}</a>
-        {{/path}}
+        {{/if}}
         {{^path}}
         {{label}}
         {{/path}}
