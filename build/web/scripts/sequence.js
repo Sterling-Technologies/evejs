@@ -22,7 +22,7 @@ jQuery.extend({
 			args.push(arguments.callee.bind(this));
 			
 			//async call
-			callback.apply(this.scope, args);
+			callback.apply(this.scope || callback, args);
 		};
 		
 		return {
