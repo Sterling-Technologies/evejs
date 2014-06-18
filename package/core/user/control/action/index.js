@@ -11,7 +11,7 @@ define(function() {
 	
 	public.start		= 0;
 	public.page 		= 1;
-	public.range 		= 10;
+	public.range 		= 25;
 	
 	public.template 	= controller.path('user/template') + '/index.html';
 	

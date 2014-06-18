@@ -12,30 +12,16 @@ define(function() {
         icon: 'user', 
         label: 'Users' 
     }, {  label: 'Create User' }];
-    
-	public.tabs = [{
-		item 		: {
-			icon 	: 'example.icon',
-			label 	: 'example label'
-		}
-	}];
-	
-	public.errors = {
-		user_name       : '',
-		user_slug       : '',
-		user_email      : '',
-		user_password   : '',
-		user_confirm    : ''
-	};
 	
     public.data     = {};
+	public.errors 	= {};
+	
     public.template = controller.path('user/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
-    var $       	= jQuery;
-    var _listening 	= false;
-    
+    var $ = jQuery;
+	
     /* Loader
     -------------------------------*/
     public.__load = c.load = function() {
@@ -52,7 +38,7 @@ define(function() {
 			.then(_setCountries)
         	.then(_setData)
         	.then(_output)
-        	.then(_listen);
+			.then(_listen);
         
         return this;
     };
@@ -60,124 +46,157 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     _setData = function(next) {
-		this.data = {
-			user	: {
-				id 					: 'example_id',
-				user_birthdate 		: '',
-            	user_gender    		: 'male',
-				user_company        : 'example company',
-				user_job_title      : 'example job title',
-				user_company_street : 'example street',
-				user_company_city   : 'example city',
-				user_company_state  : 'example state',
-				user_company_postal : '4012',
-				user_company_phone  : '(000)-000-0000',
-				company_email       : 'email@example.com',
-				user_website  		: 'http://www.web-example.com',
-            	user_phone    		: '09298888888',
-				user_photo 			: 'example.jpg',
-				user_name       	: 'example username',
-				user_slug       	: 'example slug',
-				user_email      	: 'email@example.com',
-				user_password   	: 'example password',
-				user_confirm    	: 'example confirm',
-				user_facebook 		: 'user facebook',
-				user_twitter  		: 'user twitter',
-				user_google   		: 'user google'
-			},
-			
-			request_uri : '',
-			path 		: 'example/path',
-			country     : this.countries,
-			tabs 		: this.tabs,
-			errors 		: this.errors
-		};
-		
-
+		this.data.mode 		= 'create';
+		this.data.url 		= window.location.href.split('?')[0];
+		this.data.country 	= this.countries;
+		this.data.errors 	= this.errors;
         next();
     };
     
     var _output = function(next) {
-        var self = this;
-		
 		//store form templates path to array
         var templates = [
-        'text!' + controller.path('user/template') +  'form/basic.html',
-        'text!' + controller.path('user/template') +  'form/company.html',
-        'text!' + controller.path('user/template') +  'form/contact.html',
-        'text!' + controller.path('user/template') +  'form/picture.html',
-        'text!' + controller.path('user/template') +  'form/required.html',
-        'text!' + controller.path('user/template') +  'form/tabs.html',
-        'text!' + controller.path('user/template') +  'form/social.html'];
+        'text!' + controller.path('user/template') +  '/form.html',
+        'text!' + controller.path('user/template') +  '/form/basic.html',
+        'text!' + controller.path('user/template') +  '/form/company.html',
+        'text!' + controller.path('user/template') +  '/form/contact.html',
+        'text!' + controller.path('user/template') +  '/form/picture.html',
+        'text!' + controller.path('user/template') +  '/form/required.html',
+        'text!' + controller.path('user/template') +  '/form/tabs.html',
+        'text!' + controller.path('user/template') +  '/form/social.html'];
 
         //require form templates
         //assign it to main form
-        require(templates, function(basic, company, 
+        require(templates, function(form, basic, company, 
 		contact, picture, required, tabs, social) {
-
             //load basic form template 
-            self.data.basic = Handlebars.compile(basic)(self.data);
+            this.data.basic = Handlebars.compile(basic)(this.data);
 
             //load company form template
-            self.data.company = Handlebars.compile(company)(self.data);
+            this.data.company = Handlebars.compile(company)(this.data);
 
             //load contact form template
-            self.data.contact = Handlebars.compile(contact)(self.data);
+            this.data.contact = Handlebars.compile(contact)(this.data);
             
             //load picture form template
-            self.data.picture = Handlebars.compile(picture)(self.data);
+            this.data.picture = Handlebars.compile(picture)(this.data);
 
             //load required form template
-            self.data.required = Handlebars.compile(required)(self.data);
+            this.data.required = Handlebars.compile(required)(this.data);
 
             //load tabs template
-            self.data.tabs = Handlebars.compile(tabs)(self.data);
+            this.data.tabs = Handlebars.compile(tabs)(this.data);
 
             //load social form template
-            self.data.social = Handlebars.compile(social)(self.data);
+            this.data.social = Handlebars.compile(social)(this.data);
         
-			controller
-				.setTitle(self.title)
-				.setHeader(self.header)
-				.setSubheader(self.subheader)
-				.setCrumbs(self.crumbs)
-				.setBody(self.template, self.data);            
+			//render the body
+			var body = Handlebars.compile(form)(this.data);
 			
+			controller
+				.setTitle(this.title)
+				.setHeader(this.header)
+				.setSubheader(this.subheader)
+				.setCrumbs(this.crumbs)
+				.setBody(body);            
+				
 			next();
-		});
+		}.bind(this));
     };
 
     var _listen = function(next) {
-        // if we are listening, we cant send data
-        if(_listening) {
-            next();
-            return this;
-        }
-        
         //if not listening, submit form
-        $('#body').on('submit', 'form.package-user-form', { scope: self }, function(e) {
-			//prevent page from reloading
-			e.preventDefault();
-			
-			_process();
-		});  
-		             
-        //set listening to true
-        _listening = true;
+        $('section.user-profile form.package-user-form').one('submit', _process.bind(this));  
        
+	   	$('section.user-profile form.package-user-form input[name="name"]').keyup(function(e) {
+			var name = $(this);
+			//there's a delay in when the input value is updated
+			//we do this settime out to case for this
+			setTimeout(function() {
+				$('input[name="slug"]').val($.trim(name.val()
+				.toLowerCase()
+				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
+				.replace(/\s/g, '-')
+				.replace(/^([a-z\u00E0-\u00FC])|\-([a-z\u00E0-\u00FC])/g, function ($1) {
+					return $1.toLowerCase();
+				}));
+			}, 1);
+		});
+	   
 	    next();
     };
 	
-	var _process = function() {	
+	var _process = function(e) {	
+		e.preventDefault();
+		
+		var form = $('section.user-profile form.package-user-form');
+		
 		//prepare form data
-		var data 	= $('form.package-user-form').serialize(),
+		var data 	= form.serialize(),
 			url 	= controller.getServerUrl() + '/user/create';
+		
+		//remember the data
+		this.data.user = $.queryToHash(data);
+		
+		//clear errors
+		this.errors = {};
+		
+		//local validate
+		if(!$('input[name="name"]', form).val().length) {
+			this.errors.name = { message: 'User cannot be empty.'};
+		}
+		
+		if(!$('input[name="slug"]', form).val().length) {
+			this.errors.slug = { message: 'Username cannot be empty.'};
+		}
+		
+		if(!$('input[name="email"]', form).val().length) {
+			this.errors.email = { message: 'Email cannot be empty.'};
+		}
+		
+		if($('input[name="password"]', form).val().length 
+		&& !$('input[name="confirm"]', form).val().length) {
+			this.errors.confirm = { message: 'You must confirm your password.'};
+		}
+		
+		if($('input[name="confirm"]', form).val().length
+		&& $('input[name="password"]', form).val()
+		!= $('input[name="confirm"]', form).val()) {
+			this.errors.confirm = { message: 'Password and confirm do not match.'};
+		}
+		
+		//if we have errors
+		if(JSON.stringify(this.errors) != '{}') {
+			//display message status
+			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+			
+			//let the refresh happen
+			return;
+		}
+		
+		e.originalEvent.stop = true;
 		
 		//save data to database
 		$.post(url, data, function(response) {
+			response = JSON.parse(response);
+			
+			if(!response.error) {					
+				//display message status
+				controller.addMessage('User successfully created!', 'success', 'check');
+				//push the state
+				window.history.pushState({}, '', '/user');
+				
+				return;
+			}
+			
+			this.errors = response.validation || {};
+			
+			//push the state
+			window.history.pushState({}, '', window.location.href);
+			
 			//display message status
-			controller.addMessage('Record successfully saved!');
-	   });
+			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+	   }.bind(this));
 	};
 	
 	var _setCountries = function(callback) {

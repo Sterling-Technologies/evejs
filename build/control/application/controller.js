@@ -499,6 +499,12 @@ var controller = function() {
 	var _hijackLinks = function() {
 		//live listen to all links
 		$(document).on('click', 'a', function(e) {
+			//if another event says to do nothing
+			if(e.originalEvent.stop) {
+				//do nothing
+				return;
+			}
+			
 			//if the link is in the same domain
 			if(this.href.indexOf(window.location.origin) === 0) {
 				//stop it
@@ -512,6 +518,12 @@ var controller = function() {
 	var _hijackForms = function() {
 		//listen to form submits
 		$(document).on('submit', 'form', function(e) {
+			//if another event says to do nothing
+			if(e.originalEvent.stop) {
+				//do nothing
+				return;
+			}
+			
 			//if the action is in the same domain
 			if(!$(this).attr('action') || $(this).attr('action').indexOf(window.location.origin) === 0) {
 				//stop it

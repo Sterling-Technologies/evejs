@@ -11,6 +11,7 @@ module.exports = function() {
 	
 	var _schema = {
 		name		: { type: String, required: true },
+		slug		: { type: String, required: true },
 		email		: { type: String, required: true },
         password    : String,
         birthdate   : Date,
@@ -46,7 +47,6 @@ module.exports = function() {
 			name		: String,
 			source		: String,
 			mime		: String,
-			size		: String,
 			date		: { type: Date, default: Date.now }
 		}],
 		

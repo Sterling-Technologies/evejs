@@ -1,4 +1,4 @@
-<div class="user-profile row">
+<section class="user-profile row">
     <div class="col-sm-12">
         <div class="tabbable">
             {{#when mode '==' 'update'}}
@@ -30,18 +30,17 @@
                             <div class="col-md-12">
                                 <button 
                                 {{#if update}} 
-                                    id="update"
                                     name="update"
                                     value="Update"
                                 {{else}}
-                                    id="save"
                                     name="save"
                                 {{/if}} class="btn btn-info" type="submit" ><i class="icon-ok bigger-110"></i>
-                                {{#if update}}  
+                                {{#when mode '==' 'update'}}
                                     Update 
-                                {{else}} 
+                                {{/when}}
+                                {{#when mode '==' 'create'}}
                                     Save 
-                                {{/if}}
+                                {{/when}}
                                 </button>
                             </div>
                         </div>
@@ -50,4 +49,4 @@
             </div>
         </div>
     </div>
-</div>
+</section>

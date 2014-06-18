@@ -5,7 +5,7 @@
     for="form-field-date">Birth Date</label>
     <div class="col-sm-8">
         <div class="input-medium">
-        	<input type="date" class="datepicker" value="{{user_birthdate}}" name="birthdate"/>					
+        	<input type="date" class="datepicker" value="{{user.birthdate}}" name="birthdate"/>					
         </div>
     </div>
 </div>
@@ -15,11 +15,11 @@
     <div class="col-sm-8">
         <input name="user_gender" type="hidden" value="" />
         <label class="inline">
-        <input name="gender" type="radio" class="ace" value="male"{{#when user_gender '==' 'male'}} checked="true" {{/when}}/>
+        <input name="gender" type="radio" class="ace" value="male"{{#when user.gender '==' 'male'}} checked="true" {{/when}}/>
         <span class="lbl">Male</span> </label>
         &nbsp; &nbsp; &nbsp;
         <label class="inline">
-        <input name="gender" type="radio" class="ace" value="female"{{#when user_gender '==' 'female'}} checked="true" {{/when}} />
+        <input name="gender" type="radio" class="ace" value="female"{{#when user.gender '==' 'female'}} checked="true" {{/when}} />
         <span class="lbl">Female</span> </label>
     </div>
 </div>
