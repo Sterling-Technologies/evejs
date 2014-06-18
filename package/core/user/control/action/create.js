@@ -1,5 +1,7 @@
 define(function() {
-    var c = function() {}, public = c.prototype;
+    var c = function() {
+		this.__construct.call(this);
+	}, public = c.prototype;
     
     /* Public Properties 
     -------------------------------*/
@@ -14,7 +16,6 @@ define(function() {
     }, {  label: 'Create User' }];
 	
     public.data     = {};
-	public.errors 	= {};
 	
     public.template = controller.path('user/template') + '/form.html';
     
@@ -30,7 +31,12 @@ define(function() {
     
     /* Construct
     -------------------------------*/
-    /* Public Methods
+	public.__construct = function() {
+		//reset data because of "pass by ref"
+		this.data = {};
+	};
+    
+	/* Public Methods
     -------------------------------*/
     public.render = function() {
         $.sequence()
@@ -46,12 +52,30 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _setData = function(next) {
-		var post = controller.getPost();
-		console.log(post);
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.href.split('?')[0];
 		this.data.country 	= this.countries;
-		this.data.errors 	= this.errors;
+		
+		var post = controller.getPost();
+		
+		if(post && post.length) {
+			//query to hash
+			this.data.user = $.queryToHash(post);
+			
+			if(!_valid.call(this)) {			
+				//display message status
+				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+				next();
+				
+				return;
+			}
+			
+			//we are good to send this up
+			_process.call(this, next);
+			
+			return;
+		}
+		
         next();
     };
     
@@ -107,19 +131,6 @@ define(function() {
     };
 
     var _listen = function(next) {
-        /*//if not listening, submit form
-        $('section.user-profile form.package-user-form').one('submit', function(e) {
-			if(!_valid.call(this)) {			
-				//display message status
-				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
-				
-				//let the refresh happen
-				return;
-			}
-			
-			_process.call(this);
-		}.bind(this));  */
-       
 	   	$('section.user-profile form.package-user-form input[name="name"]').keyup(function(e) {
 			var name = $(this);
 			//there's a delay in when the input value is updated
@@ -139,68 +150,68 @@ define(function() {
     };
 	
 	var _valid = function() {
-		var form 	= $('section.user-profile form.package-user-form'),
-			data 	= form.serialize();
-		
-		//remember the data
-		this.data.user = $.queryToHash(data);
-		
 		//clear errors
-		this.errors = {};
+		this.data.errors = {};
 		
 		//local validate
-		if(!$('input[name="name"]', form).val().length) {
-			this.errors.name = { message: 'User cannot be empty.'};
+		if(!this.data.user.name || !this.data.user.name.length) {
+			this.data.errors.name = { message: 'User cannot be empty.'};
 		}
 		
-		if(!$('input[name="slug"]', form).val().length) {
-			this.errors.slug = { message: 'Username cannot be empty.'};
+		if(!this.data.user.slug || !this.data.user.slug.length) {
+			this.data.errors.slug = { message: 'Username cannot be empty.'};
 		}
 		
-		if(!$('input[name="email"]', form).val().length) {
-			this.errors.email = { message: 'Email cannot be empty.'};
+		if(!this.data.user.email || !this.data.user.email.length) {
+			this.data.errors.email = { message: 'Email cannot be empty.'};
 		}
 		
-		if($('input[name="password"]', form).val().length 
-		&& !$('input[name="confirm"]', form).val().length) {
-			this.errors.confirm = { message: 'You must confirm your password.'};
+		if(this.data.user.password 
+		&& this.data.user.password.length
+		&& (!this.data.user.confirm 
+		|| !this.data.user.confirm.length)) {
+			this.data.errors.confirm = { message: 'You must confirm your password.'};
 		}
 		
-		if($('input[name="confirm"]', form).val().length
-		&& $('input[name="password"]', form).val()
-		!= $('input[name="confirm"]', form).val()) {
-			this.errors.confirm = { message: 'Password and confirm do not match.'};
+		if(this.data.user.password 
+		&& this.data.user.password.length
+		&& this.data.user.confirm 
+		&& this.data.user.confirm.length
+		&& this.data.user.password != this.data.user.confirm) {
+			this.data.errors.confirm = { message: 'Password and confirm do not match.'};
 		}
 		
 		//if we have no errors
-		return JSON.stringify(this.errors) == '{}';
+		return JSON.stringify(this.data.errors) == '{}';
 	};
 	
-	var _process = function() {
-		var form 	= $('section.user-profile form.package-user-form'),
-			data 	= form.serialize(),
-			url 	= controller.getServerUrl() + '/user/create';
-			
+	var _process = function(next) {
+		var url = controller.getServerUrl() + '/user/create';
+		
+		//don't store the confirm
+		delete this.data.user.confirm;
+		
 		//save data to database
-		$.post(url, data, function(response) {
+		$.post(url, this.data.user, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {					
-				//display message status
-				controller.addMessage('User successfully created!', 'success', 'check');
-				//push the state
-				window.history.pushState(data, '', '/user');
+			if(!response.error) {		
+				controller				
+					//display message status
+					.addMessage('User successfully created!', 'success', 'check')
+					//go to listing
+					.redirect('/user');
 				
+				//no need to next since we are redirecting out
 				return;
 			}
 			
-			this.errors = response.validation || {};
-			
-			//push the state
-			window.history.pushState(data, '', window.location.href);
+			this.data.errors = response.validation || {};
 			
 			//display message status
 			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+			
+			next();
 	   }.bind(this));
 	};
 	

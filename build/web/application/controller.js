@@ -44,6 +44,15 @@ var controller = function() {
 	};
 	
 	/**
+	 * Returns post data from push state
+	 *
+	 * @return string
+	 */
+	public.getPost = function() {
+		return window.history.state || '';
+	};
+	
+	/**
 	 * Returns formatted server 
 	 * url from config settings
 	 *
@@ -90,6 +99,19 @@ var controller = function() {
 		}
 		
 		return _paths[key];
+	};
+	
+	/**
+	 * Local redirect
+	 *
+	 * @param string path
+	 * @param string post string data
+	 * @return this
+	 */
+	public.redirect = function(path, post) {
+		post = post || '';
+		window.history.pushState(post, '', path);
+		return this;
 	};
 	
 	/**
@@ -418,7 +440,7 @@ var controller = function() {
 				//stop it
 				e.preventDefault();
 				//push the state
-				window.history.pushState({}, '', this.href);
+				window.history.pushState('', '', this.href);
 			}
 		});
 	};
@@ -437,7 +459,7 @@ var controller = function() {
 				//stop it
 				e.preventDefault();
 				
-				var url = $(this).attr('action') || window.location.href;
+				var post = '', url = $(this).attr('action') || window.location.href;
 				
 				if(!$(this).attr('method') || $(this).attr('method').toUpperCase() == 'GET') {
 					//manually form the HREF
@@ -447,10 +469,12 @@ var controller = function() {
 					} 
 					
 					url += '?' + $(this).serialize();
+				} else {
+					post = $(this).serialize();
 				}
 				
 				//push the state
-				window.history.pushState({}, '', url);
+				window.history.pushState(post, '', url);
 			}
 		});
 	};

@@ -76,7 +76,7 @@ var controller = function() {
 	 * @return string
 	 */
 	public.getPost = function() {
-		return window.history.state;
+		return window.history.state || '';
 	};
 	
 	/**
@@ -102,6 +102,19 @@ var controller = function() {
 		}
 		
 		return _paths[key];
+	};
+	
+	/**
+	 * Local redirect
+	 *
+	 * @param string path
+	 * @param string post string data
+	 * @return this
+	 */
+	public.redirect = function(path, post) {
+		post = post || '';
+		window.history.pushState(post, '', path);
+		return this;
 	};
 	
 	/**
@@ -520,7 +533,7 @@ var controller = function() {
 				//stop it
 				e.preventDefault();
 				//push the state
-				window.history.pushState({}, '', this.href);
+				window.history.pushState('', '', this.href);
 			}
 		});
 	};
