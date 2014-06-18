@@ -45,7 +45,9 @@ define(function() {
 
     /* Private Methods
     -------------------------------*/
-    _setData = function(next) {
+    var _setData = function(next) {
+		var post = controller.getPost();
+		console.log(post);
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.href.split('?')[0];
 		this.data.country 	= this.countries;
@@ -105,8 +107,18 @@ define(function() {
     };
 
     var _listen = function(next) {
-        //if not listening, submit form
-        $('section.user-profile form.package-user-form').one('submit', _process.bind(this));  
+        /*//if not listening, submit form
+        $('section.user-profile form.package-user-form').one('submit', function(e) {
+			if(!_valid.call(this)) {			
+				//display message status
+				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+				
+				//let the refresh happen
+				return;
+			}
+			
+			_process.call(this);
+		}.bind(this));  */
        
 	   	$('section.user-profile form.package-user-form input[name="name"]').keyup(function(e) {
 			var name = $(this);
@@ -126,14 +138,9 @@ define(function() {
 	    next();
     };
 	
-	var _process = function(e) {	
-		e.preventDefault();
-		
-		var form = $('section.user-profile form.package-user-form');
-		
-		//prepare form data
-		var data 	= form.serialize(),
-			url 	= controller.getServerUrl() + '/user/create';
+	var _valid = function() {
+		var form 	= $('section.user-profile form.package-user-form'),
+			data 	= form.serialize();
 		
 		//remember the data
 		this.data.user = $.queryToHash(data);
@@ -165,17 +172,15 @@ define(function() {
 			this.errors.confirm = { message: 'Password and confirm do not match.'};
 		}
 		
-		//if we have errors
-		if(JSON.stringify(this.errors) != '{}') {
-			//display message status
-			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+		//if we have no errors
+		return JSON.stringify(this.errors) == '{}';
+	};
+	
+	var _process = function() {
+		var form 	= $('section.user-profile form.package-user-form'),
+			data 	= form.serialize(),
+			url 	= controller.getServerUrl() + '/user/create';
 			
-			//let the refresh happen
-			return;
-		}
-		
-		e.originalEvent.stop = true;
-		
 		//save data to database
 		$.post(url, data, function(response) {
 			response = JSON.parse(response);
@@ -184,7 +189,7 @@ define(function() {
 				//display message status
 				controller.addMessage('User successfully created!', 'success', 'check');
 				//push the state
-				window.history.pushState({}, '', '/user');
+				window.history.pushState(data, '', '/user');
 				
 				return;
 			}
@@ -192,22 +197,22 @@ define(function() {
 			this.errors = response.validation || {};
 			
 			//push the state
-			window.history.pushState({}, '', window.location.href);
+			window.history.pushState(data, '', window.location.href);
 			
 			//display message status
 			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
 	   }.bind(this));
 	};
 	
-	var _setCountries = function(callback) {
+	var _setCountries = function(next) {
 		var self = this;
 		require([controller.path('config') + '/countries.js'], function(countries) {
 			self.countries = countries;
-			callback();
+			next();
 		});
 	};
     
     /* Adaptor
     -------------------------------*/
-    return c.load(); 
+    return c; 
 });

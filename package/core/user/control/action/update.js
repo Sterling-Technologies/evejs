@@ -1,25 +1,27 @@
 define(function() {
     var c = function() {}, public = c.prototype;
+    
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Update User';
-    public.header       = 'Update User';
+    public.title        = 'Create User';
+    public.header       = 'Create User';
     public.subheader    = 'CRM';
-    public.crumbs       = [{ 
-        path: '/user/update',
+	
+    public.crumbs = [{ 
+        path: '/user',
         icon: 'user', 
         label: 'Users' 
-    }, {  label: 'Update User' }];
-    
+    }, {  label: 'Create User' }];
+	
     public.data     = {};
+	public.errors 	= {};
+	
     public.template = controller.path('user/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
-    var $           = jQuery;
-    var _api        = 'http://api.eve.dev:8082/user/';
-    var _listening  = false;
-    
+    var $ = jQuery;
+	
     /* Loader
     -------------------------------*/
     public.__load = c.load = function() {
@@ -31,199 +33,201 @@ define(function() {
     /* Public Methods
     -------------------------------*/
     public.render = function() {
-        $.sequence().setScope(this)
-        .then(this.getData)
-        .then(this.output)
-        .then(this.listen);
+        $.sequence()
+			.setScope(this)
+			.then(_setCountries)
+        	.then(_setData)
+        	.then(_output)
+			.then(_listen);
         
-        return this;
-    };
-
-    /**
-     * Get data
-     *
-     * @param function callback
-     * @return this
-     */
-     public.getData = function(callback) {
-        var self = this;
-        
-        //set button to update
-        self.data.update = { update : 'update' };
-
-        //get user id
-        var _id =  _api + window.location.pathname.split('/')[3];
-        
-        $.getJSON(_id, function(response) {
-            
-            //if error
-            if(response.error) {
-                return;
-            }
-
-            //store requested details in a variable for ease of access
-            var user = response.results;
-            
-            //prepare all form templates
-            var forms = [
-            controller.path('config') + '/countries.js',
-            'text!' + controller.path('user/template') +  'form/basic.html',
-            'text!' + controller.path('user/template') +  'form/company.html',
-            'text!' + controller.path('user/template') +  'form/contact.html',
-            'text!' + controller.path('user/template') +  'form/picture.html',
-            'text!' + controller.path('user/template') +  'form/required.html',
-            'text!' + controller.path('user/template') +  'form/tabs.html',
-            'text!' + controller.path('user/template') +  'form/social.html'];
-
-            //inlcude form templates to page
-            //load templates and assign user details to its respective fields
-            require(forms, function(countries, basic, company, contact, picture,
-            required, tabs, social) {
-
-                //basic form
-                self.data.basic = Handlebars.compile(basic)({
-                    user_birthdate : user.birthdate,
-                    user_gender    : user.gender
-                });
-
-                //company form
-                self.data.company = Handlebars.compile(company)({
-                    user_company         : user.company.name,
-                    user_job_title       : user.company.title,
-                    user_company_street  : user.company.street,
-                    user_company_city    : user.company.city,
-                    user_company_state   : user.company.state,
-                    //We need an array for country code and country name
-                    //lets create an array inside company and store all country data on it
-                    country              : countries,
-                    user_company_postal  : user.company.postal,
-                    user_company_phone   : user.company.phone,
-                    user_company_email   : user.company.email
-                });
-
-                //contact form
-                self.data.contact = Handlebars.compile(contact)({
-                    user_website  : user.website,
-                    user_phone    : user.phone.value
-                });
-                
-                //picture form
-                self.data.picture = Handlebars.compile(picture)({
-                    user_photo : 'example.jpg'
-                });
-
-                //required form
-                self.data.required = Handlebars.compile(required)({
-                    user_name       : user.name,
-                    user_slug       : user.username,
-                    user_email      : user.email,
-                    user_password   : '********',
-                    user_confirm    : '********',
-                    errors : {
-                        user_name       : '',
-                        user_slug       : '',
-                        user_email      : '',
-                        user_password   : '',
-                        user_confirm    : ''
-                    }
-                });
-
-                //tabs
-                self.data.tabs = Handlebars.compile(tabs)({
-                    request_uri : '',
-                    path : 'example/path',
-                    id : 'example_id',
-                    tabs : [{
-                        item : {
-                            icon : 'example.icon',
-                            label : 'example label'
-                        }
-                    }]
-                });
-
-                //social form
-                self.data.social = Handlebars.compile(social)({
-                    user_facebook : user.facebook,
-                    user_twitter  : user.twitter,
-                    user_google   : user.google,
-                    user_linkedin : user.linkedin
-                });
-            });
-            
-            callback(); 
-        });
-
-        return this;
-    };
-
-    /**
-     * Output
-     *
-     * @param function callback
-     * @return this
-     */
-    public.output = function(callback) {
-        var self = this;
-   
-        controller
-        .setTitle(this.title)
-        .setHeader(this.header)
-        .setSubheader(this.subheader)
-        .setCrumbs(this.crumbs)
-        .setBody(self.template, self.data);       
-        callback();
-
-        return this;
-    };
-
-    /** 
-     * Check if we are listening
-     *
-     * @param function
-     * return this
-     */
-    public.listen = function(callback) {
-        // if we are listening, we cant send data
-        if(_listening){
-            callback();
-            return this;
-        }
-
-        //if not listening, submit form
-        $('#body').on('submit', 'form.package-user-form', { scope: self }, _processUpdate);               
-        //set listening to true
-        _listening = true;
-        callback();
-
         return this;
     };
 
     /* Private Methods
     -------------------------------*/
-    var _processUpdate = function(e) {
-        //prevent page from reloading
-        e.preventDefault();
+    var _setData = function(next) {
+		this.data.mode 		= 'create';
+		this.data.url 		= window.location.href.split('?')[0];
+		this.data.country 	= this.countries;
+		this.data.errors 	= this.errors;
+		
+		//if no data user set
+		if(!this.data.user) {
+			//get it from the server
+			//get user id
+			var id =  window.location.pathname.split('/')[3];
+			var url = controller.getServerUrl() + '/user/detail/'+id;
+			
+			$.getJSON(url, function(response) {
+				this.data.user = response.results;
+				next();
+			}.bind(this));
+			
+			return this;
+		}
+		
+        next();
+    };
+    
+    var _output = function(next) {
+		//store form templates path to array
+        var templates = [
+        'text!' + controller.path('user/template') +  '/form.html',
+        'text!' + controller.path('user/template') +  '/form/basic.html',
+        'text!' + controller.path('user/template') +  '/form/company.html',
+        'text!' + controller.path('user/template') +  '/form/contact.html',
+        'text!' + controller.path('user/template') +  '/form/picture.html',
+        'text!' + controller.path('user/template') +  '/form/required.html',
+        'text!' + controller.path('user/template') +  '/form/tabs.html',
+        'text!' + controller.path('user/template') +  '/form/social.html'];
 
-        //prepare form data
-        var data = $('form.package-user-form').serialize();
+        //require form templates
+        //assign it to main form
+        require(templates, function(form, basic, company, 
+		contact, picture, required, tabs, social) {
+            //load basic form template 
+            this.data.basic = Handlebars.compile(basic)(this.data);
 
-        //set api to update.
-        _api = 'http://api.eve.dev:8082/user/update/';
+            //load company form template
+            this.data.company = Handlebars.compile(company)(this.data);
+
+            //load contact form template
+            this.data.contact = Handlebars.compile(contact)(this.data);
+            
+            //load picture form template
+            this.data.picture = Handlebars.compile(picture)(this.data);
+
+            //load required form template
+            this.data.required = Handlebars.compile(required)(this.data);
+
+            //load tabs template
+            this.data.tabs = Handlebars.compile(tabs)(this.data);
+
+            //load social form template
+            this.data.social = Handlebars.compile(social)(this.data);
         
-        //get requested id
-        _id  =  window.location.pathname.split('/')[3];
-
-        //join update and query.
-        _api = _api + _id;
-       //update data on database
-       $.post(_api, data, function(response) {
-
-            //display message status
-            controller.addMessage('Record successfully updated!');
-       });
+			//render the body
+			var body = Handlebars.compile(form)(this.data);
+			
+			controller
+				.setTitle(this.title)
+				.setHeader(this.header)
+				.setSubheader(this.subheader)
+				.setCrumbs(this.crumbs)
+				.setBody(body);            
+				
+			next();
+		}.bind(this));
     };
 
+    var _listen = function(next) {
+        //if not listening, submit form
+        $('section.user-profile form.package-user-form').one('submit', function(e) {
+			if(!_valid.call(this)) {			
+				//display message status
+				controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+				
+				//let the refresh happen
+				return;
+			}
+			
+			_process.call(this);
+		}.bind(this));  
+       
+	   	$('section.user-profile form.package-user-form input[name="name"]').keyup(function(e) {
+			var name = $(this);
+			//there's a delay in when the input value is updated
+			//we do this settime out to case for this
+			setTimeout(function() {
+				$('input[name="slug"]').val($.trim(name.val()
+				.toLowerCase()
+				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
+				.replace(/\s/g, '-')
+				.replace(/^([a-z\u00E0-\u00FC])|\-([a-z\u00E0-\u00FC])/g, function ($1) {
+					return $1.toLowerCase();
+				}));
+			}, 1);
+		});
+	   
+	    next();
+    };
+	
+	var _valid = function() {
+		var form 	= $('section.user-profile form.package-user-form'),
+			data 	= form.serialize();
+		
+		//remember the data
+		this.data.user = $.queryToHash(data);
+		
+		//clear errors
+		this.errors = {};
+		
+		//local validate
+		if(!$('input[name="name"]', form).val().length) {
+			this.errors.name = { message: 'User cannot be empty.'};
+		}
+		
+		if(!$('input[name="slug"]', form).val().length) {
+			this.errors.slug = { message: 'Username cannot be empty.'};
+		}
+		
+		if(!$('input[name="email"]', form).val().length) {
+			this.errors.email = { message: 'Email cannot be empty.'};
+		}
+		
+		if($('input[name="password"]', form).val().length 
+		&& !$('input[name="confirm"]', form).val().length) {
+			this.errors.confirm = { message: 'You must confirm your password.'};
+		}
+		
+		if($('input[name="confirm"]', form).val().length
+		&& $('input[name="password"]', form).val()
+		!= $('input[name="confirm"]', form).val()) {
+			this.errors.confirm = { message: 'Password and confirm do not match.'};
+		}
+		
+		//if we have no errors
+		return JSON.stringify(this.errors) == '{}';
+	};
+	
+	var _process = function() {
+		var form 	= $('section.user-profile form.package-user-form'),
+			data 	= form.serialize(),
+			id 		=  window.location.pathname.split('/')[3],
+			url 	= controller.getServerUrl() + '/user/update/'+id;
+			
+		//save data to database
+		$.post(url, data, function(response) {
+			response = JSON.parse(response);
+			
+			if(!response.error) {					
+				//display message status
+				controller.addMessage('User successfully created!', 'success', 'check');
+				//push the state
+				window.history.pushState({}, '', '/user');
+				
+				return;
+			}
+			
+			this.errors = response.validation || {};
+			
+			//push the state
+			window.history.pushState({}, '', window.location.href);
+			
+			//display message status
+			controller.addMessage('There was an error in the form.', 'danger', 'exclamation-sign');
+	   }.bind(this));
+	};
+	
+	var _setCountries = function(next) {
+		var self = this;
+		require([controller.path('config') + '/countries.js'], function(countries) {
+			self.countries = countries;
+			next();
+		});
+	};
+    
     /* Adaptor
     -------------------------------*/
-    return c.load();
+    return c; 
 });

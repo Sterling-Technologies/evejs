@@ -35,6 +35,9 @@ controller
 		case window.location.pathname.indexOf('/user/create') === 0:
 			action = 'create';
 			break;
+		case window.location.pathname.indexOf('/user/update') === 0:
+			action = 'update';
+			break;
 		case window.location.pathname.indexOf('/user/remove') === 0:
 			action = 'remove';
 			break;
@@ -47,6 +50,6 @@ controller
 	
 	//load up the action
 	require([action], function(action) {
-		action.render();
+		action.load().render();
 	});
 });

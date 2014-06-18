@@ -267,5 +267,5 @@ define(function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
+	return c; 
 });
