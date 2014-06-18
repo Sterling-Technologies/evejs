@@ -44,6 +44,9 @@ controller
 		case window.location.pathname.indexOf('/user/restore') === 0:
 			action = 'restore';
 			break;
+		case window.location.pathname.indexOf('/user/bulk') === 0:
+			action = 'bulk';
+			break;
 	}
 	
 	action = controller.path('user/action') + '/' + action + '.js';

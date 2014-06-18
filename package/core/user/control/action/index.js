@@ -1,5 +1,7 @@
 define(function() {
-	var c = function() {}, public = c.prototype;
+    var c = function() {
+		this.__construct.call(this);
+	}, public = c.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
@@ -27,6 +29,11 @@ define(function() {
 	
 	/* Construct
 	-------------------------------*/
+	public.__construct = function() {
+		//reset data because of "pass by ref"
+		this.data = {};
+	};
+	
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
@@ -129,44 +136,17 @@ define(function() {
 			$(this).parent().parent().remove();
 		});
 		
-		//listen for bulk action
-		$('section.user-list form.bulk-form').submit(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			
-			var data = $.queryToHash($(this).serialize());
-			
-			//if nothing was checked
-			if(!data.action || !data.id || !data.id.length) {
-				//do nothing
-				return;
-			}
-			
-			//what is the url base
-			var url =  '/user/' + data.action + '/';
-			
-			//prepare the batch query
-			for(var batch = [], i = 0; i < data.id.length; i++) {
-				batch.push({ url: url + data.id[i] });
-			}
-			
-			//call the batch remove
-			$.post(
-			controller.getServerUrl() + '/user/batch', 
-			JSON.stringify(batch), function(response) { 
-				response = JSON.parse(response);
-				for(var errors = false, i = 0; i < response.length; i++) {
-					if(response[i].error && response[i].message) {
-						errors = true;
-						controller.addMessage(response[i].message, 'danger', 'exclamation-sign');
+		$('section.user-list  tbody input[type="checkbox"]').click(function() {
+			setTimeout(function() {	
+				var allChecked = true;
+				jQuery('tbody input[type="checkbox"]').each(function() {
+					if(!this.checked) {
+						allChecked = false;
 					}
-				}
+				});
 				
-				if(!errors) {
-					window.history.pushState({}, '', window.location.href);
-					controller.addMessage('Bulk Action ' + data.action + ' successful!', 'success', 'check');
-				}
-			});
+				jQuery('th .checkall')[0].checked = allChecked;
+			}, 1);
 		});
 		
 		next();

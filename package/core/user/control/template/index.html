@@ -15,7 +15,7 @@
     <!-- END: SEARCH FORM -->
     
     <!-- START: BULK FORM -->
-    <form method="post" class="form-inline bulk-form">
+    <form action="/user/bulk" method="post" class="form-inline bulk-form">
         <!-- START: i18n HEADER TITLE -->
         <div class="table-header">
             Showing {{#if keyword}}Results for &quot;{{keyword}}&quot; in {{/if}}{{showing}}
@@ -138,6 +138,4 @@
         </ul>
         {{/when}}
     </form>
-    <!-- END: BULK FORM -->
-    <script type="text/javascript" src="/application/package/core/user/asset/checkall.js"></script>
 </section>
