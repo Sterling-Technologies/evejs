@@ -4,6 +4,7 @@ var controller = function() {
 	/* Public Properties
 	-------------------------------*/
 	public.menu 	= []; 
+	public.post		= {};
 	
 	/* Private Properties
 	-------------------------------*/
@@ -67,6 +68,15 @@ var controller = function() {
 		return this.settings.socket.protocol 
 		+ '://' + this.settings.socket.host 
 		+ ':'	+ this.settings.socket.port;
+	};
+	
+	/**
+	 * Returns post data from push state
+	 *
+	 * @return string
+	 */
+	public.getPost = function() {
+		return window.history.state;
 	};
 	
 	/**
@@ -359,7 +369,7 @@ var controller = function() {
 		this.listen('request', function() {
 			//from a refresh - quirk
 			_refresh = false;
-		}).trigger('request');
+		}.bind(this)).trigger('request');
 		
 		//if sequence
 		if(typeof arguments[0] == 'function') {
@@ -529,7 +539,7 @@ var controller = function() {
 				//stop it
 				e.preventDefault();
 				
-				var url = $(this).attr('action') || window.location.href;
+				var post = '', url = $(this).attr('action') || window.location.href;
 				
 				if(!$(this).attr('method') || $(this).attr('method').toUpperCase() == 'GET') {
 					//manually form the HREF
@@ -539,10 +549,12 @@ var controller = function() {
 					} 
 					
 					url += '?' + $(this).serialize();
+				} else {
+					post = $(this).serialize();
 				}
 				
 				//push the state
-				window.history.pushState({}, '', url);
+				window.history.pushState(post, '', url);
 			}
 		});
 	};
