@@ -521,7 +521,7 @@ var controller = function() {
 	
 	var _hijackLinks = function() {
 		//live listen to all links
-		$(document.body).on('click', 'a', function(e) {
+		$(document).on('click', 'a', function(e) {
 			//if another event says to do nothing
 			if(e.originalEvent.stop) {
 				//do nothing
@@ -539,7 +539,6 @@ var controller = function() {
 	};
 	
 	var _hijackForms = function() {
-		
 		//listen to form submits
 		$(document.body).on('submit', 'form', function(e) {
 			//if another event says to do nothing
