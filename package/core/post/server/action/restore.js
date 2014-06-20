@@ -1,4 +1,4 @@
-module.exports = (function() {
+module.exports = (function() { 
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -9,7 +9,7 @@ module.exports = (function() {
     public.request   	= null;
     public.response  	= null;
     
-    /* Private Properties
+	/* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
@@ -25,7 +25,7 @@ module.exports = (function() {
 		this.request  	= request;
 		this.response  	= response;
 	};
-
+	
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
@@ -37,55 +37,39 @@ module.exports = (function() {
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			this.controller.trigger('user-action-response', this.request, this.response);
+			this.controller.trigger('post-action-response', this.request, this.response);
 			
 			return;
 		}
+		
+		var self = this;
 
-		var self = this, query = this
-			.controller.eden.load('string')
-			.queryToHash(this.request.message);
-
-		//if no query
-		if(JSON.stringify(query) == '{}') {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No Parameters Defined' });
-				
-			//trigger that a response has been made
-			this.controller.trigger('user-action-response', this.request, this.response);
-			
-			return;
-		}
-
-		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('user-add-address-error', function(error) {
+			.once('post-restore-error', function(error) {
 				//setup an error response
 				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
 				
 				//dont listen for success anymore
-				self.controller.unlisten('user-add-address-success');
+				self.controller.unlisten('post-restore-success');
 				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
 			//when it is successfull
-			.once('user-add-address-success', function() {
+			.once('post-restore-success', function(row) {
 				//set up a success response
-				self.response.message = JSON.stringify({ error: false });
+				self.response.message = JSON.stringify({ error: false, results: row });
 				//dont listen for error anymore
-				self.controller.unlisten('user-add-address-error');
+				self.controller.unlisten('post-restore-error');
 				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
+				self.controller.trigger('post-action-response', self.request, self.response);
 			})
-			//Now call to remove the user
-			.trigger( 'user-add-address', this.controller, this.request.variables[0], query);
+			//Now call to remove the post
+			.trigger('post-restore', this.controller, this.request.variables[0]);
 	};
-
+	
 	/* Private Methods
     -------------------------------*/
 	/* Adaptor

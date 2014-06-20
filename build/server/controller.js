@@ -181,6 +181,16 @@ module.exports = function() {
 		return this;
 	};
 	
+	/**
+	 * Stops listening to a specific event
+	 *
+	 * @return this
+	 */
+	public.unlisten = function() {
+		_events.removeAllListeners.apply(_events, arguments);
+		return this;	
+	};
+	
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor

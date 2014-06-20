@@ -1,0 +1,17 @@
+<style>
+.widget-container-span { padding-bottom: 10px; }
+</style>
+<form class="package-post-form form-horizontal" method="post">
+    <div class="row">
+        <section class="col col-md-9 widget-container-span">
+            {{{copy}}}
+            
+            {{#if revision}}
+            {{{revision}}}
+            {{/if}}
+        </section>
+        <aside class="col col-md-3 widget-container-span">
+			{{{publish}}}
+        </aside>
+    </div>
+</form>

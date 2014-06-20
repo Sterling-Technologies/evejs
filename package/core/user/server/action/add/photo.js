@@ -68,6 +68,8 @@ module.exports = (function() {
 					error: true, 
 					message: error.message });
 				
+				//dont listen for success anymore
+				self.controller.unlisten('user-add-photo-success');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})
@@ -75,7 +77,8 @@ module.exports = (function() {
 			.once('user-add-photo-success', function() {
 				//set up a success response
 				self.response.message = JSON.stringify({ error: false });
-				
+				//dont listen for error anymore
+				self.controller.unlisten('user-add-photo-error');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})

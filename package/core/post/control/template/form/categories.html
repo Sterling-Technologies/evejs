@@ -1,0 +1,14 @@
+<style>.category-tree { overflow: auto; } .eve-block-tree { border: 0; box-shadow: none; } .icon-expand-alt.toggle.eve-block-tree-handle { margin-left: -16px; }</style>
+<div class="widget-box">
+    <div class="widget-header header-color-purple">
+        <h5>Categories</h5>
+    </div>
+    <div class="widget-body category-tree">
+    	<div class="widget-main">
+    	<input type="checkbox" name="category[]" />{{name}}
+    	{{#if children}}
+    		{{template}}<i class="icon-expand-alt toggle"></i>{{template}}
+    	{{/if}}	
+		</div>
+    </div>
+</div>

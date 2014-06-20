@@ -1,4 +1,4 @@
-module.exports = (function() { 
+module.exports = (function() {
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -25,9 +25,9 @@ module.exports = (function() {
 		this.request  	= request;
 		this.response  	= response;
 	};
-	
+
 	/* Public Methods
-    -------------------------------*/
+	-------------------------------*/
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
@@ -37,37 +37,38 @@ module.exports = (function() {
 				message: 'No ID set' });
 			
 			//trigger that a response has been made
-			this.controller.trigger('user-action-response', this.request, this.response);
+			this.controller.trigger('post-action-response', this.request, this.response);
 			
 			return;
 		}
 		
 		var self = this;
-
-		this.controller
-			//when there is an error
-			.once('user-restore-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message });
+		
+		this.controller.post().store()
+			.findOne({ _id: this.request.variables[0], active: true })
+			.lean().exec(function(error, post) {
+				//if there are errors
+				if(error) {
+					//setup an error response
+					self.response.message = JSON.stringify({ 
+						error: true, 
+						message: error.message });
+					
+					//trigger that a response has been made
+					self.controller.trigger('post-action-response', self.request, self.response);
+					return;
+				}
 				
-				//dont listen for success anymore
-				self.controller.unlisten('user-restore-success');
+				//no error, then prepare the package
+				self.response.message = JSON.stringify({ 
+					error: false, 
+					results: post });
+				
 				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
-			})
-			//when it is successfull
-			.once('user-restore-success', function(row) {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false, results: row });
-				//dont listen for error anymore
-				self.controller.unlisten('user-restore-error');
-				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
-			})
-			//Now call to remove the user
-			.trigger('user-restore', this.controller, this.request.variables[0]);
+				self.controller.trigger('post-action-response', self.request, self.response);
+			});
+
+		return this;
 	};
 	
 	/* Private Methods

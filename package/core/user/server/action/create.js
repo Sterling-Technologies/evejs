@@ -44,6 +44,8 @@ module.exports = (function() {
 					message: error.message,
 					validation: error.errors || [] });
 				
+				//dont listen for success anymore
+				self.controller.unlisten('user-create-success');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})
@@ -51,7 +53,8 @@ module.exports = (function() {
 			.once('user-create-success', function() {
 				//set up a success response
 				self.response.message = JSON.stringify({ error: false });
-				
+				//dont listen for error anymore
+				self.controller.unlisten('user-create-error');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})

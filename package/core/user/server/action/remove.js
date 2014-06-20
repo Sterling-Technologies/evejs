@@ -51,7 +51,9 @@ module.exports = (function() {
 				self.response.message = JSON.stringify({ 
 					error: true, 
 					message: error.message });
-				
+					
+				//dont listen for success anymore
+				self.controller.unlisten('user-remove-success');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})
@@ -59,7 +61,8 @@ module.exports = (function() {
 			.once('user-remove-success', function(row) {
 				//set up a success response
 				self.response.message = JSON.stringify({ error: false, results: row });
-				
+				//dont listen for error anymore
+				self.controller.unlisten('user-remove-error');
 				//trigger that a response has been made
 				self.controller.trigger('user-action-response', self.request, self.response);
 			})
