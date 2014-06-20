@@ -8,12 +8,12 @@ define(function() {
     public.data     = {};
 	public.inner 	= controller.noop;
 	public.callback = null;
-	
-    public.template = controller.path('block/template') + '/field/select.html';
     
     /* Private Properties
     -------------------------------*/
     var $ = jQuery;
+	
+	var _loaded = false;
 	
     /* Loader
     -------------------------------*/
@@ -41,40 +41,62 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, options, value) {
+	public.setData = function(name, pattern, value) {
 		this.data.name 		= name;
-		this.data.options 	= options;
+		this.data.pattern	= pattern;
 		this.data.value 	= value;
-		
 		return this;
 	};
 	
 	public.setInnerTemplate = function(template) {
-		template = template || $.noop;
-		this.data.attributes = template();
+		this.data.inner = template;
 		return this;
 	};
 
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
-		//store form templates path to array
-        var templates = ['text!' + this.template];
-
-        //require form templates
-        //assign it to main form
-        require(templates, function(template) {
-            //render
-			this.callback(Handlebars.compile(template)(this.data));
-				
-			next();
+		//if this is the first time
+		if(!_loaded) {
+			//add the style to header
+			//<link rel="stylesheet" type="text/css" href="<?php echo $cdn(); ?>/styles/mask.css" />
+			$('<link rel="stylesheet" type="text/css" />')
+				.attr('href', controller.path('block/asset') + '/styles/mask.css')
+				.appendTo('head');
+			
+			//add script to header
+			//<script type="text/javascript" src="<?php echo $cdn(); ?>/scripts/mask.js">script>
+			$('<script type="text/javascript"></script>')
+				.attr('src', controller.path('block/asset') + '/scripts/mask.js')
+				.appendTo('head');
+		}
+		
+		//load up the action
+		require([controller.path('block/action') + '/field/text.js'], function(action) {
+			action = action.load();
+			
+			action.setData(this.data.name, this.data.value);
+			
+			action.setInnerTemplate(function() {
+				return 'class="eden-field-mask" ' + this.data.inner();
+			}.bind(this));
+			
+			action.render(function(html) {
+				this.callback(html);
+				next();
+			}.bind(this));
 		}.bind(this));
     };
 
     var _listen = function(next) {
+		$('input.eden-field-mask')
+			.not('.eden-field-loaded')
+			.addClass('eden-field-loaded')
+			.inputmask({ mask: this.data.pattern });
+			
 	   	next();
     };
-    
+		
     /* Adaptor
     -------------------------------*/
     return c; 

@@ -50,6 +50,7 @@ define(function() {
 	};
 	
 	public.setInnerTemplate = function(template) {
+		template = template || $.noop;
 		this.data.attributes = template();
 		return this;
 	};
