@@ -7,6 +7,8 @@ define(function() {
     -------------------------------*/
     public.data     = {};
 	public.callback = null;
+	
+    public.template = controller.path('block/template') + '/field/tag.html';
     
     /* Private Properties
     -------------------------------*/
@@ -40,21 +42,27 @@ define(function() {
 			return this;
 		}
 		
-		//add the style to header
-		//<link rel="stylesheet" type="text/css" href="/styles/mask.css" />
-		$('<link rel="stylesheet" type="text/css" />')
-			.attr('href', controller.path('block/asset') + '/styles/mask.css')
-			.appendTo('head');
-		
-		//add script to header
-		//<script type="text/javascript" src="/scripts/mask.js">script>
-		$('<script type="text/javascript"></script>')
-			.attr('src', controller.path('block/asset') + '/scripts/mask.js')
-			.appendTo('head');
-		
-		_loaded = true;
-		
-		callback();
+		//load autocomplete
+		require([controller.path('block/action') + '/field/autocomplete.js'], function(action) {
+			//load autocomplete assets
+			action.load().loadAssets(function() {
+				//add the style to header
+				//<link rel="stylesheet" type="text/css" href="/styles/tag.css" />
+				$('<link rel="stylesheet" type="text/css" />')
+					.attr('href', controller.path('block/asset') + '/styles/tag.css')
+					.appendTo('head');
+				
+				//add script to header
+				//<script type="text/javascript" src="/scripts/tag.js">script>
+				$('<script type="text/javascript"></script>')
+					.attr('src', controller.path('block/asset') + '/scripts/tag.js')
+					.appendTo('head');
+				
+				_loaded = true;
+				
+				callback();
+			});
+		});
 		
 		return this;
 	};
@@ -72,11 +80,11 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, pattern, value, attributes) {
+	public.setData = function(name, value, options, attributes) {
 		this.data.name 			= name;
-		this.data.pattern		= pattern;
 		this.data.value 		= value;
 		this.data.attributes 	= attributes || '';
+		this.data.options		= options || {};
 		
 		return this;
 	};
@@ -96,44 +104,85 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
+		//store form templates path to array
+        var templates = ['text!' + this.template];
+		
 		//add the ace admin class
 		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'eve-field-mask');
+		this.data.attributes, 'class', 'eve-field-tag');
 		
-		//load up the action
-		require([controller.path('block/action') + '/field/text.js'], function(action) {
-			//load the action
-			action.load()
-			//set the data needed
-			.setData(
-				this.data.name, 
-				this.data.value, 
-				this.data.attributes)
-			//pass the attributes along
-			.setInnerTemplate(function() {
-				return this.data.attributes;
-			}.bind(this))
-			//render the text field
-			.render(function(html) {
-				//call the callback set in render
-				this.callback(html);
-				
-				//continue with sequence
-				next();
-			}.bind(this));
+        //require form templates
+        //assign it to main form
+        require(templates, function(template) {
+            //render
+			this.callback(Handlebars.compile(template)(this.data));
+			
+			next();
 		}.bind(this));
     };
-
-    var _listen = function(next) {
+	
+	var _listen = function(next) {
+		var options = this.data.options;
+		
 		//find all the widgets
-		$('input.eve-field-mask')
+		var tag = $('input.eve-field-tag')
 			//remove the ones already set
 			.not('.eve-field-loaded')
 			//mark this as set
-			.addClass('eve-field-loaded')
-			//invoke the widget
-			.inputmask({ mask: this.data.pattern });
+			.addClass('eve-field-loaded');
+		
+		//invoke the widget
+		tag.tagsManager({prefilled: tag.val().split(','), replace: true, tagClass: 'btn'});
+		
+		//focus on click
+		tag.parent().click(function() {
+			tag.focus();
+		});
+		
+		//change width on type
+		var resize = function(e) {
+			//8 - backspace
+			//13 - enter
+			var ruler = $('<span>')
+				.html( $(this).val() )
+				.appendTo('body');
+    		
+			$(this).width( ruler.width() + 14 );
+    		
+			if(JSON.stringify(options) != '{}') {
+				var hint = $(this).siblings('input.tt-hint');
+				
+				if(hint.val().length) {
+					ruler.html(hint.val());
+				}
+				
+				hint.width( ruler.width() + 14 );
+				$(this).width( ruler.width() + 14 );
+				
+				hint.css('top', $(this).position().top + 'px')
+					.css('left', $(this).position().left + 'px')
+			}
 			
+			ruler.remove();
+		};
+		
+		tag
+			.keydown(resize)
+			.keyup(resize)
+			.blur(resize)
+			.focus(resize);
+		
+		if(JSON.stringify(options) != '{}') {
+			tag.typeahead(options)
+				.on('typeahead:selected', 
+				function (e, d) {
+					tag.tagsManager("pushTag", d.value);
+				})
+				.siblings('input.tt-hint')
+				.css('top', tag.position().top + 'px')
+				.css('left', tag.position().left + 'px')
+		}
+		
 	   	next();
     };
 	
@@ -164,7 +213,7 @@ define(function() {
 		//try to replace the attribute
 		return attributes.replace(match[0], key + '="'+value+'"');
 	};
-		
+
     /* Adaptor
     -------------------------------*/
     return c; 

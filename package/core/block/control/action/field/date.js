@@ -7,8 +7,6 @@ define(function() {
     -------------------------------*/
     public.data     = {};
 	public.callback = null;
-	
-    public.template = controller.path('block/template') + '/field/select.html';
     
     /* Private Properties
     -------------------------------*/
@@ -38,10 +36,10 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, options, value, attributes) {
+	public.setData = function(name, value, options, attributes) {
 		this.data.name 			= name;
-		this.data.options 		= options;
 		this.data.value 		= value;
+		this.data.options		= options || {};
 		this.data.attributes 	= attributes || '';
 		
 		return this;
@@ -62,51 +60,35 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
-		//store form templates path to array
-        var templates = ['text!' + this.template];
+		this.data.options.pickTime = false;
+		this.data.options.format = 'MM/dd/yyyy';
 		
-		//add the ace admin class
-		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'form-control');
-		
-        //require form templates
-        //assign it to main form
-        require(templates, function(template) {
-            //render
-			this.callback(Handlebars.compile(template)(this.data));
+		//load up the action
+		require([controller.path('block/action') + '/field/datetime.js'], function(action) {
+			//load the action
+			action.load()
+			//set the data needed
+			.setData(
+				this.data.name, 
+				this.data.value, 
+				this.data.options, 
+				this.data.attributes)
+			.setType('date')
+			//pass the attributes along
+			.setInnerTemplate(function() {
+				return this.data.attributes;
+			}.bind(this))
+			//render the text field
+			.render(function(html) {
+				//call the callback set in render
+				this.callback(html);
 				
-			next();
+				//continue with sequence
+				next();
+			}.bind(this));
 		}.bind(this));
     };
-	
-	var _addAttribute = function(attributes, key, value, verbose) {
-		//we are attempting to inject a new class name
-		if(attributes.indexOf(key + '=') == -1) {
-			//freely prepend to attributes
-			return attributes + ' ' + key + '="' + value + '"';
-		}
 		
-		//the key already exists
-		
-		//is it a class ?
-		if(key == 'class') {
-			//the class name exists
-			//so try to prepend in the class instead
-			return attributes
-				.replace('class="', 'class="'+value+' ')
-				.replace("class='", "class='"+value+" ");
-		}
-		
-		if(!verbose) {
-			return attributes;
-		}
-		
-		var match = (new RegExp(key + '="([^"]*)"', 'ig')).exec(attributes);
-		
-		//try to replace the attribute
-		return attributes.replace(match[0], key + '="'+value+'"');
-	};
-    
     /* Adaptor
     -------------------------------*/
     return c; 

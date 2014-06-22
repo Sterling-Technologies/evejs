@@ -1,15 +1,120 @@
-{{#block 'field/text' 'someone' 'somevalue'}}placeholder="This is some placeholder"{{/block}}
-{{#block 'field/text' 'someone' 'somevalue'}}placeholder="This is some placeholder"{{/block}}
-{{#block 'field/text' 'someone' 'somevalue'}}placeholder="This is some placeholder"{{/block}}
-{{#block 'field/password' 'someone' 'somevalue'}}placeholder="This is some placeholder"{{/block}}
-
-
-{{{block 'field/select' 'labels' list '2'}}}
-
-
-
-{{#block 'field/country' 'country' 'PH'}}class="yay"{{/block}}
-
-{{#block 'field/mask' 'someone' '99-999-a-**-999'}}placeholder="99-999-a-a1-321"{{/block}}
-
-
+<form method="post" class="form-horizontal">
+    {{#block 'form/fieldset' 'Text' error.name}}
+        {{{block 'field/text' 'someone' 'newww value' 'placeholder="This is some placeholder"'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Password' error.none}}
+        {{{block 'field/password' 'someone' 'value' 'placeholder="This is some placeholder"'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'File' error.none}}
+        {{{block 'field/file' 'someone'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Slider'}}
+        {{{block 'field/slider' 'someone' '50'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Mask'}}
+        {{{block 'field/mask' 'someone' '99-999-a-**-999' '' 'placeholder="99-999-a-a1-321"'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Color'}}
+        {{{block 'field/color' 'someone'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Tag'}}
+        {{{block 'field/tag' 'someone' 'test,swe' ../complete}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'DateTime'}}
+        {{{block 'field/datetime' 'someone' '05/28/2014 01:07 AM'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Date'}}
+        {{{block 'field/date' 'someone' '05/28/2014'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Time'}}
+        {{{block 'field/time' 'someone' '01:07 AM'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Autocomplete'}}
+        {{{block 'field/autocomplete' 'someone' '' ../complete}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Combobox'}}
+        {{{block 'field/combobox' 'someone' '' ../complete}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Select'}}
+        {{{block 'field/select' 'labels' ../list '2'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Country'}}
+        {{{block 'field/country' 'country' 'PH' 'class="yay"'}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Textarea'}}
+        {{#block 'field/textarea' 'detail' 'class="yay"'}}Some Value{{/block}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Button'}}
+        {{#block 'field/button' 'class="btn-success"'}}Some Value{{/block}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Radio'}}
+        {{#block 'field/radio' 'choice' 'PH' 'PH' 'class="yay"'}}PH{{/block}}
+        {{#block 'field/radio' 'choice' 'US' 'PH' 'class="yay"'}}US{{/block}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Checkbox'}}
+        {{#block 'field/checkbox' 'check' 'PH' 'PH' 'class="yay"'}}FR{{/block}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Markdown'}}
+        {{#block 'field/markdown' 'detail' 'class="yay"'}}Some Value{{/block}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'WYSIWYG'}}
+        {{#block 'field/wysiwyg' 'detail' 'class="yay"'}}Some Value{{/block}}
+    {{/block}}
+</form>

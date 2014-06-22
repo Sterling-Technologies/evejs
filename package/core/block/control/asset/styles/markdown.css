@@ -1,4 +1,4 @@
-.md-header { background-color: rgb(229, 229, 229); text-align: center; padding: 5px 5px 0; }
+.md-header { background-color: rgb(229, 229, 229); text-align: center; padding: 5px; }
 
 .md-header .btn {
 	background-color: #FFFFFF;
@@ -14,22 +14,4 @@
 	text-shadow: none;
 }
 
-.md-header .btn-inverse { font-size: 10px; }
-
-.md-input { 
-	border: 1px solid rgb(229, 229, 229); 
-	border-collapse: separate;
-	border-image-source: initial;
-	border-image-slice: initial;
-	border-image-width: initial;
-	border-image-outset: initial;
-	border-image-repeat: initial;
-	box-sizing: content-box;
-	height: 250px;
-	max-height: 250px;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	outline: none;
-	padding: 4px;
-	width: 100%;
-}
+.md-header .btn-inverse { font-size: 14px; }

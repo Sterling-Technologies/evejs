@@ -1,4 +1,4 @@
-.eden-wysiwyg-editor { 
+.eve-wysiwyg-editor { 
 	border: 1px solid rgb(229, 229, 229); 
 	border-collapse: separate;
 	border-image-source: initial;
@@ -6,7 +6,6 @@
 	border-image-width: initial;
 	border-image-outset: initial;
 	border-image-repeat: initial;
-	box-sizing: content-box;
 	height: 250px;
 	max-height: 250px;
 	overflow-y: auto;
@@ -15,10 +14,10 @@
 	padding: 4px;
 }
 
-.eden-wysiwyg-toolbar { background-color: rgb(229, 229, 229); text-align: center; padding: 5px 5px 0; }
-.eden-wysiwyg-toolbar .btn-group { float: none; font-size: 0px; }
-.eden-wysiwyg-toolbar > .btn-group { margin-bottom: 5px; }
-.eden-wysiwyg-toolbar .btn-group > .btn { 
+.eve-wysiwyg-toolbar { background-color: rgb(229, 229, 229); text-align: center; padding: 5px 5px 0; }
+.eve-wysiwyg-toolbar .btn-group { float: none; font-size: 0px; }
+.eve-wysiwyg-toolbar > .btn-group { margin-bottom: 5px; }
+.eve-wysiwyg-toolbar .btn-group > .btn { 
 	background-color: #FFFFFF;
 	border: none;
 	border-radius:0;
@@ -32,18 +31,18 @@
 	text-shadow: none;
 }
 
-.eden-wysiwyg-toolbar .btn-group .btn-info {
+.eve-wysiwyg-toolbar .btn-group .btn-info {
 	background-color: #5bc0de;
 	border-color: #46b8da;
 	color: #FFFFFF;
 }
 
-.eden-wysiwyg-toolbar .btn-group .btn.dropdown-toggle { padding: 3px 7px; }
-.eden-wysiwyg-toolbar .btn-group .btn .icon-link,
-.eden-wysiwyg-toolbar .btn-group .btn .icon-picture { margin: 3px; display: block; }
-.eden-wysiwyg-toolbar .btn-group .btn .icon-code { margin: 2px; display: block; }
+.eve-wysiwyg-toolbar .btn-group .btn.dropdown-toggle { padding: 6px 7px; }
+.eve-wysiwyg-toolbar .btn-group .btn .icon-link,
+.eve-wysiwyg-toolbar .btn-group .btn .icon-picture { margin: 3px; display: block; }
+.eve-wysiwyg-toolbar .btn-group .btn .icon-code { margin: 2px; display: block; }
 
-.eden-wysiwyg-toolbar .wysiwyg-speech-input {
+.eve-wysiwyg-toolbar .wysiwyg-speech-input {
 	-webkit-transform: scale(2, 2);
 	cursor: pointer;
 	width: 20px;
@@ -63,12 +62,12 @@
 	top: 40px;
 }
 
-.eden-wysiwyg-toolbar .dropdown-menu { padding: 10px; width: 300px; }
+.eve-wysiwyg-toolbar .dropdown-menu { padding: 10px; width: 300px; }
 
-.eden-wysiwyg-toolbar .dropdown-menu input[type="text"].form-control { min-width: 150px; }
-.eden-wysiwyg-toolbar .dropdown-menu .btn { margin-right: 8px; margin-left: 1px; }
+.eve-wysiwyg-toolbar .dropdown-menu input[type="text"].form-control { min-width: 150px; }
+.eve-wysiwyg-toolbar .dropdown-menu .btn { margin-right: 8px; margin-left: 1px; }
 
-.eden-wysiwyg-toolbar input[type="file"] {
+.eve-wysiwyg-toolbar input[type="file"] {
 	position: fixed;
 	display: block;
 	z-index: -10;
@@ -77,9 +76,9 @@
 	max-height: 0px;
 }
 
-.eden-wysiwyg-toolbar .wysiwyg-choose-file { margin-top: 10px; }
+.eve-wysiwyg-toolbar .wysiwyg-choose-file { margin-top: 10px; }
 
-.eden-wysiwyg-toolbar .btn-colorpicker {
+.eve-wysiwyg-toolbar .btn-colorpicker {
 	width: 24px;
 	height: 24px;
 	position: relative;
@@ -103,7 +102,7 @@
 	border-radius: 0px;
 }
 
-.eden-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li > .colorpick-btn {
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li > .colorpick-btn {
 	display: block;
 	width: 20px;
 	height: 20px;
@@ -115,12 +114,12 @@
 	-webkit-transition: all 0.1s ease;
 }
 
-.eden-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu {
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu {
 	width: 142px;
 	min-width: 0;
 }
 
-.eden-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li {
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li {
 	display: block;
 	float: left;
 	width: 20px;

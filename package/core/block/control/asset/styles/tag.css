@@ -100,3 +100,25 @@ input[type="text"].tm-input {
 .form-horizontal .control-group.tm-group {
   margin-bottom: 15px;
 }
+
+.eve-field-tag-wrapper {
+	border: 1px solid #d5d5d5;
+	padding: 2px 4px;
+	position: relative;
+}
+
+.eve-field-tag-wrapper .eve-field-tag { border: 0; height: 30px; width: 20px; }
+
+.eve-field-tag-wrapper .eve-field-tag:focus { outline: none; }
+
+.eve-field-tag-wrapper .tt-query,
+.eve-field-tag-wrapper .tt-hint { padding: 0; line-height: 20px; width: 20px; }
+
+.eve-field-tag-wrapper .tt-hint {
+	margin-top: -1px;
+	margin-left: -1px;
+	-webkit-transition-duration: 0.1s;
+	transition-duration: 0.1s;
+}
+
+.eve-field-tag-wrapper .twitter-typeahead { display: inline !important; position: static !important; }

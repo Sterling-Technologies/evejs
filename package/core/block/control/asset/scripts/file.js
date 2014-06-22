@@ -20,11 +20,11 @@
 					name = name.substr(0, 5)+'...'+name.substr(-9);
 				}
 				
-				var item = $('<span class="eden-field-file-item">'+
-				'<span class="eden-field-file-label">'+name+'<em>('+size+')</em></span><span class="'+
-				'eden-field-file-remove">x</span></span>');
+				var item = $('<span class="eve-field-file-item">'+
+				'<span class="eve-field-file-label">'+name+'<em>('+size+')</em></span><span class="'+
+				'eve-field-file-remove">x</span></span>');
 				
-				$('span.eden-field-file-remove', item).click(function(e) {
+				$('span.eve-field-file-remove', item).click(function(e) {
 					e.preventDefault();
 					e.stopPropagation();
 					item.remove();

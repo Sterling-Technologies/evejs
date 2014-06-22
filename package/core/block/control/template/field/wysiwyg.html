@@ -1,0 +1,253 @@
+<div class="eve-wysiwyg-toolbar btn-toolbar">
+    <div class="btn-group"> 
+    	<a class="btn dropdown-toggle" data-toggle="dropdown" 
+        data-original-title="Font">
+        	<i class="icon-font"></i>
+            <i class="icon-angle-down icon-on-right"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-light">
+            <li><a data-edit="fontName Arial" 
+            style="font-family:'Arial'">Arial</a></li>
+            <li><a data-edit="fontName Courier" 
+            style="font-family:'Courier'">Courier</a></li>
+            <li><a data-edit="fontName Comic Sans MS" 
+            style="font-family:'Comic Sans MS'">Comic Sans MS</a></li>
+            <li><a data-edit="fontName Helvetica" 
+            style="font-family:'Helvetica'">Helvetica</a></li>
+            <li><a data-edit="fontName Open Sans" 
+            style="font-family:'Open Sans'">Open Sans</a></li>
+            <li><a data-edit="fontName Tahoma" 
+            style="font-family:'Tahoma'">Tahoma</a></li>
+            <li><a data-edit="fontName Verdana" 
+            style="font-family:'Verdana'">Verdana</a></li>
+        </ul>
+    </div>
+    <div class="btn-group"> 
+    	<a class="btn dropdown-toggle" data-toggle="dropdown" 
+        data-original-title="Font Size">
+        	<i class="icon-text-height"></i>&nbsp;
+            <i class="icon-angle-down icon-on-right"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-light">
+            <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+            <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+            <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+        </ul>
+    </div>
+    <div class="btn-group"> 
+    	<a class="btn" data-edit="bold" 
+        data-original-title="Bold (Ctrl/Cmd+B)">
+        <i class="icon-bold"></i></a> 
+        
+        <a class="btn" data-edit="italic" 
+        data-original-title="Italic (Ctrl/Cmd+I)">
+        <i class="icon-italic"></i></a> 
+        
+        <a class="btn" data-edit="strikethrough" 
+        data-original-title="Strikethrough">
+        <i class="icon-strikethrough"></i></a> 
+        
+        <a class="btn" data-edit="underline" 
+        data-original-title="Underline">
+        <i class="icon-underline"></i></a> 
+    </div>
+    <div class="btn-group"> 
+    	<a class="btn btn-success" data-edit="insertunorderedlist" 
+        data-original-title="Bullet list">
+        <i class="icon-list-ul"></i></a> 
+        
+        <a class="btn btn-success" data-edit="insertorderedlist" 
+        data-original-title="Number list">
+        <i class="icon-list-ol"></i></a>
+        
+        <a class="btn btn-purple" data-edit="outdent" 
+        data-original-title="Reduce indent (Shift+Tab)">
+        <i class="icon-indent-left"></i></a>
+        
+        <a class="btn btn-purple" data-edit="indent" 
+        data-original-title="Indent (Tab)">
+        <i class="icon-indent-right"></i></a> 
+    </div>
+    <div class="btn-group"> 
+    	<a class="btn btn-primary" data-edit="justifyleft" 
+        data-original-title="Align Left (Ctrl/Cmd+L)">
+        <i class="icon-align-left"></i></a>
+        
+        <a class="btn btn-primary" data-edit="justifycenter" 
+        data-original-title="Center (Ctrl/Cmd+E)">
+        <i class="icon-align-center"></i></a>
+        
+        <a class="btn btn-primary" data-edit="justifyright" 
+        data-original-title="Align Right (Ctrl/Cmd+R)">
+        <i class="icon-align-right"></i></a>
+        
+        <a class="btn btn-inverse" data-edit="justifyfull" 
+        data-original-title="Justify (Ctrl/Cmd+J)">
+        <i class="icon-align-justify"></i></a>
+    </div>
+    <div class="btn-group">
+        <div class="btn-group"> 
+        	<a class="btn btn-pink dropdown-toggle" data-toggle="dropdown" 
+            data-original-title="Hyperlink"><i class="icon-link"></i></a>
+            
+            <div class="dropdown-menu dropdown-caret pull-right">
+                <div class="input-group">
+                    <input class="form-control" placeholder="URL" type="text" data-edit="createLink">
+                    <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button">Add</button>
+                    </span> 
+                </div>
+            </div>
+        </div>
+        <a class="btn btn-pink" data-edit="unlink" 
+        data-original-title="Remove Hyperlink">
+        <i class="icon-unlink"></i></a> 
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" 
+        data-original-title="Insert picture"><i class="icon-picture"></i></a>
+        
+        <div class="dropdown-menu dropdown-caret pull-right">
+            <div class="input-group">
+                <input class="form-control" placeholder="Image URL" 
+                type="text" data-edit="insertImage" />
+                <span class="input-group-btn">
+                <button class="btn btn-primary" type="button">Insert</button>
+                </span> 
+            </div>
+            <div class="space-2"></div>
+            <div class="center">
+                <button class="btn btn-success wysiwyg-choose-file" 
+                type="button"><i class="icon-file"></i> Choose Image &hellip;</button>
+                <input type="file" data-edit="insertImage" />
+            </div>
+        </div>
+    </div>
+    <div class="btn-group">
+        <div class="dropdown dropdown-colorpicker">
+        	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0)"><span 
+            class="btn-colorpicker" style="background-color: rgb(255, 117, 55);" 
+            data-original-title=""></span></a>
+            
+            <ul class="dropdown-menu dropdown-caret pull-right">
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#ac725e;" 
+                data-color="#ac725e"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#d06b64;" 
+                data-color="#d06b64"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#f83a22;" 
+                data-color="#f83a22"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#fa573c;" 
+                data-color="#fa573c"></a></li>
+
+                <li><a class="colorpick-btn selected" href="javascript:void(0)" 
+                style="background-color:#ff7537;" 
+                data-color="#ff7537"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#ffad46;" 
+                data-color="#ffad46"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#42d692;" 
+                data-color="#42d692"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#16a765;" 
+                data-color="#16a765"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#7bd148;" 
+                data-color="#7bd148"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#b3dc6c;" 
+                data-color="#b3dc6c"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#fbe983;" 
+                data-color="#fbe983"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#fad165;" 
+                data-color="#fad165"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#92e1c0;" 
+                data-color="#92e1c0"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#9fe1e7;" 
+                data-color="#9fe1e7"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#9fc6e7;" 
+                data-color="#9fc6e7"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#4986e7;" 
+                data-color="#4986e7"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#9a9cff;" 
+                data-color="#9a9cff"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#b99aff;" 
+                data-color="#b99aff"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#c2c2c2;" 
+                data-color="#c2c2c2"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#cabdbf;" 
+                data-color="#cabdbf"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#cca6ac;" 
+                data-color="#cca6ac"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#f691b2;" 
+                data-color="#f691b2"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#cd74e6;" 
+                data-color="#cd74e6"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#a47ae2;" 
+                data-color="#a47ae2"></a></li>
+
+                <li><a class="colorpick-btn" href="javascript:void(0)" 
+                style="background-color:#444444;" 
+                data-color="#444444"></a></li>
+            </ul>
+        </div>
+        <input disabled="" class="hide" type="text" data-edit="foreColor" />
+    </div>
+    
+    <div class="btn-group">
+    	<a class="btn" data-view="source"
+        data-original-title="View Source">
+        <i class="icon-code"></i></a> 
+    </div>
+    
+    <div class="btn-group"> 
+    	<a class="btn btn-grey" data-edit="undo" 
+        data-original-title="Undo (Ctrl/Cmd+Z)">
+       	<i class="icon-undo"></i></a> 
+        
+        <a class="btn btn-grey" data-edit="redo" 
+        data-original-title="Redo (Ctrl/Cmd+Y)">
+        <i class="icon-repeat"></i></a> 
+    </div>
+</div>
+<textarea{{#if name.length}} name="{{name}}"{{/if}} {{{attributes}}}>{{innerTemplate}}</textarea>

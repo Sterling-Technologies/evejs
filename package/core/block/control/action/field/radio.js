@@ -8,7 +8,7 @@ define(function() {
     public.data     = {};
 	public.callback = null;
 	
-    public.template = controller.path('block/template') + '/field/select.html';
+    public.template = controller.path('block/template') + '/field/radio.html';
     
     /* Private Properties
     -------------------------------*/
@@ -38,11 +38,15 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, options, value, attributes) {
+	public.setData = function(name, value, selected, attributes) {
 		this.data.name 			= name;
-		this.data.options 		= options;
 		this.data.value 		= value;
 		this.data.attributes 	= attributes || '';
+		
+		if(value == selected) {
+			this.data.attributes = _addAttribute(
+			this.data.attributes, 'selected', 'selected');
+		}
 		
 		return this;
 	};
@@ -67,7 +71,10 @@ define(function() {
 		
 		//add the ace admin class
 		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'form-control');
+		this.data.attributes, 'class', 'ace');
+		
+		//make sure we have an input type
+		this.data.type = this.data.type || 'text';
 		
         //require form templates
         //assign it to main form
@@ -106,7 +113,7 @@ define(function() {
 		//try to replace the attribute
 		return attributes.replace(match[0], key + '="'+value+'"');
 	};
-    
+
     /* Adaptor
     -------------------------------*/
     return c; 

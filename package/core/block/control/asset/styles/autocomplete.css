@@ -1,32 +1,36 @@
 .twitter-typeahead { width: 100%; }
 
-.eden-field-autocomplete,
+.eve-field-combobox, .eve-field-autocomplete-wrapper { padding: 0; }
+
+.eve-field-autocomplete,
 .tt-query,
 .tt-hint {
   width: 100%;
-  height: 34px;
+  height: 30px;
   padding: 8px 12px;
   font-size: 14px;
-  line-height: 34px;
+  line-height: 30px;
   outline: none;
 }
 
-.eden-field-autocomplete { background-color: #fff; }
+.eve-field-autocomplete { background-color: #fff; border: 0 !important; }
 
 .tt-hint {
   color: #999
 }
 
+.form-group .tt-hint:disabled { background-color: transparent !important; }
+
 .tt-dropdown-menu {
   width: 100%;
-  margin-top: 12px;
+  margin-top: -1px;
   padding: 8px 0;
   background-color: #fff;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
   -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
      -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
           box-shadow: 0 5px 10px rgba(0,0,0,.2);
@@ -34,7 +38,7 @@
 
 .tt-suggestion {
   padding: 3px 20px;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 24px;
 }
 

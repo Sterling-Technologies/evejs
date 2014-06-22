@@ -7,12 +7,14 @@ define(function() {
     -------------------------------*/
     public.data     = {};
 	public.callback = null;
-	
-    public.template = controller.path('block/template') + '/field/select.html';
     
+    public.template = controller.path('block/template') + '/field/file.html';
+	
     /* Private Properties
     -------------------------------*/
     var $ = jQuery;
+	
+	var _loaded = false;
 	
     /* Loader
     -------------------------------*/
@@ -29,18 +31,51 @@ define(function() {
     
 	/* Public Methods
     -------------------------------*/
+	public.loadAssets = function(callback) {
+		//make sure callback is a function
+		callback = callback || $.noop;
+		
+		//if loaded
+		if(_loaded) {
+			//do nothing
+			callback();
+			return this;
+		}
+		
+		//add the style to header
+		//<link rel="stylesheet" type="text/css" href="/styles/file.css" />
+		$('<link rel="stylesheet" type="text/css" />')
+			.attr('href', controller.path('block/asset') + '/styles/file.css')
+			.appendTo('head');
+		
+		//add script to header
+		//<script type="text/javascript" src="/scripts/file.js">script>
+		$('<script type="text/javascript"></script>')
+			.attr('src', controller.path('block/asset') + '/scripts/file.js')
+			.appendTo('head');
+		
+		_loaded = true;
+		
+		callback();
+		
+		return this;
+	};
+	
     public.render = function(callback) {
 		//the callback will be called in output
 		this.callback = callback;
 		
-        $.sequence().setScope(this).then(_output);
+        $.sequence()
+			.setScope(this)
+			.then(this.loadAssets)
+        	.then(_output)
+			.then(_listen);
         
         return this;
     };
 	
-	public.setData = function(name, options, value, attributes) {
+	public.setData = function(name, value, attributes) {
 		this.data.name 			= name;
-		this.data.options 		= options;
 		this.data.value 		= value;
 		this.data.attributes 	= attributes || '';
 		
@@ -63,20 +98,29 @@ define(function() {
     -------------------------------*/
     var _output = function(next) {
 		//store form templates path to array
-        var templates = ['text!' + this.template];
+		var templates = ['text!' + this.template];
 		
-		//add the ace admin class
-		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'form-control');
-		
-        //require form templates
-        //assign it to main form
-        require(templates, function(template) {
-            //render
+		//require form templates
+		//assign it to main form
+		require(templates, function(template) {
+			//render
 			this.callback(Handlebars.compile(template)(this.data));
 				
 			next();
 		}.bind(this));
+    };
+
+    var _listen = function(next) {
+		//find all the widgets
+		$('div.eve-field-file')
+			//remove the ones already set
+			.not('.eve-field-loaded')
+			//mark this as set
+			.addClass('eve-field-loaded')
+			//invoke the widget
+			.file();
+			
+	   	next();
     };
 	
 	var _addAttribute = function(attributes, key, value, verbose) {
@@ -106,7 +150,7 @@ define(function() {
 		//try to replace the attribute
 		return attributes.replace(match[0], key + '="'+value+'"');
 	};
-    
+		
     /* Adaptor
     -------------------------------*/
     return c; 

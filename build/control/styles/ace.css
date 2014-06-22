@@ -5974,6 +5974,8 @@ input[type=checkbox].ace.ace-switch.ace-switch-7:checked + .lbl::after {
   z-index: 2\0/;
 }
 /** input error states */
+form .help-block { clear: left; }
+
 .form-group select,
 .form-group textarea,
 .form-group input[type="text"],

@@ -161,9 +161,9 @@
 	background-position: bottom;
 }
 
-.eden-field-color-wrapper { position: relative; }
+.eve-field-color-wrapper { position: relative; padding: 0; }
 
-.eden-field-color {
+.eve-field-color {
 	background-image: url(../images/color/select.png);
 	background-repeat: no-repeat;
 	background-position: 0 0;

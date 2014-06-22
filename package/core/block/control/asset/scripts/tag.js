@@ -309,7 +309,7 @@
 
         var html = '<span class="' + tagClasses() + '" id="' + newTagId + '">';
         html += '<span>' + escaped + '</span>';
-        html += '<a href="#" class="tm-tag-remove" id="' + newTagRemoveId + '" TagIdToRemove="' + tagId + '">';
+        html += '<a href="javascript:void(0)" class="tm-tag-remove" id="' + newTagRemoveId + '" TagIdToRemove="' + tagId + '">';
         html += tagManagerOptions.tagCloseIcon + '</a></span> ';
         var $el = $(html);
 

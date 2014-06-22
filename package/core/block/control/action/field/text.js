@@ -6,7 +6,6 @@ define(function() {
     /* Public Properties 
     -------------------------------*/
     public.data     = {};
-	public.inner 	= controller.noop;
 	public.callback = null;
 	
     public.template = controller.path('block/template') + '/field/text.html';
@@ -31,27 +30,36 @@ define(function() {
 	/* Public Methods
     -------------------------------*/
     public.render = function(callback) {
+		//the callback will be called in output
 		this.callback = callback;
 		
-        $.sequence()
-			.setScope(this)
-        	.then(_output)
-			.then(_listen);
+        $.sequence().setScope(this).then(_output);
         
         return this;
     };
 	
-	public.setData = function(name, value, type) {
-		this.data.name 	= name;
-		this.data.value = value;
-		this.data.type = type || 'text';
+	public.setType = function(type) {
+		this.data.type = type;
+		return this;
+	};
+	
+	public.setData = function(name, value, attributes) {
+		this.data.name 			= name;
+		this.data.value 		= value;
+		this.data.attributes 	= attributes || '';
 		
 		return this;
 	};
 	
 	public.setInnerTemplate = function(template) {
+		//make template an empty function
+		//if not already defined
 		template = template || $.noop;
-		this.data.attributes = template();
+		
+		//call the template (Handlebars)
+		//make sure attributes is a string otherwise
+		this.data.innerTemplate = template() || '';
+		
 		return this;
 	};
 
@@ -60,7 +68,14 @@ define(function() {
     var _output = function(next) {
 		//store form templates path to array
         var templates = ['text!' + this.template];
-
+		
+		//add the ace admin class
+		this.data.attributes = _addAttribute(
+		this.data.attributes, 'class', 'form-control');
+		
+		//make sure we have an input type
+		this.data.type = this.data.type || 'text';
+		
         //require form templates
         //assign it to main form
         require(templates, function(template) {
@@ -70,11 +85,35 @@ define(function() {
 			next();
 		}.bind(this));
     };
+	
+	var _addAttribute = function(attributes, key, value, verbose) {
+		//we are attempting to inject a new class name
+		if(attributes.indexOf(key + '=') == -1) {
+			//freely prepend to attributes
+			return attributes + ' ' + key + '="' + value + '"';
+		}
+		
+		//the key already exists
+		
+		//is it a class ?
+		if(key == 'class') {
+			//the class name exists
+			//so try to prepend in the class instead
+			return attributes
+				.replace('class="', 'class="'+value+' ')
+				.replace("class='", "class='"+value+" ");
+		}
+		
+		if(!verbose) {
+			return attributes;
+		}
+		
+		var match = (new RegExp(key + '="([^"]*)"', 'ig')).exec(attributes);
+		
+		//try to replace the attribute
+		return attributes.replace(match[0], key + '="'+value+'"');
+	};
 
-    var _listen = function(next) {
-	   	next();
-    };
-    
     /* Adaptor
     -------------------------------*/
     return c; 

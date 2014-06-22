@@ -55,6 +55,19 @@ define(function() {
 			{ value: 2, label: 'Label 2' },
 			{ value: 3, label: 'Label 3' },
 			{ value: 4, label: 'Label 4' } ];
+			
+		this.data.error = { name: 'Name cannot be empty.' };
+		
+		this.data.complete = { 
+			local: [
+				'Lorem Ipsum', 
+				'Ipsum Dolor',
+				'Dolor Levity',
+				'Levity Dasma',
+				'Dasma Dogity',
+				'Dogity Lorem',
+				'Lord Of the Rings']
+		};
 		
 		next();
 	};

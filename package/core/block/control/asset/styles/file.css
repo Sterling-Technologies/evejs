@@ -1,7 +1,7 @@
-.eden-field-file { height: auto; }
-.eden-field-file input { display: none; }
+.eve-field-file { height: auto; }
+.eve-field-file input { display: none; }
 
-.eden-field-file-list { 
+.eve-field-file-list { 
 	background: #FFFFFF; 
 	cursor: pointer;
 	display: block;
@@ -9,7 +9,7 @@
 	line-height: 14px;
 	min-height: 22px;
 }
-.eden-field-file-list .eden-field-file-item { 
+.eve-field-file-list .eve-field-file-item { 
 	float: left; 
 	height: 15px;
 	margin-right: 1px;
@@ -17,13 +17,13 @@
 	padding: 3px;
 }
 
-.eden-field-file-list .eden-field-file-item em { font-size: 10px; }
+.eve-field-file-list .eve-field-file-item em { font-size: 10px; }
 
-.eden-field-file-list .eden-field-file-label { 
+.eve-field-file-list .eve-field-file-label { 
 	float: left; 
 	font-weight: normal;
 }
-.eden-field-file-list .eden-field-file-remove { 
+.eve-field-file-list .eve-field-file-remove { 
 	cursor: pointer;
 	color: #DF0000;
 	font-weight: bold;

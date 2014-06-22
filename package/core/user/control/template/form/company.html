@@ -59,11 +59,7 @@
     <label class="col-sm-4 control-label no-padding-right" 
     for="company[country]">Country</label>
     <div class="col-sm-8"> 
-        <select class="col-xs-12 col-sm-10" name="company[country]">
-            {{#each country}}
-            <option value="{{code}}"{{#when code '==' ../user.company.country}} selected="selected" {{/when}}>{{name}}</option>
-            {{/each}}
-        </select>
+        {{{block 'field/country' 'company[country]' user.company.country}}}
     </div>
 </div>
 

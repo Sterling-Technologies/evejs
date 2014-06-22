@@ -8,7 +8,7 @@ define(function() {
     public.data     = {};
 	public.callback = null;
 	
-    public.template = controller.path('block/template') + '/field/select.html';
+    public.template = controller.path('block/template') + '/form/fieldset.html';
     
     /* Private Properties
     -------------------------------*/
@@ -38,10 +38,11 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, options, value, attributes) {
-		this.data.name 			= name;
-		this.data.options 		= options;
-		this.data.value 		= value;
+	public.setData = function(label, error, labelSize, fieldSize, attributes) {
+		this.data.label 		= label;
+		this.data.error			= error;
+		this.data.labelSize 	= labelSize || '2';
+		this.data.fieldSize 	= fieldSize || '10';
 		this.data.attributes 	= attributes || '';
 		
 		return this;
@@ -67,7 +68,12 @@ define(function() {
 		
 		//add the ace admin class
 		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'form-control');
+		this.data.attributes, 'class', 'form-group');
+		
+		if(this.data.error) {
+			this.data.attributes = _addAttribute(
+			this.data.attributes, 'class', 'has-error');
+		}
 		
         //require form templates
         //assign it to main form
@@ -106,7 +112,7 @@ define(function() {
 		//try to replace the attribute
 		return attributes.replace(match[0], key + '="'+value+'"');
 	};
-    
+
     /* Adaptor
     -------------------------------*/
     return c; 

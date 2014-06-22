@@ -6,7 +6,6 @@ define(function() {
     /* Public Properties 
     -------------------------------*/
     public.data     = {};
-	public.inner 	= controller.noop;
 	public.callback = null;
     
     /* Private Properties
@@ -29,25 +28,30 @@ define(function() {
 	/* Public Methods
     -------------------------------*/
     public.render = function(callback) {
+		//the callback will be called in output
 		this.callback = callback;
 		
-        $.sequence()
-			.setScope(this)
-        	.then(_output)
-			.then(_listen);
+        $.sequence().setScope(this).then(_output);
         
         return this;
     };
 	
-	public.setData = function(name, value) {
-		this.data.name 		= name;
-		this.data.value 	= value;
-		this.data.type		= 'password';
+	public.setData = function(name, value, attributes) {
+		this.data.name 			= name;
+		this.data.value 		= value;
+		this.data.attributes 	= attributes || '';
 		return this;
 	};
 	
 	public.setInnerTemplate = function(template) {
-		this.data.inner = template;
+		//make template an empty function
+		//if not already defined
+		template = template || $.noop;
+		
+		//call the template (Handlebars)
+		//make sure attributes is a string otherwise
+		this.data.innerTemplate = template() || '';
+		
 		return this;
 	};
 
@@ -56,18 +60,28 @@ define(function() {
     var _output = function(next) {
 		//load up the action
 		require([controller.path('block/action') + '/field/text.js'], function(action) {
-			action = action.load();
-			action.setData(this.data.name, this.data.value, this.data.type);
-			action.setInnerTemplate(this.data.inner);
-			action.render(function(html) {
+			//load the action
+			action.load()
+			//set the input type
+			.setType('password')
+			//set the data needed
+			.setData(
+				this.data.name, 
+				this.data.value, 
+				this.data.attributes)
+			//pass the attributes along
+			.setInnerTemplate(function() {
+				return this.data.innerTemplate;
+			}.bind(this))
+			//render the text field
+			.render(function(html) {
+				//call the callback set in render
 				this.callback(html);
+				
+				//continue with sequence
 				next();
 			}.bind(this));
 		}.bind(this));
-    };
-
-    var _listen = function(next) {
-	   	next();
     };
 		
     /* Adaptor
