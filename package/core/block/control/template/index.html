@@ -18,7 +18,13 @@
     <hr />
     
     {{#block 'form/fieldset' 'Slider'}}
-        {{{block 'field/slider' 'someone' '50'}}}
+        {{{block 'field/slider' 'someone' 50 20 200 5}}}
+    {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Number'}}
+        {{{block 'field/number' 'someone' '50' '20' '200' '5'}}}
     {{/block}}
     
     <hr />
@@ -108,6 +114,18 @@
     
     <hr />
     
+    {{#block 'form/fieldset' 'Switch'}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '1'}}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '2'}}}
+        {{{block 'field/switch' 'check' 'US' 'PH' '3'}}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '4'}}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '5'}}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '6'}}}
+        {{{block 'field/switch' 'check' 'PH' 'PH' '7'}}}
+    {{/block}}
+    
+    <hr />
+    
     {{#block 'form/fieldset' 'Markdown'}}
         {{#block 'field/markdown' 'detail' 'class="yay"'}}Some Value{{/block}}
     {{/block}}
@@ -117,4 +135,11 @@
     {{#block 'form/fieldset' 'WYSIWYG'}}
         {{#block 'field/wysiwyg' 'detail' 'class="yay"'}}Some Value{{/block}}
     {{/block}}
+    
+    <hr />
+    
+    {{#block 'form/fieldset' 'Pagination'}}
+        {{{block 'component/pagination' 47 10}}}
+    {{/block}}
+    
 </form>

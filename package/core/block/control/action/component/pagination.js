@@ -8,7 +8,7 @@ define(function() {
     public.data     = {};
 	public.callback = null;
 	
-    public.template = controller.path('block/template') + '/field/radio.html';
+    public.template = controller.path('block/template') + '/component/pagination.html';
     
     /* Private Properties
     -------------------------------*/
@@ -38,15 +38,32 @@ define(function() {
         return this;
     };
 	
-	public.setData = function(name, value, selected, attributes) {
-		this.data.name 			= name;
-		this.data.value 		= value;
-		this.data.attributes 	= attributes || '';
+	public.setType = function(type) {
+		this.data.type = type;
+		return this;
+	};
+	
+	public.setData = function(total, range, attributes) {
+		//get current query
+		var query 		= {},
+			current		= 1,
+			queryString = window.location.href.split('?')[1];
 		
-		if(value == selected) {
-			this.data.attributes = _addAttribute(
-			this.data.attributes, 'checked', 'checked');
+		//if we have a query string
+		if(queryString && queryString.length) {
+			//make it into an object
+			query = jQuery.queryToHash(queryString);
+			//remember the current page
+			current = query.page || 1;
 		}
+		
+		//how many pages?
+		var pages = Math.ceil(total / range);
+		
+		this.data.pages 		= pages;
+		this.data.current 		= current;
+		this.data.query 		= query;
+		this.data.attributes 	= attributes || '';
 		
 		return this;
 	};
@@ -66,53 +83,35 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
+		//if there is one or less pages
+		if(this.data.pages < 2) {
+			//render nothing
+			this.callback('');
+			next();
+			return;
+		}
+		
 		//store form templates path to array
         var templates = ['text!' + this.template];
-		
-		//add the ace admin class
-		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'ace');
-		
-		//make sure we have an input type
-		this.data.type = this.data.type || 'text';
 		
         //require form templates
         //assign it to main form
         require(templates, function(template) {
+			this.data.items = [];
+			for(var i = 0; i < this.data.pages; i++) {
+				this.data.query.page = i + 1;
+				this.data.items.push({
+					page	: i + 1,
+					active	: this.data.current == (i + 1), 
+					query	: $.hashToQuery(this.data.query) });
+			}
+			
             //render
 			this.callback(Handlebars.compile(template)(this.data));
 				
 			next();
 		}.bind(this));
     };
-	
-	var _addAttribute = function(attributes, key, value, verbose) {
-		//we are attempting to inject a new class name
-		if(attributes.indexOf(key + '=') == -1) {
-			//freely prepend to attributes
-			return attributes + ' ' + key + '="' + value + '"';
-		}
-		
-		//the key already exists
-		
-		//is it a class ?
-		if(key == 'class') {
-			//the class name exists
-			//so try to prepend in the class instead
-			return attributes
-				.replace('class="', 'class="'+value+' ')
-				.replace("class='", "class='"+value+" ");
-		}
-		
-		if(!verbose) {
-			return attributes;
-		}
-		
-		var match = (new RegExp(key + '="([^"]*)"', 'ig')).exec(attributes);
-		
-		//try to replace the attribute
-		return attributes.replace(match[0], key + '="'+value+'"');
-	};
 
     /* Adaptor
     -------------------------------*/

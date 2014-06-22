@@ -58,7 +58,7 @@ define(function() {
 		
 		if(value == selected) {
 			this.data.attributes = _addAttribute(
-			this.data.attributes, 'selected', 'selected');
+			this.data.attributes, 'checked', 'checked');
 		}
 		
 		return this;

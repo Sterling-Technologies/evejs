@@ -12,6 +12,8 @@ define(function() {
     -------------------------------*/
     var $ = jQuery;
 	
+	var _loaded = false;
+	
     /* Loader
     -------------------------------*/
     public.__load = c.load = function() {
@@ -27,12 +29,37 @@ define(function() {
     
 	/* Public Methods
     -------------------------------*/
+	public.loadAssets = function(callback) {
+		//make sure callback is a function
+		callback = callback || $.noop;
+		
+		//if loaded
+		if(_loaded) {
+			//do nothing
+			callback();
+			return this;
+		}
+		
+		//add script to header
+		//<script type="text/javascript" src="/scripts/autocomplete.js">script>
+		$('<script type="text/javascript"></script>')
+			.attr('src', controller.path('block/asset') + '/scripts/number.js')
+			.appendTo('head');
+		
+		_loaded = true;
+		
+		callback();
+		
+		return this;
+	};
+	
     public.render = function(callback) {
 		//the callback will be called in output
 		this.callback = callback;
 		
         $.sequence()
 			.setScope(this)
+			.then(this.loadAssets)
 			.then(_output)
 			.then(_listen);
         
@@ -65,20 +92,13 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
-		//add required to attributes
-		this.data.attributes = _addAttribute(this.data.attributes, 'min', this.data.min, true);
-		this.data.attributes = _addAttribute(this.data.attributes, 'max', this.data.max, true);
-		this.data.attributes = _addAttribute(this.data.attributes, 'step', this.data.step, true);
-		
 		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'eve-field-slider');
+		this.data.attributes, 'class', 'eve-field-number');
 		
 		//load up the action
 		require([controller.path('block/action') + '/field/text.js'], function(action) {
 			//load the action
 			action.load()
-			//set the input type
-			.setType('range')
 			//set the data needed
 			.setData(
 				this.data.name, 
@@ -100,23 +120,41 @@ define(function() {
     };
 	
 	var _listen = function(next) {
-		var counter = $('<div>')
-			.css('margin-bottom', '-12px')
-			.css('font-size', '11px')
-			.html(this.data.value || this.data.min);
-			
+		var self = this;
 		//find all the widgets
-		$('input.eve-field-slider')
+		$('input.eve-field-number')
 			//remove the ones already set
 			.not('.eve-field-loaded')
 			//mark this as set
 			.addClass('eve-field-loaded')
 			//invoke the widget
-			.before(counter)
-			.change(function() {
-				counter.html($(this).val());
+			.ace_spinner({
+				//FUEL_UX SPINNER options
+				value			: parseInt(this.data.value),
+				min				: parseInt(this.data.min),
+				max				: parseInt(this.data.max),
+				step			: parseInt(this.data.step),
+				
+				// + custom ones
+				icon_up			: 'icon-plus',//default : 'icon-chevron-up'
+				icon_down		: 'icon-minus',// default : 'icon-chevron-down'
+				btn_up_class	: 'btn-success',//default : ''
+				btn_down_class	: 'btn-danger',//default : ''
+				
+				on_sides: false,//will show decrement button on left and the other one on right
+				touch_spinner: false// will use larger buttons by default
+			}).keydown(function(e) {
+				//go up
+				if(e.keyCode == 38) {
+					e.preventDefault();
+					$(this).val(parseInt($(this).val()) + parseInt(self.data.step));
+					//go down
+				
+				} else if(e.keyCode == 40) {
+					$(this).val(parseInt($(this).val()) - parseInt(self.data.step));
+				}
 			});
-			
+		
 	   	next();
     };
 	

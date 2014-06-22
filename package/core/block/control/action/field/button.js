@@ -51,7 +51,7 @@ define(function() {
 		
 		//call the template (Handlebars)
 		//make sure attributes is a string otherwise
-		this.data.innerTemplate = template() || '';
+		this.data.innerTemplate = template({}) || '';
 		
 		return this;
 	};

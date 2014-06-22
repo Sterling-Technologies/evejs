@@ -13,14 +13,8 @@
 <div class="form-group">
     <label class="col-sm-4 control-label no-padding-right">Gender</label>
     <div class="col-sm-8">
-        <input name="gender" type="hidden" value="" />
-        <label class="inline">
-        <input name="gender" type="radio" class="ace" value="male"{{#when user.gender '==' 'male'}} checked="true" {{/when}}/>
-        <span class="lbl">Male</span> </label>
-        &nbsp; &nbsp; &nbsp;
-        <label class="inline">
-        <input name="gender" type="radio" class="ace" value="female"{{#when user.gender '==' 'female'}} checked="true" {{/when}} />
-        <span class="lbl">Female</span> </label>
+    	{{#block 'field/radio' 'gender' 'male' user.gender}}Male{{/block}}
+        {{#block 'field/radio' 'gender' 'female' user.gender}}Female{{/block}}
     </div>
 </div>
 <!-- End: Basic Form -->

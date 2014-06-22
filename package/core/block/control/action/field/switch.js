@@ -31,21 +31,34 @@ define(function() {
 		//the callback will be called in output
 		this.callback = callback;
 		
-        $.sequence()
-			.setScope(this)
-			.then(_output)
-			.then(_listen);
+        $.sequence().setScope(this).then(_output);
         
         return this;
     };
 	
-	public.setData = function(name, value, min, max, step, attributes) {
+	public.setData = function(name, value, selected, type, attributes) {
 		this.data.name 			= name;
 		this.data.value 		= value;
 		this.data.attributes 	= attributes || '';
-		this.data.min			= min || '0';
-		this.data.max			= max || '0';
-		this.data.step			= step || '0';
+		this.data.selected		= selected;
+		
+		if(selected instanceof Array) {
+			for(var i = 0; i < selected.length; i++) {
+				if(value == selected[i]) {
+					this.data.attributes = _addAttribute(
+					this.data.attributes, 'selected', 'selected');
+					
+					return this;
+				}
+			}
+			
+			return this;
+		}
+		
+		type = type || 1;
+		
+		this.data.attributes = _addAttribute(this.data.attributes, 
+		'class', 'ace-switch ace-switch-' + type);
 		
 		return this;
 	};
@@ -65,24 +78,15 @@ define(function() {
     /* Private Methods
     -------------------------------*/
     var _output = function(next) {
-		//add required to attributes
-		this.data.attributes = _addAttribute(this.data.attributes, 'min', this.data.min, true);
-		this.data.attributes = _addAttribute(this.data.attributes, 'max', this.data.max, true);
-		this.data.attributes = _addAttribute(this.data.attributes, 'step', this.data.step, true);
-		
-		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'eve-field-slider');
-		
 		//load up the action
-		require([controller.path('block/action') + '/field/text.js'], function(action) {
+		require([controller.path('block/action') + '/field/checkbox.js'], function(action) {
 			//load the action
 			action.load()
-			//set the input type
-			.setType('range')
 			//set the data needed
 			.setData(
 				this.data.name, 
 				this.data.value, 
+				this.data.selected,
 				this.data.attributes)
 			//pass the attributes along
 			.setInnerTemplate(function() {
@@ -97,27 +101,6 @@ define(function() {
 				next();
 			}.bind(this));
 		}.bind(this));
-    };
-	
-	var _listen = function(next) {
-		var counter = $('<div>')
-			.css('margin-bottom', '-12px')
-			.css('font-size', '11px')
-			.html(this.data.value || this.data.min);
-			
-		//find all the widgets
-		$('input.eve-field-slider')
-			//remove the ones already set
-			.not('.eve-field-loaded')
-			//mark this as set
-			.addClass('eve-field-loaded')
-			//invoke the widget
-			.before(counter)
-			.change(function() {
-				counter.html($(this).val());
-			});
-			
-	   	next();
     };
 	
 	var _addAttribute = function(attributes, key, value, verbose) {
