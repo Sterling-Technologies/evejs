@@ -44,13 +44,17 @@
                             href="/post?mode=all{{#if keyword}}&keyword={{keyword}}{{/if}}">All &nbsp;
                             <span class="badge badge-grey">{{all}}</span></a> 
                             
-                            <a class="btn btn-sm{{#when mode '==' 'active'}} btn-light{{/when}}" 
-                            href="/post?mode=active{{#if keyword}}&keyword={{keyword}}{{/if}}">Active &nbsp;
-                            <span class="badge badge-grey">{{active}}</span></a> 
+                            <a class="btn btn-sm{{#when mode '==' 'published'}} btn-light{{/when}}" 
+                            href="/post?mode=published{{#if keyword}}&keyword={{keyword}}{{/if}}">Published &nbsp;
+                            <span class="badge badge-grey">{{published}}</span></a> 
                             
-                            <a class="btn btn-sm{{#when mode '==' 'guest'}} btn-light{{/when}}" 
-                            href="/post?mode=guest{{#if keyword}}&keyword={{keyword}}{{/if}}">Guests &nbsp;
-                            <span class="badge badge-grey">{{guests}}</span></a> 
+                            <a class="btn btn-sm{{#when mode '==' 'review'}} btn-light{{/when}}" 
+                            href="/post?mode=review{{#if keyword}}&keyword={{keyword}}{{/if}}">Review &nbsp;
+                            <span class="badge badge-grey">{{review}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'draft'}} btn-light{{/when}}" 
+                            href="/post?mode=draft{{#if keyword}}&keyword={{keyword}}{{/if}}">Draft &nbsp;
+                            <span class="badge badge-grey">{{draft}}</span></a> 
                             
                             <a class="btn btn-sm{{#when mode '==' 'trash'}} btn-light{{/when}}" 
                             href="/post?mode=trash{{#if keyword}}&keyword={{keyword}}{{/if}}">Trash &nbsp;
@@ -89,8 +93,8 @@
                             {{/if}}
                         </td>
                         <td>{{id}}</td>
-                        <th>{{title}}</th>
-                    	<th>{{status}}</th>
+                        <td>{{title}}</td>
+                    	<td>{{status}}</td>
                         <td valign="middle">{{updated}}</td>
                     </tr>	
                     {{/each}}

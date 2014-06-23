@@ -53,7 +53,6 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
@@ -71,7 +70,7 @@ define(function() {
 			
 			//we are good to send this up
 			_process.call(this, next);
-			
+			next();
 			return;
 		}
 		
@@ -109,12 +108,12 @@ define(function() {
     };
 
     var _listen = function(next) {
-	   	$('section.post-profile form.package-post-form input[name="name"]').keyup(function(e) {
+		$('form.package-post-form').on('keyup', 'input[name="title"]', function(e) {
 			var name = $(this);
 			//there's a delay in when the input value is updated
 			//we do this settime out to case for this
 			setTimeout(function() {
-				$('input[name="slug"]').val($.trim(name.val()
+				$('form.package-post-form input[name="slug"]').val($.trim(name.val()
 				.toLowerCase()
 				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
 				.replace(/\s/g, '-')
@@ -132,12 +131,16 @@ define(function() {
 		this.data.errors = {};
 		
 		//local validate
-		if(!this.data.post.title || !this.data.title.name.length) {
-			this.data.errors.name = { message: 'Post cannot be empty.'};
+		if(!this.data.post.title || !this.data.post.title.length) {
+			this.data.errors.title = { message: 'Post cannot be empty.'};
 		}
 		
 		if(!this.data.post.slug || !this.data.post.slug.length) {
 			this.data.errors.slug = { message: 'Slug cannot be empty.'};
+		}
+		
+		if(!this.data.post.detail || !this.data.post.detail.length) {
+			this.data.errors.detail = { message: 'Detail cannot be empty.'};
 		}
 		
 		//if we have no errors

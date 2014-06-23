@@ -44,6 +44,17 @@ define(function() {
 		this.data.value 		= value;
 		this.data.attributes 	= attributes || '';
 		
+		if(typeof options == 'string') {
+			this.data.options = this.data.options.split('|');
+			for(var i = 0; i < this.data.options.length; i++) {
+				this.data.options[i] = {
+					value	: this.data.options[i],
+					label	: this.data.options[i].substr(0, 1).toUpperCase() 
+							+ this.data.options[i].substr(1) 
+				};
+			}
+		}
+		
 		return this;
 	};
 	

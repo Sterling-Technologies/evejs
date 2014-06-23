@@ -33,7 +33,7 @@ module.exports = (function() {
 		var self = this, query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
-			
+		
 		//2. TRIGGER
 		this.controller
 			//when there is an error 

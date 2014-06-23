@@ -85,8 +85,8 @@ define(function() {
                 //add it to row
 				rows.push({
 					id      : response.batch[0].results[i]._id,
-					name    : response.batch[0].results[i].name,
-					email   : response.batch[0].results[i].email, 
+					title    : response.batch[0].results[i].title,
+					status   : response.batch[0].results[i].status, 
 					active	: response.batch[0].results[i].active,
 					updated	: format });
             }

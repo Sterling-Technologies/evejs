@@ -48,9 +48,9 @@ module.exports = (function() {
 		//keyword search
 		if(keyword) {
 			or.push([
-				{ name	: new RegExp(keyword, 'ig') },
-				{ postname: new RegExp(keyword, 'ig') },
-				{ email	: new RegExp(keyword, 'ig') } ]);
+				{ title	: new RegExp(keyword, 'ig') },
+				{ detail: new RegExp(keyword, 'ig') },
+				{ status: new RegExp(keyword, 'ig') } ]);
 		}
 		
 		

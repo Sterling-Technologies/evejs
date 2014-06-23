@@ -5,8 +5,8 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating {USER}';
-    public.header       = 'Updating {USER}';
+    public.title        = 'Updating {POST}';
+    public.header       = 'Updating {POST}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -40,8 +40,7 @@ define(function() {
     -------------------------------*/
     public.render = function() {
         $.sequence()
-			.setScope(this)
-			.then(_setCountries)
+			.setScope(this) 
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -54,7 +53,6 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
@@ -84,23 +82,23 @@ define(function() {
 			var url = controller.getServerUrl() + '/post/detail/'+id;
 			
 			$.getJSON(url, function(response) {
-				
 				//format the birth to the HTML5 date format
-				if(response.results.birthdate 
-				&& (new Date(response.results.birthdate)).getTime() > 0) {
+				if(response.results.published 
+				&& (new Date(response.results.published)).getTime() > 0) {
 					//convert date format
-					var birth 	= new Date(response.results.birthdate);
+					var published 	= new Date(response.results.published);
 					
 					var year 	= birth.getFullYear(),
 						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
 						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
 					
-					response.results.birthdate = [year, month, day].join('-');
+					response.results.published = [year, month, day].join('-');
 				} else {
-					response.results.birthdate = null;
+					response.results.published = null;
 				}
 				
 				this.data.post = response.results;
+				
 				next();
 			}.bind(this));
 			
@@ -114,45 +112,24 @@ define(function() {
 		//store form templates path to array
         var templates = [
         'text!' + controller.path('post/template') +  '/form.html',
-        'text!' + controller.path('post/template') +  '/form/basic.html',
-        'text!' + controller.path('post/template') +  '/form/company.html',
-        'text!' + controller.path('post/template') +  '/form/contact.html',
-        'text!' + controller.path('post/template') +  '/form/picture.html',
-        'text!' + controller.path('post/template') +  '/form/required.html',
-        'text!' + controller.path('post/template') +  '/form/tabs.html',
-        'text!' + controller.path('post/template') +  '/form/social.html'];
+        'text!' + controller.path('post/template') +  '/form/publish.html',
+        'text!' + controller.path('post/template') +  '/form/copy.html'];
 
         //require form templates
         //assign it to main form
-        require(templates, function(form, basic, company, 
-		contact, picture, required, tabs, social) {
-            //load basic form template 
-            this.data.basic = Handlebars.compile(basic)(this.data);
+        require(templates, function(form, publish, copy) {
+            //load publish form template 
+            this.data.publish = Handlebars.compile(publish)(this.data);
 
-            //load company form template
-            this.data.company = Handlebars.compile(company)(this.data);
+            //load copy form template
+            this.data.copy = Handlebars.compile(copy)(this.data);
 
-            //load contact form template
-            this.data.contact = Handlebars.compile(contact)(this.data);
-            
-            //load picture form template
-            this.data.picture = Handlebars.compile(picture)(this.data);
-
-            //load required form template
-            this.data.required = Handlebars.compile(required)(this.data);
-
-            //load tabs template
-            this.data.tabs = Handlebars.compile(tabs)(this.data);
-
-            //load social form template
-            this.data.social = Handlebars.compile(social)(this.data);
-        
 			//render the body
 			var body = Handlebars.compile(form)(this.data);
 			
 			controller
-				.setTitle(this.title.replace('{USER}', this.data.post.name))
-				.setHeader(this.header.replace('{USER}', this.data.post.name))
+				.setTitle(this.title.replace('{POST}', this.data.post.title))
+				.setHeader(this.header.replace('{POST}', this.data.post.title)) 
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
@@ -162,12 +139,12 @@ define(function() {
     };
 
     var _listen = function(next) {
-	   	$('section.post-profile form.package-post-form input[name="name"]').keyup(function(e) {
+	   	$('form.package-post-form').on('keyup', 'input[name="title"]', function(e) {
 			var name = $(this);
 			//there's a delay in when the input value is updated
 			//we do this settime out to case for this
 			setTimeout(function() {
-				$('input[name="slug"]').val($.trim(name.val()
+				$('form.package-post-form input[name="slug"]').val($.trim(name.val()
 				.toLowerCase()
 				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
 				.replace(/\s/g, '-')
@@ -177,7 +154,7 @@ define(function() {
 			}, 1);
 		});
 	   
-	    next();
+	    next(); 
     };
 	
 	var _valid = function() {
@@ -185,31 +162,16 @@ define(function() {
 		this.data.errors = {};
 		
 		//local validate
-		if(!this.data.post.name || !this.data.post.name.length) {
-			this.data.errors.name = { message: 'Post cannot be empty.'};
+		if(!this.data.post.title || !this.data.post.title.length) {
+			this.data.errors.title = { message: 'Post cannot be empty.'};
 		}
 		
 		if(!this.data.post.slug || !this.data.post.slug.length) {
-			this.data.errors.slug = { message: 'Postname cannot be empty.'};
+			this.data.errors.slug = { message: 'Slug cannot be empty.'};
 		}
 		
-		if(!this.data.post.email || !this.data.post.email.length) {
-			this.data.errors.email = { message: 'Email cannot be empty.'};
-		}
-		
-		if(this.data.post.password 
-		&& this.data.post.password.length
-		&& (!this.data.post.confirm 
-		|| !this.data.post.confirm.length)) {
-			this.data.errors.confirm = { message: 'You must confirm your password.'};
-		}
-		
-		if(this.data.post.password 
-		&& this.data.post.password.length
-		&& this.data.post.confirm 
-		&& this.data.post.confirm.length
-		&& this.data.post.password != this.data.post.confirm) {
-			this.data.errors.confirm = { message: 'Password and confirm do not match.'};
+		if(!this.data.post.detail || !this.data.post.detail.length) {
+			this.data.errors.detail = { message: 'Detail cannot be empty.'};
 		}
 		
 		//if we have no errors
@@ -220,11 +182,8 @@ define(function() {
 		var id 		=  window.location.pathname.split('/')[3],
 			url 	= controller.getServerUrl() + '/post/update/'+id;
 		
-		//don't store the confirm
-		delete this.data.post.confirm;
-		
-		if(this.data.post.birthdate) {
-			this.data.post.birthdate += 'T00:00:00Z';
+		if(this.data.post.published) {
+			this.data.post.published += 'T00:00:00Z';
 		}
 		
 		//save data to database
@@ -249,14 +208,6 @@ define(function() {
 			
 			next();
 	   }.bind(this));
-	};
-	
-	var _setCountries = function(next) {
-		var self = this;
-		require([controller.path('config') + '/countries.js'], function(countries) {
-			self.countries = countries;
-			next();
-		});
 	};
     
     /* Adaptor

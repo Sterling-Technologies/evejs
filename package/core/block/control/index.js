@@ -26,7 +26,7 @@ controller
 		require([action], function(action) {
 			action = action.load();
 			action.setData.apply(action, args);
-			action.setInnerTemplate(options.fn)
+			action.setInnerTemplate(options.fn);
 			action.render(function(html) {
 				$('#eve-block-'+ id).replaceWith(html);
 			});

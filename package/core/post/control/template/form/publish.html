@@ -7,45 +7,32 @@
         <div>
             <h6>Status</h6>
             <div>
-                <select name="status" class="form-control">
-                    {{#each status_option}}
-                    <option value="{{value}}">{{name}} </option>
-                    {{/each}}
-                </select>
+            	{{{block 'field/select' 'status' 'draft|review|publish' post.status}}}
             </div>
         </div>
         <div>
             <h6>Visibility</h6>
-            <div>
-                <select name="visibility" class="form-control">
-                    {{#each visibility_option}}
-                    <option value="{{value}}">{{name}}</option>
-                    {{/each}}
-                </select>
+            <div>{{visibility}} 
+            	{{{block 'field/select' 'visibility' 'public|private' post.visibility}}}
             </div>
         </div>
         <div>
             <h6>Publish Date {{update}}</h6>
-            <div class="input-group date eden-field-datetime eden-field-loaded">
-                <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="dd-mm-yyyy" name="published" />
-                <span class="input-group-addon">
-                    <i class="icon-calendar"></i>
-                </span>
-            </div>
+            {{{block 'field/date' 'published' post.published}}}
         </div>
         <hr />
-        <button class="pull-right btn btn-success" >
-        {{#if update}}  
-            Update 
-        {{else}} 
-            Save 
-        {{/if}}
-        </button>
+        {{#block 'field/button' 'class="btn-success"'}}
+            <i class="icon-ok bigger-110"></i>
+            {{#when ../mode '==' 'update'}} Update {{/when}}
+            {{#when ../mode '==' 'create'}} Save {{/when}}
+        {{/block}}
+        
         {{#when mode '==' 'update'}}
             <a class="btn-danger btn btn-default" href="/post/remove/{{id}}">
             <i class="icon-trash"></i> Trash</a>
         {{/when}}
-        {{#when mode '!=' 'update'}}
+        
+        {{#when mode '==' 'create'}}
             <a class="btn-danger btn btn-default" href="/post">
             <i class="icon-minus"></i> Cancel</a>
         {{/when}}

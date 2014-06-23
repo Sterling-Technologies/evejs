@@ -20,6 +20,7 @@ module.exports = function() {
 			created	: String }],
 		
 		status		: { type: String, enum: ['draft', 'review', 'published'] },
+		visibility	: { type: String, enum: ['public', 'private'] },
 		active		: { type: Boolean, default: true },
 		published	: { type: Date, default: Date.now },
 		created		: { type: Date, default: Date.now },
