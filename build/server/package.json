@@ -1,0 +1,23 @@
+{
+  "name": "eden",
+  "description": "Eden Node JS Library",
+  "version": "0.0.1",
+  "author": {
+    "name": "Christian Blanquera",
+    "email": "cblanquera@openovate.com"
+  },
+  "keywords": [
+    "framework",
+    "eden"
+  ],
+  "dependencies": {
+    "mongoose": "3.8.11"
+  },
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/openovate/evejs.git"
+  },
+  "_id": "evejs@0.0.1",
+  "_from": "evejs@"
+}
