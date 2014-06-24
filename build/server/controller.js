@@ -1,199 +1,189 @@
-module.exports = function() {
-	var c = function() {}, public = c.prototype;
-	
-	public.eden 	= require('edenjs')();
-	
-	/* Properties
-	-------------------------------*/
-	var _paths 		= {};
-	var _databases 	= {};
-	var _events 	= new (require('events').EventEmitter);
-	
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		if(!this.__instance) {
-			this.__instance = new c();
-		}
+module.exports = function($) {
+	return this.define(function(public) {
+		/* Public Properties
+		-------------------------------*/
+		public.host		= '127.0.0.1';
+		public.port		= 1337;
 		
-		return this.__instance;
-	};
-	
-	/* Construct
-	-------------------------------*/
-	/* Public Methods
-	-------------------------------*/
-	/**
-	 * Get's a configuration
-	 *
-	 * @param string
-	 * @return this
-	 */
-	public.config = function(key) {
-		return require(_paths.config + '/' + key);
-	};
-	
-	/**
-	 * Global event listener for the server
-	 *
-	 * @return this
-	 */
-	public.listen = function(event, callback) {
-		_events.on(event, callback);
-		return this;
-	};
-	
-	/**
-	 * Global event once listener for the server
-	 *
-	 * @return this
-	 */
-	public.once = function(event, callback) {
-		_events.once(event, callback);
-		return this;
-	};
-	
-	/**
-	 * Returns the path given the key
-	 *
-	 * @param string
-	 * @return this
-	 */
-	public.path = function(key, value) {
-		if(value) {
-			_paths[key] = value;
+		public.resource = null;
+		
+		/* Private Properties
+		-------------------------------*/
+		var _events 	= new (require('events').EventEmitter);
+		var _formidable = require('formidable');
+		
+		/* Loader
+		-------------------------------*/
+		public.__load = function() {
+			return new this();
+		};
+		
+		/* Construct
+		-------------------------------*/
+		/* Public Methods
+		-------------------------------*/
+		/**
+		 * Connect to server
+		 *
+		 * @return this
+		 */
+		public.connect = function() {
+			this.resource = require('http')
+				.createServer(_response.bind(this))
+				.listen(this.port, this.host);
+				
+			console.log('Eden running on http://'+this.host+':'+this.port+'/');
 			return this;
-		}
+		};
 		
-		return _paths[key];
-	};
-	
-	/**
-	 * Save any database info in memory
-	 *
-	 * @return this
-	 */
-	public.setDatabases = function() {
-		var databases = this.config('databases'),
-			database, authentication;
-		
-		for(var key in databases) {
-			database = databases[key];
+		/**
+		 * Global event listener for the server
+		 *
+		 * @return this
+		 */
+		public.listen = function(event, callback) {
+			//Argument Testing
+			$.load('argument')
+				.test(1, 'string')
+				.test(2, 'function');
 			
-			switch(database.type) {
-				case 'mongo':
-					authentication = '';
-					if(database.user && database.pass) {
-						authentication = database.user+':'+database.pass+'@';
-					} else if(database.user) {
-						authentication = database.user+'@';
+			_events.on(event, callback);
+			return this;
+		};
+		
+		/**
+		 * Sets the identifiable host name
+		 *
+		 * @param string
+		 * @return this
+		 */
+		public.setHost = function(host) {
+			//Argument Testing
+			$.load('argument').test(1, 'string');
+			
+			this.host = host;
+			return this;
+		};
+		
+		/**
+		 * Sets the identifiable port
+		 *
+		 * @param string
+		 * @return this
+		 */
+		public.setPort = function(port) {
+			//Argument Testing
+			$.load('argument').test(1, 'string', 'int');
+			
+			this.port = port;
+			return this;
+		};
+		
+		/**
+		 * Global event trigger for the server
+		 *
+		 * @return this
+		 */
+		public.trigger = function() {
+			//Argument Testing
+			$.load('argument').test(1, 'string');
+			
+			_events.emit.apply(_events, arguments);
+			return this;
+		};
+	
+		/* Private Methods
+		-------------------------------*/
+		var _response = function(request, response) {
+			//start in good conscience
+			response.state 		= 200;
+			response.headers 	= { 'Content-Type': 'text/html' };
+			
+			//parse out the URL
+			request.path 		= $.load('string').toPath(request.url);
+			request.pathArray	= $.load('string').pathToArray(request.url);
+			request.query 		= $.load('string').pathToQuery(request.url);
+			
+			request.message 		= '';
+			
+			//if this is a form submit
+			if(request.headers && request.headers['content-type']
+			&& request.headers['content-type'].indexOf('multipart/form-data') === 0) {
+				//use formidable
+				var self = this, form = new _formidable.IncomingForm();
+				
+				form.parse(request, function(error, fields, files) { 
+					//set request message
+					request.message = $.load('hash').toQuery(fields);
+					request.files 	= [];
+					
+					var fs = require('fs'), sequence = $.load('sequence');
+					
+					for(var key in files) {
+						sequence.then(function(next) {
+							fs.readFile(files[key].path, function(error, data) {
+								request.files.push({ name: files[key].name, data: data });
+								next();
+							});
+						});
 					}
 					
-					_databases[key] = require('mongoose')
-					.connect('mongodb://' 
-						+ authentication 
-						+ database.host 
-						+ ':' + database.port 
-						+ '/' + database.name);
-						
-					break;
+					sequence.then(function(next) {
+						_process.bind(self)(request, response);
+						next();
+					});
+				});  
+				
+				return;
 			}
-		}
-		
-		return this;
-	};
-	
-	/**
-	 * Starts up any packages
-	 *
-	 * @return this
-	 */
-	public.startPackages = function() {
-		var packages = this.config('packages');
-		
-		for(var i = 0; i < packages.length; i++) {
-			require(_paths.package + '/' + packages[i] + '/index.js').call(this);
-		}
-		
-		return this;
-	};
-	
-	/**
-	 * Set paths
-	 *
-	 * @return this
-	 */
-	public.setPaths = function() {
-		this.path('root'	, __dirname)
-			.path('config'	, __dirname + '/config')
-			.path('package'	, __dirname + '/package');
-		
-		return this;
-	};
-	
-	/**
-	 * Process to start server
-	 *
-	 * @return this
-	 */
-	public.startServer = function() {
-		var self = this, settings = this.config('settings').server;
-		
-		this.server = this.eden.load('server')
-			.setHost(settings.host)
-			.setPort(settings.port)
-			//when a request from the client has been made
-			.listen('request', function(request, response) { 
-				//ALLOW CORS
-				response.headers['Access-Control-Allow-Origin'] = '*';
-				
-				response.headers['Access-Control-Allow-Headers'] = 
-					'origin, x-requested-with, content-type';
-				
-				response.headers['Access-Control-Allow-Methods'] = 
-					'PUT, GET, POST, DELETE, OPTIONS';
-				
-				self.trigger('server-request', self, request, response);
-			})
 			
-			//when a response has been given out
-			.listen('output', function(request, response) { 
-				self.trigger('server-response', self, request, response);
-			})
+			request.on('data', function(data) {
+				request.message += data;
+				
+				//Prevent FLOOD ATTACK, FAULTY CLIENT, NUKE REQUEST
+				if(request.message.length > 1e6) {
+					request.message = '';
+					response.writeHead(413, {'Content-Type': 'text/plain'});
+					response.end();
+					request.connection.destroy();
+				}
+			});
 			
-			//when there's nothing found
-			.listen('response-404', function(request, response, error) {
-				self.trigger('server-response-404', self, request, response, error);
-			})
-			//begin to connect
-			.connect();
+			request.on('end', _process.bind(this, request, response));
+		};
+		
+		var _process = function(request, response) {
+			//wait for the response to be ready
+			this.listen('response', function(request, response) {
+				try {
+					response.writeHead(response.state, response.headers);
+					response.end(response.message+'');
+					
+					//event trigger
+					this.trigger('output', request, response);
+				} catch(error) {
+					response.state = 500;
+					//event trigger
+					this.trigger('output-error', request, response, error);
+					
+					if(!response.message) {
+						response.message = error.toString();
+					}
+					
+					response.writeHead(response.state, response.headers);
+					response.end(response.message);
+				}
+			}.bind(this));
 			
-		return this;
-	};
-	
-	/**
-	 * Global event trigger for the server
-	 *
-	 * @return this
-	 */
-	public.trigger = function() {
-		_events.emit.apply(_events, arguments);
-		return this;
-	};
-	
-	/**
-	 * Stops listening to a specific event
-	 *
-	 * @return this
-	 */
-	public.unlisten = function() {
-		_events.removeAllListeners.apply(_events, arguments);
-		return this;	
-	};
-	
-	/* Private Methods
-	-------------------------------*/
-	/* Adaptor
-	-------------------------------*/
-	return c.load(); 
-}();
+			//request trigger
+			this.trigger('request', request, response);
+			
+			//if response isn't processing
+			if(!response.processing) {
+				response.state = 404;
+				this.trigger('response', request, response);
+			}
+			
+		};
+	});
+};
