@@ -9,7 +9,7 @@ module.exports = function() {
 	-------------------------------*/
 	var mongoose 	= require('mongoose');
 	
-	var _schema = {
+	public._schema = {
 		name		: { type: String, required: true },
 		slug		: { type: String, required: true },
 		email		: { type: String, required: true },
@@ -76,7 +76,7 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.schema = new schema(_schema);
+		this.schema = new schema(this._schema);
 		//NOTE: add custom schema methods here
 		
 		this.store = mongoose.model('User', this.schema);
