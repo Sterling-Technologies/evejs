@@ -33,6 +33,42 @@ module.exports = (function() {
 		var self = this, query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
+			
+		//if the request has files
+		if(this.request.files) {
+			var orm 		= require('mongoose'),
+				database 	= orm.connection.db,
+				gridStore	= orm.mongo.GridStore,
+				objectId	= orm.mongo.ObjectID,
+				store		= null,
+				id			= null;
+			
+			//get the files
+			this.request.stream(function(name, mime) {
+				id = new objectId();
+				
+				//callback for start
+				store = new gridStore(
+					database, id, name, 'w+', { 
+						root: 'file', 
+						chunk_size: 1024 * 4, 
+						content_type: mime,
+					});
+			}, function(chunk) { 
+				//callback for streaming
+				store.write(chunk.toString());
+			}, function() {
+				store.close();
+				//callback when the data has ended
+				//setup an error response
+				this.response.message = JSON.stringify({ error: false, results: id}); 
+				
+				//trigger that a response has been made
+				this.controller.trigger('file-action-response', this.request, this.response);
+			}.bind(this));
+		}
+		
+		return;
 		
 		//2. TRIGGER
 		this.controller
