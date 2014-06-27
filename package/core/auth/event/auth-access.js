@@ -46,7 +46,7 @@ module.exports = function(controller, query) {
 
 					if(user.length == 0) {
 						controller.trigger('auth-access-success',
-							'Unauthorize');
+							'Invalid Username or Password');
 						return;
 					}
 
