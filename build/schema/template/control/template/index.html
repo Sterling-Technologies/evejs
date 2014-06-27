@@ -1,0 +1,151 @@
+<section class="{TEMPORARY}-list">
+    <!-- START: SEARCH FORM -->
+    <form class="pull-right search form-inline" method="get">
+        <div class="form-group">
+            <input name="keyword" placeholder="Search {TEMPORARY}s" type="text"
+            value="{{#if keyword}}{{keyword}}{{/if}}" class="form-control" />
+            {{#if mode}}
+            <input type="hidden" name="mode" value="{{mode}}" /> 
+            {{/if}}     
+        </div>
+        <button class="btn"><i class="icon-search"></i></button>    
+    </form>
+    <!-- END: SEARCH FORM -->
+    
+    <!-- START: BULK FORM -->
+    <form action="/{TEMPORARY}/bulk" method="{TEMPORARY}" class="form-inline bulk-form">
+        <!-- START: i18n HEADER TITLE -->
+        <div class="table-header">
+            Showing {{#if keyword}}Results for &quot;{{keyword}}&quot; in {{/if}}{{showing}}
+        </div>
+        <!-- END: i18n HEADER TITLE -->
+        <div class="table-responsive">
+            <div class="dataTables_wrapper table-filters" role="grid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- START: ADD NEW {TEMPORARY} -->
+                        <div class="pull-right create"><a class="btn btn-info btn-sm" 
+                        href="/{TEMPORARY}/create">Create New {TEMPORARY}</a></div>
+                        <!-- END: ADD NEW {TEMPORARY} -->
+                        {{#if rows}}
+                        <!-- START: BULK ACTION -->
+                        <select name="action" style="width:auto;" class="form-control">
+                            <option value="" selected="selected">Bulk Actions</option>
+                            <option value="remove">Remove</option>
+                            <option value="restore">Restore</option>
+                        </select>
+                        <button class="btn-primary btn-sm btn">Apply</button>
+                        <!-- END: BULK ACTION -->
+                        {{/if}}
+                        
+                        <!-- START: FILTER BUTTONS -->
+                        <span class="filter">
+                            <a class="btn btn-sm{{#when mode '==' 'all'}} btn-light{{/when}}" 
+                            href="/{TEMPORARY}?mode=all{{#if keyword}}&keyword={{keyword}}{{/if}}">All &nbsp;
+                            <span class="badge badge-grey">{{all}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'published'}} btn-light{{/when}}" 
+                            href="/{TEMPORARY}?mode=published{{#if keyword}}&keyword={{keyword}}{{/if}}">Published &nbsp;
+                            <span class="badge badge-grey">{{published}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'review'}} btn-light{{/when}}" 
+                            href="/{TEMPORARY}?mode=review{{#if keyword}}&keyword={{keyword}}{{/if}}">Review &nbsp;
+                            <span class="badge badge-grey">{{review}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'draft'}} btn-light{{/when}}" 
+                            href="/{TEMPORARY}?mode=draft{{#if keyword}}&keyword={{keyword}}{{/if}}">Draft &nbsp;
+                            <span class="badge badge-grey">{{draft}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'trash'}} btn-light{{/when}}" 
+                            href="/{TEMPORARY}?mode=trash{{#if keyword}}&keyword={{keyword}}{{/if}}">Trash &nbsp;
+                            <span class="badge badge-grey">{{trash}}</span></a> 
+                        </span>
+                        <!-- END: FILTER BUTTONS -->
+                    </div>
+                </div>
+            </div> 
+            {{#if rows}}
+            <!-- START: {TEMPORARY} TABLE -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><input class="checkall" type="checkbox" /></th>
+                        <th>Action</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each rows}}
+                    <tr data-id="{{id}}">
+                        <td><input name="id[]" value="{{id}}" type="checkbox" class="form-control" /></td>
+                        <td>
+                            {{#if active}}
+                            <a title="Edit" href="/{TEMPORARY}/update/{{id}}">
+                            <i class="icon-edit"></i></a> &nbsp; 
+                            <a title="Remove" href="/{TEMPORARY}/remove/{{id}}"
+                            class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
+                            {{else}}
+                            <a title="Restore" href="/{TEMPORARY}/restore/{{id}}" class="text-success restore">
+                            <i class="icon-external-link"></i></a>
+                            {{/if}}
+                        </td>
+                        <td>{{id}}</td>
+                        <td>{{title}}</td>
+                        <td>{{status}}</td>
+                        <td valign="middle">{{updated}}</td>
+                    </tr>   
+                    {{/each}}
+                </tbody>    
+            </table>
+            <!-- END: {TEMPORARY} TABLE -->
+            {{else}}
+            <!-- START: NO RESULTS -->
+            <div class="well no-results">No {TEMPORARY}s Found</div>
+            <!-- END: NO RESULTS -->
+            {{/if}}
+        </div>
+        
+        {{#when mode '==' 'all'}}
+        <ul class="pagination">
+            {{#pagination all range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+        
+        {{#when mode '==' 'published'}}
+        <ul class="pagination">
+            {{#pagination published range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+        
+        {{#when mode '==' 'review'}}
+        <ul class="pagination">
+            {{#pagination review range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+        
+        {{#when mode '==' 'draft'}}
+        <ul class="pagination">
+            {{#pagination draft range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+        
+        {{#when mode '==' 'trash'}}
+        <ul class="pagination">
+            {{#pagination trash range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+    </form>
+</section>
