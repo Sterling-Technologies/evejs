@@ -76,8 +76,6 @@ module.exports = (function() {
 	public.validateTokenRequest = function(query) {
 		// Get headers
 		var headers  = this.request.headers;
-		// Load up eden sequence
-		var sequence = this.controller.eden.load('sequence');
 		// Load up eden string
 		var string   = this.controller.eden.load('string');
 
