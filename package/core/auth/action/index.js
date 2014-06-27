@@ -74,9 +74,6 @@ module.exports = (function() {
 	};
 
 	public.validateTokenRequest = function(query) {
-		// Load up eden string
-		var string   = this.controller.eden.load('string');
-
 		// We are only allowing post method
 		if(this.request.method.toLowerCase() != 'post') {
 			this.response.message = JSON.stringify({
