@@ -42,23 +42,45 @@ module.exports = (function() {
 				objectId	= orm.mongo.ObjectID,
 				store		= null,
 				id			= null;
-			
+
+			var sequence = this.controller.eden.load('sequence');
+
+			console.log(this.request.headers['content-length']);
 			//get the files
 			this.request.stream(function(name, mime) {
 				id = new objectId();
 				
 				//callback for start
-				store = new gridStore(
-					database, id, name, 'w+', { 
-						root: 'file', 
-						chunk_size: 1024 * 4, 
-						content_type: mime,
+				store = new gridStore(database, id, name, 'w+', { root : 'file' });
+
+				sequence.then(function(next) {
+					store.open(function(error, store) {
+						// Set Content Type
+						store.contentType = mime;
+						// Set Maximum Chunk Size allowed for write
+						store.chunkSize   = 1024 * 24;
+						// Proceed to next sequence
+						next(error, store);
 					});
-			}, function(chunk) { 
-				//callback for streaming
-				store.write(chunk.toString());
+				});
+			}, function(chunk) {
+				// Recursively Call Store Write until
+				// there is no more chunks to be written
+				sequence.then(function(error, store, next) {
+					// Write chunk as base64 string
+					store.write(chunk, function(error, store) {
+						// Passed in current store state
+						// to next sequence
+						next(error, store);
+					});
+				});
 			}, function() {
-				store.close();
+				sequence.then(function(error, store) {
+					store.close(function(error, file) {
+						console.log(file);
+					});
+				});
+
 				//callback when the data has ended
 				//setup an error response
 				this.response.message = JSON.stringify({ error: false, results: id}); 
