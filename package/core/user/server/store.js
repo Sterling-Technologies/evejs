@@ -5,11 +5,7 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	/* Private Properties
-	-------------------------------*/
-	var mongoose 	= require('mongoose');
-	
-	public._schema = {
+	public.schema = {
 		name		: { type: String, required: true },
 		slug		: { type: String, required: true },
 		email		: { type: String, required: true },
@@ -60,6 +56,10 @@ module.exports = function() {
 		updated: { type: Date, default: Date.now }
 	};
 	
+	/* Private Properties
+	-------------------------------*/
+	var mongoose 	= require('mongoose');
+	
 	/* Loader
 	-------------------------------*/
 	public.__load = c.load = function() {
@@ -76,10 +76,10 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.schema = new schema(this._schema);
+		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('User', this.schema);
+		this.store = mongoose.model('User', this.definition);
 	};
 	
 	/* Public Methods

@@ -5,11 +5,11 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
+	public.schema = {TEMPORARY};
+	
 	/* Private Properties
 	-------------------------------*/
 	var mongoose 	= require('mongoose');
-	
-	var _schema = {TEMPORARY}
 	
 	/* Loader
 	-------------------------------*/
@@ -27,10 +27,10 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.schema = new schema(_schema);
+		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('post', this.schema);
+		this.store = mongoose.model('post', this.definition);
 	};
 	
 	/* Public Methods

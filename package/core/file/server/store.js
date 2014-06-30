@@ -5,27 +5,16 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
+	public.schema = {
+		chunkSize	: { type: Number, required: true },
+		contentType	: { type: String, required: true },
+		filename	: { type: String, required: true },
+		uploadDate	: { type: Date, default: Date.now }
+	};
+	
 	/* Private Properties
 	-------------------------------*/
 	var mongoose 	= require('mongoose');
-	
-	var _schema = {
-		slug	: { type: String, required: true },
-		title	: { type: String, required: true },
-		detail	: { type: String, required: true },
-		
-		revision: [{
-			title	: String,
-			detail	: String, 
-			created	: String }],
-		
-		status		: { type: String, enum: ['draft', 'review', 'published'] },
-		visibility	: { type: String, enum: ['public', 'private'] },
-		active		: { type: Boolean, default: true },
-		published	: { type: Date, default: Date.now },
-		created		: { type: Date, default: Date.now },
-		updated		: { type: Date, default: Date.now }
-	};
 	
 	/* Loader
 	-------------------------------*/
@@ -43,10 +32,10 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.schema = new schema(_schema);
+		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('file', this.schema);
+		this.store = mongoose.model('file.files', this.definition);
 	};
 	
 	/* Public Methods

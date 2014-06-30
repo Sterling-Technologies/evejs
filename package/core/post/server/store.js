@@ -5,11 +5,7 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	/* Private Properties
-	-------------------------------*/
-	var mongoose 	= require('mongoose');
-	
-	var _schema = {
+	public.schema = {
 		slug	: { type: String, required: true },
 		title	: { type: String, required: true },
 		detail	: { type: String, required: true },
@@ -27,6 +23,10 @@ module.exports = function() {
 		updated		: { type: Date, default: Date.now }
 	};
 	
+	/* Private Properties
+	-------------------------------*/
+	var mongoose 	= require('mongoose');
+	
 	/* Loader
 	-------------------------------*/
 	public.__load = c.load = function() {
@@ -43,10 +43,10 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.schema = new schema(_schema);
+		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('post', this.schema);
+		this.store = mongoose.model('post', this.definition);
 	};
 	
 	/* Public Methods
