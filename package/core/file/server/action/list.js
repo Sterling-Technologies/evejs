@@ -44,7 +44,6 @@ module.exports = (function() {
 		
 		var not, or = [];
 		
-		
 		//keyword search
 		if(keyword) {
 			or.push([
