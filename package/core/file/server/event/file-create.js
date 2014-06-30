@@ -56,7 +56,7 @@ module.exports = function(controller, stream) {
 		//make sure to capture the chunk
 		//variable for the callback
 		}.bind(null, chunk));
-	})
+	}) 
 	//when the file is done sending
 	.on('file-end', function() {
 		//queue sequence
