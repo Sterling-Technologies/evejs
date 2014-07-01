@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Create Category';
     public.header       = 'Create Category';
-    public.subheader    = 'CRM';
+    public.subheader    = 'Creating a new category';
 	
     public.crumbs = [{ 
         path: '/category',
