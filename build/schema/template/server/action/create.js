@@ -30,40 +30,44 @@ module.exports = (function() {
     -------------------------------*/
 	public.render = function() {
 		//1. SETUP: change the string into a native object
-		var self = this, query = this
+		var query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
 		
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('{TEMPORARY}-create-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message,
-					validation: error.errors || [] });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('{TEMPORARY}-create-success');
-				//trigger that a response has been made
-				self.controller.trigger('{TEMPORARY}-action-response', self.request, self.response);
-			})
+			.once('{TEMPORARY}-create-error', _error.bind(this))
 			//when it is successfull
-			.once('{TEMPORARY}-create-success', function() {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false });
-				//dont listen for error anymore
-				self.controller.unlisten('{TEMPORARY}-create-error');
-				//trigger that a response has been made
-				self.controller.trigger('{TEMPORARY}-action-response', self.request, self.response);
-			})
+			.once('{TEMPORARY}-create-success', _success.bind(this))
 			//Now call to remove the {TEMPORARY}
 			.trigger('{TEMPORARY}-create', this.controller, query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _success = function() {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false });
+		//dont listen for error anymore
+		this.controller.unlisten('{TEMPORARY}-create-error');
+		//trigger that a response has been made
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message,
+			validation: error.errors || [] });
+		
+		//dont listen for success anymore
+		this.controller.unlisten('{TEMPORARY}-create-success');
+		//trigger that a response has been made
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+	};
+			
 	/* Adaptor
 	-------------------------------*/
 	return c; 

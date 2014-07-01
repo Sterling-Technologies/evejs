@@ -31,13 +31,8 @@ module.exports = (function() {
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No ID set' });
-			
-			//trigger that a response has been made
-			this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+			///setup an error
+			error.call(this, { message: 'No ID set' });
 			
 			return;
 		}
@@ -46,32 +41,36 @@ module.exports = (function() {
 
 		this.controller
 			//when there is an error
-			.once('{TEMPORARY}-restore-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('{TEMPORARY}-restore-success');
-				//trigger that a response has been made
-				self.controller.trigger('{TEMPORARY}-action-response', self.request, self.response);
-			})
+			.once('{TEMPORARY}-restore-error', _error.bind(this))
 			//when it is successfull
-			.once('{TEMPORARY}-restore-success', function(row) {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false, results: row });
-				//dont listen for error anymore
-				self.controller.unlisten('{TEMPORARY}-restore-error');
-				//trigger that a response has been made
-				self.controller.trigger('{TEMPORARY}-action-response', self.request, self.response);
-			})
+			.once('{TEMPORARY}-restore-success', _success.bind(this))
 			//Now call to remove the {TEMPORARY}
 			.trigger('{TEMPORARY}-restore', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _success = function(row) {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false, results: row });
+		//dont listen for error anymore
+		this.controller.unlisten('{TEMPORARY}-restore-error');
+		//trigger that a response has been made
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+	};
+			
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		//dont listen for success anymore
+		this.controller.unlisten('{TEMPORARY}-restore-success');
+		//trigger that a response has been made
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+	};
+			
 	/* Adaptor
 	-------------------------------*/
 	return c; 

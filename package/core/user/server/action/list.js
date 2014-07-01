@@ -37,7 +37,7 @@ module.exports = (function() {
 			keyword	= this.request.query.keyword 	|| null;
 		
 		if(count) {
-			this.controller.post().store().getTotal(
+			this.controller.user().store().getTotal(
 				filter, 	keyword, 
 				_response.bind(this));
 			
