@@ -1,9 +1,6 @@
 module.exports = function(controller, id, query) {
 	//find and update
-	controller
-	.post()
-	.store()
-	.update(id, query, function(error) {
+	controller.post().store().update(id, query, function(error) {
 		//if there are errors
 		if(error) {
 			//trigger an error

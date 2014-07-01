@@ -128,6 +128,7 @@ module.exports = (function() {
 		
 		//query for results
 		store.lean().exec(function(error, data) {
+			console.log('file-data', error, data); 
 			//if there are errors
 			if(error) {
 				//setup an error response

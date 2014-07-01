@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function() { 
 	//set a goto handler incase other packages
 	//want to access this
 	this.auth = function() {

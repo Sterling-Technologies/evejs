@@ -1,1 +1,1 @@
-module.exports = ['core/auth', 'core/user', 'core/post', 'core/file'];
+module.exports = ['core/user', 'core/post', 'core/file'];

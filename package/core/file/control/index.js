@@ -16,10 +16,7 @@ controller
 		path	: '/file',
 		icon	: 'pencil',
 		label	: 'Files',
-		children: [{
-			path	: '/file/create',
-			label	: 'Create File' }]
-		});
+		children: [] });
 })
 //when a url request has been made
 .listen('request', function() {

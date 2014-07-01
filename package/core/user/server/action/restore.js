@@ -31,47 +31,44 @@ module.exports = (function() {
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No ID set' });
-			
-			//trigger that a response has been made
-			this.controller.trigger('user-action-response', this.request, this.response);
+			//setup an error
+			_error.call(this, { message: 'No ID set' });
 			
 			return;
 		}
 		
-		var self = this;
-
 		this.controller
 			//when there is an error
-			.once('user-restore-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('user-restore-success');
-				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
-			})
+			.once('user-restore-error', _error.bind(this))
 			//when it is successfull
-			.once('user-restore-success', function(row) {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false, results: row });
-				//dont listen for error anymore
-				self.controller.unlisten('user-restore-error');
-				//trigger that a response has been made
-				self.controller.trigger('user-action-response', self.request, self.response);
-			})
+			.once('user-restore-success', _success.bind(this))
 			//Now call to remove the user
 			.trigger('user-restore', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _success = function(row) {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false, results: row });
+		//dont listen for error anymore
+		this.controller.unlisten('user-restore-error');
+		//trigger that a response has been made
+		this.controller.trigger('user-action-response', this.request, this.response);
+	};
+
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		//dont listen for success anymore
+		this.controller.unlisten('user-restore-success');
+		//trigger that a response has been made
+		this.controller.trigger('user-action-response', this.request, this.response);
+	};
+			
 	/* Adaptor
 	-------------------------------*/
 	return c; 

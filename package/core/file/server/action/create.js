@@ -29,6 +29,8 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
+		var self = this;
+		
 		//1. TRIGGER
 		this.controller
 			//when there is an error 

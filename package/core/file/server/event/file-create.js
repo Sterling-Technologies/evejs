@@ -60,7 +60,7 @@ module.exports = function(controller, stream) {
 	//when the file is done sending
 	.on('file-end', function() {
 		//queue sequence
-		sequence.then(function(id, store, next) {
+		sequence.then(function(id, store, next) { 
 			//push files
 			files.push({
 				_id		: id,
