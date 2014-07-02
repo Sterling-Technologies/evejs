@@ -84,11 +84,12 @@ define(function() {
                 
                 //add it to row
 				rows.push({
-					id      : response.batch[0].results[i]._id,
+					id       : response.batch[0].results[i]._id,
 					title    : response.batch[0].results[i].title,
+					category : response.batch[0].results[i]._category,
 					status   : response.batch[0].results[i].status, 
-					active	: response.batch[0].results[i].active,
-					updated	: format });
+					active	 : response.batch[0].results[i].active,
+					updated	 : format });
             }
 			
 			var showing = query.mode || 'active';
@@ -129,7 +130,7 @@ define(function() {
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
-			
+
 			next();
 		}.bind(this));
 	};

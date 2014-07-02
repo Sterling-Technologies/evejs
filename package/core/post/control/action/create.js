@@ -188,7 +188,7 @@ define(function() {
 			self.categories = response.results;
 			next();
 		});
-	}
+	};
     
     /* Adaptor
     -------------------------------*/
