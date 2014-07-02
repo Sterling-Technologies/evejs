@@ -102,7 +102,6 @@ define(function() {
 			//2. Active Count
 			//3. Trash Count
 			//4. All Count
-			console.log(response);
 			this.data = {
 				showing 	: showing,
 				rows		: rows,
@@ -159,62 +158,75 @@ define(function() {
 		});
 		
 		$('section.file-list input.field-upload').change(function(e) {
-			var files = e.target.files, form = new FormData();
+			var files = e.target.files;
 			
 			for(var i = 0; i < files.length; i++) {
-        		form.append('file-' + i, files[i]);
-        		
-				var ajax = new XMLHttpRequest();
-				
-				// Progress listerner.
-				ajax.upload.addEventListener('progress', function (e) {
-					var percentComplete = 0;
-					if (e.lengthComputable) {
-						percentComplete = Math.round(e.loaded * 100 / e.total);
-					}
+				// Wrap into closure, to
+				// make sure that this will
+				// process properly inside loop
+				// because it's asynchronous :)
+				(function(files, i) {
+					var form = new FormData();
+	        		
+	        		form.append('file-' + i, files[i]);
+	        		
+					var ajax = new XMLHttpRequest();
 					
-					//TODO: Add to gritter
-					//message: percentComplete.toString() + '%'
-					controller.notify('Upload Progress', 
-						'Uploaded: ' + percentComplete.toString() + '%', 'info');
-				}, false);
-				
-				//on load
-				ajax.addEventListener('load', function (e) {			
-					// Parse json.
-					var response = $.parseJSON(e.target.responseText);
-					
-					//TODO: Show response message
-					// Parse all files that has been
-					// successfuly uploaded
-					for(var i in response.results) {
-						var filename = response.results[i].filename;
+					// Inject current file that is uploading
+					ajax.upload.file = files[i];
 
-						controller
-							.notify('Upload Complete', filename + ' was successfully uploaded', 'success')
-							.redirect('/file');
-					}
-				}, false);
-				
-				//on error
-				ajax.addEventListener('error', function (e) {
-					//TODO: Show error message
-					//ex. There was an error attempting to upload the file.
-					controller.notify('Error Uploading File(s)',
-						'An error occured while uploading file(s)', 'error');
-				}, false);
+					// Progress listerner.
+					ajax.upload.addEventListener('progress', function (e) {
+						var percentComplete = 0;
+						if (e.lengthComputable) {
+							percentComplete = Math.round(e.loaded * 100 / e.total);
+						}
+
+						// File name
+						var name = ajax.upload.file.name;
+
+						//TODO: Add to gritter
+						//message: percentComplete.toString() + '%'
+						controller.notify('Upload Progress (' + name + ')', 
+							'Uploaded: ' + percentComplete.toString() + '%', 'info');
+					}, false);
 					
-				// On cancel.
-				ajax.addEventListener('abort', function (e) {
-					//TODO: Show abort message
-					//The upload has been canceled by the user or the browser dropped the connection.
-					controller.notify('Upload Aborted',
-						'Upload was aborted, please check internet connection', 'error');
-				}, false);
-				
-				ajax.open('POST', controller.getServerUrl() + '/file/create');
-				
-        		ajax.send(form);
+					//on load
+					ajax.upload.addEventListener('loadend', function (e) {
+					 	var name = ajax.upload.file.name;
+
+					 	// On upload end, notify success message
+						controller.notify('Success (' + name + ')', 
+							'File: ' + name + ' has been successfully uploaded', 'success');
+					}, false);
+					
+					//on error
+					ajax.upload.addEventListener('error', function (e) {
+						//TODO: Show error message
+						//ex. There was an error attempting to upload the file.
+						controller.notify('Error Uploading File(s)',
+							'An error occured while uploading file(s)', 'error');
+					}, false);
+						
+					// On cancel.
+					ajax.upload.addEventListener('abort', function (e) {
+						//TODO: Show abort message
+						//The upload has been canceled by the user or the browser dropped the connection.
+						controller.notify('Upload Aborted',
+							'Upload was aborted, please check internet connection', 'error');
+					}, false);
+					
+					// On ajax transfer done
+					ajax.addEventListener('readystatechange', function() {
+						if(this.readyState === 4) {
+							controller.redirect('/file');
+						}
+					});
+
+					ajax.open('POST', controller.getServerUrl() + '/file/create');
+					
+	        		ajax.send(form);
+	        	})(files, i);
 			}
 		});
 		
