@@ -23,12 +23,20 @@ controller
 })
 //when a url request has been made
 .listen('request', function() {
+	// cache post index
+	var postIndex = window.location.pathname.indexOf('/post');
+
 	//if it doesn't start with category
-	if(window.location.pathname.indexOf('/category') !== 0) {
+	if(window.location.pathname.indexOf('/category') !== 0 && postIndex !== 0) {
 		//we don't care about it
 		return;
 	}
-	
+
+	// check if we are on the post page
+	if(postIndex == 0) {
+		$('.table')
+	}
+
 	//router -> action
 	var action = 'index';
 	switch(true) {

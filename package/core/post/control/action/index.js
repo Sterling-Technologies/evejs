@@ -80,16 +80,10 @@ define(function() {
 			//loop through data
 			for(i in response.batch[0].results) {
 				var updated = new Date(response.batch[0].results[i].updated);
-				var format = $.timeToDate(updated.getTime(), true, true);
+				response.batch[0].results[i].updated = $.timeToDate(updated.getTime(), true, true);
                 
                 //add it to row
-				rows.push({
-					id       : response.batch[0].results[i]._id,
-					title    : response.batch[0].results[i].title,
-					category : response.batch[0].results[i]._category,
-					status   : response.batch[0].results[i].status, 
-					active	 : response.batch[0].results[i].active,
-					updated	 : format });
+				rows.push(response.batch[0].results[i]);
             }
 			
 			var showing = query.mode || 'active';
@@ -113,7 +107,7 @@ define(function() {
 				trash		: response.batch[4].results,
 				all			: response.batch[5].results,
 				range		: this.range };
-            
+
 			next();
 		}.bind(this));
 	};

@@ -9,8 +9,6 @@ module.exports = function() {
 		slug	: { type: String, required: true },
 		title	: { type: String, required: true },
 		detail	: { type: String, required: true },
-
-		_category: { type: String, required: true, ref: 'categories'},
 		
 		revision: [{
 			title	: String,
@@ -175,7 +173,6 @@ module.exports = function() {
 		
 		//now we are ready to call the query
 		var store = this.find(query)
-			.populate('_category', 'name')
 			.skip(start)
 			.limit(range);
 		

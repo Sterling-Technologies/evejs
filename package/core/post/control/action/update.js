@@ -41,7 +41,6 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this) 
-			.then(_setCategories)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -228,17 +227,6 @@ define(function() {
 			
 			next();
 	   }.bind(this));
-	};
-
-	var _setCategories = function(next) {
-		var server = controller.getServerUrl();
-		var self = this;
-
-		// get the category list
-		$.getJSON( server + '/category', function(response) {
-			self.categories = response.results;
-			next();
-		});
 	};
     
     /* Adaptor

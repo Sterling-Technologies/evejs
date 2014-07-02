@@ -41,7 +41,6 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
-			.then(_setCategories)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -54,9 +53,6 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-
-		// store categories in data
-		this.data.category  = this.categories;
 
 		var post = controller.getPost();
 		
@@ -179,16 +175,6 @@ define(function() {
 	   }.bind(this));
 	};
 
-	var _setCategories = function(next) {
-		var server = controller.getServerUrl();
-		var self = this;
-
-		// get the category list
-		$.getJSON( server + '/category', function(response) {
-			self.categories = response.results;
-			next();
-		});
-	};
     
     /* Adaptor
     -------------------------------*/
