@@ -1,32 +1,41 @@
 module.exports = function(controller, query) {
 	// Load up eden sequence
 	var sequence = controller.eden.load('sequence');
+	// Load up eden string
 	var string   = controller.eden.load('string');
 
 	sequence
 	// Check if user exists
 	.then(function(next) {
+		// Search filter
 		var filter = { slug : query.username, password : string.md5(query.password) };
 
+		// Search the user
+		// if exists
 		controller
 		.auth()
 		.store()
 		.find(filter, function(error, user) {
+			// If there is an error
 			if(error) {
-				controller.trigger('auth-access-error',
-					'An error occured, please try again');
-				return;
+				// trigger error event
+				return controller.trigger('auth-access-error',
+					   { message : 'An error occured, please try again' });
+				
 			}
 
+			// If user does not exists
 			if(user.length == 0) {
-				controller.trigger('auth-access-error',
-					'Invalid Username or Password');
-				return;
+				// trigger error event
+				return controller.trigger('auth-access-error',
+					  { message : 'Invalid Username or Password' });
 			}
 
+			// Proceed to next sequence
 			next(user[0]);
 		});
 	})
+
 	// Check if user has a token
 	// already, if auth object
 	// does not exist, create one
@@ -38,24 +47,31 @@ module.exports = function(controller, query) {
 				.auth()
 				.store()
 				.update(user._id, { 'auth.active' : true }, function(error, user) {
+					// If there is an error
 					if(error) {
-						controller.trigger('auth-access-error',
-							'An error occured, please try again');
-						return;
+						// trigger error event
+						return controller.trigger('auth-access-error',
+							   { message : 'An error occured, please try again' });
 					}
 
+					// If there is no user record
 					if(user.length == 0) {
-						controller.trigger('auth-access-success',
-							'Invalid Username or Password');
-						return;
+						// trigger error event
+						return controller.trigger('auth-access-success',
+							   { message : 'Invalid Username or Password' });
 					}
 
-					controller.trigger('auth-access-success', user.auth.token);
+					// If there is no error, trigger
+					// success event an passed in user
+					// token
+					return controller.trigger('auth-access-success', { token : user.auth.token });
 				});
 			}
 
-			controller.trigger('auth-access-success', user.auth.token);
-			return;
+			// If user exist, and it has token
+			// already, trigger success event
+			// and passed in user token
+			return controller.trigger('auth-access-success', { token : user.auth.token });
 		}
 
 		// Create new access token
@@ -81,14 +97,17 @@ module.exports = function(controller, query) {
 		.auth()
 		.store()
 		.update(user._id, update, function(error, user) {
+			// If there is an error
 			if(error) {
-				controller.trigger('auth-access-error',
-					'An error occured, please try again');
-				return;
+				// trigger error event
+				return controller.trigger('auth-access-error',
+					   { message : 'An error occured, please try again' });
 			}
 
-			controller.trigger('auth-access-success',
-				user.auth.token);
+			// If there is no error, trigger success event
+			// and passed in user token
+			return controller.trigger('auth-access-success',
+				   { token : user.auth.token });
 		});
 	});
 };

@@ -29,8 +29,8 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		var self = this, query = this.controller.eden
-				.load('string').queryToHash(this.request.message);
+		var query = this.controller.eden
+			.load('string').queryToHash(this.request.message);
 
 		// Validate Request
 		if(!this.validateTokenRequest(query)) {
@@ -40,35 +40,12 @@ module.exports = (function() {
 
 		// Listen to login events
 		this.controller
-		// If there is an error logging in
-		.once('auth-access-error', function(error) {
-			// Don't listen to success anymore
-			this.controller.unlisten('auth-access-success');
-
-			this.response.message = JSON.stringify({
-				error  	 : true,
-				message  : error
-			});
-
-			// Send out response message
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
-		}.bind(this))
-		// If authentication is good
-		.once('auth-access-success', function(message) {
-			// Don't listen to error anymore
-			this.controller.unlisten('auth-access-error');
-
-			this.response.message = JSON.stringify({
-				error 	: false,
-				message : message
-			});
-
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
-		}.bind(this))
-		// Trigger Auth Access Event
-		.trigger('auth-access', this.controller, query);
+			// When there is an error
+			.once('auth-access-error', _error.bind(this))
+			// When authentication is successful
+			.once('auth-access-success', _success.bind(this))
+			// Trigger Auth Access Event
+			.trigger('auth-access', this.controller, query);
 
 		return this;
 	};
@@ -76,29 +53,18 @@ module.exports = (function() {
 	public.validateTokenRequest = function(query) {
 		// We are only allowing post method
 		if(this.request.method.toLowerCase() != 'post') {
-			this.response.message = JSON.stringify({
-				error  	 : true,
-				message  : 'Invalid Username or Password'
-			});
-
-			// Send out response message
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
-			return false;
+			return _error.call(this, { message : 'Invalid Request, request method must be post' });
 		}
 
 		// If username and password is not
 		// present on the query
 		if(!('username' in query) || !('password' in query)) {
-			this.response.message = JSON.stringify({
-				error  	 : true,
-				message  : 'Username and Password field is required'
-			});
+			return _error.call(this, { message : 'Username and Password field is required' });
+		}
 
-			// Send out response message
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
-			return false;
+		// If username or password is null
+		if(query.username === null || query.password === null) {
+			return _error.call(this, { message : 'Username and Password field is required' });
 		}
 
 		return true;
@@ -106,6 +72,41 @@ module.exports = (function() {
 
 	/* Private Methods
     -------------------------------*/
+    var _response = function(error, data) {
+		//if there are errors
+		if(error) {
+			_error.call(this, error);
+			return;
+		}
+		
+		//no error
+		_success.call(this, data);
+	};
+	
+	var _success = function(data) {
+		//then prepare the package
+		this.response.message = JSON.stringify({ 
+			error: false, 
+			results: data });
+		
+		// don't listen for error anymore
+		this.controller.unlisten('auth-access-error');
+		//trigger that a response has been made
+		this.controller.trigger('auth-action-response', this.request, this.response);
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		// don't listen for success anymore
+		this.controller.unlisten('auth-access-success');
+		//trigger that a response has been made
+		this.controller.trigger('auth-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

@@ -29,37 +29,22 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		var self = this, token = this.request.query['access_token'];
+		// Get request access token
+		var token = this.request.query['access_token'];
 
+		// If token is not present on the
+		// request
 		if(token === undefined || token == null) {
-			this.response.message = JSON.stringify({
-				error   : true,
-				message : 'Unauthorized Request'
-			});
-
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
 			return;
 		}
 
 		// Listen to login events
 		this.controller
 		// If there is an error logging in
-		.once('auth-resource-error', function(error) {
-			this.response.message = JSON.stringify({
-				error  	 : true,
-				message  : error
-			});
-
-			// Send out response message
-			this.controller.trigger('auth-action-response',
-			this.request, this.response);
-		}.bind(this))
+		.once('auth-resource-error', _error.bind(this))
 		// If there is no error
-		.once('auth-resource-success', function() {
-			// Noop
-		})
-		// Trigger Oauth Access Event
+		.once('auth-resource-success', _success.bind(this))
+		// Trigger  auth resource event
 		.trigger('auth-resource', this.controller, token);
 
 		return this;
@@ -67,6 +52,33 @@ module.exports = (function() {
 
 	/* Private Methods
     -------------------------------*/
+    var _response = function(error, data) {
+		//if there are errors
+		if(error) {
+			_error.call(this, error);
+			return;
+		}
+		
+		//no error
+		_success.call(this, data);
+	};
+	
+	var _success = function() {
+		// noop
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		// don't listen for success anymore
+		this.controller.trigger('auth-resource-success');
+		//trigger that a response has been made
+		this.controller.trigger('auth-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

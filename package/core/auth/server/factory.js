@@ -26,7 +26,6 @@ module.exports = function() {
 	/* Public Methods
 	-------------------------------*/
 	public.store = function() {
-		// Get User Object
 		return store.load(this.controller);
 	};
 	
