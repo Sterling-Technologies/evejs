@@ -14,7 +14,7 @@ controller
 	//add our menu item
 	menu.push({
 		path	: '/file',
-		icon	: 'pencil',
+		icon	: 'file',
 		label	: 'Files',
 		children: [] });
 })
