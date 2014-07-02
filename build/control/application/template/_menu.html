@@ -7,9 +7,9 @@
         {{#items}}
         <li>
         	<a href="{{path}}">
-            	{{#icon}}
+            	{{#if icon}}
             	<i class="icon-{{icon}}"></i>
-                {{/icon}}
+                {{/if}}
         		<span class="menu-text">{{label}}</span>
             </a>
             {{#if children}}
@@ -17,9 +17,9 @@
                 {{#each children}}
                 <li>
                     <a href="{{path}}">
-                        {{#icon}}
-                        <i class="icon-{{icon}}"></i>
-                        {{/icon}}
+                        {{#if icon}}
+                    <i class="icon-{{icon}}"></i>
+                    {{/if}}
                         <span class="menu-text">{{label}}</span>
                     </a>
                     {{#if children}}
@@ -27,9 +27,9 @@
                         {{#each children}}
                         <li>
                             <a href="{{path}}">
-                                {{#icon}}
+                                {{#if icon}}
                                 <i class="icon-{{icon}}"></i>
-                                {{/icon}}
+                                {{/if}}
                                 <span class="menu-text">{{label}}</span>
                             </a>
                         </li>
