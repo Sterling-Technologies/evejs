@@ -55,20 +55,29 @@ module.exports = (function() {
 	var _response = function(error, data) {
 		//if there are errors
 		if(error) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: error.message });
-			
-			//trigger that a response has been made
-			this.controller.trigger('post-action-response', this.request, this.response);
+			_error.call(this, error);
 			return;
 		}
 		
-		//no error, then prepare the package
+		//no error
+		_success.call(this, data);
+	};
+	
+	var _success = function(data) {
+		//then prepare the package
 		this.response.message = JSON.stringify({ 
 			error: false, 
 			results: data });
+		
+		//trigger that a response has been made
+		this.controller.trigger('post-action-response', this.request, this.response);
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
 		
 		//trigger that a response has been made
 		this.controller.trigger('post-action-response', this.request, this.response);

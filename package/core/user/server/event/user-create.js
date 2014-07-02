@@ -1,6 +1,6 @@
 module.exports = function(controller, query) {
 	//create the model and save
-	controller.user().insert(query, function(error) {
+	controller.user().store().insert(query, function(error) {
 		//if there are errors
 		if(error) {
 			//trigger an error

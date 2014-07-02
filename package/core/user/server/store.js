@@ -317,9 +317,9 @@ module.exports = function() {
 		//keyword search
 		if(keyword) {
 			or.push([
-				{ title	: new RegExp(keyword, 'ig') },
-				{ detail: new RegExp(keyword, 'ig') },
-				{ status: new RegExp(keyword, 'ig') } ]);
+				{ name	: new RegExp(keyword, 'ig') },
+				{ username: new RegExp(keyword, 'ig') },
+				{ email	: new RegExp(keyword, 'ig') } ]);
 		}
 		
 		

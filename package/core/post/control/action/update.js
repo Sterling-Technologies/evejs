@@ -76,6 +76,7 @@ define(function() {
 		
 		//if no data post set
 		if(!this.data.post) {
+			
 			//get it from the server
 			//get post id
 			var id =  window.location.pathname.split('/')[3];
@@ -88,11 +89,11 @@ define(function() {
 					//convert date format
 					var published 	= new Date(response.results.published);
 					
-					var year 	= birth.getFullYear(),
-						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
-						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
-					
-					response.results.published = [year, month, day].join('-');
+					var year 	= published.getFullYear(),
+						month 	= published.getMonth() < 9 ? '0'+(published.getMonth() + 1) : (published.getMonth() + 1),
+						day 	= published.getDate() < 10 ? '0'+(published.getDate()) : (published.getDate());
+						
+					response.results.published = [month, day, year].join('/');
 				} else {
 					response.results.published = null;
 				}
@@ -183,7 +184,10 @@ define(function() {
 			url 	= controller.getServerUrl() + '/post/update/'+id;
 		
 		if(this.data.post.published) {
-			this.data.post.published += 'T00:00:00Z';
+			var published = this.data.post.published.split('/');
+			this.data.post.published = published[2] 
+				+ '-' + published[1] + '-' + published[0] 
+				+ 'T00:00:00Z';
 		}
 		
 		//save data to database
@@ -193,7 +197,7 @@ define(function() {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', 'Post successfully created!', 'success')
+					.notify('Success', 'Post successfully updated!', 'success')
 					//go to listing
 					.redirect('/post');
 				
@@ -202,6 +206,18 @@ define(function() {
 			}
 			
 			this.data.errors = response.validation || {};
+			
+			//there is data, fix published
+			if(this.data.post.published) {
+				//convert date format
+				var published 	= new Date(this.data.post.published);
+				
+				var year 	= published.getFullYear(),
+					month 	= published.getMonth() < 9 ? '0'+(published.getMonth() + 1) : (published.getMonth() + 1),
+					day 	= published.getDate() < 10 ? '0'+(published.getDate()) : (published.getDate());
+				
+				this.data.post.published = [year, month, day].join('-');
+			}
 			
 			//display message status
 			controller.notify('Error', 'There was an error in the form.', 'error');
