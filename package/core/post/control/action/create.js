@@ -11,7 +11,7 @@ define(function() {
 	
     public.crumbs = [{ 
         path: '/post',
-        icon: 'post', 
+        icon: 'pencil', 
         label: 'Posts' 
     }, {  label: 'Create Post' }];
 	

@@ -29,30 +29,50 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		var filter 	= this.request.query.filter 	|| {},
-			range 	= this.request.query.range 		|| 50,
-			start 	= this.request.query.start 		|| 0,
-			order 	= this.request.query.order 		|| {},
-			count	= this.request.query.count 		|| 0,
-			keyword	= this.request.query.keyword 	|| null;
-			
-		if(count) {
-			this.controller.{TEMPORARY}().store().getTotal(
-				filter, 	keyword, 
-				_response.bind(this));
-			
+		var query = this.controller.eden
+			.load('string').queryToHash(this.request.message);
+
+		// Validate Request
+		if(!this.validateTokenRequest(query)) {
+			// If request is not valid, do nothing
 			return;
 		}
-		
-		this.controller.{TEMPORARY}().store().getList(
-			filter, 	keyword, 
-			order, 		start, 
-			range,		_response.bind(this));
+
+		// Listen to login events
+		this.controller
+			// When there is an error
+			.once('auth-access-error', _error.bind(this))
+			// When authentication is successful
+			.once('auth-access-success', _success.bind(this))
+			// Trigger Auth Access Event
+			.trigger('auth-access', this.controller, query);
+
+		return this;
 	};
-	
+
+	public.validateTokenRequest = function(query) {
+		// We are only allowing post method
+		if(this.request.method.toLowerCase() != 'post') {
+			return _error.call(this, { message : 'Invalid Request, request method must be post' });
+		}
+
+		// If username and password is not
+		// present on the query
+		if(!('username' in query) || !('password' in query)) {
+			return _error.call(this, { message : 'Username and Password field is required' });
+		}
+
+		// If username or password is null
+		if(query.username === null || query.password === null) {
+			return _error.call(this, { message : 'Username and Password field is required' });
+		}
+
+		return true;
+	};
+
 	/* Private Methods
     -------------------------------*/
-	var _response = function(error, data) {
+    var _response = function(error, data) {
 		//if there are errors
 		if(error) {
 			_error.call(this, error);
@@ -69,8 +89,10 @@ module.exports = (function() {
 			error: false, 
 			results: data });
 		
+		// don't listen for error anymore
+		this.controller.unlisten('auth-access-error');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('auth-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -79,10 +101,12 @@ module.exports = (function() {
 			error: true, 
 			message: error.message });
 		
+		// don't listen for success anymore
+		this.controller.unlisten('auth-access-success');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('auth-action-response', this.request, this.response);
 	};
-	
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

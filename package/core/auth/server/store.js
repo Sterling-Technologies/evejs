@@ -1,21 +1,26 @@
 module.exports = function() {
-	var c = function() {
-		this.__construct.call(this);
+	var c = function(controller) {
+		this.__construct.call(this, controller);
 	}, public = c.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {TEMPORARY};
-	
+	public.schema = {};
+
 	/* Private Properties
 	-------------------------------*/
-	var mongoose 	= require('mongoose');
-	
+	var mongoose = require('mongoose');
+
+	var _auth = {
+		active  : { type : Boolean },
+		token   : String
+	};
+
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	public.__load = c.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new c(controller);
 		}
 		
 		return this.__instance;
@@ -23,72 +28,76 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	public.__construct = function(controller) {
+		// Mongoose Schema Object
 		var schema = mongoose.Schema;
-		
-		//define schema
-		this.definition = new schema(this.schema);
-		//NOTE: add custom schema methods here
-		
-		this.store = mongoose.model('{TEMPORARY}', this.definition);
+		// Reference to User Package store
+		var store  = controller.user().store();
+
+		// Copy user schema
+		this.schema = Object.create(store.schema);
+
+		// Inject auth object
+		this.schema.auth = _auth;
+
+		// Define New User Schema
+		this.definition = new schema(this.schema, { collection : 'users' });
+
+		// Define Store model
+		this.store = mongoose.model('auth', this.definition);
 	};
 	
 	/* Public Methods
 	-------------------------------*/
 	/**
-	 * Returns count based on the query
+	 * Returns record count
+	 * based on the given
+	 * query
 	 *
-	 * @param object
-	 * @param function
-	 * @return this
+	 * @param 	object
+	 * @param 	function
+	 * @return 	object
 	 */
 	public.count = function(query, callback) {
-		this.store.count(query, callback);
-		return this;
+		return this.store.count(query, callback);
 	};
 	
 	/**
-	 * Inserts an object to the collection
+	 * Returns raw mongoose model
 	 *
-	 * @param object
-	 * @param function
-	 * @return this
+	 * @param 	object
+	 * @return 	object
 	 */
-	public.insert = function(data, callback) {
-		this.model(data).save(callback);
-		return this;
+	public.model = function(data) {
+		return new (this.store)(data);
 	};
 	
 	/**
-	 * Returns the raw mongoose find protocol
+	 * Returns records based on
+	 * the given query
 	 *
-	 * @param object
-	 * @return Mongoose
+	 * @param 	object
+	 * @param 	function
+	 * @return 	object
 	 */
-	public.find = function(query) {
-		return this.store.find(query);
+	public.find = function(query, callback) {
+		return this.store.find(query, callback);
 	};
 	
 	/**
-	 * Returns the raw mongoose findById protocol
+	 * Returns single record based
+	 * on the given query
 	 *
-	 * @param ID
-	 * @return Mongoose
+	 * @param 	object
+	 * @param 	string
+	 * @param 	object
+	 * @param 	function
+	 * @return 	object
 	 */
-	public.findById = function(id) {
-		return this.store.findById(id);
+	public.findOne = function(query, fields, options, callback) {
+		return this.store.findOne(query, fields, options, callback);
 	};
-	
-	/**
-	 * Returns the raw mongoose findOne protocol
-	 *
-	 * @param object
-	 * @return Mongoose
-	 */
-	public.findOne = function(query) {
-		return this.store.findOne(query);
-	};
-	
+
 	/**
 	 * Returns the details based on the id
 	 *
@@ -198,61 +207,61 @@ module.exports = function() {
 	};
 	
 	/**
-	 * Returns the raw mongoose model
+	 * Returns single record based
+	 * on the given id
 	 *
-	 * @param object
-	 * @return Mongoose
+	 * @param 	string 		ObjectID
+	 * @param  	object
+	 * @param 	object
+	 * @param 	function
+	 * @return 	object
 	 */
-	public.model = function(data) {
-		return new (this.store)(data);
+	public.findById = function(id, fields, options, callback) {
+		return this.store.findById(id, fields, options, callback);
 	};
 	
 	/**
-	 * removes an object based on the id
-	 * this does not actually remove the object
-	 * but simply sets the active to false
+	 * Removes a record based on 
+	 * ObjectID given
 	 *
-	 * @param ID
-	 * @param function
-	 * @return this
+	 * @param 	string 		ObjectID
+	 * @param 	function
+	 * @return 	object
 	 */
 	public.remove = function(id, callback) {
-		this.store.findOneAndUpdate(
-			{_id: id, active: true }, 
-			{ $set: { active: false } }, callback);
-		
-		return this;
+		return this.update(id, { active: false }, callback);
 	};
 	
 	/**
-	 * restores the object
-	 *
-	 * @param ID
-	 * @param function
-	 * @return this
+	 * Returns inactive records
+	 * and updates its status
+	 * to active
+	 * 
+	 * @param 	string 		ObjectID
+	 * @param 	function
+	 * @return 	object
 	 */
 	public.restore = function(id, callback) {
-		this.store.findOneAndUpdate(
-			{_id: id, active: false }, 
+		return this.store.findOneAndUpdate(
+			{_id: id, active: false}, 
 			{ $set: { active: true } }, callback);
-		
-		return this;
 	};
 	
 	/**
-	 * Updates the object
+	 * Updates single record based
+	 * on the given id and data
 	 *
-	 * @param ID
-	 * @param object
-	 * @param function
-	 * @return this
+	 * @param 	string 	ObjectID
+	 * @param 	object
+	 * @param 	function
+	 * @return 	object
 	 */
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
 			{_id: id, active: true}, 
 			{ $set: data }, callback);
 	};
-	
+
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor

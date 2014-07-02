@@ -10,7 +10,7 @@ module.exports = (function() {
     public.response  	= null;
     
 	/* Private Properties
-    -------------------------------*/
+    -------------------------------*/     
     /* Loader
     -------------------------------*/
     public.__load = c.load = function(controller, request, response) {
@@ -27,41 +27,44 @@ module.exports = (function() {
 	};
 
 	/* Public Methods
-	-------------------------------*/
+    -------------------------------*/
 	public.render = function() {
-		//if no ID
-		if(!this.request.variables[0]) {
-			//setup an error
-			_error.call(this, { message: 'No ID set' });
-			
+		// Get request access token
+		var token = this.request.query['access_token'];
+
+		// If token is not present on the
+		// request
+		if(token === undefined || token == null) {
 			return;
 		}
-		
-		this.controller.{TEMPORARY}().store().getDetail(this.request.variables[0], _response.bind(this));
+
+		// Listen to login events
+		this.controller
+		// If there is an error logging in
+		.once('auth-resource-error', _error.bind(this))
+		// If there is no error
+		.once('auth-resource-success', _success.bind(this))
+		// Trigger  auth resource event
+		.trigger('auth-resource', this.controller, token);
 
 		return this;
 	};
-	
+
 	/* Private Methods
     -------------------------------*/
-	var _response = function(error, row) {
+    var _response = function(error, data) {
 		//if there are errors
 		if(error) {
-			_error.call(this, error)
+			_error.call(this, error);
 			return;
 		}
 		
-		_success.call(this, row);
+		//no error
+		_success.call(this, data);
 	};
 	
-	var _success = function(row) {
-		//no error, then prepare the package
-		this.response.message = JSON.stringify({ 
-			error: false, 
-			results: row });
-		
-		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+	var _success = function() {
+		// noop
 	};
 	
 	var _error = function(error) {
@@ -70,10 +73,12 @@ module.exports = (function() {
 			error: true, 
 			message: error.message });
 		
+		// don't listen for success anymore
+		this.controller.trigger('auth-resource-success');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('auth-action-response', this.request, this.response);
 	};
-	
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

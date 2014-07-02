@@ -26,11 +26,11 @@ module.exports = function() {
 	/* Public Methods
 	-------------------------------*/
 	public.store = function() {
-		return store.load();
+		return store.load(this.controller);
 	};
 	
 	public.path = function(key) {
-		return this.controller.path('{TEMPORARY}/' + key);
+		return this.controller.path('auth/' + key);
 	};
 	
 	/* Private Methods

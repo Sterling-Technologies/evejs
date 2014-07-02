@@ -8,7 +8,7 @@ define(function() {
 	public.title 		= 'Posts';
 	public.header 		= 'Posts';
 	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ icon: 'post', label: 'Posts' }];
+	public.crumbs 		= [{ icon: 'pencil', label: 'Posts' }];
 	public.data 		= {};
 	
 	public.start		= 0;
