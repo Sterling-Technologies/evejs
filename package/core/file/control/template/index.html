@@ -69,6 +69,7 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Mime</th>
+                        <th>Size</th>
                         <th>Uploaded</th>
                     </tr>
                 </thead>
@@ -86,8 +87,9 @@
                             {{/if}}
                         </td>
                         <td>{{id}}</td>
-                        <td>{{name}}</td>
+                        <td>{{filename}}</td>
                     	<td>{{mime}}</td>
+                        <td>{{size}}</td>
                         <td valign="middle">{{created}}</td>
                     </tr>	
                     {{/each}}

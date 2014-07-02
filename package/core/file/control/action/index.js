@@ -63,7 +63,7 @@ define(function() {
 		
 		//5. get all count
 		batch.push({ url: _getAllCountRequest.call(this, query) });
-		
+
 		$.post(
 			controller.getServerUrl() + '/file/batch', 
 			JSON.stringify(batch), function(response) { 
@@ -73,16 +73,26 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-				var updated = new Date(response.batch[0].results[i].updated);
-				var format = $.timeToDate(updated.getTime(), true, true);
-                
+				var uploadDate = new Date(response.batch[0].results[i].uploadDate);
+				var format 	   = $.timeToDate(uploadDate.getTime(), true, true);
+                var size 	   = response.batch[0].results[i].length;
+
+                if(size == 0) {
+                	size = '0 B';
+                } else {
+                	var sizes 	  = ['B', 'KB', 'MB', 'GB'];
+                	var index  	  = Math.floor(Math.log(size) / Math.log(1024));
+                	size = (size / Math.pow(1024, index)).toPrecision(3) + ' ' + sizes[index];
+                }
+
                 //add it to row
 				rows.push({
-					id      : response.batch[0].results[i]._id,
-					title    : response.batch[0].results[i].title,
-					status   : response.batch[0].results[i].status, 
-					active	: response.batch[0].results[i].active,
-					updated	: format });
+					id      	: response.batch[0].results[i]._id,
+					filename    : response.batch[0].results[i].filename,
+					mime   		: response.batch[0].results[i].contentType,
+					size 		: size,
+					active		: response.batch[0].results[i].metadata.active,
+					created		: format });
             }
 			
 			var showing = query.mode || 'active';
@@ -92,7 +102,7 @@ define(function() {
 			//2. Active Count
 			//3. Trash Count
 			//4. All Count
-			
+			console.log(response);
 			this.data = {
 				showing 	: showing,
 				rows		: rows,
@@ -149,12 +159,9 @@ define(function() {
 		});
 		
 		$('section.file-list input.field-upload').change(function(e) {
-			var files = e.target.files;
+			var files = e.target.files, form = new FormData();
 			
 			for(var i = 0; i < files.length; i++) {
-				var form = new FormData();
-				
-        		form.append('foo', 'bar');
         		form.append('file-' + i, files[i]);
         		
 				var ajax = new XMLHttpRequest();
@@ -168,6 +175,8 @@ define(function() {
 					
 					//TODO: Add to gritter
 					//message: percentComplete.toString() + '%'
+					controller.notify('Upload Progress', 
+						'Uploaded: ' + percentComplete.toString() + '%', 'info');
 				}, false);
 				
 				//on load
@@ -176,18 +185,31 @@ define(function() {
 					var response = $.parseJSON(e.target.responseText);
 					
 					//TODO: Show response message
+					// Parse all files that has been
+					// successfuly uploaded
+					for(var i in response.results) {
+						var filename = response.results[i].filename;
+
+						controller
+							.notify('Upload Complete', filename + ' was successfully uploaded', 'success')
+							.redirect('/file');
+					}
 				}, false);
 				
 				//on error
 				ajax.addEventListener('error', function (e) {
 					//TODO: Show error message
 					//ex. There was an error attempting to upload the file.
+					controller.notify('Error Uploading File(s)',
+						'An error occured while uploading file(s)', 'error');
 				}, false);
 					
 				// On cancel.
 				ajax.addEventListener('abort', function (e) {
 					//TODO: Show abort message
-					//The upload has been canceled by the user or the browser dropped the connection. 
+					//The upload has been canceled by the user or the browser dropped the connection.
+					controller.notify('Upload Aborted',
+						'Upload was aborted, please check internet connection', 'error');
 				}, false);
 				
 				ajax.open('POST', controller.getServerUrl() + '/file/create');
@@ -216,13 +238,13 @@ define(function() {
 		
 		switch(request.mode || 'active') {
 			case 'all':
-				query.filter.active = -1;
+				query.filter['metadata.active'] = -1;
 				break;
 			case 'active':
-				query.filter.active = 1;
+				query.filter['metadata.active'] = 1;
 				break;
 			case 'trash':
-				query.filter.active = 0;
+				query.filter['metadata.active'] = 0;
 				break;
 		}
 		
@@ -239,7 +261,7 @@ define(function() {
 		}
 		
 		query.count = 1;
-		query.filter.active = -1;
+		query.filter['metadata.active'] = -1;
 		
 		return '/file/list?' + $.hashToQuery(query);
 	};
@@ -254,7 +276,7 @@ define(function() {
 		}
 	
 		query.count = 1;
-		query.filter.active = 1;
+		query.filter['metadata.active'] = 1;
 		
 		return '/file/list?' + $.hashToQuery(query);
 	};
@@ -269,7 +291,7 @@ define(function() {
 		}
 		
 		query.count = 1;
-		query.filter.active = 0;
+		query.filter['metadata.active'] = 0;
 		
 		return '/file/list?' + $.hashToQuery(query);
 	};
