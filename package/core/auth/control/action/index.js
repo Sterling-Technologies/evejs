@@ -104,20 +104,12 @@ define(function() {
 			valid    = true;
 
 		if(username.val().length == 0) {
-			username
-			.parent()
-			.parent()
-			.addClass('has-error');
-
+			_setError('username');
 			valid = false;
 		}
 
 		if(password.val().length == 0) {
-			password
-			.parent()
-			.parent()
-			.addClass('has-error');
-			
+			_setError('password');
 			valid = false;
 		}
 
