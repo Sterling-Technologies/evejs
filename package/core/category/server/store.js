@@ -10,6 +10,8 @@ module.exports = function() {
 		slug	: { type: String, required: true },
 		detail	: { type: String, required: true },
 		
+		_post	: { type: String, required: false, ref: 'posts' },
+
 		active		: { type: Boolean, default: true },
 		created		: { type: Date, default: Date.now },
 		updated		: { type: Date, default: Date.now }

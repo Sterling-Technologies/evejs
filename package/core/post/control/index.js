@@ -55,4 +55,5 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
+	
 });
