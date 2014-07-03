@@ -158,7 +158,8 @@ define(function() {
 		});
 		
 		$('section.file-list input.field-upload').change(function(e) {
-			var files = e.target.files;
+			var files = e.target.files,
+				url   = controller.getServerUrl() + '/file/create';
 			
 			for(var i = 0; i < files.length; i++) {
 				// Wrap into closure, to
@@ -170,62 +171,78 @@ define(function() {
 	        		
 	        		form.append('file-' + i, files[i]);
 	        		
-					var ajax = new XMLHttpRequest();
-					
-					// Inject current file that is uploading
-					ajax.upload.file  = files[i];
+	        		// Need to use jquery ajax
+	        		// so that auth can catch
+	        		// up request, and append access
+	        		// token into it
+	        		$.ajax({
+	        			url 	: url,
+	        			type 	: 'POST',
+	        			// custom xhr
+	        			xhr 	: function() {
+	        				var jqxhr = $.ajaxSettings.xhr();
 
-					// Progress listerner.
-					ajax.upload.addEventListener('progress', function (e) {
-						var percentComplete = 0;
-						if (e.lengthComputable) {
-							percentComplete = Math.round(e.loaded * 100 / e.total);
-						}
+	        				if(jqxhr.upload) {
+	        					jqxhr.upload.file = files[i];
 
-						// File name
-						var name = ajax.upload.file.name;
+	        					// On Progress
+	        					jqxhr.upload.addEventListener('progress', function(e) {
+	        						var percentComplete = 0;
+									if (e.lengthComputable) {
+										percentComplete = Math.round(e.loaded * 100 / e.total);
+									}
 
-						//TODO: Add to gritter
-						//message: percentComplete.toString() + '%'
-						controller.notify('Upload Progress (' + name + ')', 
-							'Uploaded: ' + percentComplete.toString() + '%', 'info');
-					}, false);
-					
-					//on load
-					ajax.upload.addEventListener('loadend', function (e) {
-						// File name
-					 	var name = ajax.upload.file.name;
+									// File name
+									var name = jqxhr.upload.file.name;
 
-					 	// On upload end, notify success message
-						controller.notify('Success (' + name + ')', 
-							'File: ' + name + ' has been successfully uploaded', 'success');
-					}, false);
-					
-					//on error
-					ajax.upload.addEventListener('error', function (e) {
-						//TODO: Show error message
-						//ex. There was an error attempting to upload the file.
-						controller.notify('Error Uploading File(s)',
-							'An error occured while uploading file(s)', 'error');
-					}, false);
-						
-					// On cancel.
-					ajax.upload.addEventListener('abort', function (e) {
-						//TODO: Show abort message
-						//The upload has been canceled by the user or the browser dropped the connection.
-						controller.notify('Upload Aborted',
-							'Upload was aborted, please check internet connection', 'error');
-					}, false);
+									//TODO: Add to gritter
+									//message: percentComplete.toString() + '%'
+									controller.notify('Upload Progress (' + name + ')', 
+										'Uploaded: ' + percentComplete.toString() + '%', 'info');
+	        					}, false);
 
-					ajax.addEventListener('readystatechange', function(e) {
-						if(this.readyState === 4) {
-							controller.redirect('/file');
-						}
-					});
+	        					// On Load End
+	        					jqxhr.upload.addEventListener('loadend', function(e) {
+	        						// File name
+									var name = jqxhr.upload.file.name;
 
-					ajax.open('POST', controller.getServerUrl() + '/file/create');
-					
-	        		ajax.send(form);
+									// On upload end, notify success message
+									controller.notify('Success (' + name + ')', 
+										'File: ' + name + ' has been successfully uploaded', 'success');
+	        					}, false);
+
+	        					//on error
+								jqxhr.upload.addEventListener('error', function (e) {
+									//TODO: Show error message
+									//ex. There was an error attempting to upload the file.
+									controller.notify('Error Uploading File(s)',
+										'An error occured while uploading file(s)', 'error');
+								}, false);
+									
+								// On cancel.
+								jqxhr.upload.addEventListener('abort', function (e) {
+									//TODO: Show abort message
+									//The upload has been canceled by the user or the browser dropped the connection.
+									controller.notify('Upload Aborted',
+										'Upload was aborted, please check internet connection', 'error');
+								}, false);
+
+	        					return jqxhr;
+	        				}
+	        			},
+	        			// form data
+	        			data  		: form,
+	        			// disable cache
+	        			cache 		: false,
+	        			// do not set content type
+	        			contentType : false,
+	        			// do not proccess data
+	        			processData : false,
+	        			// on success
+	        			success : function(response) {
+	        				return controller.redirect('/file');
+	        			}
+	        		});
 	        	})(files, i);
 			}
 		});
