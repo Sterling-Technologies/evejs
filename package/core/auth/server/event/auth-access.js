@@ -41,6 +41,16 @@ module.exports = function(controller, query) {
 	// does not exist, create one
 	.then(function(user, next) {
 		if(('auth' in user) && user.auth.token !== undefined) {
+			// Data to be sended back
+			var data = {
+				id 	  : user._id,
+				name  : user.name,
+				slug  : user.slug,
+				email : user.email,
+				photo : user.photo,
+				token : user.auth.token 
+			};
+		
 			if(user.auth.active !== undefined && user.auth.active == false) {
 				// Update User auth token
 				controller
@@ -64,14 +74,14 @@ module.exports = function(controller, query) {
 					// If there is no error, trigger
 					// success event an passed in user
 					// token
-					return controller.trigger('auth-access-success', { token : user.auth.token });
+					return controller.trigger('auth-access-success', data);
 				});
 			}
 
 			// If user exist, and it has token
 			// already, trigger success event
 			// and passed in user token
-			return controller.trigger('auth-access-success', { token : user.auth.token });
+			return controller.trigger('auth-access-success', data);
 		}
 
 		// Create new access token
@@ -104,10 +114,19 @@ module.exports = function(controller, query) {
 					   { message : 'An error occured, please try again' });
 			}
 
+			// Data to be sended back
+			var data = {
+				id 	  : user._id,
+				name  : user.name,
+				slug  : user.slug,
+				email : user.email,
+				photo : user.photo,
+				token : user.auth.token 
+			};
+
 			// If there is no error, trigger success event
 			// and passed in user token
-			return controller.trigger('auth-access-success',
-				   { token : user.auth.token });
+			return controller.trigger('auth-access-success', data);
 		});
 	});
 };

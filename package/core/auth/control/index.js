@@ -17,12 +17,12 @@ controller
 		// we need to validate if user session
 		// exists, else we need to redirect user
 		// back to login page.
-		var token = $.cookie('__acctoken');
-		
-		// If token is undefined
-		if(token === undefined) {
+		var session = $.cookie('__acc');
+
+		// If session is undefined
+		if(session === undefined) {
 			// Redirect back to login page
-			window.history.pushState({}, '', '/login');
+			return controller.redirect('/login')
 		}
 
 		return;
@@ -34,5 +34,15 @@ controller
 	//load up the action
 	require([action], function(action) {
 		action.load().render();
+	});
+})
+
+// when a url request has been made
+.listen('request', function() {
+	var navigation = controller.path('auth/action') + '/nav.js';
+
+	// load up navigation for user
+	require([navigation], function(nav) {
+		nav.load().render();
 	});
 });

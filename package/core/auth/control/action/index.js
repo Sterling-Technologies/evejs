@@ -56,7 +56,6 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
-			.then(_checkSession)
 			.then(this.loadAssets)
 			.then(_output)
 			.then(_listen);
@@ -66,20 +65,6 @@ define(function() {
 	
 	/* Private Methods
 	-------------------------------*/
-	var _checkSession = function(next) {
-		// Get account token
-		var token = $.cookie('__acctoken');
-
-		// If token is undefined
-		if(token !== undefined) {
-			// Redirect user back to login
-			// page
-			return window.history.pushState({}, '', '/');
-		}
-
-		next();
-	};
-
 	var _output = function(next) {
 		//bulk load the templates
 		require(['text!' + this.template], function(template) {
@@ -149,13 +134,15 @@ define(function() {
 				if(response.error) {
 					// Set Field error
 					_setError('username'), _setError('password');
+
 					// Notify that there is an error
 					controller.notify('Error', response.message, 'error');
 					return;
 				}
 
-				// Set response token as cookie
-				$.cookie('__acctoken', response.results.token, { path : '/', expires : 1 });
+				// Set response data as cookie
+				$.cookie('__acc', JSON.stringify(response.results), 
+						{ path : '/', expires : 1 });
 
 				// Redirect to home page
 				window.location.href = '/';

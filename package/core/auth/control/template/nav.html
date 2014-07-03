@@ -1,0 +1,32 @@
+<!-- Navigation Item for User -->
+<li class="light-blue nav-user">
+	<a data-toggle="dropdown" href="javascript:void(0)" class="dropdown-toggle">
+		<img class="nav-user-photo" src="placeholder/avatars/user.jpg" alt="User's Photo" />
+		<span class="user-info">
+			<small>Welcome,</small> 
+			{{user.name}}
+		</span>
+		<i class="icon-caret-down"></i>
+	</a>
+	<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+		<li>
+			<a href="#">
+				<i class="icon-cog"></i>
+				Settings
+			</a>
+		</li>
+		<li>
+			<a href="#">
+				<i class="icon-user"></i>
+				Profile
+			</a>
+		</li>
+		<li class="divider"></li>
+		<li>
+			<a id="logout" href="javascript:void(0)">
+				<i class="icon-off"></i>
+				Logout
+			</a>
+		</li>
+	</ul>
+</li>
