@@ -218,7 +218,7 @@ module.exports = function() {
 	 * @return 	object
 	 */
 	public.remove = function(id, callback) {
-		return this.update(id, { active: false }, callback);
+		return this.update(id, { 'metadata.active': false }, callback);
 	};
 	
 	/**
@@ -231,8 +231,8 @@ module.exports = function() {
 	 */
 	public.restore = function(id, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, active: false}, 
-			{ $set: { active: true } }, callback);
+			{_id: id, 'metadata.active': false}, 
+			{ $set: { 'metadata.active': true } }, callback);
 	};
 	
 	/**
@@ -246,7 +246,7 @@ module.exports = function() {
 	 */
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, active: true}, 
+			{_id: id, 'metadata.active': true }, 
 			{ $set: data }, callback);
 	};
 	
@@ -265,9 +265,7 @@ module.exports = function() {
 		//keyword search
 		if(keyword) {
 			or.push([
-				{ name	: new RegExp(keyword, 'ig') },
-				{ username: new RegExp(keyword, 'ig') },
-				{ email	: new RegExp(keyword, 'ig') } ]);
+				{ filename : new RegExp(keyword, 'ig') } ]);
 		}
 		
 		

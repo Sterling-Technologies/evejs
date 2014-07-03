@@ -30,7 +30,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var file = controller.getFile();
+		var file = controller.getPost();
 		
 		if(!file || !file.length) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');

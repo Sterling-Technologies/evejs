@@ -38,7 +38,7 @@ define(function() {
     		if(response.error) {
 				controller.notify('Error', response.message, 'error');
 			} else {
-				controller.notify('Success', response.results.name + ' has been removed!', 'success');
+				controller.notify('Success', response.results.filename + ' has been removed!', 'success');
 			}
 			
 			window.history.back();

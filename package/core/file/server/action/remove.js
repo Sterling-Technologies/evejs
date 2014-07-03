@@ -46,32 +46,50 @@ module.exports = (function() {
 
 		this.controller
 			//when there is an error
-			.once('file-remove-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('file-remove-success');
-				//trigger that a response has been made
-				self.controller.trigger('file-action-response', self.request, self.response);
-			})
+			.once('file-remove-error', _error.bind(this))
 			//when it is successfull
-			.once('file-remove-success', function(row) {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false, results: row });
-				//dont listen for error anymore
-				self.controller.unlisten('file-remove-error');
-				//trigger that a response has been made
-				self.controller.trigger('file-action-response', self.request, self.response);
-			})
+			.once('file-remove-success', _success.bind(this))
 			//Now call to remove the file
 			.trigger('file-remove', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+    var _response = function(error, data) {
+		//if there are errors
+		if(error) {
+			_error.call(this, error);
+			return;
+		}
+		
+		//no error
+		_success.call(this, data);
+	};
+	
+	var _success = function(data) {
+		//then prepare the package
+		this.response.message = JSON.stringify({ 
+			error: false, 
+			results: data });
+		
+		// do not listen to error anymore
+		this.controller.unlisten('file-remove-error');
+		//trigger that a response has been made
+		this.controller.trigger('file-action-response', this.request, this.response);
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		// do not listen to success anymore
+		this.controller.unlisten('file-remove-success');
+		//trigger that a response has been made
+		this.controller.trigger('file-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

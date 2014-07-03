@@ -173,7 +173,7 @@ define(function() {
 					var ajax = new XMLHttpRequest();
 					
 					// Inject current file that is uploading
-					ajax.upload.file = files[i];
+					ajax.upload.file  = files[i];
 
 					// Progress listerner.
 					ajax.upload.addEventListener('progress', function (e) {
@@ -193,6 +193,7 @@ define(function() {
 					
 					//on load
 					ajax.upload.addEventListener('loadend', function (e) {
+						// File name
 					 	var name = ajax.upload.file.name;
 
 					 	// On upload end, notify success message
@@ -215,9 +216,8 @@ define(function() {
 						controller.notify('Upload Aborted',
 							'Upload was aborted, please check internet connection', 'error');
 					}, false);
-					
-					// On ajax transfer done
-					ajax.addEventListener('readystatechange', function() {
+
+					ajax.addEventListener('readystatechange', function(e) {
 						if(this.readyState === 4) {
 							controller.redirect('/file');
 						}
