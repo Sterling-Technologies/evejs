@@ -136,8 +136,11 @@ define(function() {
 				.setHeader(this.header.replace('{POST}', this.data.post.title)) 
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
-				.setBody(body);            
-				
+				.setBody(body); 
+
+				// event when the post view is ready
+				controller.trigger('post-ready');
+
 			next();
 		}.bind(this));
     };

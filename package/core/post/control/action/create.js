@@ -104,6 +104,9 @@ define(function() {
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
 				
+			// event when the post view is ready
+			controller.trigger('post-ready');
+				
 			next();
 		}.bind(this));
     };

@@ -23,11 +23,8 @@ controller
 })
 //when a url request has been made
 .listen('request', function() {
-	// cache post index
-	var postIndex = window.location.pathname.indexOf('/post');
-
 	//if it doesn't start with category
-	if(window.location.pathname.indexOf('/category') !== 0 && postIndex !== 0) {
+	if(window.location.pathname.indexOf('/category') !== 0) {
 		//we don't care about it
 		return;
 	}
@@ -58,79 +55,5 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
-
-	// check if we are on the post page
-	if(postIndex == 0) {
-		var categories,
-			tableContentFlag = false;
-		// get the list of category
-		var _getCategory = function(fn) {
-			var requestUrl = controller.getServerUrl() + '/category/list/';
-
-			// ajax request, get all category
-			$.getJSON(requestUrl, function(data) {
-				fn(data);
-			});
-		};
-
-		// async function fix
-		var _setCategory = function(data) {
-			categories = data.results;
-
-			// listens for the document to become fully loaded
-			controller.listen('post-ready', function() {
-				// create the selectors
-				var post_table_head = $('body .post-list .table thead tr'),
-					post_table_body = $('body .post-list .table tbody tr');
-
-				// append the table-header element
-				if(tableContentFlag == false) {
-					post_table_head.children().eq(3).after('<th>Category</th>');
-
-					// append the table-content
-					$.each(post_table_body, function() {
-						// get the post id of the current item
-						var post_id = $(this).find('td:eq(2)').html();
-
-						// will accept a parameter and iterate
-						// through each category item and
-						// return a category name
-						var cat = function(post) {
-							var name  = "";
-
-							// iterate through each category
-							$.each(categories, function(key, value) {
-								var found = false;
-								// check if the current item has the same
-								// post id, then store it to name variable
-								if(value._post == post) {
-									name = value.name;
-									found = true;
-								}
-
-								// check if there's no value found
-								if(found == false) {
-									name = "UNCATEGORIZED";
-								}
-							});
-
-							// return the category name
-							return name;
-						};
-
-						// get the correct element node, display the category for the current
-						// cursor of the loop
-						$(this).find('td:eq(3)').after('<td>' + cat(post_id) + '</td>');
-					});
-
-					tableContentFlag = true;
-				}
-			});
-		};
-
-		// call the injection process
-		_getCategory(_setCategory);
-	}
-
 
 });
