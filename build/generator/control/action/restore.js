@@ -30,7 +30,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/{TEMPORARY}/remove/';
+		var url = controller.getServerUrl() + '/{SLUG}/restore/';
 		var id 	= window.location.pathname.split('/')[3];
 		
 		$.getJSON(url + id, function(response) {
@@ -38,7 +38,7 @@ define(function() {
     		if(response.error) {
 				controller.notify('Error', response.message, 'error');
 			} else {
-				controller.notify('Success', response.results.name + ' has been removed!', 'success');
+				controller.notify('Success', response.results.name + ' has been restored!', 'success');
 			}
 			
 			window.history.back();

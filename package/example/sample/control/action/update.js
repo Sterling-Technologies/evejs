@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating {{TEMPORARY}}';
-    public.header       = 'Updating {{TEMPORARY}}';
+    public.title        = 'Updating {SINGULAR}';
+    public.header       = 'Updating {SINGULAR}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
-        path: '/{TEMPORARY}',
-        icon: '{TEMPORARY}', 
-        label: '{TEMPORARY}' 
-    }, {  label: 'Create {TEMPORARY}' }];
+        path: '/{SLUG}',
+        icon: '{ICON}', 
+        label: '{PLURAL}' 
+    }, {  label: 'Create {SINGULAR}' }];
 	
     public.data     = {};
 	
-    public.template = controller.path('{TEMPORARY}/template') + '/form.html';
+    public.template = controller.path('{SLUG}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -40,7 +40,8 @@ define(function() {
     -------------------------------*/
     public.render = function() {
         $.sequence()
-			.setScope(this) 
+			.setScope(this)
+			.then(_setCountries)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -53,12 +54,13 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
+		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
 		if(post && post.length) {
 			//query to hash
-			this.data.{TEMPORARY} = $.queryToHash(post);
+			this.data.user = $.queryToHash(post);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -74,31 +76,16 @@ define(function() {
 			return;
 		}
 		
-		//if no data post set
-		if(!this.data.{TEMPORARY}) {
+		//if no data user set
+		if(!this.data.user) {
 			//get it from the server
-			//get {TEMPORARY} id
+			//get user id
 			var id =  window.location.pathname.split('/')[3];
-			var url = controller.getServerUrl() + '/{TEMPORARY}/detail/'+id;
+			var url = controller.getServerUrl() + '/{SLUG}/detail/'+id;
 			
 			$.getJSON(url, function(response) {
-				//format the birth to the HTML5 date format
-				if(response.results.published 
-				&& (new Date(response.results.published)).getTime() > 0) {
-					//convert date format
-					var published 	= new Date(response.results.published);
-					
-					var year 	= birth.getFullYear(),
-						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
-						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
-					
-					response.results.published = [year, month, day].join('-');
-				} else {
-					response.results.published = null;
-				}
 				
-				this.data.{TEMPORARY} = response.results;
-				
+				this.data.{SLUG} = response.results;
 				next();
 			}.bind(this));
 			
@@ -110,17 +97,17 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = [];
+        var templates = [ 'text!' + this.template ];
 
         //require form templates
         //assign it to main form
         require(templates, function(form) {
-   
+            //render the body
 			var body = Handlebars.compile(form)(this.data);
 			
 			controller
-				.setTitle(this.title.replace('{{TEMPORARY}}', this.data.{TEMPORARY}.title))
-				.setHeader(this.header.replace('{{TEMPORARY}}', this.data.{TEMPORARY}.title)) 
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
@@ -130,31 +117,15 @@ define(function() {
     };
 
     var _listen = function(next) {
-	   	$('form.package-{TEMPORARY}-form').on('keyup', 'input[name="title"]', function(e) {
-			var name = $(this);
-			//there's a delay in when the input value is updated
-			//we do this settime out to case for this
-			setTimeout(function() {
-				$('form.package-{TEMPORARY}-form input[name="slug"]').val($.trim(name.val()
-				.toLowerCase()
-				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
-				.replace(/\s/g, '-')
-				.replace(/^([a-z\u00E0-\u00FC])|\-([a-z\u00E0-\u00FC])/g, function ($1) {
-					return $1.toLowerCase();
-				}));
-			}, 1);
-		});
-	   
-	    next(); 
+	   	
+	    next();
     };
 	
 	var _valid = function() {
 		//clear errors
 		this.data.errors = {};
 		
-		/*
-        validation here
-        */
+		//NOTE: local validate
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';
@@ -162,22 +133,25 @@ define(function() {
 	
 	var _process = function(next) {
 		var id 		=  window.location.pathname.split('/')[3],
-			url 	= controller.getServerUrl() + '/{TEMPORARY}/update/'+id;
+			url 	= controller.getServerUrl() + '/user/update/'+id;
 		
-		if(this.data.{TEMPORARY}.published) {
-			this.data.{TEMPORARY}.published += 'T00:00:00Z';
+		//don't store the confirm
+		delete this.data.user.confirm;
+		
+		if(this.data.user.birthdate) {
+			this.data.user.birthdate += 'T00:00:00Z';
 		}
 		
 		//save data to database
-		$.post(url, this.data.{TEMPORARY}, function(response) {
+		$.post(url, this.data.user, function(response) {
 			response = JSON.parse(response);
 			
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', '{TEMPORARY} successfully created!', 'success')
+					.notify('Success', 'User successfully created!', 'success')
 					//go to listing
-					.redirect('/{TEMPORARY}');
+					.redirect('/user');
 				
 				//no need to next since we are redirecting out
 				return;

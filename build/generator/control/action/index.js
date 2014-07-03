@@ -5,17 +5,17 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= '{TEMPORARY}';
-	public.header 		= '{TEMPORARY}';
-	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ icon: '{TEMPORARY}', label: '{TEMPORARY}' }];
+	public.title 		= '{PLURAL}';
+	public.header 		= '{PLURAL}';
+	public.subheader 	= '';
+	public.crumbs 		= [{ icon: '{ICON}', label: '{PLURAL}' }];
 	public.data 		= {};
 	
 	public.start		= 0;
 	public.page 		= 1;
 	public.range 		= 25;
 	
-	public.template 	= controller.path('{TEMPORARY}/template') + '/index.html';
+	public.template 	= controller.path('{SLUG}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -54,48 +54,38 @@ define(function() {
 		
 		//1. get the list
 		batch.push({ url: _getListRequest.call(this, query) });
-
-        //2. get the active count
-        batch.push({ url: _getActiveCountRequest.call(this, query) });
 		
-		//3. get the trash count
+		//2. get the active count
+		batch.push({ url: _getActiveCountRequest.call(this, query) });
+		
+		//4. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		
-		//4. get all count
+		//5. get all count
 		batch.push({ url: _getAllCountRequest.call(this, query) });
 		
 		$.post(
-			controller.getServerUrl() + '/{TEMPORARY}/batch', 
+			controller.getServerUrl() + '/{SLUG}/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
-			var i, rows = [];
-			
-			//loop through data
-			for(i in re.batch[0]espons.results) {
-				var updated = new Date(response.batch[0].results[i].updated);
-				var format = $.timeToDate(updated.getTime(), true, true);
-                
-                //add it to row
-				rows.push({
-					id      : response.batch[0].results[i]._id,
-					active	: response.batch[0].results[i].active,
-					updated	: format });
-            }
-			
 			var showing = query.mode || 'active';
 			showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
-	
+			
+			//1. List
+			//2. Active Count
+			//3. Trash Count
+			//4. All Count
 			
 			this.data = {
-				showing 	: showing,
-				rows		: rows,
-				mode		: query.mode || 'active',
-				keyword		: query.keyword || null,
-				active  	: response.batch[1].results,
-				trash		: response.batch[2].results,
-				all			: response.batch[3].results,
-				range		: this.range };
+				showing : showing,
+				rows	: response.batch[0].results,
+				mode	: query.mode || 'active',
+				keyword	: query.keyword || null,
+				active	: response.batch[1].results,
+				trash	: response.batch[2].results,
+				all		: response.batch[3].results,
+				range	: this.range };
             
 			next();
 		}.bind(this));
@@ -120,12 +110,12 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.{TEMPORARY}-list a.remove, section.{TEMPORARY}-list a.restore').click(function(e) {
+		$('section.{SLUG}-list a.remove, section.{SLUG}-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.{TEMPORARY}-list  tbody input[type="checkbox"]').click(function() {
+		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
 				jQuery('tbody input[type="checkbox"]').each(function() {
@@ -163,15 +153,15 @@ define(function() {
 			case 'trash':
 				query.filter.active = 0;
 				break;
-            case 'all':
-                query.filter.active = -1;
-                break;
+			case 'all':
+				query.filter.active = -1;
+				break;
 		}
 		
-		return '/{TEMPORARY}/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
-	var _getAllCountRequest = function(request) {
+	var _getActiveCountRequest = function(request) {
 		var query = {};
 		
 		query.filter = request.filter || {};
@@ -179,11 +169,11 @@ define(function() {
 		if(request.keyword) {
 			query.keyword = request.keyword;
 		}
-		
+	
 		query.count = 1;
 		query.filter.active = 1;
 		
-		return '/{TEMPORARY}/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getTrashCountRequest = function(request) {
@@ -198,7 +188,22 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 0;
 		
-		return '/{TEMPORARY}/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
+	};
+	
+	var _getAllCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		query.count = 1;
+		query.filter.active = -1;
+		
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	/* Adaptor

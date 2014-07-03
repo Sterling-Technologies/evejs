@@ -32,17 +32,17 @@ define(function() {
 	var _process = function(next) {
 		var post = controller.getPost();
 		
-		if(post && post.length) {
+		if(!post || !post.length) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
 		}
 		
-		{TEMPORARY} = $.queryToHash({TEMPORARY});
+		post = $.queryToHash(post);
 		
 		//if nothing was checked
-		if(!{TEMPORARY}.action) {
+		if(!post.action) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -51,7 +51,7 @@ define(function() {
 		
 		
 		//if nothing was checked
-		if(!{TEMPORARY}.id || !{TEMPORARY}.id.length) {
+		if(!post.id || !post.id.length) {
 			controller.notify('Error', 'No items were chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -59,16 +59,16 @@ define(function() {
 		}
 		
 		//what is the url base
-		var url =  '/{TEMPORARY}/' + {TEMPORARY}.action + '/';
+		var url =  '/{SLUG}/' + post.action + '/';
 		
 		//prepare the batch query
-		for(var batch = [], i = 0; i < {TEMPORARY}.id.length; i++) {
-			batch.push({ url: url + {TEMPORARY}.id[i] });
+		for(var batch = [], i = 0; i < post.id.length; i++) {
+			batch.push({ url: url + post.id[i] });
 		}
 		
 		//call the batch remove
 		$.post(
-		controller.getServerUrl() + '/{TEMPORARY}/batch', 
+		controller.getServerUrl() + '/{SLUG}/batch', 
 		JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			for(var errors = false, i = 0; i < response.length; i++) {
@@ -79,7 +79,7 @@ define(function() {
 			}
 			
 			if(!errors) {
-				controller.notify('Success', 'Bulk Action ' + {TEMPORARY}.action + ' successful!', 'success');
+				controller.notify('Success', 'Bulk Action ' + post.action + ' successful!', 'success');
 			}
 			
 			window.history.back();

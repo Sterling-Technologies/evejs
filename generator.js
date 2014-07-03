@@ -1,3 +1,169 @@
+(function() {
+	var eden 		= require('./build/server/node_modules/edenjs/lib/index');
+	var parameter 	= eden('array').slice(process.argv, 2)[0];
+	
+	var paths = {
+		schema		: __dirname + '/schema/',
+		package		: __dirname + '/package/',
+		generator	: __dirname + '/build/generator/' };
+	
+	//is there a parameter?
+	if(!parameter || !parameter.length) {
+		console.log('\x1b[31m%s\x1b[0m', 'Invalid parameter. Must be in the form of vendor or vendor/package');
+		return;
+	}
+	
+	parameter = parameter.split('/');
+
+	//is the schema valid?
+	if(parameter.length > 2) {
+		console.log('\x1b[31m%s\x1b[0m', 'Invalid parameter. Must be in the form of vendor or vendor/package');
+		return;
+	}
+	
+	var packages = [];
+	
+	//is there a slash?
+	if(parameter.length == 2) {
+		//is this a valid file ? 
+		if(!eden('file', paths.schema + parameter.join('/') + '.js').isFile()) {
+			console.log('\x1b[31m%s\x1b[0m', paths.schema + parameter.join('/') + '.js does not exist.');
+			return;
+		}
+		
+		packages.push(parameter[1]);
+	}
+	
+	//set the vendor 
+	var vendor = parameter[0];
+	
+	//start up sequence
+	var sequence = eden('sequence');
+	
+	//if there is no package
+	if(!packages.length) {
+		//is this a valid folder ? 
+		if(!eden('folder', paths.schema + vendor).isFolder()) {
+			console.log('\x1b[31m%s\x1b[0m', paths.schema + vendor + ' does not exist.');
+			return;
+		}
+		
+		sequence.then(function(next) {
+			//query the vendor folder for the list of packages
+			eden('folder', paths.schema + vendor).getFiles(null, false, next);
+		});
+		
+		sequence.then(function(files, next) {
+			//parse through files
+			for(var i = 0; i < files.length; i++) {
+				//if this is not a js file
+				if(files[i].getExtension() != 'js') {
+					//skip it
+					continue;
+				}
+				
+				//store the package
+				packages.push(files[i].getBase());
+			}
+			
+			next();
+		});
+	}
+	
+	//loop through packages
+	sequence.then(function(next) {
+		for(var source, destination, i = 0; i < packages.length; i++) {
+			//require the source path
+			source = require(paths.schema + vendor + '/' + packages[i]);
+			
+			//determine the estination path
+			destination = eden('folder', paths.package + vendor + '/' + packages[i]);
+			
+			//does the destination package exist?
+			if(destination.isFolder()) {
+				console.log('\x1b[31m%s\x1b[0m', destination.path + ' already exists.');
+				console.log('\x1b[31m%s\x1b[0m', 'If you want to build a new package, you must delete this package first.');
+				return;
+			}
+			
+			next(source, destination);
+		}
+	});
+	
+	sequence.then(function(source, destination, next) {
+		//going to be forking the sequence
+		var subsequence = eden('sequence');
+		
+		//create the folder
+		subsequence.then(function(subnext) {
+			destination.mkdir(0777, function(error) {
+				if(error) {
+					console.log('\x1b[31m%s\x1b[0m', error);
+					return;
+				}
+				
+				subnext(source, destination);
+			});
+		});
+		
+		//copy generator to destination
+		subsequence.then(function(source, destination, subnext) {
+			eden('folder', paths.generator).copy(destination.path, function(error) {
+				if(error) {
+					console.log('\x1b[31m%s\x1b[0m', error);
+					return;
+				}
+				
+				subnext(source, destination);
+			})
+		});
+		
+		//get all files
+		subsequence.then(function(source, destination, subnext) {
+			destination.getFiles(null, true, function(files) {
+				subnext(source, destination, files);
+			});
+		});
+		
+		
+		//change out templates
+		subsequence.then(function(source, destination, files, subnext) {
+			for(var done = 0, i = 0; i < files[i]; i++) {
+				files[i].getContent(function(file, error, data) {
+					if(error) {
+						console.log('\x1b[31m%s\x1b[0m', error);
+						return;
+					}
+					
+					//Change variables
+					data = eden('string').replace(data, /{SLUG}/g		, source.slug);
+					data = eden('string').replace(data, /{ICON}/g		, source.icon);
+					data = eden('string').replace(data, /{SINGULAR}/g	, source.singular);
+					data = eden('string').replace(data, /{PLURAL}/g		, source.plural);
+					
+					//send back
+					file.setContent(data, function(error) {
+						if(error) {
+							console.log('\x1b[31m%s\x1b[0m', error);
+							return;
+						}
+						
+						//old school sequence :D
+						if((++done) == files.length) {
+							console.log('\x1b[32m%s\x1b[0m', 'Package was successfully created in ' + destination);
+							subnext();
+							next();
+						}
+					});
+				}.bind(this, files[i]));
+			}
+		});
+	});
+	
+})();
+
+
+/*--- OLD ---
 //require denpendancies
 var eden      = require('./build/server/node_modules/edenjs/lib/index');
 
@@ -11,7 +177,7 @@ fs        = require('fs');
 //check if package already exist
 var packageExists = function(schema, folderCount, next) {
     var message = false;
-    for(var folder in schema ){
+    for(var folder in schema ) {
         (function() {
             var path = paths.dev + paths.packages + '/' + folder;
             fs.exists(path, function(exist) {
@@ -631,4 +797,4 @@ eden('sequence')
             });
         })(schema[folder], schemaFolder);
     }
-});
+});*/
