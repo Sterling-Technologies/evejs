@@ -44,7 +44,7 @@ define(function() {
 		//save data to database
 		$.post(url, this.data.file, function(response) {
 			response = JSON.parse(response);
-			
+
 			if(!response.error) {		
 				controller				
 					//display message status

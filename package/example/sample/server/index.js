@@ -1,22 +1,22 @@
 module.exports = function() {
 	//set a goto handler incase other packages
 	//want to access this
-	this.post = function() {
+	this.{TEMPORARY} = function() {
 		return require('./factory').load(this);
 	};
 	
 	//on init set the paths
 	this.listen('init', function() {
-		this.path('post', __dirname)
-			.path('post/action', __dirname + '/action')
-			.path('post/event', __dirname + '/event');
+		this.path('{TEMPORARY}', __dirname)
+			.path('{TEMPORARY}/action', __dirname + '/action')
+			.path('{TEMPORARY}/event', __dirname + '/event');
 	
 	}.bind(this))
 	 
 	//when the server starts listen to file events
 	.listen('start', function() {
 		//get event path
-		var self = this, events = this.post().path('event');
+		var self = this, events = this.{TEMPORARY}().path('event');
 		
 		//get files in the event folder
 		this.eden.load('folder', events).getFiles(null, false, function(files) {
@@ -43,8 +43,8 @@ module.exports = function() {
 	
 	//when a server request has been made
 	.listen('server-request', function(control, request, response) {
-		//if path does not starts with /post
-		if(request.path != '/post' && request.path.indexOf('/post/') !== 0) {
+		//if path does not starts with /{TEMPORARY}
+		if(request.path != '/{TEMPORARY}' && request.path.indexOf('/{TEMPORARY}/') !== 0) {
 			//do nothing
 			return;
 		}
@@ -52,8 +52,8 @@ module.exports = function() {
 		response.processing = true;
 		
 		//trim the prefix
-		var root 		= this.post().path('action'),
-			path 		= request.path.replace('/post', ''),
+		var root 		= this.{TEMPORARY}().path('action'),
+			path 		= request.path.replace('/{TEMPORARY}', ''),
 			buffer 		= path.split('/'),
 			action 		= root + '/index',
 			variables 	= [];
@@ -73,7 +73,7 @@ module.exports = function() {
 		//set the variables
 		request.variables = variables;
 		//listen for response
-		control.once('post-action-response', function(request, response) {
+		control.once('{TEMPORARY}-action-response', function(request, response) {
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response
@@ -86,7 +86,5 @@ module.exports = function() {
 		
 		//call it
 		require(action).load(control, request, response).render();
-	}.bind(this))
-	
-	.trigger('post-init');
+	}.bind(this));
 };

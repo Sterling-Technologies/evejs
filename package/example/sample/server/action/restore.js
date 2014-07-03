@@ -31,13 +31,8 @@ module.exports = (function() {
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No ID set' });
-			
-			//trigger that a response has been made
-			this.controller.trigger('file-action-response', this.request, this.response);
+			///setup an error
+			error.call(this, { message: 'No ID set' });
 			
 			return;
 		}
@@ -46,50 +41,36 @@ module.exports = (function() {
 
 		this.controller
 			//when there is an error
-			.once('file-remove-error', _error.bind(this))
+			.once('{TEMPORARY}-restore-error', _error.bind(this))
 			//when it is successfull
-			.once('file-remove-success', _success.bind(this))
-			//Now call to remove the file
-			.trigger('file-remove', this.controller, this.request.variables[0]);
+			.once('{TEMPORARY}-restore-success', _success.bind(this))
+			//Now call to remove the {TEMPORARY}
+			.trigger('{TEMPORARY}-restore', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
-    var _response = function(error, data) {
-		//if there are errors
-		if(error) {
-			_error.call(this, error);
-			return;
-		}
-		
-		//no error
-		_success.call(this, data);
-	};
-	
-	var _success = function(data) {
-		//then prepare the package
-		this.response.message = JSON.stringify({ 
-			error: false, 
-			results: data });
-		
-		// do not listen to error anymore
-		this.controller.unlisten('file-remove-error');
+	var _success = function(row) {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false, results: row });
+		//dont listen for error anymore
+		this.controller.unlisten('{TEMPORARY}-restore-error');
 		//trigger that a response has been made
-		this.controller.trigger('file-action-response', this.request, this.response);
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
 	};
-	
+			
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
 			error: true, 
 			message: error.message });
 		
-		// do not listen to success anymore
-		this.controller.unlisten('file-remove-success');
+		//dont listen for success anymore
+		this.controller.unlisten('{TEMPORARY}-restore-success');
 		//trigger that a response has been made
-		this.controller.trigger('file-action-response', this.request, this.response);
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
 	};
-
+			
 	/* Adaptor
 	-------------------------------*/
 	return c; 

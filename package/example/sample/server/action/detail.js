@@ -10,7 +10,7 @@ module.exports = (function() {
     public.response  	= null;
     
 	/* Private Properties
-    -------------------------------*/     
+    -------------------------------*/
     /* Loader
     -------------------------------*/
     public.__load = c.load = function(controller, request, response) {
@@ -27,53 +27,41 @@ module.exports = (function() {
 	};
 
 	/* Public Methods
-    -------------------------------*/
+	-------------------------------*/
 	public.render = function() {
-		//figure out the query and stuffs
-		var filter 	= this.request.query.filter 	|| {},
-			range 	= this.request.query.range 		|| 50,
-			start 	= this.request.query.start 		|| 0,
-			order 	= this.request.query.order 		|| {},
-			count	= this.request.query.count 		|| 0,
-			keyword	= this.request.query.keyword 	|| null;
+		//if no ID
+		if(!this.request.variables[0]) {
+			//setup an error
+			_error.call(this, { message: 'No ID set' });
+			
+			return;
+		}
 		
-		//remember the scope and load up the data store
-		var store = this.controller.file().store();
-		
-		//if we just want the count based from the query
-		if(count) {
-			//execute the count query
-			return store.getTotal(filter, keyword, _response.bind(this));
-		} 
-		
-		//set up the store for results
-		store.getList(
-			filter, 	keyword,
-			order, 		start,
-			range, 		_response.bind(this));
+		this.controller.{TEMPORARY}().store().getDetail(this.request.variables[0], _response.bind(this));
+
+		return this;
 	};
 	
 	/* Private Methods
     -------------------------------*/
-    var _response = function(error, data) {
+	var _response = function(error, row) {
 		//if there are errors
 		if(error) {
-			_error.call(this, error);
+			_error.call(this, error)
 			return;
 		}
 		
-		//no error
-		_success.call(this, data);
+		_success.call(this, row);
 	};
 	
-	var _success = function(data) {
-		//then prepare the package
+	var _success = function(row) {
+		//no error, then prepare the package
 		this.response.message = JSON.stringify({ 
 			error: false, 
-			results: data });
+			results: row });
 		
 		//trigger that a response has been made
-		this.controller.trigger('file-action-response', this.request, this.response);
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -83,9 +71,9 @@ module.exports = (function() {
 			message: error.message });
 		
 		//trigger that a response has been made
-		this.controller.trigger('file-action-response', this.request, this.response);
+		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
 	};
-
+	
 	/* Adaptor
 	-------------------------------*/
 	return c; 

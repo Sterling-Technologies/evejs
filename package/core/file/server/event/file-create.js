@@ -17,17 +17,17 @@ module.exports = function(controller, stream) {
 			
 		//queue sequence
 		sequence.then(function(next) {
-			var id = new objectId();
+			var id   = new objectId(), meta = { active : true };
+
 			//setup the gridstore	
 			(new gridStore(
 				database, id, name, 
-				'w+', { root: 'file' })
+				'w+', { root: 'file', metadata : meta })
 			).open(function(error, store) {
 				//if there are errors
 				if(error) {
 					//trigger an error
-					controller.trigger('file-create-error', error);
-					return;
+					return controller.trigger('file-create-error', error);
 				}
 				
 				//manually set the mime 
@@ -46,8 +46,7 @@ module.exports = function(controller, stream) {
 				//if there are errors
 				if(error) {
 					//trigger an error
-					controller.trigger('file-create-error', error);
-					return;
+					return controller.trigger('file-create-error', error);
 				}
 				
 				//it is now okay to move on
@@ -60,22 +59,26 @@ module.exports = function(controller, stream) {
 	//when the file is done sending
 	.on('file-end', function() {
 		//queue sequence
-		sequence.then(function(id, store, next) { 
-			//push files
-			files.push({
-				_id		: id,
-				name	: store.filename,
-				mime	: store.contentType });
-			
+		sequence.then(function(id, store, next) { 			
 			//we are good to close the store
-			store.close();
-			next();
+			//this will actually save the
+			//file / record to mongo
+			store.close(function(error, data) {
+				//if there is an error
+				if(error) {
+					return controller.trigger('file-create-error', error);
+				}
+
+				//push the newly created file(s)
+				files.push(data);
+				next(files);
+			});
 		});
 	})
 	//when we are done getting everything
 	.on('complete', function(query) {
 		//queue sequence
-		sequence.then(function(next) {
+		sequence.then(function(files, next) {
 			//trigger that we are good
 			controller.trigger('file-create-success', files);
 			next();

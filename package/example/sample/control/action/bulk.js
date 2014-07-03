@@ -30,19 +30,19 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var file = controller.getPost();
+		var post = controller.getPost();
 		
-		if(!file || !file.length) {
+		if(!post || !post.length) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
 		}
 		
-		file = $.queryToHash(file);
+		post = $.queryToHash(post);
 		
 		//if nothing was checked
-		if(!file.action) {
+		if(!post.action) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -51,7 +51,7 @@ define(function() {
 		
 		
 		//if nothing was checked
-		if(!file.id || !file.id.length) {
+		if(!post.id || !post.id.length) {
 			controller.notify('Error', 'No items were chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -59,16 +59,16 @@ define(function() {
 		}
 		
 		//what is the url base
-		var url =  '/file/' + file.action + '/';
+		var url =  '/{SLUG}/' + post.action + '/';
 		
 		//prepare the batch query
-		for(var batch = [], i = 0; i < file.id.length; i++) {
-			batch.push({ url: url + file.id[i] });
+		for(var batch = [], i = 0; i < post.id.length; i++) {
+			batch.push({ url: url + post.id[i] });
 		}
 		
 		//call the batch remove
 		$.post(
-		controller.getServerUrl() + '/file/batch', 
+		controller.getServerUrl() + '/{SLUG}/batch', 
 		JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			for(var errors = false, i = 0; i < response.length; i++) {
@@ -79,7 +79,7 @@ define(function() {
 			}
 			
 			if(!errors) {
-				controller.notify('Success', 'Bulk Action ' + file.action + ' successful!', 'success');
+				controller.notify('Success', 'Bulk Action ' + post.action + ' successful!', 'success');
 			}
 			
 			window.history.back();

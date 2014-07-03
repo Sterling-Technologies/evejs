@@ -5,15 +5,7 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {
-		chunkSize	: { type: Number, required: true },
-		contentType	: { type: String, required: true },
-		filename	: { type: String, required: true },
-		uploadDate	: { type: Date, default: Date.now },
-		metadata  	: {
-			active : { type: Boolean, default: true }
-		}
-	};
+	public.schema = {TEMPORARY};
 	
 	/* Private Properties
 	-------------------------------*/
@@ -35,72 +27,68 @@ module.exports = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.definition = new schema(this.schema, { collection : 'file.files' });
+		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('file.files', this.definition);
+		this.store = mongoose.model('{TEMPORARY}', this.definition);
 	};
 	
 	/* Public Methods
 	-------------------------------*/
 	/**
-	 * Returns total record count
-	 * based on query
+	 * Returns count based on the query
 	 *
-	 * @param 	object
-	 * @param 	function
-	 * @return 	object
+	 * @param object
+	 * @param function
+	 * @return this
 	 */
 	public.count = function(query, callback) {
-		return this.store.count(query, callback);
+		this.store.count(query, callback);
+		return this;
 	};
 	
 	/**
-	 * Returns raw mongoose mongoose
+	 * Inserts an object to the collection
 	 *
-	 * @param 	object
-	 * @return 	object
+	 * @param object
+	 * @param function
+	 * @return this
 	 */
-	public.model = function(data) {
-		return new (this.store)(data);
+	public.insert = function(data, callback) {
+		this.model(data).save(callback);
+		return this;
 	};
 	
 	/**
-	 * Returns a record based on query
-	 * specified
+	 * Returns the raw mongoose find protocol
 	 *
-	 * @param 	object
-	 * @param 	function
-	 * @return 	object
+	 * @param object
+	 * @return Mongoose
 	 */
-	public.find = function(query, callback) {
-		return this.store.find(query, callback);
+	public.find = function(query) {
+		return this.store.find(query);
 	};
 	
 	/**
-	 * Returns single record based
-	 * on query specified
+	 * Returns the raw mongoose findById protocol
 	 *
-	 * @param 	object
-	 * @param 	function
-	 * @return 	object
+	 * @param ID
+	 * @return Mongoose
 	 */
-	public.findOne = function(query, callback) {
-		return this.store.findOne(query, callback);
+	public.findById = function(id) {
+		return this.store.findById(id);
 	};
 	
 	/**
-	 * Returns a record based on id 
-	 * given
+	 * Returns the raw mongoose findOne protocol
 	 *
-	 * @param 	string 	 ObjectId
-	 * @param 	function
-	 * @return 	object
+	 * @param object
+	 * @return Mongoose
 	 */
-	public.findById = function(id, callback) {
-		return this.store.findById(id, callback);
+	public.findOne = function(query) {
+		return this.store.findOne(query);
 	};
-
+	
 	/**
 	 * Returns the details based on the id
 	 *
@@ -210,100 +198,63 @@ module.exports = function() {
 	};
 	
 	/**
-	 * Removes single record based on
-	 * id given
+	 * Returns the raw mongoose model
 	 *
-	 * @param 	string 		ObjectId
-	 * @param 	function
-	 * @return 	object
+	 * @param object
+	 * @return Mongoose
+	 */
+	public.model = function(data) {
+		return new (this.store)(data);
+	};
+	
+	/**
+	 * removes an object based on the id
+	 * this does not actually remove the object
+	 * but simply sets the active to false
+	 *
+	 * @param ID
+	 * @param function
+	 * @return this
 	 */
 	public.remove = function(id, callback) {
-		return this.update(id, { 'metadata.active': false }, callback);
+		this.store.findOneAndUpdate(
+			{_id: id, active: true }, 
+			{ $set: { active: false } }, callback);
+		
+		return this;
 	};
 	
 	/**
-	 * Restores archive / inactive
-	 * records back to active
+	 * restores the object
 	 *
-	 * @param 	string 	 ObjectId
-	 * @param 	function
-	 * @return 	object
+	 * @param ID
+	 * @param function
+	 * @return this
 	 */
 	public.restore = function(id, callback) {
-		return this.store.findOneAndUpdate(
-			{_id: id, 'metadata.active': false}, 
-			{ $set: { 'metadata.active': true } }, callback);
+		this.store.findOneAndUpdate(
+			{_id: id, active: false }, 
+			{ $set: { active: true } }, callback);
+		
+		return this;
 	};
 	
 	/**
-	 * Updates a record based on id
-	 * and data given
+	 * Updates the object
 	 *
-	 * @param 	string 	ObjectId
-	 * @param 	object
-	 * @param 	function
-	 * @return 	object
+	 * @param ID
+	 * @param object
+	 * @param function
+	 * @return this
 	 */
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, 'metadata.active': true }, 
+			{_id: id, active: true}, 
 			{ $set: data }, callback);
 	};
 	
 	/* Private Methods
 	-------------------------------*/
-	var _buildQuery = function(query, keyword) {
-		query 	= query 	|| {};
-		keyword = keyword 	|| null;
-		
-		if(query['metadata.active'] != -1) {
-			query['metadata.active'] = query['metadata.active'] != 0;
-		}
-		
-		var not, or = [];
-		
-		//keyword search
-		if(keyword) {
-			or.push([
-				{ filename : new RegExp(keyword, 'ig') } ]);
-		}
-		
-		
-		for(var key in query) {
-			//if prefixed with !, just test if it does not exist
-			//SECRET SAUCE:
-			//{ active: true, $or: [ {password: { $exists: false }}, {password: { $type: 10 }}, {password: ""} ] }
-			if(key.indexOf('!') === 0) {
-				not = [ {}, {}, {} ];
-				not[0][key.substr(1)] = { $exists: false };
-				not[1][key.substr(1)] = { $type: 10 };
-				not[2][key.substr(1)] = '';
-				
-				or.push(not);
-				continue;
-			}
-			
-			if(query[key] !== null) {
-				continue;
-			}
-			
-			//if null value, just test if it exists
-			
-			query[key] = { $exists: true };
-		}
-		
-		if(or.length == 1) {
-			query['$or'] = or[0];
-		} else if(or.length) {
-			query['$and'] = [];
-			for(var i = 0; i < or.length; i++) {
-				query['$and'].push({ '$or': or[i] });
-			}
-		}
-		
-		return query;
-	};
-
 	/* Adaptor
 	-------------------------------*/
 	return c;  

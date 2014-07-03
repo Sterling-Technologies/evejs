@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Create {TEMPORARY}';
-    public.header       = 'Create {TEMPORARY}';
-    public.subheader    = 'CRM';
+    public.title        = 'Create {SINGULAR}';
+    public.header       = 'Create {SINGULAR}';
+    public.subheader    = '';
 	
     public.crumbs = [{ 
-        path: '/{TEMPORARY}',
-        icon: '{TEMPORARY}', 
-        label: '{TEMPORARY}' 
-    }, {  label: 'Create {TEMPORARY}' }];
+        path: '/{SLUG}',
+        icon: '{ICON}', 
+        label: '{PLURAL}' 
+    }, {  label: 'Create {SINGULAR}' }];
 	
     public.data     = {};
 	
-    public.template = controller.path('{TEMPORARY}/template') + '/form.html';
+    public.template = controller.path('{SLUG}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -41,6 +41,7 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
+			.then(_setCountries)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -53,12 +54,13 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
+		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
 		if(post && post.length) {
 			//query to hash
-			this.data.{TEMPORARY} = $.queryToHash(post);
+			this.data.{SLUG} = $.queryToHash(post);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -70,7 +72,7 @@ define(function() {
 			
 			//we are good to send this up
 			_process.call(this, next);
-			next();
+			
 			return;
 		}
 		
@@ -79,12 +81,12 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var forms = [];
+        var templates = [ 'text!' + this.template ];
 
         //require form templates
         //assign it to main form
-        require(forms, function(form) {
-			var body = Handlebars.compile(form)(this.data);
+        require(templates, function(form) {
+            var body = Handlebars.compile(form)(this.data);
 			
 			controller
 				.setTitle(this.title)
@@ -98,21 +100,7 @@ define(function() {
     };
 
     var _listen = function(next) {
-		$('form.package-{TEMPORARY}-form').on('keyup', 'input[name="title"]', function(e) {
-			var name = $(this);
-			//there's a delay in when the input value is updated
-			//we do this settime out to case for this
-			setTimeout(function() {
-				$('form.package-{TEMPORARY}-form input[name="slug"]').val($.trim(name.val()
-				.toLowerCase()
-				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
-				.replace(/\s/g, '-')
-				.replace(/^([a-z\u00E0-\u00FC])|\-([a-z\u00E0-\u00FC])/g, function ($1) {
-					return $1.toLowerCase();
-				}));
-			}, 1);
-		});
-	   
+	   	
 	    next();
     };
 	
@@ -120,27 +108,28 @@ define(function() {
 		//clear errors
 		this.data.errors = {};
 		
-        /*
-        validation here
-        */
-
+		//NOTE: local validate
+		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';
 	};
 	
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/{TEMPORARY}/create';
+		var url = controller.getServerUrl() + '/{SLUG}/create';
+		
+		//don't store the confirm
+		delete this.data.{SLUG}.confirm;
 		
 		//save data to database
-		$.post(url, this.data.{TEMPORARY}, function(response) {
+		$.post(url, this.data.{SLUG}, function(response) {
 			response = JSON.parse(response);
 			
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', '{TEMPORARY} successfully created!', 'success')
+					.notify('Success', '{SINGULAR} successfully created!', 'success')
 					//go to listing
-					.redirect('/{TEMPORARY}');
+					.redirect('/{SLUG}');
 				
 				//no need to next since we are redirecting out
 				return;
