@@ -162,7 +162,7 @@ var controller = function() {
 			self.trigger('menu', [self.menu]);
 			
 			//render head
-			head = Handlebars.compile(head)({ right: false });
+			head = Handlebars.compile(head)({ right: true });
 			
 			//render menu
 			menu = Handlebars.compile(menu)({ items: self.menu });
