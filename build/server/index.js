@@ -33,4 +33,12 @@ require('./controller')
 
 /* Trigger Start Event
 -------------------------------*/
-.trigger('start');
+.trigger('start')
+
+/* Start Socket IO
+--------------------------------*/
+.startSocket()
+
+/* Trigger Socket Event
+---------------------------------*/
+.trigger('socket');
