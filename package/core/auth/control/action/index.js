@@ -11,8 +11,6 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ = jQuery;
-	
-	var _loaded = false;
 
 	/* Loader
 	-------------------------------*/
@@ -29,30 +27,6 @@ define(function() {
 	
 	/* Public Methods
 	-------------------------------*/
-	public.loadAssets = function(callback) {
-		//make sure callback is a function
-		callback = callback || $.noop;
-		
-		//if loaded
-		if(_loaded) {
-			//do nothing
-			callback();
-			return this;
-		}
-		
-		//add the style to header
-		//<link rel="stylesheet" type="text/css" href="/styles/autocomplete.css" />
-		$('<link rel="stylesheet" type="text/css" />')
-			.attr('href', controller.path('auth/asset') + '/index.css')
-			.appendTo('head');
-		
-		_loaded = true;
-		
-		callback();
-		
-		return this;
-	};
-
 	public.render = function() {
 		$.sequence()
 			.setScope(this)

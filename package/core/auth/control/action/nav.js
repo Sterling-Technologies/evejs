@@ -82,7 +82,7 @@ define(function() {
 			// If nav does not exists
 			if(nav.length == 0) {
 				// Inject user nav into right nav
-				$('ul.nav.ace-nav').html(body);
+				$('ul.nav.ace-nav').append(body);
 			}
 
 			next();
@@ -104,7 +104,7 @@ define(function() {
 			if(session === undefined) {
 				return controller.redirect('/login');
 			}
-
+ 
 			// Logout endpoint
 			var logout = controller.getServerUrl() + '/auth/logout';
 			
