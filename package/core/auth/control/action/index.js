@@ -30,7 +30,6 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
-			.then(this.loadAssets)
 			.then(_output)
 			.then(_listen);
 		
