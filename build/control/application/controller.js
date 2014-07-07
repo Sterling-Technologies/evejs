@@ -88,6 +88,16 @@ var controller = function() {
 		$(window).on(event, callback);
 		return this;
 	};
+
+	/**
+	 * Global event listener for the server
+	 *
+	 * @return this
+	 */
+	public.once = function(event, callback) {
+		$(window).once(event, callback);
+		return this;
+	};
 	
 	/**
 	 * Returns the path given the key
