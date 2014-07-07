@@ -8,18 +8,30 @@ controller
 		.path('file/action'		, controller.path('package') + '/core/file/action')
 		.path('file/asset'		, controller.path('package') + '/core/file/asset')
 		.path('file/template'	, controller.path('package') + '/core/file/template');
+
+	// fire event when the file is finished initializing
+	controller.trigger('file-init');
 })
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
+	// fire event when the file menu is starting
+	controller.trigger('file-menu-before');
+
 	//add our menu item
 	menu.push({
 		path	: '/file',
 		icon	: 'pencil',
 		label	: 'Files',
 		children: [] });
+
+	// fire event when the file menu is finished
+	controller.trigger('file-menu-after');
 })
 //when a url request has been made
 .listen('request', function() {
+	// fire event when the file request is starting
+	controller.trigger('file-request-before');
+
 	//if it doesn't start with file
 	if(window.location.pathname.indexOf('/file') !== 0) {
 		//we don't care about it
@@ -52,4 +64,7 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
+
+	// fire event when the file request is finished
+	controller.trigger('file-request-after');
 });
