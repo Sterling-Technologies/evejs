@@ -164,10 +164,12 @@ define(function() {
 					.notify('Success', 'Post successfully created!', 'success')
 					//go to listing
 					.redirect('/post');
-				
+
 				// fire an event to notify all the listeners
 				// that a new post have been modified
-				controller.trigger('post-created', this.data.post.category, response);
+				var res = {_category: this.data.post.category, _post: response._id };
+
+				controller.trigger('post-created', res);
 				//no need to next since we are redirecting out
 				return;
 			}

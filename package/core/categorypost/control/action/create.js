@@ -102,12 +102,13 @@ define(function() {
 	 */
 	 var _process = function(next) {
 	 	// listen for post update
-		controller.once('post-created', function(e, data, res) {
+		controller.once('post-created', function(e, res) {
 			var url 	= controller.getServerUrl() + '/categorypost/create/';
-			//var postData = { _category: data, _post: update_id };
-			// $.post(url, postData, function(response) {
+			//var postData = { _category: data };
+			$.post(url, res, function(response) {
 			 	//console.log(res);
-			// }.bind(this));
+			}.bind(this));
+		
 
 			controller.unlisten('post-created');
 			next();
