@@ -3,7 +3,9 @@ controller
 .listen('init', function() {
 	// set the paths
 	controller
-		.path('categorypost'			, controller.path('package') + '/core/categorypost');
+		.path('categorypost'			, controller.path('package') + '/core/categorypost')
+		.path('categorypost/action'		, controller.path('package') + '/core/categorypost/action');
+
 })
 // when a url request has been made
 .listen('request', function() {
@@ -18,151 +20,240 @@ controller
 		return;
 	}
 
-	var selectBox = function() {
-		var requestUrl = controller.getServerUrl() + '/category/list/';
-		// create the initial selecbox
-		var result = '<div><h6>Category</h6><div><select class="form-control">';
-		var categories;
+	var action = 'index';
+	switch(true) {
+		case postCreateIndex == 0:
+			action = 'create';
+			break;
+		case postUpdateIndex == 0:
+			action = 'update';
+			break;
+	}
 
-		var getCat = function() {
-			// ajax request, get all category
-			$.ajax({
-		    	url: requestUrl,
-		    	async: false,
-		    	dataType: 'json',
-		    	success: function(data) {
-		    		categories = data.results;
-		    	}
-		    });
-		};
+	action = controller.path('categorypost/action') + '/' + action + '.js';
 
-		getCat();
+	// //load up the action
+	require([action], function(action) {
+		action.load().render();
+	});
 
-		// create options by iterating through each category
-		$.each(categories, function(key, data) {
-			result += '<option value="' + data._id + '">' + data.name + '</option>';
-		});
+	//NOTE: I've tried putting the event listener here just incase the listener doesnt work on the action/index.js
+	// controller.listen('post-ready', function() {
+	// 	action = 'index';
+	// 	action = controller.path('categorypost/action') + '/' + action + '.js';
 
-		// concatenate the endings
-		result += '</select></div></div>';
+	// 	//load up the action
+	// 	require([action], function(action) {
+	// 		action.load().render();
+	// 	});
+	// });
 
-		// return the result
-		return result;
-	};
+	//NOTE: The codes below are my first codes
+	//It was like a procedural style actually
+	//WARNING:MESSY CODES AHEAD
+
+	// var selectBox = function() {
+	// 	var requestUrl = controller.getServerUrl() + '/category/list/';
+	// 	// create the initial selecbox
+	// 	var result = '<div><h6>Category</h6><div><select class="form-control" name="category">';
+	// 	var categories;
+
+	// 	var getCat = function() {
+	// 		// ajax request, get all category
+	// 		$.ajax({
+	// 	    	url: requestUrl,
+	// 	    	async: false,
+	// 	    	dataType: 'json',
+	// 	    	success: function(data) {
+	// 	    		categories = data.results;
+	// 	    	}
+	// 	    });
+	// 	};
+
+	// 	getCat();
+
+	// 	// create options by iterating through each category
+	// 	$.each(categories, function(key, data) {
+	// 		result += '<option value="' + data._id + '">' + data.name + '</option>';
+	// 	});
+
+	// 	// concatenate the endings
+	// 	result += '</select></div></div>';
+
+	// 	// return the result
+	// 	return result;
+	// };
 
 	// check if we are updating a post
 	if(postUpdateIndex == 0) {
-		console.log('Im updating an old post');
-		var selectFlag = false;
+		// console.log('Im updating an old post');
+		// var selectFlag = false;
+		// var update_id 		=  window.location.pathname.split('/')[3];
 
-		// listen if the document is ready
-		controller.listen('post-ready', function() {
-			// check if the checkbox for category have been rendered already
-			if(selectFlag == false) {
-				// if not yet, select the correct location
-				// and prepend the select box
-				$('.widget-body div.widget-main')
-					.children().eq(3)
-					.prepend(selectBox());
+		// // listen if the document is ready
+		// controller.listen('post-ready', function() {
+		// 	// check if the checkbox for category have been rendered already
+		// 	if(selectFlag == false) {
+		// 		// if not yet, select the correct location
+		// 		// and prepend the select box
+		// 		$('.widget-body div.widget-main')
+		// 			.children().eq(3)
+		// 			.prepend(selectBox());
 				
-				// set the flag true to know if the selectbox is rendered
-				selectFlag = true;
-			}
-		});
+		// 		// set the flag true to know if the selectbox is rendered
+		// 		selectFlag = true;
+		// 	}
+
+		// 	// listen for post update
+		// 	controller.listen('post-updated', function(e, data) {
+		// 		var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
+					
+		// 		var postData = { _category: data, _post: update_id };
+		// 		$.post(url, postData, function(response) {
+		// 			console.log(postData);
+		// 		}.bind(this));
+
+		// 	});
+
+		// });
+
 	}
 
 	// check if we are creating a new post
 	if(postCreateIndex == 0) {
-		console.log('Im creating a new post');
-		var selectFlag = false;
-		console.log(selectBox());
-		// listen if the document is ready
-		controller.listen('post-ready', function() {
-			// check if the select box for category have been rendered already
-			if(selectFlag == false) {
-				// if not yet, select the correct location
-				// and prepend the select box
-				$('.widget-body div.widget-main')
-					.children().eq(3)
-					.prepend(selectBox());
+		// console.log('Im creating a new post');
+		// var selectFlag = false;
+		
+		// // listen if the document is ready
+		// controller.listen('post-ready', function() {
+		// 	// check if the select box for category have been rendered already
+		// 	if(selectFlag == false) {
+		// 		// if not yet, select the correct location
+		// 		// and prepend the select box
+		// 		$('.widget-body div.widget-main')
+		// 			.children().eq(3)
+		// 			.prepend(selectBox());
 				
-				// set the flag true to know if the selectbox is rendered
-				selectFlag = true;
-			}
-		});
+		// 		// set the flag true to know if the selectbox is rendered
+		// 		selectFlag = true;
+		// 	}
+
+		// 	// listen for post update
+		// 	controller.listen('post-created', function(e, data, res) {
+		// 		var url 	= controller.getServerUrl() + '/categorypost/create/';
+		// 			console.log(res)
+		// 		var postData = { _category: data, _post: update_id };
+		// 		// $.post(url, postData, function(response) {
+		// 		// 	console.log(postData);
+		// 		// }.bind(this));
+
+		// 	});
+		// });
 	}
 	
+	//NOTE: This one is working but the programing style is bad
+	// I guess it would break the current structure of the framework
+	// but It's working
+
 	//check if we are on the post page
-	if(postIndex == 0) {
-		var categories,
-			tableContentFlag = false;
-		// get the list of category
-		var _getCategory = function(fn) {
-			var requestUrl = controller.getServerUrl() + '/category/list/';
+	// if(postIndex == 0) {
+	// 	//private variables
+	// 	var categories,
+	// 		tableContentFlag = false,
+	// 		foundCategory = '';
 
-			// ajax request, get all category
-			$.getJSON(requestUrl, function(data) {
-				fn(data);
-			});
-		};
 
-		// async function fix
-		var _setCategory = function(data) {
-			categories = data.results;
+	// 	//1 Create a sequence to call the function synchronously
+	// 	var _injectToPost = function() {
+	// 		$.sequence()
+	// 			.setScope(this)
+	// 			.then(_getCategory)
+	// 			.then(_setCategory);
+	// 	}
 
-			// listens for the document to become fully loaded
-			controller.listen('post-ready', function() {
-				// create the selectors
-				var post_table_head = $('body .post-list .table thead tr'),
-					post_table_body = $('body .post-list .table tbody tr');
+	// 	//2 get all the categorypost list
+	// 	var _getCategory = function(next) {
+	// 		var requestUrl = controller.getServerUrl() + '/categorypost/list/';
 
-				// append the table-header element
-				if(tableContentFlag == false) {
-					post_table_head.children().eq(3).after('<th>Category</th>');
+	// 		// ajax request, get all category
+	// 		$.getJSON(requestUrl, function(data) {
+	// 			categories = data.results;
+	// 			next();
+	// 		});
+	// 	};
 
-					// append the table-content
-					$.each(post_table_body, function() {
-						// get the post id of the current item
-						var post_id = $(this).find('td:eq(2)').html();
+	// 	// utility to find the specified category
+	// 	function findCat(id) {
+	// 		var requestUrl = controller.getServerUrl() + '/category/detail/' + id;
+	// 		// ajax request, get all category
+	// 		$.ajax({
+	// 	    	url: requestUrl,
+	// 	    	async: false,
+	// 	    	dataType: 'json',
+	// 	    	success: function(data) {
+	// 	    		foundCategory = data.results.name;
+	// 	    	}
+	// 	    });
+	// 	};
 
-						// will accept a parameter and iterate
-						// through each category item and
-						// return a category name
-						var cat = function(post) {
-							var name  = "";
+	// 	//3 Set the category
+	// 	var _setCategory = function(next) {
+	// 		// listen for the document to become fully loaded
+	// 		controller.listen('post-ready', function() {
+	// 			// create the selectors
+	// 			var post_table_head = $('body .post-list .table thead tr'),
+	// 				post_table_body = $('body .post-list .table tbody tr');
 
-							// iterate through each category
-							$.each(categories, function(key, value) {
-								var found = false;
-								// check if the current item has the same
-								// post id, then store it to name variable
-								if(value._post == post) {
-									name = value.name;
-									found = true;
-								}
+	// 			// append the table-header element
+	// 			if(tableContentFlag == false) {
+	// 				post_table_head.children().eq(3).after('<th>Category</th>');
 
-								// check if there's no value found
-								if(found == false) {
-									name = "UNCATEGORIZED";
-								}
-							});
+					
+	// 				// append the table-content
+	// 				$.each(post_table_body, function(key, bodyContent) {
+	// 					// get the post id of the current item
+	// 					var post_id = $(this).find('td:eq(2)').html();
 
-							// return the category name
-							return name;
-						};
+	// 					// linking category and post
+	// 					var name  = "";
 
-						// get the correct element node, display the category for the current
-						// cursor of the loop
-						$(this).find('td:eq(3)').after('<td>' + cat(post_id) + '</td>');
-					});
+	// 					// iterate through each category
+	// 					$.each(categories, function(key, value) {
+	// 						var found = false;
+	// 						// check if the current item has the same
+	// 						// post id, then store it to name variable
+	// 						if(value._post == post_id) {
+	// 							//get the category for this row of post
+	// 							findCat(value._category);
+	// 							name = foundCategory;
+	// 							foundCategory = '';
+	// 							found = true;
+	// 							return false;
+	// 						}
 
-					tableContentFlag = true;
-				}
-			});
-		};
+	// 						// check if there's no value found
+	// 						if(found == false) {
+	// 							name = "UNCATEGORIZED";
+	// 						}
+	// 					});
 
-		// call the injection process
-		_getCategory(_setCategory);
-	}
+	// 					// get the correct element node, display the category for the current
+	// 					// cursor of the loop
+	// 					$(this).find('td:eq(3)').after('<td>' + name + '</td>');
+
+	// 					return;
+	// 				});
+
+	// 				tableContentFlag = true;
+	// 			}
+
+
+	// 		});
+
+	// 		next();
+	// 	};
+
+	// 	_injectToPost();
+	// }
 
 })

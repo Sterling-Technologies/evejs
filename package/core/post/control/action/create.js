@@ -165,6 +165,9 @@ define(function() {
 					//go to listing
 					.redirect('/post');
 				
+				// fire an event to notify all the listeners
+				// that a new post have been modified
+				controller.trigger('post-created', this.data.post.category, response);
 				//no need to next since we are redirecting out
 				return;
 			}

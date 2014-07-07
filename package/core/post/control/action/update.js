@@ -200,12 +200,16 @@ define(function() {
 		$.post(url, this.data.post, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {		
+			if(!response.error) {
 				controller				
 					//display message status
 					.notify('Success', 'Post successfully updated!', 'success')
 					//go to listing
 					.redirect('/post');
+
+				// fire an event to notify listeners that
+				// a post have been modified
+				controller.trigger('post-updated', this.data.post.category);
 				
 				//no need to next since we are redirecting out
 				return;
