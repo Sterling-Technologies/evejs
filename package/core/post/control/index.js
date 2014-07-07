@@ -8,9 +8,15 @@ controller
 		.path('post/action'		, controller.path('package') + '/core/post/action')
 		.path('post/asset'		, controller.path('package') + '/core/post/asset')
 		.path('post/template'	, controller.path('package') + '/core/post/template');
+
+	// fire event when the post was initialized
+	controller.trigger('post-init');
 })
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
+	// fire event when the post menu is starting
+	controller.trigger('post-menu-before');
+
 	//add our menu item
 	menu.push({
 		path	: '/post',
@@ -20,9 +26,15 @@ controller
 			path	: '/post/create',
 			label	: 'Create Post' }]
 		});
+
+	// fire event when the post menu is finished
+	controller.trigger('post-menu-after');
 })
 //when a url request has been made
 .listen('request', function() {
+	// fire event when the post request is starting
+	controller.trigger('post-request-before');
+
 	//if it doesn't start with post
 	if(window.location.pathname.indexOf('/post') !== 0) {
 		//we don't care about it
@@ -55,4 +67,7 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
+
+	// fire event when the post request is finished
+	controller.trigger('post-request-after');
 });

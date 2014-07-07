@@ -88,6 +88,26 @@ var controller = function() {
 		$(window).on(event, callback);
 		return this;
 	};
+
+	/**
+	 * Global event listener for the server once
+	 *
+	 * @return this
+	 */
+	public.once = function(event, callback) {
+		$(window).once(event, callback);
+		return this;
+	};
+
+	/**
+	 * Stops listening to a specific event
+	 *
+	 * @return this
+	 */
+	public.unlisten = function(event) {
+		$(window).unbind(event);
+		return this;	
+	};
 	
 	/**
 	 * Returns the path given the key
@@ -162,7 +182,7 @@ var controller = function() {
 			self.trigger('menu', [self.menu]);
 			
 			//render head
-			head = Handlebars.compile(head)({ right: true });
+			head = Handlebars.compile(head)({ right: false });
 			
 			//render menu
 			menu = Handlebars.compile(menu)({ items: self.menu });

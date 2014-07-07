@@ -8,9 +8,14 @@ controller
 		.path('user/action'		, controller.path('package') + '/core/user/action')
 		.path('user/asset'		, controller.path('package') + '/core/user/asset')
 		.path('user/template'	, controller.path('package') + '/core/user/template');
+
+	controller.trigger('user-init');
 })
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
+	// event when the user menu is starting
+	controller.trigger('user-menu-before');
+
 	//add our menu item
 	menu.push({
 		path	: '/user',
@@ -20,9 +25,15 @@ controller
 			path	: '/user/create',
 			label	: 'Create User' }]
 		});
+
+	// event when the user menu is finished
+	controller.trigger('user-menu-after');
 })
 //when a url request has been made
 .listen('request', function() {
+	//event when the user request is starting
+	controller.trigger('user-request-before');
+
 	//if it doesn't start with user
 	if(window.location.pathname.indexOf('/user') !== 0) {
 		//we don't care about it
@@ -55,4 +66,7 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
+
+	// event when the user request is finished
+	controller.trigger('user-request-after');
 });
