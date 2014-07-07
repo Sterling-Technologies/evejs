@@ -79,7 +79,7 @@ define(function() {
 	var _setCategory = function(next) {
 		tableContentFlag = false;
 		// listen for the document to become fully loaded
-		controller.listen('post-ready', function() {
+		controller.once('post-ready', function() {
 			// create the selectors
 			var post_table_head = $('body .post-list .table thead tr'),
 				post_table_body = $('body .post-list .table tbody tr');

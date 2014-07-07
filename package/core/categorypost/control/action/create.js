@@ -76,7 +76,7 @@ define(function() {
 		var selectFlag = false;
 		
 		// listen if the document is ready
-		controller.listen('post-ready', function() {
+		controller.once('post-ready', function() {
 			// check if the select box for category have been rendered already
 			if(selectFlag == false) {
 				// if not yet, select the correct location
@@ -90,7 +90,7 @@ define(function() {
 			}
 
 			// listen for post update
-			controller.listen('post-created', function(e, data, res) {
+			controller.once('post-created', function(e, data, res) {
 				var url 	= controller.getServerUrl() + '/categorypost/create/';
 				//var postData = { _category: data, _post: update_id };
 				// $.post(url, postData, function(response) {

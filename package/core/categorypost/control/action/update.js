@@ -78,7 +78,7 @@ define(function() {
 		//var postData		= {};
 
 		// listen if the document is ready
-		controller.listen('post-ready', function() {
+		controller.once('post-ready', function() {
 			// check if the checkbox for category have been rendered already
 			if(selectFlag == false) {
 				// if not yet, select the correct location
@@ -92,7 +92,7 @@ define(function() {
 			}
 
 			// listen for post update
-			controller.listen('post-updated', function(e, data) {
+			controller.once('post-updated', function(e, data) {
 				var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
 					
 				var postData = { _category: data, _post: update_id };
