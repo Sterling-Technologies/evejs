@@ -28,7 +28,8 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
-			.then(_createPost);
+			.then(_createPost)
+			.then(_process);
 
 		return this;
 	};
@@ -89,19 +90,30 @@ define(function() {
 				selectFlag = true;
 			}
 
-			// listen for post update
-			controller.once('post-created', function(e, data, res) {
-				var url 	= controller.getServerUrl() + '/categorypost/create/';
-				//var postData = { _category: data, _post: update_id };
-				// $.post(url, postData, function(response) {
-				 	//console.log(res);
-				// }.bind(this));
-
-			});
+			next();
 		});
 
 		next();
 	};
+
+	/**
+	 * Will process the data for creating a new post
+	 * this will create the link
+	 */
+	 var _process = function(next) {
+	 	// listen for post update
+		controller.once('post-created', function(e, data, res) {
+			var url 	= controller.getServerUrl() + '/categorypost/create/';
+			//var postData = { _category: data, _post: update_id };
+			// $.post(url, postData, function(response) {
+			 	//console.log(res);
+			// }.bind(this));
+
+			controller.unlisten('post-created');
+			next();
+		});
+
+	 }
 
 
 	return c;	

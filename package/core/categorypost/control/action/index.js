@@ -29,6 +29,8 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
+		tableContentFlag = false;
+		
 		$.sequence()
 			.setScope(this)
 			.then(_getCategory)
@@ -77,9 +79,8 @@ define(function() {
 	 *
 	 */
 	var _setCategory = function(next) {
-		tableContentFlag = false;
 		// listen for the document to become fully loaded
-		controller.once('post-ready', function() {
+		controller.listen('post-ready', function() {
 			// create the selectors
 			var post_table_head = $('body .post-list .table thead tr'),
 				post_table_body = $('body .post-list .table tbody tr');
@@ -128,9 +129,9 @@ define(function() {
 				tableContentFlag = true;
 			}
 
-		});
+			controller.unlisten('post-ready');
 
-		tableContentFlag = false;
+		});
 
 		next();
 	};
