@@ -188,8 +188,16 @@ module.exports = function() {
 	 * @return 	this
 	 */
 	public.startSocket = function() {
+		// Initialize socket io connection
 		this.socket = this.eden.load('socket')
-			.listen(this.server.server, {});
+			// on client connection
+			.listen('connection', function(socket) {
+				// trigger socket client event
+				this.trigger('socket-client', socket);
+			}.bind(this))
+			// start socket io server
+			.connect(this.server.server, {});
+
 		return this;
 	};
 
