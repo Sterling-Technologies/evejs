@@ -1,84 +1,56 @@
-define(function() {
-    var c = function() {
-		this.__construct.call(this);
-	}, public = c.prototype;
-	
-	/* Public Properties
-	-------------------------------*/
-	public.title 		= 'Notification';
-	public.template 	= controller.path('notification/template') + '/index.html';
-	
-	/* Private Properties
-	-------------------------------*/
-	var $ = jQuery;
-	
-	var _loaded = false;
+controller
+//when the application is initialized
+.listen('init', function() {
+	//set paths
+	controller
+		.path('notification'			, controller.path('package') + '/core/notification')
+		.path('notification/action'		, controller.path('package') + '/core/notification/action')
+		.path('notification/asset'		, controller.path('package') + '/core/notification/asset')
+		.path('notification/template'	, controller.path('package') + '/core/notification/template');
+})
 
-	/* Loader
-	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
-	};
-	
-	/* Construct
-	-------------------------------*/
-	public.__construct = function() {
-		//reset data because of "pass by ref"
-		this.data = {};
-	};
-	
-	/* Public Methods
-	-------------------------------*/
-	public.loadAssets = function(callback) {
-		//make sure callback is a function
-		callback = callback || $.noop;
-		
-		//if loaded
-		if(_loaded) {
-			//do nothing
-			callback();
-			return this;
-		}
-		
-		//add the style to header
-		//<link rel="stylesheet" type="text/css" href="/styles/autocomplete.css" />
-		$('<link rel="stylesheet" type="text/css" />')
-			.attr('href', controller.path('notification/asset') + '/index.css')
-			.appendTo('head');
-		
-		_loaded = true;
-		
-		callback();
-		
-		return this;
-	};
+//when the application is initialized
+.listen('init', function() {
+	// auto generated socket.io module
+	var socket = controller.getServerUrl() + '/socket.io/socket.io.js';
 
-	public.render = function() {
-		$.sequence()
-			.setScope(this)
-			.then(this.loadAssets)
-			.then(_output)
-			.then(_listen);
-		
-		return this;
-	};
-	
-	/* Private Methods
-	-------------------------------*/
-	var _output = function(next) {
-		//bulk load the templates
-		require(['text!' + this.template], function(template) {
-			//render the body
-			var body = Handlebars.compile(template)(this.data);
-			next();
-		}.bind(this));
-	};
-	
-	var _listen = function(next) {
-		next();
-	};
+	// socket.io module must be loaded this
+	// way, there is no way to include it
+	// in client side, it must be fetch
+	// from the socket io server
+	if(!window.io) {
+		// require socket.io module
+		require([socket], function(socket) {
+			// expose socket io globally
+			window.io = socket;
+		});
+	}
+})
 
-	/* Adaptor
-	-------------------------------*/
-	return c; 
+//when a url request has been made
+.listen('request', function() {
+	//if it doesn't start with notification
+	if(window.location.pathname.indexOf('/notification') !== 0) {
+		return;
+	}
+	
+	//router -> action
+	var action = controller.path('notification/action') + '/index.js';
+	
+	//load up the action
+	require([action], function(action) {
+		action.load().render();
+	});
+})
+
+// when a url request has been made
+.listen('request', function() {
+	// notification nav
+	var navigation = controller.path('notification/action') + '/nav.js';
+
+	// load up notification on
+	// navigation
+	require([navigation], function(nav) {
+		nav.load().render();
+	});
 });

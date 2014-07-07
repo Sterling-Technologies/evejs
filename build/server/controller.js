@@ -193,7 +193,7 @@ module.exports = function() {
 			// on client connection
 			.listen('connection', function(socket) {
 				// trigger socket client event
-				this.trigger('socket-client', socket);
+				this.trigger('socket-request', this, socket);
 			}.bind(this))
 			// start socket io server
 			.connect(this.server.server, {});
