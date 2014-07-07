@@ -90,13 +90,23 @@ var controller = function() {
 	};
 
 	/**
-	 * Global event listener for the server
+	 * Global event listener for the server once
 	 *
 	 * @return this
 	 */
 	public.once = function(event, callback) {
 		$(window).once(event, callback);
 		return this;
+	};
+
+	/**
+	 * Stops listening to a specific event
+	 *
+	 * @return this
+	 */
+	public.unlisten = function(event) {
+		$(window).unbind(event);
+		return this;	
 	};
 	
 	/**

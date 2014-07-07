@@ -28,7 +28,8 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
-			.then(_updatePost);
+			.then(_updatePost)
+			.then(_process);
 
 		return this;
 	};
@@ -74,7 +75,6 @@ define(function() {
 	var _updatePost = function(next) {
 		console.log('Im updating an old post');
 		var selectFlag 		= false;
-		var update_id 		=  window.location.pathname.split('/')[3];
 		//var postData		= {};
 
 		// listen if the document is ready
@@ -91,21 +91,32 @@ define(function() {
 				selectFlag = true;
 			}
 
-			// listen for post update
-			controller.once('post-updated', function(e, data) {
-				var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
-					
-				var postData = { _category: data, _post: update_id };
-				$.post(url, postData, function(response) {
-					console.log(postData);
-				}.bind(this));
-
-				next();
-			});
+			controller.unlisten('post-ready');
+			next();
 		});
 
 		next();
 	};
+
+	/**
+	 * Will process the data that will be updated
+	 */
+	 var _process = function(next) {
+	 	var update_id 		=  window.location.pathname.split('/')[3];
+	 	
+	 	// listen for post update
+		controller.once('post-updated', function(e, data) {
+			var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
+				
+			var postData = { _category: data, _post: update_id };
+			$.post(url, postData, function(response) {
+				console.log(postData);
+			}.bind(this));
+
+			controller.unlisten('post-updated', this);
+			next();
+		});
+	 };
 
 
 	return c;	
