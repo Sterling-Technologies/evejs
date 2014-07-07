@@ -31,11 +31,12 @@ module.exports = function() {
 	public.__construct = function(controller) {
 		// Mongoose Schema Object
 		var schema = mongoose.Schema;
+
 		// Reference to User Package store
 		var store  = controller.user().store();
 
 		// Copy user schema
-		this.schema = Object.create(store.schema);
+		this.schema = store.schema;
 
 		// Inject auth object
 		this.schema.auth = _auth;
@@ -49,6 +50,18 @@ module.exports = function() {
 	
 	/* Public Methods
 	-------------------------------*/
+	/**
+	 * Returns a new object with clone
+	 * of properties from another object.
+	 *
+	 * @param 	object
+	 * @param 	object
+	 * @retur 	object
+	 */
+	public.clone = function() {
+
+	};
+
 	/**
 	 * Returns record count
 	 * based on the given

@@ -11,8 +11,6 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ = jQuery;
-	
-	var _loaded = false;
 
 	/* Loader
 	-------------------------------*/
@@ -29,35 +27,9 @@ define(function() {
 	
 	/* Public Methods
 	-------------------------------*/
-	public.loadAssets = function(callback) {
-		//make sure callback is a function
-		callback = callback || $.noop;
-		
-		//if loaded
-		if(_loaded) {
-			//do nothing
-			callback();
-			return this;
-		}
-		
-		//add the style to header
-		//<link rel="stylesheet" type="text/css" href="/styles/autocomplete.css" />
-		$('<link rel="stylesheet" type="text/css" />')
-			.attr('href', controller.path('auth/asset') + '/index.css')
-			.appendTo('head');
-		
-		_loaded = true;
-		
-		callback();
-		
-		return this;
-	};
-
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
-			.then(_checkSession)
-			.then(this.loadAssets)
 			.then(_output)
 			.then(_listen);
 		
@@ -66,20 +38,6 @@ define(function() {
 	
 	/* Private Methods
 	-------------------------------*/
-	var _checkSession = function(next) {
-		// Get account token
-		var token = $.cookie('__acctoken');
-
-		// If token is undefined
-		if(token !== undefined) {
-			// Redirect user back to login
-			// page
-			return window.history.pushState({}, '', '/');
-		}
-
-		next();
-	};
-
 	var _output = function(next) {
 		//bulk load the templates
 		require(['text!' + this.template], function(template) {
@@ -149,13 +107,15 @@ define(function() {
 				if(response.error) {
 					// Set Field error
 					_setError('username'), _setError('password');
+
 					// Notify that there is an error
 					controller.notify('Error', response.message, 'error');
 					return;
 				}
 
-				// Set response token as cookie
-				$.cookie('__acctoken', response.results.token, { path : '/', expires : 1 });
+				// Set response data as cookie
+				$.cookie('__acc', JSON.stringify(response.results), 
+						{ path : '/', expires : 1 });
 
 				// Redirect to home page
 				window.location.href = '/';

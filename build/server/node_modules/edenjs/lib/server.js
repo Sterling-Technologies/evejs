@@ -29,9 +29,10 @@ module.exports = function($) {
 		 * @return this
 		 */
 		public.connect = function() {
-			this.resource = _http
-				.createServer(_response.bind(this))
-				.listen(this.port, this.host);
+			// Server instance
+			this.server   = _http.createServer(_response.bind(this));
+			// Server Resource
+			this.resource = this.server.listen(this.port, this.host);
 				
 			console.log('Eden running on http://'+this.host+':'+this.port+'/');
 			return this;

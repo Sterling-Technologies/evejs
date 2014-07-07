@@ -183,6 +183,17 @@ module.exports = function() {
 	};
 	
 	/**
+	 * Process to start socket.io
+	 *
+	 * @return 	this
+	 */
+	public.startSocket = function() {
+		this.socket = this.eden.load('socket')
+			.listen(this.server.server, {});
+		return this;
+	};
+
+	/**
 	 * Global event trigger for the server
 	 *
 	 * @return this

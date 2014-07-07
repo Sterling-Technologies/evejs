@@ -29,23 +29,17 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		// Get request access token
-		var token = this.request.query['access_token'];
-
-		// If token is not present on the
-		// request
-		if(token === undefined || token == null) {
-			return _error.call(this, { message : 'Request not Authorized!' });
-		}
+		var query = this.controller.eden
+			.load('string').queryToHash(this.request.message);
 
 		// Listen to login events
 		this.controller
-		// If there is an error logging in
-		.once('auth-resource-error', _error.bind(this))
-		// If there is no error
-		.once('auth-resource-success', _success.bind(this))
-		// Trigger  auth resource event
-		.trigger('auth-resource', this.controller, token);
+			// When there is an error
+			.once('auth-logout-error', _error.bind(this))
+			// When authentication is successful
+			.once('auth-logout-success', _success.bind(this))
+			// Trigger Auth Access Event
+			.trigger('auth-logout', this.controller, query);
 
 		return this;
 	};
@@ -63,8 +57,16 @@ module.exports = (function() {
 		_success.call(this, data);
 	};
 	
-	var _success = function() {
-		// noop
+	var _success = function(data) {
+		//then prepare the package
+		this.response.message = JSON.stringify({ 
+			error: false, 
+			results: data });
+		
+		// don't listen for error anymore
+		this.controller.unlisten('auth-logout-error');
+		//trigger that a response has been made
+		this.controller.trigger('auth-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -74,7 +76,7 @@ module.exports = (function() {
 			message: error.message });
 		
 		// don't listen for success anymore
-		this.controller.trigger('auth-resource-success');
+		this.controller.unlisten('auth-logout-success');
 		//trigger that a response has been made
 		this.controller.trigger('auth-action-response', this.request, this.response);
 	};

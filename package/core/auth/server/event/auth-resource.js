@@ -19,7 +19,14 @@ module.exports = function(controller, token) {
 		if(user.length == 0) {
 			// trigger error event
 			return controller.trigger('auth-resource-error', 
-				   { message : 'Invalid Username or Password' });
+				   { message : 'Unauthorized Request' });
+		}
+
+		// If token is not active
+		if(user[0].auth !== undefined && user[0].auth.active !== undefined &&
+		   user[0].auth.active === false) {
+			return controller.trigger('auth-resource-error',
+				{ message : 'Unauthorized Request' });
 		}
 
 		// If user exists and token is not undefined
@@ -27,7 +34,7 @@ module.exports = function(controller, token) {
 		   user[0].auth.token !== token) {
 		   	// trigger error event
 			return controller.trigger('auth-resource-error', 
-				   { message : 'Invalid Username or Password' });
+				   { message : 'Unauthorized Request' });
 		}
 
 		// Trigger resource success event,
