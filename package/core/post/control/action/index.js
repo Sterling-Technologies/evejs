@@ -127,6 +127,7 @@ define(function() {
 
 			// event when the post view is ready
 			controller.trigger('post-ready');
+			console.log('post is ready');
 
 			next();
 		}.bind(this));

@@ -9,7 +9,8 @@ define(function() {
 
 	/* Private Properties
 	-------------------------------*/
-	var $ = jQuery;
+	var $ 		   = jQuery;
+	var selectFlag = false;
 
 	/* Loader
 	-------------------------------*/
@@ -74,10 +75,10 @@ define(function() {
 	 */
 	var _createPost = function(next) {
 		console.log('Im creating a new post');
-		var selectFlag = false;
+		selectFlag = false;
 		
 		// listen if the document is ready
-		controller.once('post-ready', function() {
+		controller.listen('post-create-ready', function() {
 			// check if the select box for category have been rendered already
 			if(selectFlag == false) {
 				// if not yet, select the correct location
@@ -89,8 +90,6 @@ define(function() {
 				// set the flag true to know if the selectbox is rendered
 				selectFlag = true;
 			}
-
-			next();
 		});
 
 		next();
@@ -104,9 +103,8 @@ define(function() {
 	 	// listen for post update
 		controller.once('post-created', function(e, res) {
 			var url 	= controller.getServerUrl() + '/categorypost/create/';
-			//var postData = { _category: data };
 			$.post(url, res, function(response) {
-			 	//console.log(res);
+				// category-post link created
 			}.bind(this));
 		
 

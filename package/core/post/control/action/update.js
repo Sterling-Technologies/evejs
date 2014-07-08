@@ -139,7 +139,7 @@ define(function() {
 				.setBody(body); 
 
 				// event when the post view is ready
-				controller.trigger('post-ready');
+				controller.trigger('post-update-ready');
 
 			next();
 		}.bind(this));

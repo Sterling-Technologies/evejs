@@ -9,7 +9,8 @@ define(function() {
 
 	/* Private Properties
 	-------------------------------*/
-	var $ = jQuery;
+	var $ 			= jQuery;
+	var selectFlag 	= false;
 
 	/* Loader
 	-------------------------------*/
@@ -73,12 +74,11 @@ define(function() {
 	 * and listens if the form was submitted and successfully stored
 	 */
 	var _updatePost = function(next) {
-		console.log('Im updating an old post');
-		var selectFlag 		= false;
+		selectFlag = false;
 		//var postData		= {};
 
 		// listen if the document is ready
-		controller.once('post-ready', function() {
+		controller.listen('post-update-ready', function() {
 			// check if the checkbox for category have been rendered already
 			if(selectFlag == false) {
 				// if not yet, select the correct location
@@ -91,8 +91,6 @@ define(function() {
 				selectFlag = true;
 			}
 
-			controller.unlisten('post-ready');
-			next();
 		});
 
 		next();
