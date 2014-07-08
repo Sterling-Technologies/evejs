@@ -95,7 +95,7 @@ var controller = function() {
 	 * @return this
 	 */
 	public.once = function(event, callback) {
-		$(window).once(event, callback);
+		$(window).one(event, callback);
 		return this;
 	};
 

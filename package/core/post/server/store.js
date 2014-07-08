@@ -22,6 +22,8 @@ module.exports = function() {
 		created		: { type: Date, default: Date.now },
 		updated		: { type: Date, default: Date.now }
 	};
+
+
 	
 	/* Private Properties
 	-------------------------------*/
@@ -46,7 +48,7 @@ module.exports = function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('post', this.definition);
+		this.store = mongoose.model('posts', this.definition);
 	};
 	
 	/* Public Methods

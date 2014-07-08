@@ -108,7 +108,7 @@ define(function() {
     };
 
     var _listen = function(next) {
-		$('form.package-category-form').on('keyup', 'input[name="title"]', function(e) {
+		$('form.package-category-form').on('keyup', 'input[name="name"]', function(e) {
 			var name = $(this);
 			//there's a delay in when the input value is updated
 			//we do this settime out to case for this

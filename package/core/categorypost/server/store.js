@@ -6,13 +6,8 @@ module.exports = function() {
 	/* Public Properties
 	-------------------------------*/
 	public.schema = {
-		name	: { type: String, required: true },
-		slug	: { type: String, required: true },
-		detail	: { type: String, required: true },
-
-		active		: { type: Boolean, default: true },
-		created		: { type: Date, default: Date.now },
-		updated		: { type: Date, default: Date.now }
+		_post		: { type: String, required: true },
+		_category	: { type: String, required: true }
 	};
 	
 	/* Private Properties
@@ -38,7 +33,7 @@ module.exports = function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('categories', this.definition);
+		this.store = mongoose.model('categoryposts', this.definition);
 	};
 	
 	/* Public Methods
@@ -51,8 +46,8 @@ module.exports = function() {
 		return new (this.store)(data);
 	};
 	
-	public.find = function(query) {
-		return this.store.find(query);
+	public.find = function(query, callback) {
+		return this.store.find(query, callback);
 	};
 	
 	public.findOne = function(query) {
@@ -75,7 +70,7 @@ module.exports = function() {
 	
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, active: true}, 
+			{_post: id}, 
 			{ $set: data }, callback);
 	};
 	

@@ -53,6 +53,13 @@ define(function() {
 							+ this.data.options[i].substr(1) 
 				};
 			}
+		} else if(typeof options == 'object') {
+			for(var i = 0; i < options.length; i++) {
+				this.data.options[i] = {
+					value	: options[i]._id,
+					label	: options[i].name
+				};
+			}
 		}
 		
 		return this;

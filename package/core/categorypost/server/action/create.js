@@ -30,45 +30,40 @@ module.exports = (function() {
     -------------------------------*/
 	public.render = function() {
 		//1. SETUP: change the string into a native object
-		var query = this
+		var self = this, query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
 		
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('post-create-error', _error.bind(this))
+			.once('categorypost-create-error', function(error) {
+				//setup an error response
+				self.response.message = JSON.stringify({ 
+					error: true, 
+					message: error.message,
+					validation: error.errors || [] });
+				
+				//dont listen for success anymore
+				self.controller.unlisten('categorypost-create-success');
+				//trigger that a response has been made
+				self.controller.trigger('categorypost-action-response', self.request, self.response);
+			})
 			//when it is successfull
-			.once('post-create-success', _success.bind(this))
-			//Now call to remove the post
-			.trigger('post-create', this.controller, query);
+			.once('categorypost-create-success', function() {
+				//set up a success response
+				self.response.message = JSON.stringify({ error: false });
+				//dont listen for error anymore
+				self.controller.unlisten('categorypost-create-error');
+				//trigger that a response has been made
+				self.controller.trigger('categorypost-action-response', self.request, self.response);
+			})
+			//Now call to remove the categorypost
+			.trigger('categorypost-create', this.controller, query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
-	var _success = function(res) {
-		//set up a success response
-		this.response.message = JSON.stringify(res);
-
-		//dont listen for error anymore
-		this.controller.unlisten('post-create-error');
-		//trigger that a response has been made
-		this.controller.trigger('post-action-response', this.request, this.response);
-	};
-	
-	var _error = function(error) {
-		//setup an error response
-		this.response.message = JSON.stringify({ 
-			error: true, 
-			message: error.message,
-			validation: error.errors || [] });
-		
-		//dont listen for success anymore
-		this.controller.unlisten('post-create-success');
-		//trigger that a response has been made
-		this.controller.trigger('post-action-response', this.request, this.response);
-	};
-	
 	/* Adaptor
 	-------------------------------*/
 	return c; 

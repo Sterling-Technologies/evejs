@@ -201,7 +201,7 @@ define(function() {
 					.notify('Success', 'User successfully created!', 'success')
 					//go to listing
 					.redirect('/user');
-				
+
 				//no need to next since we are redirecting out
 				return;
 			}

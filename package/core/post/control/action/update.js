@@ -55,6 +55,9 @@ define(function() {
 		this.data.url 		= window.location.pathname;
 		
 		var post = controller.getPost();
+
+		// store categories in data
+		this.data.category  = this.categories;
 		
 		if(post && post.length) {
 			//query to hash
@@ -133,8 +136,11 @@ define(function() {
 				.setHeader(this.header.replace('{POST}', this.data.post.title)) 
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
-				.setBody(body);            
-				
+				.setBody(body); 
+
+				// event when the post view is ready
+				controller.trigger('post-update-ready');
+
 			next();
 		}.bind(this));
     };
@@ -194,12 +200,16 @@ define(function() {
 		$.post(url, this.data.post, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {		
+			if(!response.error) {
 				controller				
 					//display message status
 					.notify('Success', 'Post successfully updated!', 'success')
 					//go to listing
 					.redirect('/post');
+
+				// fire an event to notify listeners that
+				// a post have been modified
+				controller.trigger('post-updated', this.data.post.category);
 				
 				//no need to next since we are redirecting out
 				return;
