@@ -74,8 +74,8 @@ define(function() {
 	 * and listens if the form was submitted and successfully stored
 	 */
 	var _updatePost = function(next) {
+		// reset the flag for the selectbox
 		selectFlag = false;
-		//var postData		= {};
 
 		// listen if the document is ready
 		controller.listen('post-update-ready', function() {
@@ -104,6 +104,7 @@ define(function() {
 	 	
 	 	// listen for post update
 		controller.once('post-updated', function(e, data) {
+			// build the request url
 			var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
 				
 			var postData = { _category: data, _post: update_id };
@@ -111,6 +112,7 @@ define(function() {
 				//updated success
 			}.bind(this));
 
+			// unlisten to the event to prevent multiple event listening
 			controller.unlisten('post-updated', this);
 			next();
 		});

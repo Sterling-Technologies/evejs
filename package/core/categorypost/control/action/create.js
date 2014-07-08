@@ -38,7 +38,9 @@ define(function() {
 	/* Private Methods
 	------------------------------*/
 	var selectBox = function() {
+		//build the request url
 		var requestUrl = controller.getServerUrl() + '/category/list/';
+
 		// create the initial selecbox
 		var result = '<div><h6>Category</h6><div><select class="form-control" name="category">';
 		var categories;
@@ -106,7 +108,7 @@ define(function() {
 				// category-post link created
 			}.bind(this));
 		
-
+			// unlisten to the event to prevent the multiple listening and form sending
 			controller.unlisten('post-created');
 			next();
 		});

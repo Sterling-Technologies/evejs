@@ -29,6 +29,7 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	public.render = function() {
+		// reset the flag for table content appending
 		tableContentFlag = false;
 
 		$.sequence()
@@ -47,8 +48,10 @@ define(function() {
 	 *
 	 * @param string
 	 */
-	function findCat(id) {
+	var _findCat = function(id) {
+		// build the request url
 		var requestUrl = controller.getServerUrl() + '/category/detail/' + id;
+
 		// ajax request, get all category
 		$.ajax({
 	    	url: requestUrl,
@@ -65,10 +68,12 @@ define(function() {
 	 *
 	 */
 	var _getCategory = function(next) {
+		// build the request url to be use on ajax
 		var requestUrl = controller.getServerUrl() + '/categorypost/list/';
 
 		// ajax request, get all category
 		$.getJSON(requestUrl, function(data) {
+			// get the results
 			categories = data.results;
 			next();
 		});
@@ -107,7 +112,7 @@ define(function() {
 						// post id, then store it to name variable
 						if(value._post == post_id) {
 							//get the category for this row of post
-							findCat(value._category);
+							_findCat(value._category);
 							name = foundCategory;
 							foundCategory = '';
 							found = true;
@@ -127,6 +132,7 @@ define(function() {
 					return;
 				});
 
+				// tell the flag that the table content have been appended
 				tableContentFlag = true;
 			}
 
