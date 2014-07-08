@@ -108,7 +108,7 @@ define(function() {
 				
 			var postData = { _category: data, _post: update_id };
 			$.post(url, postData, function(response) {
-				console.log(postData);
+				//updated success
 			}.bind(this));
 
 			controller.unlisten('post-updated', this);

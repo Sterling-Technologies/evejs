@@ -74,7 +74,6 @@ define(function() {
 	 * and listens if the form was submitted and successfully stored
 	 */
 	var _createPost = function(next) {
-		console.log('Im creating a new post');
 		selectFlag = false;
 		
 		// listen if the document is ready
