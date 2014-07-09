@@ -28,7 +28,7 @@ controller
 		//we don't care about it
 		return;
 	}
-	
+
 	//router -> action
 	var action = 'index';
 	switch(true) {
@@ -55,4 +55,5 @@ controller
 	require([action], function(action) {
 		action.load().render();
 	});
+
 });

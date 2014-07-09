@@ -94,7 +94,6 @@ define(function() {
 			//2. Active Count
 			//3. Trash Count
 			//4. All Count
-			console.log(response.batch);
 			this.data = {
 				showing 	: showing,
 				rows		: rows,

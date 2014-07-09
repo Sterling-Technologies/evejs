@@ -53,7 +53,7 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		
+
 		var post = controller.getPost();
 		
 		if(post && post.length) {
@@ -78,6 +78,7 @@ define(function() {
     };
     
     var _output = function(next) {
+
 		//store form templates path to array
         var templates = [
         'text!' + controller.path('post/template') +  '/form.html',
@@ -102,6 +103,9 @@ define(function() {
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
+				
+			// event when the post view is ready
+			controller.trigger('post-create-ready');
 				
 			next();
 		}.bind(this));
@@ -160,7 +164,12 @@ define(function() {
 					.notify('Success', 'Post successfully created!', 'success')
 					//go to listing
 					.redirect('/post');
-				
+
+				// fire an event to notify all the listeners
+				// that a new post have been modified
+				var res = {_category: this.data.post.category, _post: response._id };
+
+				controller.trigger('post-created', res);
 				//no need to next since we are redirecting out
 				return;
 			}
@@ -173,6 +182,7 @@ define(function() {
 			next();
 	   }.bind(this));
 	};
+
     
     /* Adaptor
     -------------------------------*/

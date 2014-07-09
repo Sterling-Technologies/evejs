@@ -79,20 +79,20 @@
                 </thead>
                 <tbody>
                     {{#each rows}}
-                    <tr data-id="{{id}}">
-                        <td><input name="id[]" value="{{id}}" type="checkbox" class="form-control" /></td>
+                    <tr data-id="{{_id}}">
+                        <td><input name="_id[]" value="{{_id}}" type="checkbox" class="form-control" /></td>
                         <td>
                             {{#if active}}
-                            <a title="Edit" href="/post/update/{{id}}">
+                            <a title="Edit" href="/post/update/{{_id}}">
                             <i class="icon-edit"></i></a> &nbsp; 
-                            <a title="Remove" href="/post/remove/{{id}}"
-                            class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
+                            <a title="Remove" href="/post/remove/{{_id}}"
+                            class="text-danger remove"><i class="icon-remove" value="{{_id}}"></i></a>
                             {{else}}
-                            <a title="Restore" href="/post/restore/{{id}}" class="text-success restore">
+                            <a title="Restore" href="/post/restore/{{_id}}" class="text-success restore">
                             <i class="icon-external-link"></i></a>
                             {{/if}}
                         </td>
-                        <td>{{id}}</td>
+                        <td>{{_id}}</td>
                         <td>{{title}}</td>
                     	<td>{{status}}</td>
                         <td valign="middle">{{updated}}</td>
