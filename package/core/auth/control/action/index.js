@@ -30,6 +30,7 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
+			.then(_checkSession)
 			.then(_output)
 			.then(_listen);
 		
@@ -38,6 +39,16 @@ define(function() {
 	
 	/* Private Methods
 	-------------------------------*/
+	var _checkSession = function(next) {
+		var session = $.cookie('__acc');
+
+		if(session !== undefined) {
+			return controller.redirect('/');
+		}
+
+		next();
+	};
+
 	var _output = function(next) {
 		//bulk load the templates
 		require(['text!' + this.template], function(template) {

@@ -121,13 +121,21 @@ module.exports = function() {
 			// add variables to socket object
 			socket.variables = variables;
 
-			// socket response listener
-			control.once('notify-socket-response', function(socket) {
-
-			});
-
-			// call socket action
-			require(action).load(control, socket).render();
+			// we need to wrap this in a closure
+			// cause we are listening to asynchronous
+			// socket on connection.
+			(function(i, socket, action) {
+				// create a channel for
+				// current request
+				var channel = socket
+					.of(i)
+					.removeAllListeners('connection')
+					.on('connection', function(socket) {
+						// call socket action
+						require(action).load(control, channel, socket).render();
+					});
+			})(i, socket, action);
 		}
+
 	}.bind(this));
 };

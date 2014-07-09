@@ -6,14 +6,11 @@ define(function() {
 	/* Public Properties
 	-------------------------------*/
 	public.template 	= controller.path('auth/template') + '/nav.html';
-	
 	public.data = {};
 
 	/* Private Properties
 	-------------------------------*/
 	var $ = jQuery;
-	
-	var _loaded = false;
 
 	/* Loader
 	-------------------------------*/

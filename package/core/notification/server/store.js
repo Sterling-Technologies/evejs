@@ -1,25 +1,35 @@
 module.exports = function() {
-	var c = function() {
-		this.__construct.call(this);
+	var c = function(controller) {
+		this.__construct.call(this, controller);
 	}, public = c.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {
-		title 	: String,
-		details : String,
-		created : { type : Date, default : Date.now }
-	};
-	
+	public.schema = null;
+
 	/* Private Properties
 	-------------------------------*/
 	var mongoose 	= require('mongoose');
-	
+
+	var _notifications = {
+		status : { type : String, default : 'unread' },
+		queue  : [{
+			sender 	: String,
+			details : String,
+			created : { type : Date, default : Date.now }
+		}],
+		list   : [{
+			sender 	: String,
+			details : String,
+			created : { type : Date, default : Date.now } 
+		}]
+	};
+
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	public.__load = c.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new c(controller);
 		}
 		
 		return this.__instance;
@@ -27,13 +37,23 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	public.__construct = function(controller) {
+		// Mongoose Schema Object
 		var schema = mongoose.Schema;
-		
-		//define schema
-		this.definition = new schema(this.schema, { collection : 'notification' });
-		//NOTE: add custom schema methods here
-		
+
+		// Reference to User Package store
+		var store  = controller.user().store();
+
+		// Copy user schema
+		this.schema = store.schema;
+
+		// Inject notification
+		this.schema.notifications = _notifications;
+
+		// Define New User Schema
+		this.definition = new schema(this.schema, { collection : 'users' });
+
+		// Define Store model
 		this.store = mongoose.model('notification', this.definition);
 	};
 	
@@ -242,8 +262,7 @@ module.exports = function() {
 	 */
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, 'metadata.active': true }, 
-			{ $set: data }, callback);
+			{_id: id, 'active': true }, data, { upsert : false }, callback);
 	};
 	
 	/* Private Methods

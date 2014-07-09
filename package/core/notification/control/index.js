@@ -9,6 +9,24 @@ controller
 		.path('notification/template'	, controller.path('package') + '/core/notification/template');
 })
 
+//when the application is initialized
+.listen('init', function() {
+	// auto generated socket.io module
+	var socket = controller.getServerUrl() + '/socket.io/socket.io.js';
+
+	// socket.io module must be loaded this
+	// way, there is no way to include it
+	// in client side, it must be fetch
+	// from the socket io server
+	if(!window.io) {
+		// require socket.io module
+		require([socket], function(socket) {
+			// expose socket io globally
+			window.io = socket;
+		});
+	}
+})
+
 //when a url request has been made
 .listen('request', function() {
 	//if it doesn't start with notification
@@ -35,9 +53,4 @@ controller
 	require([navigation], function(nav) {
 		nav.load().render();
 	});
-})
-
-// when a url request has been made
-.listen('request', function() {
-
 });

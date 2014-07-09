@@ -22,7 +22,7 @@ controller
 		// If session is undefined
 		if(session === undefined) {
 			// Redirect back to login page
-			return controller.redirect('/login')
+			return controller.redirect('/login');
 		}
 
 		return;

@@ -191,7 +191,7 @@ module.exports = function() {
 		// Initialize socket io connection
 		this.socket = this.eden.load('socket')
 			// on client connection
-			.listen('connection', function(socket) {
+			.listen('request', function(socket) {
 				// trigger socket client event
 				this.trigger('socket-request', this, socket);
 			}.bind(this))
