@@ -48,18 +48,16 @@ define(function() {
 	var _setData = function(next) {
 		var session = JSON.parse($.cookie('__acc')) || {};
 
+		// fetch all notifications
 		this.list.emit('notification-fetch', { id : session.id });
-		this.list
-			.removeAllListeners('notification-list')
-			.on('notification-list', _processList.bind(this));
+		// on notification list
+		this.list.on('notification-list', _processList.bind(this));
 
-		// default socket connection
-		this.notification = 
-		// setup notification listener
+		// on notification
 		this.notification
-			// clean up listeners
+			// clean up all listeners
 			.removeAllListeners('notification')
-			// on notification event
+			// on notification
 			.on('notification', _process.bind(this));
 
 		next();
@@ -128,25 +126,29 @@ define(function() {
 			switch(true) {
 				case create !== -1 : 
 					type 	= url.substring(url.lastIndexOf('/', create - 2) + 1, create);
-					message = firstname + ' has created a ' + type;
+					message = '<span class="blue">' + firstname + '</span> has created a ' + 
+							  '<span class="green">' + type + '</span>';
 
 					this.notification.emit('notify-client-action', { sender: userid, message : message });
 					break;
 				case update !== -1 :
 					type = url.substring(url.lastIndexOf('/', update - 2) + 1, update);
-					message = firstname + ' has updated a ' + type;
+					message = '<span class="blue">' + firstname + '</span> has updated a ' + 
+							  '<span class="green">' + type + '</span>';
 
 					this.notification.emit('notify-client-action', { sender: userid, message : message });
 					break;
 				case remove !== -1 :
 					type = url.substring(url.lastIndexOf('/', remove - 2) + 1, remove);
-					message = firstname + ' has removed a ' + type;
+					message = '<span class="blue">' + firstname + '</span> has remove a ' + 
+							  '<span class="green">' + type + '</span>';
 
 					this.notification.emit('notify-client-action', { sender: userid, message : message });
 					break;
 				case restore !== -1 :
 					type = url.substring(url.lastIndexOf('/', restore - 2) + 1, restore);
-					message = firstname + ' has restored a ' + type;
+					message = '<span class="blue">' + firstname + '</span> has restored a ' + 
+							  '<span class="green">' + type + '</span>';
 
 					this.notification.emit('notify-client-action', { sender: userid, message : message });
 					break;
@@ -159,12 +161,6 @@ define(function() {
 
 		// if user clicks the nav-notification
 		$('li.nav-notification').on('click', function() {
-			// If there is no unread notification
-			if(notifications == 0) {
-				// just do nothing
-				return;
-			}
-
 			// get user session first
 			var session = JSON.parse($.cookie('__acc')) || {};
 
@@ -192,6 +188,15 @@ define(function() {
 		// build out notification html
 		var tpl   = _buildNotification(data.result.details);
 
+		// get all notification
+		var notification = $('li.nav-notification ul li.notification');
+
+		// if there is already notifications
+		if(notification.length <= 5) {
+			// remove last
+			notification[4].remove();
+		}
+
 		// update badge counter
 		badge.html(notifications);
 		// append notification
@@ -212,7 +217,7 @@ define(function() {
 
 	var _buildNotification = function(message) {
 		// notification template
-		var tpl = '<li><a href="#">' +
+		var tpl = '<li class="notification"><a href="#">' +
 				  '<i class="btn btn-xs btn-primary icon-user"></i>' + message + 
 				  '</a></li>';
 
@@ -235,16 +240,32 @@ define(function() {
 		
 		// build notification template
 		// for each notification
-		for(var i in data.result.list[0]) {
+		var length = (data.result.list[0].length <= 5) ? 
+					  data.result.list[0].length : 5;
+					  
+		for(var i = 0; i < length; i ++) {
 			html += _buildNotification(data.result.list[0][i].details);
+		}
+
+		// get all notification
+		var notification = $('li.nav-notification ul li.notification');
+
+		// if there is already notifications
+		if(notification.length <= 5) {
+			// remove it first, so we
+			// can avoid unnecessary
+			// html append
+			notification.remove();
 		}
 
 		// update badge total
 		badge.html(total);
-		// append html notifications
+		// set html notifications
 		nav.after(html);
 		// update notification counter
 		nav.find('span.total-notifications').html(total + ' Notifications');
+		// clean up all listeners
+		this.list.removeAllListeners('notification-list');
 	};
 
 	var _clearUnreadNotification = function(data) {

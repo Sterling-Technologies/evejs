@@ -262,7 +262,7 @@ module.exports = function() {
 	 */
 	public.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, 'active': true }, data, { upsert : false }, callback);
+			{ _id: id, 'active': true }, data, { upsert : false }, callback);
 	};
 	
 	/* Private Methods

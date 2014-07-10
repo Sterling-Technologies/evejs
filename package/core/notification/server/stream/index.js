@@ -8,7 +8,6 @@ module.exports = (function() {
     public.controller = null;
     public.channel 	  = null;
     public.socket  	  = null;
-    public.clients 	  = [];
     
 	/* Private Properties
     -------------------------------*/

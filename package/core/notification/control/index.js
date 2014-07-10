@@ -35,7 +35,17 @@ controller
 	}
 	
 	//router -> action
-	var action = controller.path('notification/action') + '/index.js';
+	var action = 'index';
+
+	switch(true) {
+		case window.location.pathname.indexOf('/notification/all') === 0 :
+			action = 'all';
+			break;
+		default :
+			action = 'index';
+	}
+
+	action = controller.path('notification/action') + '/' + action + '.js';
 	
 	//load up the action
 	require([action], function(action) {
