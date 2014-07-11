@@ -18,8 +18,8 @@
         "eve" : "./bin/eve.js"
     },
     "eve" : {
-        "server"    : "",
-        "control"   : "",
-        "web"       : ""
+        "server"    : "/server/node/web/eve.dev/app/trunk/server/current",
+        "control"   : "/server/node/web/eve.dev/app/trunk/control/current",
+        "web"       : "/server/node/web/eve.dev/app/trunk/web/current"
     }
 }

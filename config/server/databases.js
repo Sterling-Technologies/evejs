@@ -6,5 +6,5 @@ module.exports = {
 		name : 'eve',
 		user : '',
 		pass : ''
-	};
+	}
 };
