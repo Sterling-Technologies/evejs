@@ -12,6 +12,7 @@ define(function() {
 	var $ 			   = jQuery;
 	var selectFlag 	   = false;
 	var lastCategories = [];
+	var parentName	   = '';
 
 	/* Loader
 	-------------------------------*/
@@ -41,7 +42,7 @@ define(function() {
 	------------------------------*/
 
 	/**
-	 * Get all the categories from the mongodb
+	 * Get all the categories-post link from the mongodb
 	 *
 	 */
 	var _getCategory = function(next) {
@@ -76,6 +77,10 @@ define(function() {
 
 		var categories;
 
+		/**
+		 * Get all the categories
+		 *
+		 */
 		var getCat = function() {
 			// ajax request, get all category
 			$.ajax({
@@ -87,6 +92,35 @@ define(function() {
 		    	}
 		    });
 		};
+
+		/**
+		 * Get the parent upto the root node of the category recursively
+		 */
+		var _getParentCategory = function(parentId) {
+			var requestUrl = controller.getServerUrl() + '/category/detail/' + parentId;
+
+			// get the parent of this child categories
+			$.ajax({
+		    	url: requestUrl,
+		    	async: false,
+		    	dataType: 'json',
+		    	success: function(data) {
+		    		var results = data.results;
+
+		    		// get the parent name
+					parentName = results.name + ' > ' + parentName;
+
+					// recursion base case
+					if(results.parent == 'undefined') {
+						return parentName;
+					}
+
+					// recursive case
+					// it will run except when the parent category is undefined
+					return _getParentCategory(results.parent);
+		    	}
+		    });
+		}
 
 		getCat();
 
@@ -103,7 +137,17 @@ define(function() {
 				result += ' selected>';
 			}
 			
-			result += data.name + '</option>';
+			// check if the parent has parents categories
+			if(data.parent == 'undefined') {
+				result += data.name + '</option>';
+			} else {
+				// get the parents
+				_getParentCategory(data.parent)
+				result += parentName + data.name + '</option>';
+			}
+
+			// reset the parents
+			parentName = '';
 		});
 
 		// concatenate the endings
@@ -140,8 +184,13 @@ define(function() {
 			}
 
 			// for the select multiple list
-			$(".chosen-select").chosen(); 
-
+			$(".chosen-select").chosen().change(function() {
+				$('.search-choice span').each(function(key, data) { 
+					var lastElem = $(this).text().split(' > ');
+					$(this).text(lastElem[lastElem.length - 1]);
+				});
+			});
+			// template for chosenjs
 			var which = parseInt(2);
 			if(which == 2) $('#form-field-select-4').addClass('tag-input-style');
 			else $('#form-field-select-4').removeClass('tag-input-style');

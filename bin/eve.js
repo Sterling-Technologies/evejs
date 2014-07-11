@@ -177,4 +177,42 @@ require('../lib/').
             });
         })
 
+        //generate events
+        .listen('generate-step-1', function(source) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Looping Through ' + source + ' ...');
+        })
+        .listen('generate-step-2', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Creating ' + packageName + ' Folder ...');
+        })
+        .listen('generate-step-3', function(packageName, folder) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Copying ' + packageName + '/' + folder + ' Folder ...');
+        })
+        .listen('generate-step-4', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Building ' + packageName + ' Form ...');
+        })
+        .listen('generate-step-5', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Writing ' + packageName + ' Form File ...');
+        })
+        .listen('generate-step-6', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Building ' + packageName + ' Validation ...');
+        })
+        .listen('generate-step-7', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Building ' + packageName + ' Schema ...');
+        })
+        .listen('generate-step-8', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Replacing File Stubs ...');
+        })
+        .listen('generate-step-complete', function(packageName) {
+            console.log('\x1b[33m%s\x1b[0m',
+                    'Generating ' + packageName + ' Complete!');
+        })
+
         .run(local, action, section);

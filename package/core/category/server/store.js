@@ -161,7 +161,7 @@ module.exports = function() {
 		}
 		
 		query = _buildQuery(query, keyword);
-		console.log(query);
+
 		//now we are ready to call the query
 		var store = this.find(query)
 			.skip(start)

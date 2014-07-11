@@ -12,6 +12,7 @@ define(function() {
 	var $ 		     = jQuery;
 	var selectFlag   = false;
 	var lastInserted = '';
+	var parentName 	 = '';
 
 	/* Loader
 	-------------------------------*/
@@ -68,11 +69,46 @@ define(function() {
 		    });
 		};
 
-		getCat();
+		var _getParentCategory = function(parentId) {
+			var requestUrl = controller.getServerUrl() + '/category/detail/' + parentId;
 
+			// get the parent of this child categories
+			$.ajax({
+		    	url: requestUrl,
+		    	async: false,
+		    	dataType: 'json',
+		    	success: function(data) {
+		    		var results = data.results;
+
+		    		// get the parent name
+					parentName = results.name + ' > ' + parentName;
+
+					// recursion base case
+					if(results.parent == 'undefined') {
+						return parentName;
+					}
+
+					// recursive case
+					// it will run except when the parent category is undefined
+					return _getParentCategory(results.parent);
+		    	}
+		    });
+		}
+
+		getCat();
 		// create options by iterating through each category
 		$.each(categories, function(key, data) {
-			result += '<option value="' + data._id + '">' + data.name + '</option>';
+			// check for parent categories
+			if(data.parent == 'undefined') {
+				result += '<option value="' + data._id + '">' + data.name + '</option>';
+			} else {
+				// get the parents
+				_getParentCategory(data.parent)
+				result += '<option value="' + data._id + '" label="' + data.name + '">' + parentName + data.name + '</option>';
+			}
+
+			// reset the parents
+			parentName = '';
 		});
 
 		// concatenate the endings
@@ -107,8 +143,13 @@ define(function() {
 			}
 
 			// for the select multiple list
-			$(".chosen-select").chosen(); 
-
+			$(".chosen-select").chosen().change(function() {
+				$('.search-choice span').each(function(key, data) { 
+					var lastElem = $(this).text().split(' > ');
+					$(this).text(lastElem[lastElem.length - 1]);
+				});
+			});
+			//template for chosenjs
 			var which = parseInt(2);
 			if(which == 2) $('#form-field-select-4').addClass('tag-input-style');
 			else $('#form-field-select-4').removeClass('tag-input-style');
@@ -140,7 +181,7 @@ define(function() {
 			next();
 		});
 
-	 }
+	 };
 
 
 	return c;	

@@ -22,6 +22,7 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $ = jQuery;
+    var parentId;
 	
     /* Loader
     -------------------------------*/
@@ -53,10 +54,19 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
+		parentId =  window.location.pathname.split('/')[3];
 		
 		var category = controller.getPost();
-		
+
 		if(category && category.length) {
+			if(parentId !== '') {
+				category = 'parent=' + parentId + '&' + category;
+			} else {
+				category = 'parent=&' + category;
+			}
+
+			console.log(category);
+		
 			//query to hash
 			this.data.category = $.queryToHash(category);
 			
@@ -159,7 +169,7 @@ define(function() {
 					//display message status
 					.notify('Success', 'Category successfully created!', 'success')
 					//go to listing
-					.redirect('/category');
+					.redirect('/category/child/' + parentId);
 				
 				//no need to next since we are redirecting out
 				return;

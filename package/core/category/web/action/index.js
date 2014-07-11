@@ -175,6 +175,8 @@ define(function() {
 				query.filter.active = 0;
 				break;
 		}
+
+		query.filter.parent = 'undefined';
 		
 		return '/category/list?' + $.hashToQuery(query);
 	};
@@ -190,51 +192,6 @@ define(function() {
 		
 		query.count = 1;
 		query.filter.active = 1;
-		
-		return '/category/list?' + $.hashToQuery(query);
-	};
-	
-	var _getPublishedCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-	
-		query.count = 1;
-		query.filter.status = 'published';
-		
-		return '/category/list?' + $.hashToQuery(query);
-	};
-	
-	var _getReviewCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.status = 'review';
-		
-		return '/category/list?' + $.hashToQuery(query);
-	};
-	
-	var _getDraftCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.status = 'draft';
 		
 		return '/category/list?' + $.hashToQuery(query);
 	};

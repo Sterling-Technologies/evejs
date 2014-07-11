@@ -6,8 +6,8 @@ define(function() {
 	/* Public Properties
 	-------------------------------*/
 	public.title 		= 'Categories';
-	public.header 		= 'Categories';
-	public.subheader 	= 'List of Categories';
+	public.header 		= 'Child Categories';
+	public.subheader 	= 'List of Child Categories';
 	public.crumbs 		= [{ icon: 'post', label: 'Categories' }];
 	public.data 		= {};
 	
@@ -20,6 +20,8 @@ define(function() {
 	/* Private Properties
 	-------------------------------*/
 	var $ = jQuery;
+	var parentId;
+	var parentName;
 	
 	/* Loader
 	-------------------------------*/
@@ -30,6 +32,9 @@ define(function() {
 	/* Construct
 	-------------------------------*/
 	public.__construct = function() {
+		// reset the crumbs
+		public.crumbs 		= [{ icon: 'post', label: 'Categories' }];
+		parentId =  window.location.pathname.split('/')[3];
 		//reset data because of "pass by ref"
 		this.data = {};
 	};
@@ -39,6 +44,7 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 			.setScope(this)
+			.then(_getParentCategory)
 			.then(_setData)
 			.then(_output)
 			.then(_listen);
@@ -49,7 +55,6 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _setData = function(next) {
-		var parent_id =  window.location.pathname.split('/')[3];
 		//use a batch call
 		var batch = [], query = $.getUrlQuery();
 		
@@ -66,7 +71,7 @@ define(function() {
 		batch.push({ url: _getAllCountRequest.call(this, query) });
 		
 		$.post(
-			controller.getServerUrl() + '/category/batch/' + parent_id, 
+			controller.getServerUrl() + '/category/batch/' + parentId, 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
@@ -123,6 +128,8 @@ define(function() {
 				.setCrumbs(this.crumbs)
 				.setBody(body);
 			
+			var href = $('.create a').attr('href');
+			$('.create a').attr('href', href + '/' + parentId);
 			next();
 		}.bind(this));
 	};
@@ -151,10 +158,9 @@ define(function() {
 	};
 	
 	var _getListRequest = function(request) {
-		var parent_id =  window.location.pathname.split('/')[3];
 		var query = {};
 
-		query.filter    = { parent: parent_id };
+		query.filter    = { parent: parentId };
 		query.range		= request.range	  || this.range;
 		query.start 	= request.start   || this.start;
 		
@@ -196,51 +202,6 @@ define(function() {
 		return '/category/child?' + $.hashToQuery(query);
 	};
 	
-	var _getPublishedCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-	
-		query.count = 1;
-		query.filter.status = 'published';
-		
-		return '/category/child?' + $.hashToQuery(query);
-	};
-	
-	var _getReviewCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.status = 'review';
-		
-		return '/category/child?' + $.hashToQuery(query);
-	};
-	
-	var _getDraftCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.status = 'draft';
-		
-		return '/category/child?' + $.hashToQuery(query);
-	};
-	
 	var _getTrashCountRequest = function(request) {
 		var query = {};
 		
@@ -270,6 +231,25 @@ define(function() {
 
 		return '/category/child?' + $.hashToQuery(query);
 	};
+
+	var _getParentCategory = function(next) {
+		var requestUrl = controller.getServerUrl() + '/category/detail/' + parentId;
+
+		// get the parent of this child categories
+		$.get(requestUrl, function(data) {
+			// parse the result string into a json object
+			data = JSON.parse(data);
+			var results = data.results;
+
+			// get the parent name
+			parentName = results.name;
+
+			// append the parent name into the crumbs
+			public.subheader = 'Child categories of ' + parentName;
+			public.crumbs.push({ label: parentName });
+			next();
+		});
+	}
 	
 	/* Adaptor
 	-------------------------------*/

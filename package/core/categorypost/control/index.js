@@ -32,7 +32,7 @@ controller
 
 	action = controller.path('categorypost/action') + '/' + action + '.js';
 
-	// //load up the action
+	//load up the action
 	require([action], function(action) {
 		action.load().render();
 	});
