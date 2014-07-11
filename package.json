@@ -18,8 +18,8 @@
         "eve" : "./bin/eve.js"
     },
     "eve" : {
-        "server"    : "/server/node/web/eve2.dev/control",
-        "control"   : "/server/node/web/eve2.dev/server",
-        "web"       : "/server/node/web/eve2.dev/web"
+        "server"    : "",
+        "control"   : "",
+        "web"       : ""
     }
 }
