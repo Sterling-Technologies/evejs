@@ -275,7 +275,9 @@ define(function() {
 		var badge = $('li.nav-notification a.dropdown-toggle span.total-notif-badge');
 		// navigation container
 		var nav   = $('li.nav-notification ul li.dropdown-header');
-
+		// current total notifications
+		var notifications = notifications ? notifications : 0;
+		
 		// Show latest total notification before resetting 
 		nav.find('span.total-notifications').html(notifications + ' New Notification(s)');
 		// reset notification count
