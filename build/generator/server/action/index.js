@@ -45,7 +45,7 @@ module.exports = (function() {
 				//it must be a detail
 				action = require('./detail');
 			}
-		//is there a {SINGULAR} ?
+		//is there a Sample ?
 		} else if(this.request.method.toUpperCase() == 'POST') {
 			//it must be a create
 			action = require('./create');

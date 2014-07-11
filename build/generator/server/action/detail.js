@@ -37,7 +37,7 @@ module.exports = (function() {
 			return;
 		}
 		
-		this.controller.{SLUG}().store().getDetail(this.request.variables[0], _response.bind(this));
+		this.controller.sample().store().getDetail(this.request.variables[0], _response.bind(this));
 
 		return this;
 	};
@@ -61,7 +61,7 @@ module.exports = (function() {
 			results: row });
 		
 		//trigger that a response has been made
-		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+		this.controller.trigger('sample-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -71,7 +71,7 @@ module.exports = (function() {
 			message: error.message });
 		
 		//trigger that a response has been made
-		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+		this.controller.trigger('sample-action-response', this.request, this.response);
 	};
 	
 	/* Adaptor

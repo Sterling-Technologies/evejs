@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating {SINGULAR}';
-    public.header       = 'Updating {SINGULAR}';
+    public.title        = 'Updating Sample';
+    public.header       = 'Updating Sample';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
-        path: '/{SLUG}',
-        icon: '{ICON}', 
-        label: '{PLURAL}' 
-    }, {  label: 'Create {SINGULAR}' }];
+        path: '/sample',
+        icon: 'facebook', 
+        label: 'Samples' 
+    }, {  label: 'Create Sample' }];
 	
     public.data     = {};
 	
-    public.template = controller.path('{SLUG}/template') + '/form.html';
+    public.template = controller.path('sample/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -81,11 +81,11 @@ define(function() {
 			//get it from the server
 			//get user id
 			var id =  window.location.pathname.split('/')[3];
-			var url = controller.getServerUrl() + '/{SLUG}/detail/'+id;
+			var url = controller.getServerUrl() + '/sample/detail/'+id;
 			
 			$.getJSON(url, function(response) {
 				
-				this.data.{SLUG} = response.results;
+				this.data.sample = response.results;
 				next();
 			}.bind(this));
 			
@@ -126,7 +126,43 @@ define(function() {
 		this.data.errors = {};
 		
 		//local validations
-{VALIDATION}
+		if (isNaN(this.data.sample.title) || this.data.sample.title > 4) {
+			this.data.errors.title = { message: 'Title should be a number greater than 4'};
+		}
+		if(!this.data.sample.title || !this.data.sample.title.length) {
+			this.data.errors.title = { message: 'Title cannot be empty.' };
+		}
+
+		if (isNaN(this.data.sample.detail) || this.data.sample.detail < 7) {
+			this.data.errors.detail = { message: 'Detail should be a number lesser than 7'};
+		}
+		if(!this.data.sample.detail || !this.data.sample.detail.length) {
+			this.data.errors.detail = { message: 'Detail cannot be empty.' };
+		}
+
+		if ((new RegExp('/^(?:(?:(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|\x5c(?=[@,"\[\]'
+				+ '\x5c\x00-\x20\x7f-\xff]))(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]'
+				+ '\x5c\x00-\x20\x7f-\xff]|\x5c(?=[@,"\[\]\x5c\x00-\x20\x7f-\xff])|\.(?=[^\.])){1,62'
+				+ '}(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]\x5c\x00-\x20\x7f-\xff])|'
+				+ '[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]{1,2})|"(?:[^"]|(?<=\x5c)"){1,62}")@(?:(?!.{64})'
+				+ '(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.?|[a-zA-Z0-9]\.?)+\.(?:xn--[a-zA-Z0-9]'
+				+ '+|[a-zA-Z]{2,6})|\[(?:[0-1]?\d?\d|2[0-4]\d|25[0-5])(?:\.(?:[0-1]?\d?\d|2[0-4]\d|25'
+				+ '[0-5])){3}\])$/', 'ig')).test(this.data.sample.email)) {
+			this.data.errors.email = { message: 'Email should be a valid email.' };
+		}
+
+		if(!this.data.sample.bio || !this.data.sample.bio.length) {
+			this.data.errors.bio = { message: 'Bio cannot be empty.' };
+		}
+
+		try {
+			$.datepicker.parseDate('dd/dd/dddd', this.data.sample.published);
+		}
+		catch(er) {
+			this.data.errors.published = { message: 'Published must be date as dd/dd/dddd'};
+		}
+
+
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';
@@ -134,18 +170,18 @@ define(function() {
 	
 	var _process = function(next) {
 		var id 		=  window.location.pathname.split('/')[3],
-			url 	= controller.getServerUrl() + '/{SLUG}/update/'+id;
+			url 	= controller.getServerUrl() + '/sample/update/'+id;
 		
 		//save data to database
-		$.post(url, this.data.{SLUG}, function(response) {
+		$.post(url, this.data.sample, function(response) {
 			response = JSON.parse(response);
 			
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', '{SINGULAR} successfully created!', 'success')
+					.notify('Success', 'Sample successfully created!', 'success')
 					//go to listing
-					.redirect('/{SLUG}');
+					.redirect('/sample');
 				
 				//no need to next since we are redirecting out
 				return;

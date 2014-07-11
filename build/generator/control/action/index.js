@@ -5,17 +5,17 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= '{PLURAL}';
-	public.header 		= '{PLURAL}';
+	public.title 		= 'Samples';
+	public.header 		= 'Samples';
 	public.subheader 	= '';
-	public.crumbs 		= [{ icon: '{ICON}', label: '{PLURAL}' }];
+	public.crumbs 		= [{ icon: 'facebook', label: 'Samples' }];
 	public.data 		= {};
 	
 	public.start		= 0;
 	public.page 		= 1;
 	public.range 		= 25;
 	
-	public.template 	= controller.path('{SLUG}/template') + '/index.html';
+	public.template 	= controller.path('sample/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -65,7 +65,7 @@ define(function() {
 		batch.push({ url: _getAllCountRequest.call(this, query) });
 		
 		$.post(
-			controller.getServerUrl() + '/{SLUG}/batch', 
+			controller.getServerUrl() + '/sample/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
@@ -110,12 +110,12 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.{SLUG}-list a.remove, section.{SLUG}-list a.restore').click(function(e) {
+		$('section.sample-list a.remove, section.sample-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
+		$('section.sample-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
 				jQuery('tbody input[type="checkbox"]').each(function() {
@@ -158,7 +158,7 @@ define(function() {
 				break;
 		}
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		return '/sample/list?' + $.hashToQuery(query);
 	};
 	
 	var _getActiveCountRequest = function(request) {
@@ -173,7 +173,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 1;
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		return '/sample/list?' + $.hashToQuery(query);
 	};
 	
 	var _getTrashCountRequest = function(request) {
@@ -188,7 +188,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 0;
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		return '/sample/list?' + $.hashToQuery(query);
 	};
 	
 	var _getAllCountRequest = function(request) {
@@ -203,7 +203,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = -1;
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		return '/sample/list?' + $.hashToQuery(query);
 	};
 	
 	/* Adaptor

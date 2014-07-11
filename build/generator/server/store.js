@@ -5,7 +5,15 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {{SCHEMA}};
+	public.schema = {
+		title: { type: String, required: true }, 
+		detail: { type: String, required: true }, 
+		email: String, 
+		phone: String, 
+		bio: { type: String, required: true }, 
+		active: { type: Boolean, default: true }, 
+		published: { type: Date, default: Date.now }, 
+		status: { type: String, enum: ['draft', 'review', 'published', 'other'] }};
 	
 	/* Private Properties
 	-------------------------------*/
@@ -30,7 +38,7 @@ module.exports = function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('{SLUG}', this.definition);
+		this.store = mongoose.model('sample', this.definition);
 	};
 	
 	/* Public Methods
@@ -255,6 +263,60 @@ module.exports = function() {
 	
 	/* Private Methods
 	-------------------------------*/
+	var _buildQuery = function(query, keyword) {
+		query 	= query 	|| {};
+		keyword = keyword 	|| null;
+		
+		if(query.active != -1) {
+			query.active = query.active != 0;
+		}
+		
+		var not, or = [];
+		
+		//keyword search
+		if(keyword) {
+			or.push([
+				{ name	: new RegExp(keyword, 'ig') },
+				{ username: new RegExp(keyword, 'ig') },
+				{ email	: new RegExp(keyword, 'ig') } ]);
+		}
+		
+		
+		for(var key in query) {
+			//if prefixed with !, just test if it does not exist
+			//SECRET SAUCE:
+			//{ active: true, $or: [ {password: { $exists: false }}, {password: { $type: 10 }}, {password: ""} ] }
+			if(key.indexOf('!') === 0) {
+				not = [ {}, {}, {} ];
+				not[0][key.substr(1)] = { $exists: false };
+				not[1][key.substr(1)] = { $type: 10 };
+				not[2][key.substr(1)] = '';
+				
+				or.push(not);
+				continue;
+			}
+			
+			if(query[key] !== null) {
+				continue;
+			}
+			
+			//if null value, just test if it exists
+			
+			query[key] = { $exists: true };
+		}
+		
+		if(or.length == 1) {
+			query['$or'] = or[0];
+		} else if(or.length) {
+			query['$and'] = [];
+			for(var i = 0; i < or.length; i++) {
+				query['$and'].push({ '$or': or[i] });
+			}
+		}
+		
+		return query;
+	};
+	
 	/* Adaptor
 	-------------------------------*/
 	return c;  
