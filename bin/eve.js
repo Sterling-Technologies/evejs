@@ -19,16 +19,19 @@ var lint = require('../lib/lint');
 
 var LINT_CONFIG = {
     SERVER : {
+        bitwise : false,
         strict : true,
         node : true
     },
     CONTROL : {
+        bitwise : false,
         strict : false,
         browser : true,
         jquery : true,
         node : false
     },
     WEB : {
+        bitwise : false,
         strict : false,
         browser : true,
         jquery : true,
