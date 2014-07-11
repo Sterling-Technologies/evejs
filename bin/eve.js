@@ -24,6 +24,7 @@ var LINT_CONFIG = {
         node : true
     },
     CONTROL : {
+        globals : { define : true, controller : true, console : true },
         bitwise : false,
         strict : false,
         browser : true,
@@ -31,6 +32,7 @@ var LINT_CONFIG = {
         node : false
     },
     WEB : {
+        globals : { console : true },
         bitwise : false,
         strict : false,
         browser : true,
@@ -38,6 +40,10 @@ var LINT_CONFIG = {
         node : false
     }
 };
+
+process.on('uncaughtException', function(err) {
+    console.log('Uncaught Error: %s\n\t%s', err.name, err.stack);
+});
 
 var local = process.env.PWD || process.cwd(),
         //NOTE: maybe find a better way to find the root folder
