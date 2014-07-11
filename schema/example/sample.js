@@ -7,35 +7,37 @@ module.exports = {
 		title: {
 			meta: { type: String, required: true },
 			field: ['text'],
-			holder: 'Please enter a title',
+			placeholder: 'Please enter a title',
 			valid: [['gt', 4]]
 		},
 		
 		detail: {
 			meta: { type: String, required: true },
 			field: ['wysiwyg'],
-			holder: 'Please enter a detail',
+			title: 'This is the title',
+			placeholder: 'Please enter a detail',
 			valid: [['lt', 7]]
 		},
 		
 		email: {
 			meta: String,
 			field: ['text'],
-			holder: 'john@doe.com',
+			placeholder: 'john@doe.com',
+			value: 'jerielmari@gmail.com',
 			valid: [['email']]
 		},
 		
 		phone: {
 			meta: String,
 			field: ['mask', 'aaa-11-aaa'],
-			holder: '(415) 555-2424',
+			placeholder: '(415) 555-2424',
 			valid: []
 		},
 		
 		bio: {
 			meta: { type: String, required: true },
-			field: ['textarea'],
-			holder: 'Please enter some bio',
+			field: ['textarea', 'class="testinglang"'],
+			placeholder: 'Please enter some bio',
 			valid: []
 		},
 		
@@ -47,7 +49,7 @@ module.exports = {
 		published: {
 			meta: { type: Date, default: Date.now },
 			field: ['date'],
-			holder: '01/01/2014',
+			placeholder: '01/01/2014',
 			valid: [['date', 'dd/dd/dddd']]
 		},
 		
