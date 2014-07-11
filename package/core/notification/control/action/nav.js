@@ -204,7 +204,7 @@ define(function() {
 		// append notification
 		nav.after(tpl);
 		// update notification counter
-		nav.find('span.total-notifications').html(notifications + ' Notifications');
+		nav.find('span.total-notifications').html(notifications + ' New Notification(s)');
 
 		// remove animation class on bell, and re-add it again
 		// just to make it alive :D
@@ -265,7 +265,7 @@ define(function() {
 		// set html notifications
 		nav.after(html);
 		// update notification counter
-		nav.find('span.total-notifications').html(total + ' Notifications');
+		nav.find('span.total-notifications').html(total + ' New Notification(s)');
 		// clean up all listeners
 		this.list.removeAllListeners('notification-list');
 	};
@@ -276,12 +276,12 @@ define(function() {
 		// navigation container
 		var nav   = $('li.nav-notification ul li.dropdown-header');
 
+		// Show latest total notification before resetting 
+		nav.find('span.total-notifications').html(notifications + ' New Notification(s)');
 		// reset notification count
 		notifications = 0;
 		// clear badge
 		badge.html('');
-		// update notification counter
-		nav.find('span.total-notifications').html('0 Notifications');
 	};
 
 	/* Adaptor
