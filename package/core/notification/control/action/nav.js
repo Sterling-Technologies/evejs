@@ -188,17 +188,19 @@ define(function() {
 		// build out notification html
 		var tpl   = _buildNotification(data.result.details);
 
-		// get all notification
-		var notification = $('li.nav-notification ul li.notification');
-
-		// if there is already notifications
-		if(notification.length <= 5) {
-			// remove last
-			notification[4].remove();
-		}
-
 		// update badge counter
 		badge.html(notifications);
+
+		// get all current notifications
+		var current = $('li.nav-notification ul li.notification');
+
+		// if notifications is greater
+		// than or equals to 4
+		if(current.length >= 4) {
+			// remove the last part
+			current[4].remove();
+		}
+
 		// append notification
 		nav.after(tpl);
 		// update notification counter
