@@ -1,0 +1,128 @@
+.eve-wysiwyg-editor { 
+	border: 1px solid rgb(229, 229, 229); 
+	border-collapse: separate;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	height: 250px;
+	max-height: 250px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	outline: none;
+	padding: 4px;
+}
+
+.eve-wysiwyg-toolbar { background-color: rgb(229, 229, 229); text-align: center; padding: 5px 5px 0; }
+.eve-wysiwyg-toolbar .btn-group { float: none; font-size: 0px; }
+.eve-wysiwyg-toolbar > .btn-group { margin-bottom: 5px; }
+.eve-wysiwyg-toolbar .btn-group > .btn { 
+	background-color: #FFFFFF;
+	border: none;
+	border-radius:0;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	color: rgb(173, 179, 190);
+	margin: 0px;
+	text-shadow: none;
+}
+
+.eve-wysiwyg-toolbar .btn-group .btn-info {
+	background-color: #5bc0de;
+	border-color: #46b8da;
+	color: #FFFFFF;
+}
+
+.eve-wysiwyg-toolbar .btn-group .btn.dropdown-toggle { padding: 6px 7px; }
+.eve-wysiwyg-toolbar .btn-group .btn .icon-link,
+.eve-wysiwyg-toolbar .btn-group .btn .icon-picture { margin: 3px; display: block; }
+.eve-wysiwyg-toolbar .btn-group .btn .icon-code { margin: 2px; display: block; }
+
+.eve-wysiwyg-toolbar .wysiwyg-speech-input {
+	-webkit-transform: scale(2, 2);
+	cursor: pointer;
+	width: 20px;
+	color: transparent;
+	background: none transparent;
+	border: none;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	float: right;
+	position: relative;
+	right: 5px;
+	top: 40px;
+}
+
+.eve-wysiwyg-toolbar .dropdown-menu { padding: 10px; width: 300px; }
+
+.eve-wysiwyg-toolbar .dropdown-menu input[type="text"].form-control { min-width: 150px; }
+.eve-wysiwyg-toolbar .dropdown-menu .btn { margin-right: 8px; margin-left: 1px; }
+
+.eve-wysiwyg-toolbar input[type="file"] {
+	position: fixed;
+	display: block;
+	z-index: -10;
+	opacity: 0;
+	max-width: 0px;
+	max-height: 0px;
+}
+
+.eve-wysiwyg-toolbar .wysiwyg-choose-file { margin-top: 10px; }
+
+.eve-wysiwyg-toolbar .btn-colorpicker {
+	width: 24px;
+	height: 24px;
+	position: relative;
+	background: -webkit-linear-gradient(top, 
+		rgb(207, 62, 115) 10%, 
+		rgb(255, 255, 255) 20%, 
+		rgb(34, 131, 197) 30%, 
+		rgb(255, 255, 255) 40%, 
+		rgb(135, 184, 127) 50%, 
+		rgb(255, 255, 255) 60%, 
+		rgb(255, 183, 82) 70%, 
+		rgb(255, 255, 255) 80%, 
+		rgb(209, 91, 71) 90%, 
+		rgb(255, 255, 255) 100%);
+		
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background-color: rgb(221, 221, 221);
+	vertical-align: middle;
+	border-radius: 0px;
+}
+
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li > .colorpick-btn {
+	display: block;
+	width: 20px;
+	height: 20px;
+	margin: 0px;
+	padding: 0px;
+	border-radius: 0px;
+	position: relative;
+	transition: all 0.1s ease;
+	-webkit-transition: all 0.1s ease;
+}
+
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu {
+	width: 142px;
+	min-width: 0;
+}
+
+.eve-wysiwyg-toolbar .dropdown-colorpicker > .dropdown-menu > li {
+	display: block;
+	float: left;
+	width: 20px;
+	height: 20px;
+	margin: 2px;
+}

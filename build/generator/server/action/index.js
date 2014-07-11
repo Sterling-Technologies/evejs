@@ -45,8 +45,8 @@ module.exports = (function() {
 				//it must be a detail
 				action = require('./detail');
 			}
-		//is there a {TEMPORARY} ?
-		} else if(this.request.method.toUpperCase() == '{TEMPORARY}') {
+		//is there a {SINGULAR} ?
+		} else if(this.request.method.toUpperCase() == 'POST') {
 			//it must be a create
 			action = require('./create');
 		//by default 

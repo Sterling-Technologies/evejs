@@ -44,11 +44,11 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('{TEMPORARY}-update-error', _error.bind(this))
+			.once('{SLUG}-update-error', _error.bind(this))
 			//when it is successfull
-			.once('{TEMPORARY}-update-success', _success.bind(this))
-			//Now call to update the {TEMPORARY}
-			.trigger('{TEMPORARY}-update', this.controller, this.request.variables[0], query);
+			.once('{SLUG}-update-success', _success.bind(this))
+			//Now call to update the {SINGULAR}
+			.trigger('{SLUG}-update', this.controller, this.request.variables[0], query);
 	};
 	
 	/* Private Methods
@@ -57,9 +57,9 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('{TEMPORARY}-update-error');
+		this.controller.unlisten('{SLUG}-update-error');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -70,9 +70,9 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('{TEMPORARY}-update-success');
+		this.controller.unlisten('{SLUG}-update-success');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 			
 	/* Adaptor

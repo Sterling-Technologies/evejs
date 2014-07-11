@@ -108,7 +108,8 @@ define(function() {
 		//clear errors
 		this.data.errors = {};
 		
-		//NOTE: local validate
+		//local validations
+{VALIDATION}
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';

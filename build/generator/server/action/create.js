@@ -37,11 +37,11 @@ module.exports = (function() {
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('{TEMPORARY}-create-error', _error.bind(this))
+			.once('{SLUG}-create-error', _error.bind(this))
 			//when it is successfull
-			.once('{TEMPORARY}-create-success', _success.bind(this))
-			//Now call to remove the {TEMPORARY}
-			.trigger('{TEMPORARY}-create', this.controller, query);
+			.once('{SLUG}-create-success', _success.bind(this))
+			//Now call to remove the {SINGULAR}
+			.trigger('{SLUG}-create', this.controller, query);
 	};
 	
 	/* Private Methods
@@ -50,9 +50,9 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('{TEMPORARY}-create-error');
+		this.controller.unlisten('{SLUG}-create-error');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -63,9 +63,9 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('{TEMPORARY}-create-success');
+		this.controller.unlisten('{SLUG}-create-success');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 			
 	/* Adaptor

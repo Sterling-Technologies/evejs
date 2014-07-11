@@ -31,51 +31,50 @@ module.exports = (function() {
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No ID set' });
-			
-			//trigger that a response has been made
-			this.controller.trigger('categorypost-action-response', this.request, this.response);
+			//setup an error
+			_error.call(this, { message: 'No ID set' });
 			
 			return;
 		}
 		
-		var self = this, query = this
+		var query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
 		
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('categorypost-update-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message,
-					validation: error.errors || [] });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('categorypost-update-success');
-				//trigger that a response has been made
-				self.controller.trigger('categorypost-action-response', self.request, self.response);
-			})
+			.once('categorypost-update-error', _error.bind(this))
 			//when it is successfull
-			.once('categorypost-update-success', function() {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false });
-				//dont listen for error anymore
-				self.controller.unlisten('categorypost-update-error');
-				//trigger that a response has been made
-				self.controller.trigger('categorypost-action-response', self.request, self.response);
-			})
+			.once('categorypost-update-success', _success.bind(this))
 			//Now call to update the categorypost
 			.trigger('categorypost-update', this.controller, this.request.variables[0], query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+    var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message,
+			validation: error.errors || [] });
+		
+		//dont listen for success anymore
+		this.controller.unlisten('categorypost-update-success');
+		//trigger that a response has been made
+		this.controller.trigger('categorypost-action-response', this.request, this.response);
+	};
+			
+	var _success = function() {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false });
+		//dont listen for error anymore
+		this.controller.unlisten('categorypost-update-error');
+		//trigger that a response has been made
+		this.controller.trigger('categorypost-action-response', this.request, this.response);
+	};
+	
 	/* Adaptor
 	-------------------------------*/
 	return c; 

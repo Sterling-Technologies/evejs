@@ -48,6 +48,31 @@ module.exports = function($) {
 			//run the virtual
 			return this.virtual(args, index, types);
 		};
+
+		/**
+		 * Tests arguments for valid data types
+		 *
+		 * @param *int
+		 * @param *mixed
+		 * @param *string[,string..]
+		 * @return this
+		 */
+		public.testValue = function(value, types) {
+			//if no test
+			if(_stop) {
+				return this;
+			}
+			
+			//types are comma separated
+			types = $.args();
+			//shift out the value from types (it's not a type!)
+			types.shift();
+			//get the arguments of the function that called this method
+			var args = [value];
+			
+			//run the virtual
+			return this.virtual(args, 0, types);
+		};
 		
 		/**
 		 * Turns argument testing off

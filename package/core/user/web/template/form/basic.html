@@ -1,0 +1,20 @@
+<!--START: Basic Form-->
+<h4 class="header blue bolder smaller">Basic</h4>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right" 
+    for="form-field-date">Birth Date</label>
+    <div class="col-sm-8">
+        <div class="input-medium">
+        	<input type="date" class="datepicker" value="{{user.birthdate}}" name="birthdate"/>					
+        </div>
+    </div>
+</div>
+<div class="space-4"></div>
+<div class="form-group">
+    <label class="col-sm-4 control-label no-padding-right">Gender</label>
+    <div class="col-sm-8">
+    	{{#block 'field/radio' 'gender' 'male' user.gender}}Male{{/block}}
+        {{#block 'field/radio' 'gender' 'female' user.gender}}Female{{/block}}
+    </div>
+</div>
+<!-- End: Basic Form -->

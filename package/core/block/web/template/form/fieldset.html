@@ -1,0 +1,9 @@
+<div{{{attributes}}}>
+    <label class="col-lg-{{labelSize}} control-label">{{{label}}}</label>
+    <div class="col-lg-{{fieldSize}}">
+        {{{innerTemplate}}}
+        {{#if error}}
+        <span class="help-block">{{error}}</span>
+        {{/if}}
+    </div>
+</div>

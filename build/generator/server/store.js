@@ -5,7 +5,7 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {TEMPORARY};
+	public.schema = {{SCHEMA}};
 	
 	/* Private Properties
 	-------------------------------*/
@@ -30,7 +30,7 @@ module.exports = function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('{TEMPORARY}', this.definition);
+		this.store = mongoose.model('{SLUG}', this.definition);
 	};
 	
 	/* Public Methods

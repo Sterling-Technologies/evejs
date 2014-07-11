@@ -379,7 +379,7 @@ module.exports = function($) {
 		 * @return bool
 		 */
 		public.isString = function(data) {
-			return typeof data = 'string';
+			return typeof data === 'string';
 		};
 		
 		/**

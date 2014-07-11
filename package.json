@@ -1,0 +1,25 @@
+{
+    "name" : "eve-cli",
+    "version" : "0.0.0",
+    "description" : "Eve Builder",
+    "main" : "index.js",
+    "scripts" : {
+        "test" : "echo \"Error: no test specified\" && exit 1"
+    },
+    "author" : "Christian Blanquera",
+    "license" : "MIT",
+    "dependencies" : {
+        "edenjs" : "0.0.1",
+        "chokidar" : "0.8.2",
+        "jshint" : "2.5.2"
+    },
+    "main" : "./lib/index.js",
+    "bin" : {
+        "eve" : "./bin/eve.js"
+    },
+    "eve" : {
+        "server"    : "/server/node/web/eve2.dev/control",
+        "control"   : "/server/node/web/eve2.dev/server",
+        "web"       : "/server/node/web/eve2.dev/web"
+    }
+}

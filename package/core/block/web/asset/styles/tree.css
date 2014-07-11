@@ -1,0 +1,14 @@
+.eden-block-tree, .eden-block-tree ul {
+	display: block;
+	float: none;
+	position: static;
+	padding-left: 15px;
+}
+
+.eden-block-tree ul { 
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.eden-block-tree .dropdown-header { padding-left: 0; }

@@ -29,34 +29,51 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		//remember the scope and load up the data store
-		var self = this, store = this.controller.categorypost().store();
-
-		this.controller.categorypost().store().find({}, function(err, data) {
-			//if there are errors
-			if(err) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message });
-				
-				//trigger that a response has been made
-				self.controller.trigger('categorypost-action-response', self.request, self.response);
-				return;
-			}
-
-			//no error, then prepare the package
-			self.response.message = JSON.stringify({ 
-				error: false, 
-				results: data });
+		var filter 	= this.request.query.filter 	|| {},
+			range 	= this.request.query.range 		|| 50,
+			start 	= this.request.query.start 		|| 0,
+			order 	= this.request.query.order 		|| {},
+			count	= this.request.query.count 		|| 0,
+			keyword	= this.request.query.keyword 	|| null;
+		
+		if(count) {
+			this.controller.categorypost().store().getTotal(
+				filter, 	keyword, 
+				_response.bind(this));
 			
-			//trigger that a response has been made
-			self.controller.trigger('categorypost-action-response', self.request, self.response);
-		});
+			return;
+		}
+		
+		this.controller.categorypost().store().getList(
+			filter, 	keyword, 
+			order, 		start, 
+			range,		_response.bind(this));
 	};
 	
 	/* Private Methods
     -------------------------------*/
+    var _response = function(error, data) {
+		//if there are errors
+		if(error) {
+			//setup an error response
+			this.response.message = JSON.stringify({ 
+				error: true, 
+				message: error.message });
+			
+			//trigger that a response has been made
+			this.controller.trigger('categorypost-action-response', this.request, this.response);
+			return;
+		}
+		
+		//no error, then prepare the package
+		this.response.message = JSON.stringify({ 
+			error: false, 
+			results: data });
+		
+		//trigger that a response has been made
+		this.controller.trigger('categorypost-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

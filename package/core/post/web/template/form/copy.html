@@ -1,0 +1,27 @@
+<div class="widget-box">
+    <div class="widget-header header-color-blue2">
+        {{#if create}}
+        <h5>Enter Copy</h5>
+        {{else}}
+            {{#if revision.detail}}       
+            <h5>Restoring Copy From{{revision.created}}</h5>
+            {{/if}}
+        <h5>Change Copy</h5>    
+        {{/if}}
+    </div>
+    <div class="widget-body">  
+        <div class="widget-main">      
+            {{#block 'form/fieldset' 'Text <span>*</span>' errors.title.message}}
+                {{{block 'field/text' 'title' ../post.title 'placeholder="Enter Title"'}}}
+            {{/block}}
+            
+            {{#block 'form/fieldset' 'Path <span>*</span>' errors.slug.message}}
+                {{{block 'field/text' 'slug' ../post.slug 'placeholder="URL Path"'}}}
+            {{/block}}
+            
+            {{#block 'form/fieldset' 'Detail <span>*</span>' errors.detail.message}}
+                {{#block 'field/wysiwyg' 'detail'}}{{{../../post.detail}}}{{/block}}
+            {{/block}}   
+        </div>
+    </div>
+</div>

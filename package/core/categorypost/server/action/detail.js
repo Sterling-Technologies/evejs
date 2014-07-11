@@ -31,48 +31,50 @@ module.exports = (function() {
 	public.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
-			//setup an error response
-			this.response.message = JSON.stringify({ 
-				error: true, 
-				message: 'No ID set' });
-			
-			//trigger that a response has been made
-			this.controller.trigger('categorypost-action-response', this.request, this.response);
+			//setup an error
+			_error.call(this, { message: 'No ID set' });
 			
 			return;
 		}
 		
-		var self = this;
-		
-		this.controller.categorypost().store()
-			.findOne({ _id: this.request.variables[0], active: true })
-			.lean().exec(function(error, categorypost) {
-				//if there are errors
-				if(error) {
-					//setup an error response
-					self.response.message = JSON.stringify({ 
-						error: true, 
-						message: error.message });
-					
-					//trigger that a response has been made
-					self.controller.trigger('categorypost-action-response', self.request, self.response);
-					return;
-				}
-				
-				//no error, then prepare the package
-				self.response.message = JSON.stringify({ 
-					error: false, 
-					results: categorypost });
-				
-				//trigger that a response has been made
-				self.controller.trigger('categorypost-action-response', self.request, self.response);
-			});
+		this.controller.categorypost().store().getDetail(this.request.variables[0], _response.bind(this));
 
 		return this;
 	};
 	
 	/* Private Methods
     -------------------------------*/
+    var _response = function(error, row) {
+		//if there are errors
+		if(error) {
+			_error.call(this, error);
+			return;
+		}
+		
+		//no error, then prepare the package
+		_success.call(this, row);
+	};
+	
+	var _success = function(row) {
+		//no error, then prepare the package
+		this.response.message = JSON.stringify({ 
+			error: false, 
+			results: row });
+		
+		//trigger that a response has been made
+		this.controller.trigger('categorypost-action-response', this.request, this.response);
+	};
+	
+	var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error: true, 
+			message: error.message });
+		
+		//trigger that a response has been made
+		this.controller.trigger('categorypost-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

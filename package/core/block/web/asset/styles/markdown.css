@@ -1,0 +1,17 @@
+.md-header { background-color: rgb(229, 229, 229); text-align: center; padding: 5px; }
+
+.md-header .btn {
+	background-color: #FFFFFF;
+	border: none;
+	border-radius:0;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	color: rgb(173, 179, 190);
+	margin: 0 0 5px 0;
+	text-shadow: none;
+}
+
+.md-header .btn-inverse { font-size: 14px; }

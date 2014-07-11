@@ -39,11 +39,11 @@ module.exports = (function() {
 		
 		this.controller
 			//when there is an error
-			.once('{TEMPORARY}-remove-error', _error.bind(this))
+			.once('{SLUG}-remove-error', _error.bind(this))
 			//when it is successfull
-			.once('{TEMPORARY}-remove-success', _success.bind(this))
-			//Now call to remove the {TEMPORARY}
-			.trigger('{TEMPORARY}-remove', this.controller, this.request.variables[0]);
+			.once('{SLUG}-remove-success', _success.bind(this))
+			//Now call to remove the {SINGULAR}
+			.trigger('{SLUG}-remove', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
@@ -55,9 +55,9 @@ module.exports = (function() {
 			message: error.message });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('{TEMPORARY}-remove-success');
+		this.controller.unlisten('{SLUG}-remove-success');
 		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	var _success = function(row) {
