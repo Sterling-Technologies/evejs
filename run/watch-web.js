@@ -61,4 +61,7 @@ module.exports = function(eve, local, config) {
 				break;
 		}
 	});
+	
+	//trigger init
+	eve.trigger('watch-web-init', eve, local, config);
 };

@@ -61,4 +61,7 @@ module.exports = function(eve, local, config) {
 				break;
 		}
 	});
+	
+	//trigger init
+	eve.trigger('watch-control-init', eve, local, config);
 };

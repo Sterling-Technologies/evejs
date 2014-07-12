@@ -1,5 +1,5 @@
 {
-    "name" : "eve-cli",
+    "name" : "eve",
     "version" : "0.0.0",
     "description" : "Eve Builder",
     "main" : "index.js",
@@ -16,10 +16,5 @@
     "main" : "./lib/index.js",
     "bin" : {
         "eve" : "./bin/eve.js"
-    },
-    "eve" : {
-        "server"    : "/server/node/web/eve.dev/app/trunk/server/current",
-        "control"   : "/server/node/web/eve.dev/app/trunk/control/current",
-        "web"       : "/server/node/web/eve.dev/app/trunk/web/current"
     }
 }

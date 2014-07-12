@@ -24,7 +24,13 @@ var LINT_CONFIG = {
         node : true
     },
     CONTROL : {
-        globals : { define : true, controller : true, console : true },
+        globals : { 
+			define : true, 
+			controller : true, 
+			console : true, 
+			require: true,
+			Handlebars: true 
+		},
         bitwise : false,
         strict : false,
         browser : true,
@@ -32,7 +38,13 @@ var LINT_CONFIG = {
         node : false
     },
     WEB : {
-        globals : { console : true },
+        globals : {
+			define : true, 
+			controller : true, 
+			console : true, 
+			require: true,
+			Handlebars: true 
+		},
         bitwise : false,
         strict : false,
         browser : true,
@@ -75,6 +87,9 @@ require('../lib/').
         })
         .listen('install-control-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Control Installation Complete!');
+        })
+		.listen('watch-control-init', function() {
+            console.log('\x1b[32m%s\x1b[0m', 'Watching control changes ...');
         })
         .listen('watch-control-update', function(event, path, destination) {
             console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
@@ -121,6 +136,9 @@ require('../lib/').
         .listen('install-server-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Server Installation Complete!');
         })
+		.listen('watch-server-init', function() {
+            console.log('\x1b[32m%s\x1b[0m', 'Watching server changes ...');
+        })
         .listen('watch-server-update', function(event, path, destination) {
             console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
         })
@@ -162,6 +180,9 @@ require('../lib/').
         })
         .listen('install-web-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Web Installation Complete!');
+        })
+		.listen('watch-web-init', function() {
+            console.log('\x1b[32m%s\x1b[0m', 'Watching web changes ...');
         })
         .listen('watch-web-update', function(event, path, destination) {
             console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
