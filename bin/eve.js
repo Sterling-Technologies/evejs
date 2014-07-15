@@ -20,7 +20,7 @@ var lint = require('../lib/lint');
 var LINT_CONFIG = {
     SERVER : {
         bitwise : false,
-        strict : true,
+        strict : false,
         node : true
     },
     CONTROL : {
@@ -36,7 +36,7 @@ var LINT_CONFIG = {
         browser : true,
         jquery : true,
         node : false
-    },
+    }, 
     WEB : {
         globals : {
 			define : true, 
