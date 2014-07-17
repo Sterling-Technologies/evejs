@@ -207,11 +207,11 @@ define(function() {
 	 	var update_id 		=  window.location.pathname.split('/')[3];
 	 	
 	 	// listen for post update
-		controller.once('post-updated', function(e, data) {
+		controller.once('post-updated', function(e, res) {
 			// build the request url
 			var url 	= controller.getServerUrl() + '/categorypost/update/'+update_id;
 				
-			var postData = { _category: data.category, _post: update_id };
+			var postData = { _category: res.category, _post: update_id };
 			$.post(url, postData, function(response) {
 				//updated success
 			}.bind(this));

@@ -12,7 +12,7 @@ define(function() {
 	var $ 		     = jQuery;
 	var selectFlag   = false;
 	var lastInserted = '';
-	var parentName 	 = '';
+	var tree 	 	 = [];
 
 	/* Loader
 	-------------------------------*/
@@ -39,92 +39,28 @@ define(function() {
 
 	/* Private Methods
 	------------------------------*/
-
-	/**
-	 * Build the widget box for this plugin
-	 *
-	 */
 	var selectBox = function() {
 		//build the request url
 		var requestUrl = controller.getServerUrl() + '/category/list/';
 
-		// create the initial selecbox
-		var result = '<div class="widget-box panel-primary">';
-		result += '<div class="widget-header header-color-red"><h5>Category<h5></div>';
-		result += '<div class="widget-body"><div class="widget-main">';
-		result += '<div>';
-		result += '<div><h6>Categories</h6><div><select multiple name="category[]" class="width-80 chosen-select" id="form-field-select-4" data-placeholder="Choose a category...">';
+		var categories = {};
+		// ajax request, get all category
+		$.ajax({
+	    	url 		: requestUrl,
+	    	async 		: false,
+	    	dataType 	: 'json',
+	    	success 	: function(data) {
+	    		categories = data.results;
+	    	}
+	    });
 
-		var categories;
 
-		var getCat = function() {
-			// ajax request, get all category
-			$.ajax({
-		    	url: requestUrl,
-		    	async: false,
-		    	dataType: 'json',
-		    	success: function(data) {
-		    		categories = data.results;
-		    	}
-		    });
-		};
-
-		var _getParentCategory = function(parentId) {
-			var requestUrl = controller.getServerUrl() + '/category/detail/' + parentId;
-
-			// get the parent of this child categories
-			$.ajax({
-		    	url: requestUrl,
-		    	async: false,
-		    	dataType: 'json',
-		    	success: function(data) {
-		    		var results = data.results;
-
-		    		// get the parent name
-					parentName = results.name + ' > ' + parentName;
-
-					// recursion base case
-					if(results.parent == 'undefined') {
-						return parentName;
-					}
-
-					// recursive case
-					// it will run except when the parent category is undefined
-					return _getParentCategory(results.parent);
-		    	}
-		    });
-		}
-
-		getCat();
-		// create options by iterating through each category
-		$.each(categories, function(key, data) {
-			// check for parent categories
-			if(data.parent == 'undefined') {
-				result += '<option value="' + data._id + '">' + data.name + '</option>';
-			} else {
-				// get the parents
-				_getParentCategory(data.parent)
-				result += '<option value="' + data._id + '" label="' + data.name + '">' + parentName + data.name + '</option>';
-			}
-
-			// reset the parents
-			parentName = '';
-		});
-
-		// concatenate the endings
-		result += '</select>';
-		result += '</div></div>';
-		result += '</div>';
-		result += '</div>';
+		var result = _getCategoryPostTemplate(categories);
 
 		// return the result
 		return result;
 	};
 
-	/**
-	 * Create Post hack, check if the user is creating a post
-	 * and listens if the form was submitted and successfully stored
-	 */
 	var _createPost = function(next) {
 		// reset the flag for the selectbox
 		selectFlag = false;
@@ -151,28 +87,29 @@ define(function() {
 			});
 			//template for chosenjs
 			var which = parseInt(2);
-			if(which == 2) $('#form-field-select-4').addClass('tag-input-style');
-			else $('#form-field-select-4').removeClass('tag-input-style');
+			if(which == 2) {
+				$('#form-field-select-4').addClass('tag-input-style');
+				return;
+			}
 			
+			$('#form-field-select-4').removeClass('tag-input-style');
+			return;
 		});
 
 		next();
 	};
 
-	/**
-	 * Will process the data for creating a new post
-	 * this will create the link
-	 */
-	 var _process = function(next) {
+	var _process = function(next) {
 	 	// listen for post update
 		controller.listen('post-created', function(e, res) {
-			var url 	= controller.getServerUrl() + '/categorypost/create/';
 			
-			if(lastInserted !== res._post) {
-				$.post(url, res, function(response) {
-					lastInserted = res._post;
-					// category-post link created
-					console.log(response);
+			var url 	= controller.getServerUrl() + '/categorypost/create/';
+			// build the postdata that would be pass on the api server
+			var postData = { _category: res.data.category, _post: res._post };
+			
+			if(lastInserted !== postData._post) {
+				$.post(url, postData, function(response) {
+					lastInserted = postData._post;
 				}.bind(this));
 			}
 			
@@ -181,8 +118,88 @@ define(function() {
 			next();
 		});
 
-	 };
+	};
 
+	var _getCategoryPostTemplate = function(categories) {
+	 	// create the initial selecbox
+		var result = '<div class="widget-box panel-primary">' + 
+					 '<div class="widget-header header-color-red"><h5>Category</h5></div>' +
+					 '<div class="widget-body"><div class="widget-main">' +
+					 '<div><div><h6>Categories</h6><div>' + 
+					 '<select multiple name="category[]" class="width-80 chosen-select" id="form-field-select-4" data-placeholder="Choose a category...">';
+
+		// iterate on each category
+		// on list
+		for(var i in categories) {
+			// temp handler
+			var category = '';
+			// current category id
+			var id 		 = categories[i].id;
+			// parent category id
+			var parent 	 = categories[i].parent;
+			// current category
+			var current  = categories[i].name;
+
+			// if the category has no parent
+			if(parent === 'undefined') {
+				result += '<option value="' + id + '">' + current + '</option>';
+				continue;
+			}
+
+			// push current category on
+			// queue
+			tree.push(current);
+			// traverse and find current category's
+			// child
+			category = _traverseCategory(parent, categories);
+			// clear out category queue
+			tree = [];
+
+			// append html
+			result += '<option value="' + id + '" label="' + current + '">' + category + '</option>'
+
+		}
+
+		// append ending tags
+		result += '</select></div></div></div></div>';
+
+		return result;
+	};
+
+	var _traverseCategory = function(parent, categories) {
+		// find out given category
+		// parent
+		for(var i in categories) {
+			// current category id
+			var id 	 = categories[i]._id;
+			// current category parent
+			var root = categories[i].parent;
+			// current category name
+			var name = categories[i].name;
+
+			// if current id is
+			// equal to the given
+			// parent id
+			if(id == parent) {
+				// push it into our queue
+				tree.push(name);
+				// it means that we need to
+				// re-call this function again
+				return _traverseCategory(root, categories);
+			}
+
+			// if parent of current category
+			// is undefined, it means this is
+			// the root category
+			if(parent === 'undefined') {
+				// reverse queue, then join using
+				// > seperator
+				tree = tree.reverse().join(' > ');
+				// return category tree
+				return tree;
+			}
+		}
+	};
 
 	return c;	
 });

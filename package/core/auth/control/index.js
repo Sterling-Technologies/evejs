@@ -52,12 +52,12 @@ controller
 	// modify url to dynamically
 	// add access token in every
 	// server request.
-	$.ajaxPrefilter(function(options, original, jqxhr) {
+	$.ajaxPrefilter(function(options, original) {
 		// Get Requested url
 		var url  	= original.url;
 
 		// If requested url is auth
-		if(url.indexOf('/auth') == 0 || url.indexOf('/auth/') == 0) {
+		if(url.indexOf('/auth') === 0 || url.indexOf('/auth/') === 0) {
 			// There's no need to modify
 			// the request.
 			return;
@@ -85,7 +85,7 @@ controller
 		// We will only need to modify
 		// app server request, other request
 		// will no need to be modified
-		if(server == target) {
+		if(server === target) {
 			// Get user session
 			var session = $.cookie('__acc');
 

@@ -41,7 +41,6 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
-			.then(_setCountries)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -54,7 +53,6 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
@@ -213,14 +211,6 @@ define(function() {
 			
 			next();
 	   }.bind(this));
-	};
-	
-	var _setCountries = function(next) {
-		var self = this;
-		require([controller.path('config') + '/countries.js'], function(countries) {
-			self.countries = countries;
-			next();
-		});
 	};
     
     /* Adaptor

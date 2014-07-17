@@ -1,4 +1,6 @@
 module.exports = function() { 
+	'use strict';
+	
 	//set a goto handler incase other packages
 	//want to access this
 	this.auth = function() {
@@ -23,7 +25,7 @@ module.exports = function() {
 			//loop through files  
 			for(var callback, i = 0; i < files.length; i++) {
 				//accept only js
-				if(files[i].getExtension() != 'js') {
+				if(files[i].getExtension() !== 'js') {
 					continue;
 				}
 				
@@ -31,7 +33,7 @@ module.exports = function() {
 				callback = require(files[i].path);
 				
 				//only listen if it is a callback
-				if(typeof callback != 'function') {
+				if(typeof callback !== 'function') {
 					continue;
 				}
 				
@@ -46,7 +48,7 @@ module.exports = function() {
 		var authenticate = false;
 
 		//if path does not starts with /auth
-		if(request.path != '/auth' && request.path.indexOf('/auth/') !== 0) {
+		if(request.path !== '/auth' && request.path.indexOf('/auth/') !== 0) {
 			authenticate = true;
 		}
 

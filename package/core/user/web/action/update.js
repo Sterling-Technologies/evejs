@@ -41,7 +41,6 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
-			.then(_setCountries)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -54,7 +53,6 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
 		var post = controller.getPost();
 		
@@ -156,7 +154,10 @@ define(function() {
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
-				
+			
+			// fire this event whenever the update page of user is available and fully loaded
+			controller.trigger('user-update-ready');
+
 			next();
 		}.bind(this));
     };
@@ -249,14 +250,6 @@ define(function() {
 			
 			next();
 	   }.bind(this));
-	};
-	
-	var _setCountries = function(next) {
-		var self = this;
-		require([controller.path('config') + '/countries.js'], function(countries) {
-			self.countries = countries;
-			next();
-		});
 	};
     
     /* Adaptor

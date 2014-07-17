@@ -117,16 +117,20 @@ define(function() {
         var templates = [
         'text!' + controller.path('post/template') +  '/form.html',
         'text!' + controller.path('post/template') +  '/form/publish.html',
-        'text!' + controller.path('post/template') +  '/form/copy.html'];
+        'text!' + controller.path('post/template') +  '/form/copy.html',
+        'text!' + controller.path('post/template') +  '/form/revision.html'];
 
-        //require form templates
+         //require form templates
         //assign it to main form
-        require(templates, function(form, publish, copy) {
+        require(templates, function(form, publish, copy, revision) {
             //load publish form template 
             this.data.publish = Handlebars.compile(publish)(this.data);
 
             //load copy form template
             this.data.copy = Handlebars.compile(copy)(this.data);
+
+            //load the revision
+            this.data.revision = Handlebars.compile(revision)(this.data.post);
 
 			//render the body
 			var body = Handlebars.compile(form)(this.data);
@@ -209,7 +213,7 @@ define(function() {
 
 				// fire an event to notify listeners that
 				// a post have been modified
-				controller.trigger('post-updated', this.data.post.category);
+				controller.trigger('post-updated', this.data.post);
 				
 				//no need to next since we are redirecting out
 				return;

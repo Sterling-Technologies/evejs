@@ -5,8 +5,8 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'Login';
-	public.template 	= controller.path('auth/template') + '/index.html';
+	public.title 	= 'Login';
+	public.template = controller.path('auth/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -72,12 +72,12 @@ define(function() {
 			password = $('label#password input'),
 			valid    = true;
 
-		if(username.val().length == 0) {
+		if(username.val().length === 0) {
 			_setError('username');
 			valid = false;
 		}
 
-		if(password.val().length == 0) {
+		if(password.val().length === 0) {
 			_setError('password');
 			valid = false;
 		}
@@ -86,12 +86,12 @@ define(function() {
 	};
 
 	var _setError = function(field) {
-		if(field == 'username') {
+		if(field === 'username') {
 			$('label#username').addClass('has-error');
 			return;
 		}
 
-		if(field == 'password') {
+		if(field === 'password') {
 			$('label#password').addClass('has-error');
 			return;
 		}
@@ -117,7 +117,8 @@ define(function() {
 				// If there is an error
 				if(response.error) {
 					// Set Field error
-					_setError('username'), _setError('password');
+					_setError.call(null, 'username'); 
+					_setError.call(null, 'password');
 
 					// Notify that there is an error
 					controller.notify('Error', response.message, 'error');

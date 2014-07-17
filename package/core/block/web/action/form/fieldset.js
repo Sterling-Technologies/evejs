@@ -68,7 +68,7 @@ define(function() {
 		
 		//add the ace admin class
 		this.data.attributes = _addAttribute(
-		this.data.attributes, 'class', 'form-group');
+		this.data.attributes, 'class', 'form-group clearfix');
 		
 		if(this.data.error) {
 			this.data.attributes = _addAttribute(

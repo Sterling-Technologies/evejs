@@ -5,8 +5,8 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.template 	= controller.path('auth/template') + '/nav.html';
-	public.data = {};
+	public.template = controller.path('auth/template') + '/nav.html';
+	public.data 	= {};
 
 	/* Private Properties
 	-------------------------------*/
@@ -77,7 +77,7 @@ define(function() {
 			var nav = $('ul.nav.ace-nav').find('li.nav-user');
 
 			// If nav does not exists
-			if(nav.length == 0) {
+			if(nav.length === 0) {
 				// Inject user nav into right nav
 				$('ul.nav.ace-nav').append(body);
 			}

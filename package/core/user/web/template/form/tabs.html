@@ -1,3 +1,7 @@
 <li{{#when url 'startsWith' '/user/update'}} class="active"{{/when}}>
-<a href="/user/update/{{id}}">
+<a href="#profile">
 <i class="green icon-edit bigger-125"></i>Basic Info</a></li>
+
+<li{{#when url 'startsWith' '/user/update'}} {{/when}}>
+<a href="#post">
+<i class="green icon-edit bigger-125"></i>Posts</a></li>

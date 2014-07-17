@@ -166,11 +166,14 @@ define(function() {
 	 var _process = function(next) {
 	 	// listen for post update
 		controller.listen('post-created', function(e, res) {
-			var url 	= controller.getServerUrl() + '/categorypost/create/';
 			
-			if(lastInserted !== res._post) {
-				$.post(url, res, function(response) {
-					lastInserted = res._post;
+			var url 	= controller.getServerUrl() + '/categorypost/create/';
+			// build the postdata that would be pass on the api server
+			var postData = { _category: res.data.category, _post: res._post };
+			
+			if(lastInserted !== postData._post) {
+				$.post(url, postData, function(response) {
+					lastInserted = postData._post;
 					// category-post link created
 					console.log(response);
 				}.bind(this));

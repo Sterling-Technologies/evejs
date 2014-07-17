@@ -1,0 +1,45 @@
+<section class="user-list">
+    <!-- START: BULK FORM -->
+    <form action="/user/bulk" method="post" class="form-inline bulk-form">
+        <!-- START: i18n HEADER TITLE -->
+        <div class="table-header">
+            Showing all notifications
+        </div>
+        <!-- END: i18n HEADER TITLE -->
+        <div class="table-responsive">
+            {{#if notifications}}
+            <!-- START: POST TABLE -->
+            <table class="table table-striped">
+                <!-- <thead>
+                    <tr>
+                        <th>Details</th>
+                        <th>Date</th>
+                    </tr>
+                </thead> -->
+                <tbody>
+                    {{#each notifications}}
+                        <tr>
+                            <td colspan="2"><strong>{{@key}}</strong></td>
+                        </tr>
+                        {{#each this}}
+                        <tr>
+                            <td>
+                                <i class="btn btn-xs btn-primary icon-user"></i> 
+                                &nbsp; {{{details}}}
+                                &nbsp;
+                                <small>at {{created}}</small>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    {{/each}}
+                </tbody>
+            </table>
+            {{else}}
+            <!-- END: POST TABLE -->
+            <!-- START: NO RESULTS -->
+            <div class="well no-results">You don't have any notifications received yet</div>
+            <!-- END: NO RESULTS -->
+            {{/if}}
+        </div>
+    </form>
+</section>
