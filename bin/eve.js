@@ -14,9 +14,59 @@
 /**
  * Module Dependencies
  */
+var cli = require('cli');
+var prompt = require('prompt');
 var eden = require('edenjs');
+var _ = require('underscore');
 var lint = require('../lib/lint');
 
+/**
+ * CLI Settings
+ */
+cli.parse(null, {
+    init : ['Creates an eve package.json'],
+    install : [
+        'Install the evejs',
+        'Alias for `eve install all`.',
+        'Arguments: all, web, control, server'
+    ],
+    watch : [
+        'Watches the evejs packages',
+        'Alias for `eve watch all`.',
+        'Arguments: all, web, control, server'
+    ],
+    generate : [
+        'Generates a control view and server controllers from schema.',
+        'Argument: schema path'
+    ]
+});
+
+/**
+ * Prompt Settings
+ */
+prompt.message = '';
+prompt.delimiter = '';
+var promptProps = [
+    {
+        name : 'server',
+        description : 'Eve server path (default: src/server):',
+        type : 'string'
+    },
+    {
+        name : 'control',
+        description : 'Eve control environment path (default: src/control):',
+        type : 'string'
+    },
+    {
+        name : 'web',
+        description : 'Eve web environment path (default: src/web):',
+        type : 'string'
+    }
+];
+
+/**
+ * LINT Config
+ */
 var LINT_CONFIG = {
     SERVER : {
         bitwise : false,
@@ -24,27 +74,27 @@ var LINT_CONFIG = {
         node : true
     },
     CONTROL : {
-        globals : { 
-			define : true, 
-			controller : true, 
-			console : true, 
-			require: true,
-			Handlebars: true 
-		},
+        globals : {
+            define : true,
+            controller : true,
+            console : true,
+            require : true,
+            Handlebars : true
+        },
         bitwise : false,
         strict : false,
         browser : true,
         jquery : true,
         node : false
-    }, 
+    },
     WEB : {
         globals : {
-			define : true, 
-			controller : true, 
-			console : true, 
-			require: true,
-			Handlebars: true 
-		},
+            define : true,
+            controller : true,
+            console : true,
+            require : true,
+            Handlebars : true
+        },
         bitwise : false,
         strict : false,
         browser : true,
@@ -53,17 +103,21 @@ var LINT_CONFIG = {
     }
 };
 
+/**
+ * Catches unspected errors.
+ */
 process.on('uncaughtException', function(err) {
     console.log('Uncaught Error: %s\n\t%s', err.name, err.stack);
 });
 
+/**
+ * Paths
+ */
 var local = process.env.PWD || process.cwd(),
         //NOTE: maybe find a better way to find the root folder
-        root = process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
-        action = process.argv[2] || 'watch',
-        section = process.argv[3] || 'all';
+        root = process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length);
 
-require('../lib/').
+var evejs = require('../lib/').
         setRoot(root).
         listen('error', function(message) {
             console.log('\x1b[31m%s\x1b[0m', message);
@@ -88,7 +142,7 @@ require('../lib/').
         .listen('install-control-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Control Installation Complete!');
         })
-		.listen('watch-control-init', function() {
+        .listen('watch-control-init', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Watching control changes ...');
         })
         .listen('watch-control-update', function(event, path, destination) {
@@ -136,7 +190,7 @@ require('../lib/').
         .listen('install-server-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Server Installation Complete!');
         })
-		.listen('watch-server-init', function() {
+        .listen('watch-server-init', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Watching server changes ...');
         })
         .listen('watch-server-update', function(event, path, destination) {
@@ -181,7 +235,7 @@ require('../lib/').
         .listen('install-web-complete', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Web Installation Complete!');
         })
-		.listen('watch-web-init', function() {
+        .listen('watch-web-init', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Watching web changes ...');
         })
         .listen('watch-web-update', function(event, path, destination) {
@@ -243,6 +297,89 @@ require('../lib/').
         .listen('generate-step-complete', function(packageName) {
             console.log('\x1b[33m%s\x1b[0m',
                     'Generating ' + packageName + ' Complete!');
-        })
+        });
 
-        .run(local, action, section);
+/**
+ * Process the CLI command
+ */
+var action = cli.command || 'watch';
+switch (action) {
+    case 'init':
+        var packageFile = eden('file', local + '/package.json');
+
+        if (!packageFile.isFile()) {
+            cli.fatal('Cannot open package.json.' +
+                    ' Type `npm init` to create one.');
+            break;
+        }
+
+        prompt.start();
+        cli.info('This utility will walk you through creating a eve package.json file.');
+
+        prompt.get(promptProps, function(err, result) {
+            if (err) {
+                return 1;
+            }
+
+            packageFile.getContent(function(err, content) {
+                if (err) {
+                    throw err;
+                }
+
+                content = JSON.parse(content.toString());
+                content.eve = {
+                    'server' : result.server || 'src/server',
+                    'control' : result.control || 'src/control',
+                    'web' : result.web || 'src/web'
+                };
+
+                content.lint_config = {
+                    server : LINT_CONFIG.SERVER,
+                    control : LINT_CONFIG.CONTROL,
+                    web : LINT_CONFIG.WEB
+                };
+
+                content = JSON.stringify(content, null, 4);
+
+                packageFile.setContent(content, function(err) {
+                    if (err) {
+                        throw err;
+                    }
+
+                    cli.ok('package.json updated');
+                });
+            });
+        });
+        break;
+    case 'install':
+    case 'watch':
+    case 'generate':
+        var packageFile = eden('file', local + '/package.json');
+
+        if (packageFile.isFile()) {
+            packageFile.getContent(function(err, content) {
+                if (err) {
+                    throw err;
+                }
+
+                content = JSON.parse(content.toString());
+
+                var config = { };
+
+                if (content.lint_config) {
+                    for (var env in content.lint_config) {
+                        if (content.lint_config.hasOwnProperty(env)) {
+                            var newEnv = env.toUpperCase();
+                            config[newEnv] = content.lint_config[env];
+                        }
+                    }
+                }
+
+                _.extend(LINT_CONFIG, config);
+            });
+        }
+
+        var section = cli.args.shift() || 'all';
+        evejs.run(local, action, section);
+        break;
+}

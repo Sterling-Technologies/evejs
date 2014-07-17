@@ -1,20 +1,62 @@
 {
-    "name" : "eve",
-    "version" : "0.0.0",
-    "description" : "Eve Builder",
-    "main" : "index.js",
-    "scripts" : {
-        "test" : "echo \"Error: no test specified\" && exit 1"
+    "name": "eve",
+    "version": "0.0.0",
+    "description": "Eve Builder",
+    "main": "./lib/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author" : "Christian Blanquera",
-    "license" : "MIT",
-    "dependencies" : {
-        "edenjs" : "0.0.2",
-        "chokidar" : "0.8.2",
-        "jshint" : "2.5.2"
+    "author": "Christian Blanquera",
+    "license": "MIT",
+    "dependencies": {
+        "edenjs": "0.0.2",
+        "chokidar": "0.8.2",
+        "jshint": "2.5.2",
+        "cli": "0.6.3",
+        "prompt": "0.2.13",
+        "underscore": "1.6.0"
     },
-    "main" : "./lib/index.js",
-    "bin" : {
-        "eve" : "./bin/eve.js"
+    "bin": {
+        "eve": "./bin/eve.js"
+    },
+    "eve": {
+        "server": "src/server",
+        "control": "src/control",
+        "web": "src/web"
+    },
+    "lint_config": {
+        "server": {
+            "bitwise": false,
+            "strict": false,
+            "node": true
+        },
+        "control": {
+            "globals": {
+                "define": true,
+                "controller": true,
+                "console": true,
+                "require": true,
+                "Handlebars": true
+            },
+            "bitwise": false,
+            "strict": false,
+            "browser": true,
+            "jquery": true,
+            "node": false
+        },
+        "web": {
+            "globals": {
+                "define": true,
+                "controller": true,
+                "console": true,
+                "require": true,
+                "Handlebars": true
+            },
+            "bitwise": false,
+            "strict": false,
+            "browser": true,
+            "jquery": true,
+            "node": false
+        }
     }
 }
