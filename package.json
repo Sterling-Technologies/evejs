@@ -18,45 +18,5 @@
     },
     "bin": {
         "eve": "./bin/eve.js"
-    },
-    "eve": {
-        "server": "src/server",
-        "control": "src/control",
-        "web": "src/web"
-    },
-    "lint_config": {
-        "server": {
-            "bitwise": false,
-            "strict": false,
-            "node": true
-        },
-        "control": {
-            "globals": {
-                "define": true,
-                "controller": true,
-                "console": true,
-                "require": true,
-                "Handlebars": true
-            },
-            "bitwise": false,
-            "strict": false,
-            "browser": true,
-            "jquery": true,
-            "node": false
-        },
-        "web": {
-            "globals": {
-                "define": true,
-                "controller": true,
-                "console": true,
-                "require": true,
-                "Handlebars": true
-            },
-            "bitwise": false,
-            "strict": false,
-            "browser": true,
-            "jquery": true,
-            "node": false
-        }
     }
 }
