@@ -54,7 +54,7 @@ define(function() {
 		batch.push({ url: _getAllCountRequest.call(this, query) });
 		
 		$.post(
-			controller.getServerUrl() + '/addressuser/batch', 
+			controller.getServerUrl() + '/address/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
@@ -133,6 +133,35 @@ define(function() {
 		query.filter 	= request.filter 	|| {};
 		query.range		= request.range 	|| this.range;
 		query.start 	= request.start 	|| this.start;
+		query.join		= { user: this.id };
+		
+		/**
+		User: 
+		
+		{
+			_id: asldjka987das89duaodsj,
+			name: John Doe,	
+			...
+			address: [
+				{ _id: 123k2k3j12k3j1k3j3 },
+				{ _id: 123k2k3j12k3j1k3j4 },
+				{ _id: 123k2k3j12k3j1k3j5 }
+			]
+		}
+		
+		Address:
+		{
+			_id: asldjka987das89duaodsj,
+			street: 123 Sesame Street,
+			user: [{ _id: asldjka987das89duaodsj }]
+		}
+		
+		public.joinTo = function(collection, id) {
+			
+		};
+		
+		*/
+		
 		
 		if(request.page) {
 			query.start = (request.page - 1) * this.range;
@@ -154,7 +183,7 @@ define(function() {
 				break;
 		}
 		
-		return '/addressuser/list?' + $.hashToQuery(query);
+		return '/address/list?' + $.hashToQuery(query);
 	};
 	
 	var _getAllCountRequest = function(request) {
