@@ -6,6 +6,8 @@ controller
 		.path('addressuser'				, controller.path('package') + '/core/addressuser')
 		.path('addressuser/action'		, controller.path('package') + '/core/addressuser/action')
 		.path('addressuser/template'	, controller.path('package') + '/core/addressuser/template');
+		
+	controller.trigger('address-user-init');
 })
 
 //when the user update has been rendered
@@ -35,7 +37,7 @@ controller
 	route.path = controller.path('addressuser/action') + '/index.js';
 	
 	//event when the user address action is about to render
-	controller.trigger('user-address-action-index-before', route);
+	controller.trigger('address-user-action-index-before', route);
 })
 
 //when the user index is about to render
@@ -50,5 +52,5 @@ controller
 	//at this point the path is /user/address
 	
 	//event when the user address action has rendered
-	controller.trigger('user-address-action-index-after', route);
+	controller.trigger('address-user-action-index-after', route);
 });
