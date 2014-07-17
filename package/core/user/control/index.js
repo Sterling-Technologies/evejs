@@ -8,35 +8,8 @@ controller
 		.path('user/asset'		, controller.path('package') + '/core/user/asset')
 		.path('user/template'	, controller.path('package') + '/core/user/template');
 
-	// actions
-	controller.user = { 
-		actions : [
-			{
-				action : controller.path('user/action') + '/create.js',
-				path   : '/user/create'
-			},
-			{
-				action : controller.path('user/action') + '/update.js',
-				path   : '/user/update'
-			},
-			{
-				action : controller.path('user/action') + '/remove.js',
-				path   : '/user/remove'
-			},
-			{
-				action : controller.path('user/action') + '/restore.js',
-				path   : '/user/restore'
-			},
-			{
-				action : controller.path('user/action') + '/bulk.js',
-				path   : '/user/bulk'
-			}
-		]
-	};
-
 	controller.trigger('user-init');
 })
-
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
 	// event when the user menu is starting
@@ -55,13 +28,6 @@ controller
 	// event when the user menu is finished
 	controller.trigger('user-menu-after');
 })
-
-// when other packages wants to inject an
-// action
-.listen('user-add-action', function(e, callback) {
-	controller.user.actions.push(callback()[0]);
-})
-
 //when a url request has been made
 .listen('request', function() {
 	//event when the user request is starting
@@ -72,21 +38,39 @@ controller
 		//we don't care about it
 		return;
 	}
-
-	var actions  = controller.user.actions;
-	var action 	 = controller.path('user/action') + '/index.js';
-
-	// for each actions
-	for(var i in actions) {
-		if(window.location.pathname.indexOf(actions[i].path) === 0) {
-			action = actions[i].action;
+	
+	//router -> action
+	var route = { action: 'index' };
+	
+	switch(true) {
+		case window.location.pathname.indexOf('/user/create') === 0:
+			route.action = 'create';
 			break;
-		}
+		case window.location.pathname.indexOf('/user/update') === 0:
+			route.action = 'update';
+			break;
+		case window.location.pathname.indexOf('/user/remove') === 0:
+			route.action = 'remove';
+			break;
+		case window.location.pathname.indexOf('/user/restore') === 0:
+			route.action = 'restore';
+			break;
+		case window.location.pathname.indexOf('/user/bulk') === 0:
+			route.action = 'bulk';
+			break;
 	}
-
+	
+	route.path = controller.path('user/action') + '/' + route.action + '.js';
+	
+	//event when the user action is about to render
+	controller.trigger('user-action-' + route.action + '-before', route);
+	
 	//load up the action
-	require([action], function(action) {
+	require([route.path], function(action) {
 		action.load().render();
+		
+		//event when the user action is rendered
+		controller.trigger('user-action-' + route.action + '-after', route);
 	});
 
 	// event when the user request is finished
