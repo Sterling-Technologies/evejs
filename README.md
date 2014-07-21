@@ -2,7 +2,9 @@
 
   A package management framework for for [node](http://nodejs.org).
 
-# WARNING: Eve is in development and has not passed testing. DO NOT USE IN LIVE ENVIRONMENTS!
+```
+WARNING: Eve is in development and has not passed testing. DO NOT USE IN LIVE ENVIRONMENTS!
+```
 
 ### Installation
 
