@@ -86,4 +86,4 @@ eve watch
 3. Make your code changes. Always make sure to sign-off (-s) on all commits made (git commit -s -m "Commit message")
 4. Once you've committed all the code to this branch, push the branch to your *FORKED EVE REPOSITORY* (git push fork bugfix/fix-server-post)
 5. Go back to your *FORKED EVE REPOSITORY* on GitHub and submit a pull request.
-6. Someone from our will review your code and merge it in when it has been classified as suitable.
+6. Someone from our team will review your code and merge it in when it has been classified as suitable.
