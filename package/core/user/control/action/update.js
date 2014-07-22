@@ -13,7 +13,7 @@ define(function() {
         path: '/user',
         icon: 'user', 
         label: 'Users' 
-    }, {  label: 'Create User' }];
+    }, {  label: 'Update User' }];
 	
     public.data     = {};
 	
@@ -116,13 +116,12 @@ define(function() {
         'text!' + controller.path('user/template') +  '/form/contact.html',
         'text!' + controller.path('user/template') +  '/form/picture.html',
         'text!' + controller.path('user/template') +  '/form/required.html',
-        'text!' + controller.path('user/template') +  '/form/tabs.html',
         'text!' + controller.path('user/template') +  '/form/social.html'];
 
         //require form templates
         //assign it to main form
         require(templates, function(form, basic, company, 
-		contact, picture, required, tabs, social) {
+		contact, picture, required, social) {
             //load basic form template 
             this.data.basic = Handlebars.compile(basic)(this.data);
 
@@ -137,9 +136,6 @@ define(function() {
 
             //load required form template
             this.data.required = Handlebars.compile(required)(this.data);
-
-            //load tabs template
-            this.data.tabs = Handlebars.compile(tabs)(this.data);
 
             //load social form template
             this.data.social = Handlebars.compile(social)(this.data);

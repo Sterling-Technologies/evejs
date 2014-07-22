@@ -40,8 +40,7 @@ controller
 	}
 	
 	//router -> action
-	var route = { action: 'index' };
-	
+	var route = { action: null };
 	switch(true) {
 		case window.location.pathname.indexOf('/user/create') === 0:
 			route.action = 'create';
@@ -58,6 +57,15 @@ controller
 		case window.location.pathname.indexOf('/user/bulk') === 0:
 			route.action = 'bulk';
 			break;
+		case window.location.pathname === '/user':
+			route.action = 'index';
+			break;
+	}
+
+	// if there is no route
+	if(!route.action) {
+		// just do nothing
+		return;
 	}
 	
 	route.path = controller.path('user/action') + '/' + route.action + '.js';
@@ -75,4 +83,21 @@ controller
 
 	// event when the user request is finished
 	controller.trigger('user-request-after');
+})
+
+// when body is fully loaded
+.listen('body', function() {
+	var url = window.location.pathname;
+	var id  = controller.getUrlSegment(-1);
+
+	// if tab is already rendered
+	if(jQuery('section.user-update ul.nav-tabs li.user-profile-tab').length !== 0) {
+		// just do nothing
+		return;
+	}
+
+	require(['text!' + controller.path('user/template') + '/form/tabs.html'], function(html) {
+		html = Handlebars.compile(html)({ id : id, url : url });
+		jQuery('section.user-update ul.nav.nav-tabs').prepend(html)
+	});
 });

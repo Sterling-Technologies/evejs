@@ -26,6 +26,9 @@ controller
 		case window.location.pathname.indexOf('/user/address/create') === 0:
 			route.action = 'create';
 			break;
+		case window.location.pathname.indexOf('/user/address/update') === 0:
+			route.action = 'update';
+			break;
 		case window.location.pathname.indexOf('/user/address') === 0:
 			route.action = 'index';
 			break;

@@ -5,18 +5,18 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating Address';
-    public.header       = 'Updating Address';
-    public.subheader    = 'Update Address';
+    public.title        = 'Updating Address Book';
+    public.header       = 'Updating Address Book';
+    public.subheader    = 'Update Address Book';
 	
     public.crumbs = [{ 
-        path: '/address',
-        icon: 'address', 
-        label: 'Address' 
-    }, {  label: 'Update Address' }];
+        path: '/user',
+        icon: 'user', 
+        label: 'Users'
+    }, {  label: 'Update User' }];
 	
     public.data     = {};
-    public.template = controller.path('address/template') + '/form.html';
+    public.template = controller.path('address-user/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -51,9 +51,10 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
-		
+		this.data.id 		= controller.getUrlSegment(-1);
+
 		var data = controller.getPost();
-		
+
 		if(data && data.length) {
 			//query to hash
 			this.data.address = $.queryToHash(data);
@@ -74,14 +75,11 @@ define(function() {
 		
 		//if no data address set
 		if(!this.data.address) {
-			//get it from the server
-			//get address id
-			var id  =  controller.getUrlSegment(-1);
-			var url = controller.getServerUrl() + '/address/detail/' + id;
+			var id  =  controller.getUrlSegment(-2);
+			var url =  controller.getServerUrl() + '/address/detail/' + id;
 			
 			$.getJSON(url, function(response) {
 				this.data.address = response.results;
-
 				next();
 			}.bind(this));
 			
@@ -92,21 +90,17 @@ define(function() {
     };
     
     var _output = function(next) {
-		//store form templates path to array
-        var templates = [
-        'text!' + controller.path('address/template') +  '/form.html'];
-
-        require(templates, function(form) {
-			//render the body
+    	// render user address update form
+        require(['text!' + public.template], function(form) {
 			var body = Handlebars.compile(form)(this.data);
-			
-			controller 
+
+			controller
 				.setTitle(this.title)
 				.setHeader(this.header)
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
-				.setBody(body);              
-				
+				.setBody(body);
+
 			next();
 		}.bind(this));
     };
@@ -141,7 +135,7 @@ define(function() {
 	};
 	
 	var _process = function(next) {
-		var id   = controller.getUrlSegment(-1) ,
+		var id   = controller.getUrlSegment(-2) ,
 			url  = controller.getServerUrl() + '/address/update/' + id;
 		
 		//save data to database
@@ -152,9 +146,9 @@ define(function() {
 				controller				
 					//display message status
 					.notify('Success', 'Address successfully updated!', 'success')
-					//go to listing
-					.redirect('/address');
-				
+					// redirect back to address book
+					.redirect('/user/address/' + this.data.id);
+
 				//no need to next since we are redirecting out
 				return;
 			}

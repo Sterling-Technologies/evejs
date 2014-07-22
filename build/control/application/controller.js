@@ -168,8 +168,8 @@ var controller = function() {
 	public.getUrlSegment = function(index) {
 		var buffer = window.location.pathname.split('/');
 
-		if(index === -1) {
-			index = buffer.length - 1;
+		if(index < 0) {
+			index = buffer.length - Math.abs(index);
 		}
 
 		return buffer[index];
