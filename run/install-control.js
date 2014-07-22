@@ -1,17 +1,96 @@
-module.exports = function(eve, local, config) {
-	var eden = require('edenjs');
-	var exec = require('child_process').exec;
-	var paths = config.eve;
+module.exports = function(eve, local, args) {
+	var eden 	= require('edenjs');
+	var wizard 	= require('prompt');
+	var exec 	= require('child_process').exec;
 	
-	eve.trigger('install-control-step-1', eve, local, config);
+	var deployTo = null;
 	
 	eden('sequence')
+	//get paths
+	.then(function(next) {
+		var settings = eden('file', local + '/build.json');
+		
+		var setPath = function(settings, next, json) {
+			json = json || {};
+			json.control = json.control || {};
+			json.control.lint = json.control.lint || {
+				globals : {
+					define 		: true,
+					controller 	: true,
+					console 	: true,
+					require 	: true,
+					Handlebars 	: true
+				},
+				
+				bitwise : false,
+				strict 	: false,
+				browser : true,
+				jquery 	: true,
+				node 	: false
+			};
+			
+			var copy = [{
+				name 		: 'control',
+				description : 'Where should eve deploy control to ? (default: ' + local +'/deploy/control)',
+				type 		: 'string' }];
+			
+			wizard.get(copy, function(error, result) {
+				if(error) {
+					eve.trigger('error', error);
+					return;
+				}
+				
+				deployTo = json.control.path = result.control || local +'/deploy/control';
+				  
+				//write this to settings
+				settings.setContent(JSON.stringify(json, null, 4), function(error) {
+					if(error) {
+						eve.trigger('error', error);
+					}	
+					
+					next();
+				});
+			});
+		};
+		
+		//if this is a file
+		if(settings.isFile()) {
+			settings.getContent(function(error, content) {
+				if(error) {
+					eve.trigger('error', error);
+					return;
+				}
+				
+				var json = JSON.parse(content);	
+				
+				//if there is already a control path
+				if(json.control && json.control.path) {
+					deployTo = json.control.path;
+					//goto next
+					next();
+					return;
+				}
+				
+				//at this point there is no settings
+				//we need to prompt for the path
+				setPath(settings, next, json);
+			});
+			
+			return;
+		}
+		
+		//this is not a file
+		//we need to prompt for the path
+		setPath(settings, next);
+	})
 
 	// 1. Create Folder Structure in [ROOT] -X
 	.then(function(next) {
-		eden('folder', paths.control)
+		eve.trigger('install-control-step-1', eve, local, deployTo);
+		
+		eden('folder', deployTo)
 		.mkdir(0777, function() {
-			eve.trigger('install-control-step-2', eve, local, config);
+			eve.trigger('install-control-step-2', eve, local, deployTo);
 			next();
 		});
 	})
@@ -19,8 +98,8 @@ module.exports = function(eve, local, config) {
 	// 2. Copy [DEV]/build/server folder to [CONTROL]
 	.then(function(next) {
 		eden('folder', eve.root + '/build/control')
-		.copy(paths.control, function() {
-			eve.trigger('install-control-step-3', eve, local, config);
+		.copy(deployTo, function() {
+			eve.trigger('install-control-step-3', eve, local, deployTo);
 			next();
 		});
 	})
@@ -28,8 +107,8 @@ module.exports = function(eve, local, config) {
 	// 3. Copy [DEV]/config/server folder to [CONTROL]/config
 	.then(function(next) {
 		eden('folder', eve.root + '/config/control')
-		.copy(paths.control + '/application/config', function() {
-			eve.trigger('install-control-step-4', eve, local, config);
+		.copy(deployTo + '/application/config', function() {
+			eve.trigger('install-control-step-4', eve, local, deployTo);
 			next();
 		});
 	})
@@ -38,7 +117,7 @@ module.exports = function(eve, local, config) {
 	.then(function(next) {
 		eden('folder', eve.root + '/config/control')
 		.copy(local + '/config/control', function() {
-			eve.trigger('install-control-step-5', eve, local, config);
+			eve.trigger('install-control-step-5', eve, local, deployTo);
 			next();
 		});
 	})
@@ -53,7 +132,7 @@ module.exports = function(eve, local, config) {
 			for(var i = 0; i < folders.length; folders ++) {
 				// 5a. Create [VENDOR] in [CONTROL]/application/package
 				subSequence.then(function(folder, subNext) {
-					eden('folder', paths.control + '/application/package/' + folder.getName())
+					eden('folder', deployTo + '/application/package/' + folder.getName())
 						.mkdir(0777, function() {
 							subNext();
 						});	
@@ -65,18 +144,29 @@ module.exports = function(eve, local, config) {
 					for(var j = 0; j < packages.length; j++) {
 						// 5b1. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/control/ to [CONTROL]/application/package/[VENDOR]/[PACKAGE]
 						subSequence.then(function(package, subNext) {
+							var deployPackage = deployTo 
+								+ '/application/package/' 
+								+ vendor.getName() + '/' 
+								+ package.getName();
+								
 							eden('folder', package.path + '/control')
-							.copy(paths.control + '/application/package/' + vendor.getName() + '/' + package.getName(), function() {
-								subNext();
-							});
+								.copy(deployPackage, function() {
+									subNext();
+								});
 						}.bind(this, packages[j]));
 						
 						// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/control/ to caller
 						subSequence.then(function(package, subNext) {
+							var localPackage = local 
+								+ '/package/' 
+								+ vendor.getName() + '/' 
+								+ package.getName() 
+								+ '/control';
+								
 							eden('folder', package.path + '/control')
-							.copy(local + '/package/' + vendor.getName() + '/' + package.getName() + '/control', function() {
-								subNext();
-							});
+								.copy(localPackage, function() {
+									subNext();
+								});
 						}.bind(this, packages[j]));
 					}			
 				}.bind(this, folders[i]));
@@ -85,7 +175,7 @@ module.exports = function(eve, local, config) {
 			
 			//alas
 			subSequence.then(function(subNext) {
-				eve.trigger('install-control-complete', eve, local, config);
+				eve.trigger('install-control-complete', eve, local, deployTo);
 				subNext();
 				next();
 			});
