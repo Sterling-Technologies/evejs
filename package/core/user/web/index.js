@@ -1,7 +1,6 @@
 controller
 //when the application is initialized
 .listen('init', function() {
-	//comment test 2
 	//set paths
 	controller
 		.path('user'			, controller.path('package') + '/core/user')
@@ -41,30 +40,37 @@ controller
 	}
 	
 	//router -> action
-	var action = 'index';
+	var route = { action: 'index' };
+	
 	switch(true) {
 		case window.location.pathname.indexOf('/user/create') === 0:
-			action = 'create';
+			route.action = 'create';
 			break;
 		case window.location.pathname.indexOf('/user/update') === 0:
-			action = 'update';
+			route.action = 'update';
 			break;
 		case window.location.pathname.indexOf('/user/remove') === 0:
-			action = 'remove';
+			route.action = 'remove';
 			break;
 		case window.location.pathname.indexOf('/user/restore') === 0:
-			action = 'restore';
+			route.action = 'restore';
 			break;
 		case window.location.pathname.indexOf('/user/bulk') === 0:
-			action = 'bulk';
+			route.action = 'bulk';
 			break;
 	}
 	
-	action = controller.path('user/action') + '/' + action + '.js';
+	route.path = controller.path('user/action') + '/' + route.action + '.js';
+	
+	//event when the user action is about to render
+	controller.trigger('user-action-' + route.action + '-before', route);
 	
 	//load up the action
-	require([action], function(action) {
+	require([route.path], function(action) {
 		action.load().render();
+		
+		//event when the user action is rendered
+		controller.trigger('user-action-' + route.action + '-after', route);
 	});
 
 	// event when the user request is finished

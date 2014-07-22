@@ -54,15 +54,16 @@ define(function() {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
 		
-		var post = controller.getPost();
+		var data = controller.getPost();
 		
-		if(post && post.length) {
+		if(data && data.length) {
 			//query to hash
-			this.data.user = $.queryToHash(post);
+			this.data.user = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
 				controller.notify('Error', 'There was an error in the form.', 'error');
+				
 				next();
 				
 				return;
@@ -70,6 +71,8 @@ define(function() {
 			
 			//we are good to send this up
 			_process.call(this, next);
+			
+			next();
 			
 			return;
 		}

@@ -54,11 +54,11 @@ define(function() {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
 		
-		var post = controller.getPost();
+		var data = controller.getPost();
 		
-		if(post && post.length) {
+		if(data && data.length) {
 			//query to hash
-			this.data.user = $.queryToHash(post);
+			this.data.user = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -82,7 +82,6 @@ define(function() {
 			var url = controller.getServerUrl() + '/user/detail/'+id;
 			
 			$.getJSON(url, function(response) {
-				
 				//format the birth to the HTML5 date format
 				if(response.results.birthdate 
 				&& (new Date(response.results.birthdate)).getTime() > 0) {
