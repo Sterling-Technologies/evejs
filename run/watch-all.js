@@ -1,5 +1,5 @@
-module.exports = function(eve, local, config) {
-	require('./watch-server.js')(eve, local, config);
-	require('./watch-control.js')(eve, local, config);
-	require('./watch-web.js')(eve, local, config);
+module.exports = function(eve, local, args) {
+	require('./watch-server.js')(eve, local, args);
+	require('./watch-control.js')(eve, local, args);
+	require('./watch-web.js')(eve, local, args);
 };
