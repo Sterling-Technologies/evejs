@@ -8,7 +8,7 @@ define(function() {
 	public.title 		= 'Address';
 	public.header 		= 'Address';
 	public.subheader 	= 'List of Address';
-	public.crumbs 		= [{ icon: 'post', label: 'Address' }];
+	public.crumbs 		= [{ icon: 'home', label: 'Address' }];
 	public.data 		= {};
 	
 	public.start		= 0;
@@ -60,9 +60,6 @@ define(function() {
 		//3. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		
-		//4. get all count
-		batch.push({ url: _getAllCountRequest.call(this, query) });
-		
 		$.post(
 			controller.getServerUrl() + '/address/batch', 
 			JSON.stringify(batch), function(response) { 
@@ -72,21 +69,18 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-				var updated = new Date(response.batch[0].results[i].updated);
-				var created = new Date(response.batch[0].results[i].created);
-				var format = $.timeToDate(updated.getTime(), true, true);
-				var createdFormat = $.timeToDate(created.getTime(), true, true);
-                
                 //add it to row
 				rows.push({
 					id      	  : response.batch[0].results[i]._id,
-					street    	  : response.batch[0].results[i].street,
-					city    	  : response.batch[0].results[i].city,
-					province	  : response.batch[0].results[i].province,
-					country		  : response.batch[0].results[i].country,
-					active		  : response.batch[0].results[i].active,
-					created 	  : createdFormat,
-					updated		  : format });
+					label 		  : response.batch[0].results[i].label,
+					contact_name  : response.batch[0].results[i].contact_name,
+					street 		  : response.batch[0].results[i].street,
+					city 		  : response.batch[0].results[i].city,
+					state 	      : response.batch[0].results[i].state,
+					country 	  : response.batch[0].results[i].country, 
+					postal 		  : response.batch[0].results[i].postal,
+					phone 		  : response.batch[0].results[i].phone,
+					active 		  : response.batch[0].results[i].active });
             }
 			
 			var showing = query.mode || 'active';
@@ -103,7 +97,6 @@ define(function() {
 				keyword		: query.keyword || null,
 				active		: response.batch[1].results,
 				trash		: response.batch[2].results,
-				all			: response.batch[3].results,
 				range		: this.range };
             
 			next();
@@ -126,7 +119,7 @@ define(function() {
 			next();
 		}.bind(this));
 	};
-	
+
 	var _getListRequest = function(request) {
 		var query = {};
 		
@@ -143,9 +136,6 @@ define(function() {
 		}
 		
 		switch(request.mode || 'active') {
-			case 'all':
-				query.filter.active = 1;
-				break;
 			case 'active':
 				query.filter.active = 1;
 				break;
@@ -201,7 +191,7 @@ define(function() {
 
 		return '/address/list?' + $.hashToQuery(query);
 	};
-	
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

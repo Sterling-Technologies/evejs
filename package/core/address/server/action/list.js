@@ -34,7 +34,14 @@ module.exports = (function() {
 			start 	= this.request.query.start 		|| 0,
 			order 	= this.request.query.order 		|| {},
 			count	= this.request.query.count 		|| 0,
-			keyword	= this.request.query.keyword 	|| null;
+			keyword	= this.request.query.keyword 	|| null,
+			join 	= this.request.query.join 		|| null;
+
+		// if join
+		if(join && join.to && join.using) {
+			// set join as filter
+			filter[join.using] = join.value;
+		}
 		
 		if(count) {
 			this.controller.address().store().getTotal(
@@ -47,7 +54,8 @@ module.exports = (function() {
 		this.controller.address().store().getList(
 			filter, 	keyword, 
 			order, 		start, 
-			range,		_response.bind(this));
+			range, 		join,
+		_response.bind(this));
 	};
 	
 	/* Private Methods

@@ -5,18 +5,17 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating {ADDRESS}';
-    public.header       = 'Updating {ADDRESS}';
+    public.title        = 'Updating Address';
+    public.header       = 'Updating Address';
     public.subheader    = 'Update Address';
 	
     public.crumbs = [{ 
         path: '/address',
         icon: 'address', 
-        label: 'Categories' 
-    }, {  label: 'Create Address' }];
+        label: 'Address' 
+    }, {  label: 'Update Address' }];
 	
     public.data     = {};
-	
     public.template = controller.path('address/template') + '/form.html';
     
     /* Private Properties
@@ -42,8 +41,7 @@ define(function() {
         $.sequence()
 			.setScope(this) 
         	.then(_setData)
-        	.then(_output)
-			.then(_listen);
+        	.then(_output);
         
         return this;
     };
@@ -54,11 +52,11 @@ define(function() {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
 		
-		var address = controller.getPost();
+		var data = controller.getPost();
 		
-		if(address && address.length) {
+		if(data && data.length) {
 			//query to hash
-			this.data.address = $.queryToHash(address);
+			this.data.address = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -78,27 +76,12 @@ define(function() {
 		if(!this.data.address) {
 			//get it from the server
 			//get address id
-			var id =  window.location.pathname.split('/')[3];
-			var url = controller.getServerUrl() + '/address/detail/'+id;
+			var id  =  controller.getUrlSegment(-1);
+			var url = controller.getServerUrl() + '/address/detail/' + id;
 			
 			$.getJSON(url, function(response) {
-				//format the birth to the HTML5 date format
-				if(response.results.published 
-				&& (new Date(response.results.published)).getTime() > 0) {
-					//convert date format
-					var published 	= new Date(response.results.published);
-					
-					var year 	= birth.getFullYear(),
-						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
-						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
-					
-					response.results.published = [year, month, day].join('-');
-				} else {
-					response.results.published = null;
-				}
-				
 				this.data.address = response.results;
-				
+
 				next();
 			}.bind(this));
 			
@@ -115,53 +98,26 @@ define(function() {
         'text!' + controller.path('address/template') +  '/form/publish.html',
         'text!' + controller.path('address/template') +  '/form/copy.html'];
 
-        //require form templates
-        //assign it to main form
-        require(templates, function(form, publish, copy) {
-            //load publish form template 
-            this.data.publish = Handlebars.compile(publish)(this.data);
-
-            //load copy form template
-            this.data.copy = Handlebars.compile(copy)(this.data);
-
+        require(templates, function(form) {
 			//render the body
 			var body = Handlebars.compile(form)(this.data);
 			
-			controller
-				.setTitle(this.title.replace('{ADDRESS}', this.data.address.title))
-				.setHeader(this.header.replace('{ADDRESS}', this.data.address.title)) 
+			controller 
+				.setTitle(this.title)
+				.setHeader(this.header)
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
-				.setBody(body);            
+				.setBody(body);              
 				
 			next();
 		}.bind(this));
-    };
-
-    var _listen = function(next) {
-	   	$('form.package-address-form').on('keyup', 'input[name="title"]', function(e) {
-			var name = $(this);
-			//there's a delay in when the input value is updated
-			//we do this settime out to case for this
-			setTimeout(function() {
-				$('form.package-address-form input[name="slug"]').val($.trim(name.val()
-				.toLowerCase()
-				.replace(/[^a-zA-Z0-9-_ ]/g, ''))
-				.replace(/\s/g, '-')
-				.replace(/^([a-z\u00E0-\u00FC])|\-([a-z\u00E0-\u00FC])/g, function ($1) {
-					return $1.toLowerCase();
-				}));
-			}, 1);
-		});
-	   
-	    next(); 
     };
 	
 	var _valid = function() {
 		//clear errors
 		this.data.errors = {};
-		
-		//local validate
+	
+		// validate fields
 		if(!this.data.address.street || !this.data.address.street.length) {
 			this.data.errors.street = { message: 'Street name cannot be empty.'};
 		}
@@ -170,16 +126,16 @@ define(function() {
 			this.data.errors.city = { message: 'City cannot be empty.'};
 		}
 		
-		if(!this.data.address.province || !this.data.address.province.length) {
-			this.data.errors.province = { message: 'Province cannot be empty.'};
+		if(!this.data.address.state || !this.data.address.state.length) {
+			this.data.errors.state = { message: 'State cannot be empty.'};
 		}
 
 		if(!this.data.address.country || !this.data.address.country.length) {
 			this.data.errors.country = { message: 'Country cannot be empty.'};
 		}
 
-		if(!this.data.address.zipcode || !this.data.address.zipcode.length) {
-			this.data.errors.zipcode = { message: 'Zipcode cannot be empty.'};
+		if(!this.data.address.postal || !this.data.address.postal.length) {
+			this.data.errors.postal = { message: 'Postal Code cannot be empty.'};
 		}
 		
 		//if we have no errors
@@ -187,18 +143,17 @@ define(function() {
 	};
 	
 	var _process = function(next) {
-		var id 		=  window.location.pathname.split('/')[3],
-			url 	= controller.getServerUrl() + '/address/update/'+id;
-		
+		var id   = controller.getUrlSegment(-1) ,
+			url  = controller.getServerUrl() + '/address/update/' + id;
 		
 		//save data to database
 		$.post(url, this.data.address, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {		
+			if(!response.error) {
 				controller				
 					//display message status
-					.notify('Success', 'address successfully created!', 'success')
+					.notify('Success', 'Address successfully updated!', 'success')
 					//go to listing
 					.redirect('/address');
 				

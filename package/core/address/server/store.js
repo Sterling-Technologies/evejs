@@ -1,19 +1,22 @@
 module.exports = function() {
-	var c = function() {
-		this.__construct.call(this);
+	var c = function(controller) {
+		this.__construct.call(this, controller);
 	}, public = c.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
 	public.schema = {
-		street		: { type: String, required: true },
-		city		: { type: String, required: true },
-		province	: { type: String, required: true },
-		country		: { type: String, required: true },
-		zipcode		: { type: String, required: true },
-		active		: { type: Boolean, default: true },
-		created		: { type: Date, default: Date.now },
-		updated		: { type: Date, default: Date.now }
+		label 			: String,
+		contact_name 	: String,
+		street			: { type: String, required: true },
+		city			: { type: String, required: true },
+		state			: { type: String, required: true },
+		country			: { type: String, required: true },
+		postal			: { type: String, required: true },
+		phone 			: String,
+		active			: { type: Boolean, default: true },
+		created			: { type: Date, default: Date.now },
+		updated			: { type: Date, default: Date.now }
 	};
 	
 	/* Private Properties
@@ -22,9 +25,9 @@ module.exports = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	public.__load = c.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new c(controller);
 		}
 		
 		return this.__instance;
@@ -32,11 +35,13 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	public.__construct = function(controller) {
+		this.controller = controller;
+
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.definition = new schema(this.schema);
+		this.definition = new schema(this.schema, { collection : 'addresses' });
 		//NOTE: add custom schema methods here
 		
 		this.store = mongoose.model('addresses', this.definition);
@@ -44,6 +49,35 @@ module.exports = function() {
 	
 	/* Public Methods
 	-------------------------------*/
+	public.join = function(document) {
+		// load stores for dbref
+		for(var i in this.controller) {
+			if(typeof this.controller[i] === 'function' && 
+			   this.controller.hasOwnProperty(i)) {
+			  	// load store
+			  	this.controller[i]().store && this.controller[i]().store();
+			}
+		}
+
+		var schema = mongoose.Schema;
+
+		// define reference field
+		var field = {};
+		
+		// NOTE: we need to manually do this to use
+		// custom object keys before adding this to
+		// schema definition
+		field[document] = [{ _id : { type : schema.Types.ObjectId, ref : document } }];
+
+		// add reference field to schema definition
+		this.definition.add(field);
+
+		// re-define store with reference
+		this.store = mongoose.model('addresses', this.definition);
+
+		return this;
+	};
+
 	/**
 	 * Returns count based on the query
 	 *
@@ -128,12 +162,13 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.getList = function(query, keyword, order, start, range, callback) {
+	public.getList = function(query, keyword, order, start, range, join, callback) {
 		query 		= query 	|| {};
 		range 		= range 	|| 50;
 		start 		= start 	|| 0;
 		order 		= order 	|| {};
 		keyword		= keyword 	|| null;
+		join 		= join 		|| null;
 		callback	= callback 	|| function() {};
 		
 		switch(true) {
@@ -156,21 +191,29 @@ module.exports = function() {
 			case typeof arguments[4] == 'function': //range
 				callback = arguments[4];
 				range = 50;
+			case typeof arguments[5] == 'function': // join
+				callback = arguments[5];
+				join = null;
 				break;
 		}
 		
 		query = _buildQuery(query, keyword);
 
 		//now we are ready to call the query
-		var store = this.find(query)
-			.skip(start)
-			.limit(range);
+		var store = this;
+
+		if(join && join.to && join.using) {
+			store = store.join(join.to).find(query).populate(join.using);
+		} else {
+			store = store.find(query);
+		}
+		
+		store = store.skip(start).limit(range);
 		
 		for(key in order) {
 			store.sort(key, order[key] != -1 ? 1: -1);
 		}
-		
-		//query for results
+
 		store.lean().exec(callback);
 		
 		return this;
@@ -278,9 +321,9 @@ module.exports = function() {
 			or.push([
 				{ street	: new RegExp(keyword, 'ig') },
 				{ city		: new RegExp(keyword, 'ig') },
-				{ province	: new RegExp(keyword, 'ig') },
+				{ state		: new RegExp(keyword, 'ig') },
 				{ country	: new RegExp(keyword, 'ig') },
-				{ zipcode	: new RegExp(keyword, 'ig') } ]);
+				{ postal	: new RegExp(keyword, 'ig') } ]);
 		}
 		
 		

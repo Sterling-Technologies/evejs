@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function(controller) {
 	var c = function(controller) {
 		this.__construct.call(this, controller);	
 	}, public = c.prototype;
@@ -26,7 +26,7 @@ module.exports = function() {
 	/* Public Methods
 	-------------------------------*/
 	public.store = function() {
-		return store.load();
+		return store.load(this.controller);
 	};
 	
 	public.path = function(key) {

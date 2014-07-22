@@ -22,7 +22,6 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $ = jQuery;
-    var parentId;
 	
     /* Loader
     -------------------------------*/
@@ -53,19 +52,12 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		parentId =  window.location.pathname.split('/')[3];
-		
-		var address = controller.getPost();
 
-		if(address && address.length) {
-			if(parentId !== '') {
-				address = 'parent=' + parentId + '&' + address;
-			} else {
-				address = 'parent=&' + address;
-			}
+		var data = controller.getPost();
 
+		if(data && data.length) {
 			//query to hash
-			this.data.address = $.queryToHash(address);
+			this.data.address = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -77,6 +69,7 @@ define(function() {
 			
 			//we are good to send this up
 			_process.call(this, next);
+			
 			next();
 			return;
 		}
@@ -110,8 +103,8 @@ define(function() {
 	var _valid = function() {
 		//clear errors
 		this.data.errors = {};
-		
-		//local validate
+	
+		// validate fields
 		if(!this.data.address.street || !this.data.address.street.length) {
 			this.data.errors.street = { message: 'Street name cannot be empty.'};
 		}
@@ -120,16 +113,16 @@ define(function() {
 			this.data.errors.city = { message: 'City cannot be empty.'};
 		}
 		
-		if(!this.data.address.province || !this.data.address.province.length) {
-			this.data.errors.province = { message: 'Province cannot be empty.'};
+		if(!this.data.address.state || !this.data.address.state.length) {
+			this.data.errors.state = { message: 'State cannot be empty.'};
 		}
 
 		if(!this.data.address.country || !this.data.address.country.length) {
 			this.data.errors.country = { message: 'Country cannot be empty.'};
 		}
 
-		if(!this.data.address.zipcode || !this.data.address.zipcode.length) {
-			this.data.errors.zipcode = { message: 'Zipcode cannot be empty.'};
+		if(!this.data.address.postal || !this.data.address.postal.length) {
+			this.data.errors.postal = { message: 'Postal Code cannot be empty.'};
 		}
 		
 		//if we have no errors
@@ -148,11 +141,11 @@ define(function() {
 					//display message status
 					.notify('Success', 'address successfully created!', 'success')
 					//go to listing
-					.redirect('/address/child/' + parentId);
+					.redirect('/address');
 				
 				//no need to next since we are redirecting out
 				return;
-			}
+			} 
 			
 			this.data.errors = response.validation || {};
 			

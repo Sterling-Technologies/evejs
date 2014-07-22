@@ -157,6 +157,23 @@ var controller = function() {
 		$(window).trigger.apply($(window), arguments);
 		return this;
 	};
+
+	/**
+	 * Returns Url Segment based on
+	 * index given.
+	 *
+	 * @param 	int
+	 * @return 	string
+	 */
+	public.getUrlSegment = function(index) {
+		var buffer = window.location.pathname.split('/');
+
+		if(index === -1) {
+			index = buffer.length - 1;
+		}
+
+		return buffer[index];
+	};
 	
 	/* Bootstrap Methods
 	-------------------------------*/

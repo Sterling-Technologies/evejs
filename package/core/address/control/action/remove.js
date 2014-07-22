@@ -38,7 +38,7 @@ define(function() {
     		if(response.error) {
 				controller.notify('Error', response.message, 'error');
 			} else {
-				controller.notify('Success', response.results.street + ' ' + response.results.city + ' ' + response.results.country + ' has been restored!', 'success');
+				controller.notify('Success', 'Address has been removed!', 'success');
 			}
 			
 			window.history.back();

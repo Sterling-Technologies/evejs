@@ -1,7 +1,6 @@
 controller
 //when the application is initialized
 .listen('init', function() {
-	//comment test 2
 	//set paths
 	controller
 		.path('address'			, controller.path('package') + '/core/address')
@@ -14,7 +13,7 @@ controller
 	//add our menu item
 	menu.push({
 		path	: '/address',
-		icon	: 'pencil',
+		icon	: 'home',
 		label	: 'Address',
 		children: [{
 			path	: '/address/create',

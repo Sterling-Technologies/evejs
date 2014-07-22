@@ -40,10 +40,6 @@
                         
                        <!-- START: FILTER BUTTONS -->
                         <span class="filter">
-                            <a class="btn btn-sm{{#when mode '==' 'all'}} btn-light{{/when}}" 
-                            href="/address?mode=all{{#if keyword}}&keyword={{keyword}}{{/if}}">All &nbsp;
-                            <span class="badge badge-grey">{{all}}</span></a> 
-                            
                             <a class="btn btn-sm{{#when mode '==' 'active'}} btn-light{{/when}}" 
                             href="/address?mode=active{{#if keyword}}&keyword={{keyword}}{{/if}}">Active &nbsp;
                             <span class="badge badge-grey">{{active}}</span></a> 
@@ -64,12 +60,14 @@
                         <th><input class="checkall" type="checkbox" /></th>
                         <th>Action</th>
                         <th>ID</th>
+                        <th>Label</th>
+                        <th>Contact Name</th>
                         <th>Street</th>
                         <th>City</th>
-                        <th>Province</th>
+                        <th>State</th>
                         <th>Country</th>
-                        <th>Created</th>
-                        <th>Updated</th>
+                        <th>Postal</th>
+                        <th>Phone</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,12 +87,14 @@
                             {{/if}}
                         </td>
                         <td>{{id}}</td>
+                        <td>{{label}}</td>
+                        <td>{{contact_name}}</td>
                         <td>{{street}}</td>
                         <td>{{city}}</td>
-                        <td>{{province}}</td>
+                    	<td>{{state}}</td>
                         <td>{{country}}</td>
-                    	<td>{{created}}</td>
-                        <td valign="middle">{{updated}}</td>
+                        <td>{{postal}}</td>
+                        <td>{{phone}}</td>
                     </tr>	
                     {{/each}}
                 </tbody>	

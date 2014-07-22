@@ -37,33 +37,37 @@ module.exports = (function() {
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('address-create-error', function(error) {
-				//setup an error response
-				self.response.message = JSON.stringify({ 
-					error: true, 
-					message: error.message,
-					validation: error.errors || [] });
-				
-				//dont listen for success anymore
-				self.controller.unlisten('address-create-success');
-				//trigger that a response has been made
-				self.controller.trigger('address-action-response', self.request, self.response);
-			})
+			.once('address-create-error', _error.bind(this))
 			//when it is successfull
-			.once('address-create-success', function() {
-				//set up a success response
-				self.response.message = JSON.stringify({ error: false });
-				//dont listen for error anymore
-				self.controller.unlisten('address-create-error');
-				//trigger that a response has been made
-				self.controller.trigger('address-action-response', self.request, self.response);
-			})
+			.once('address-create-success', _success.bind(this))
 			//Now call to remove the address
 			.trigger('address-create', this.controller, query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+    var _error = function(error) {
+		//setup an error response
+		this.response.message = JSON.stringify({ 
+			error 		: true, 
+			message		: error.message,
+			validation	: error.errors || [] });
+		
+		//dont listen for success anymore
+		this.controller.unlisten('address-create-success');
+		//trigger that a response has been made
+		this.controller.trigger('address-action-response', this.request, this.response);
+	};
+			
+	var _success = function() {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false });
+		//dont listen for error anymore
+		this.controller.unlisten('address-create-error');
+		//trigger that a response has been made
+		this.controller.trigger('address-action-response', this.request, this.response);
+	};
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 
