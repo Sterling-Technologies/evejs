@@ -14,13 +14,7 @@ $ npm install -g evejs
 
 ## Quick Start
 
-  1. Create a package.json
-
-```
-npm init
-```
-
-  2. Install an eve build in current directory
+  1. Install an eve build in current directory
 
 ```
 eve install
@@ -28,7 +22,7 @@ eve install
 
   This does 2 things. Deploys a build in your specified folder and creates default packages and config in your current directory.
 
-  3. Specify what folder to build the environments
+  3. Follow instructions.
   4. Point Apache to the control and web folders in the build environments you specified.
   5. Watch for changes in the current directory
 
