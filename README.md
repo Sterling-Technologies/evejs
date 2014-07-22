@@ -69,7 +69,7 @@ eve watch
 
 #Contibuting to Eve
 
-##Setting up your machine with the Eden repository and your fork
+##Setting up your machine with the Eve repository and your fork
 
 1. Fork the main Eden repository (https://github.com/Openovate/evejs)
 2. Fire up your local terminal and clone the *MAIN EVE REPOSITORY* (git clone git://github.com/Openovate/evejs.git)
