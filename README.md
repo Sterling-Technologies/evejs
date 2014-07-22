@@ -66,3 +66,24 @@ eve watch
   Packages in Eve are different from npm packages. Packages in Eve are more like mini apps in your project that 
   surround a particular object like a post. A post package in Eve is plug and play with the REST, admin and general front
   end usage pre built in. Packages in Eve should be developed as independant from each other as best as possible.
+
+#Contibuting to Eve
+
+##Setting up your machine with the Eden repository and your fork
+
+1. Fork the main Eden repository (https://github.com/Openovate/evejs)
+2. Fire up your local terminal and clone the *MAIN EVE REPOSITORY* (git clone git://github.com/Openovate/evejs.git)
+3. Add your *FORKED EDEN REPOSITORY* as a remote (git remote add fork git@github.com:*github_username*/evejs.git)
+
+##Making pull requests
+
+1. Before anything, make sure to update the *MAIN EVE REPOSITORY*. (git checkout master; git pull origin master)
+2. Once updated with the latest code, create a new branch with a branch name describing what your changes are (git checkout -b bugfix/fix-server-post)
+    Possible types:
+    - bugfix
+    - feature
+    - improvement
+3. Make your code changes. Always make sure to sign-off (-s) on all commits made (git commit -s -m "Commit message")
+4. Once you've committed all the code to this branch, push the branch to your *FORKED EVE REPOSITORY* (git push fork bugfix/fix-server-post)
+5. Go back to your *FORKED EVE REPOSITORY* on GitHub and submit a pull request.
+6. Someone from our will review your code and merge it in when it has been classified as suitable.
