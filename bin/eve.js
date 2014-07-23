@@ -126,7 +126,7 @@ require('../lib/')
 	.listen('watch-server-init', function() {
 		console.log('\x1b[32m%s\x1b[0m', 'Watching for server changes ...');
 	})
-	.listen('watch-server-update', function(event, path, destination, eve, local, config) {
+	.listen('watch-server-update', function(event, path, destination, eve, local, config, push) {
 		//we only care if something has changed
 		if (event !== 'change' && event !== 'add') {
 			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
@@ -192,7 +192,7 @@ require('../lib/')
 	.listen('watch-web-init', function() {
 		console.log('\x1b[32m%s\x1b[0m', 'Watching for web changes ...');
 	})
-	.listen('watch-web-update', function(event, path, destination, eve, local, config) {
+	.listen('watch-web-update', function(event, path, destination, eve, local, config, push) {
 		//we only care if something has changed
 		if (event !== 'change' && event !== 'add') {
 			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
