@@ -12,7 +12,8 @@
         "edenjs": "0.0.2",
         "chokidar": "0.8.2",
         "jshint": "2.5.2",
-        "prompt": "0.2.13"
+        "prompt": "0.2.13",
+        "nodemon": "1.2.1"
     },
     "bin": {
         "eve": "./bin/eve.js"
