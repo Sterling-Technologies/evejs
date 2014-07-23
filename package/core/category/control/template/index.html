@@ -24,8 +24,15 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <!-- START: ADD NEW CATEGORY -->
-                        <div class="pull-right create"><a class="btn btn-info btn-sm" 
-                        href="/category/create">Create New Category</a></div>
+                        <div class="pull-right create">
+                            {{#when id '!=' '0'}}
+                            <a class="btn btn-info btn-sm" href="/category/create/{{id}}">Create New Category</a>
+                            {{/when}}
+
+                            {{#when id '==' '0'}}
+                            <a class="btn btn-info btn-sm" href="/category/create">Create New Category</a>
+                            {{/when}}
+                        </div>
                         <!-- END: ADD NEW CATEGORY -->
                         {{#if rows}}
                         <!-- START: BULK ACTION -->
@@ -39,11 +46,7 @@
                         {{/if}}
                         
                        <!-- START: FILTER BUTTONS -->
-                        <span class="filter">
-                            <a class="btn btn-sm{{#when mode '==' 'all'}} btn-light{{/when}}" 
-                            href="/category?mode=all{{#if keyword}}&keyword={{keyword}}{{/if}}">All &nbsp;
-                            <span class="badge badge-grey">{{all}}</span></a> 
-                            
+                        <span class="filter">  
                             <a class="btn btn-sm{{#when mode '==' 'active'}} btn-light{{/when}}" 
                             href="/category?mode=active{{#if keyword}}&keyword={{keyword}}{{/if}}">Active &nbsp;
                             <span class="badge badge-grey">{{active}}</span></a> 
@@ -65,9 +68,8 @@
                         <th>Action</th>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Slug</th>
                         <th>Type</th>
-                        <th>Created</th>
-                        <th>Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,8 +80,8 @@
                             {{#if active}}
                             <a title="Edit" href="/category/update/{{id}}">
                             <i class="icon-edit"></i></a> &nbsp; 
-                            <a title="Children" href="/category/child/{{id}}">
-                            <i class="icon-trello"></i></a> &nbsp;
+                            <a title="Add Child Category" href="/category/child/{{id}}">
+                            <i class="icon-sitemap"></i></a> &nbsp;
                             <a title="Remove" href="/category/remove/{{id}}"
                             class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
                             {{else}}
@@ -89,9 +91,8 @@
                         </td>
                         <td>{{id}}</td>
                         <td>{{name}}</td>
+                        <td>{{slug}}</td>
                         <td>{{type}}</td>
-                    	<td>{{created}}</td>
-                        <td valign="middle">{{updated}}</td>
                     </tr>	
                     {{/each}}
                 </tbody>	
@@ -103,14 +104,6 @@
             <!-- END: NO RESULTS -->
             {{/if}}
         </div>
-        
-        {{#when mode '==' 'all'}}
-        <ul class="pagination">
-            {{#pagination all range}}
-            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
-            {{/pagination}}
-        </ul>
-        {{/when}}
         
         {{#when mode '==' 'active'}}
         <ul class="pagination">

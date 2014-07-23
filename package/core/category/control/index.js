@@ -14,7 +14,7 @@ controller
 	//add our menu item
 	menu.push({
 		path	: '/category',
-		icon	: 'pencil',
+		icon	: 'sitemap',
 		label	: 'Category',
 		children: [{
 			path	: '/category/create',
@@ -23,6 +23,9 @@ controller
 })
 //when a url request has been made
 .listen('request', function() {
+	// trigger category request before
+	controller.trigger('category-request-before');
+
 	//if it doesn't start with category
 	if(window.location.pathname.indexOf('/category') !== 0) {
 		//we don't care about it
@@ -30,33 +33,67 @@ controller
 	}
 
 	//router -> action
-	var action = 'index';
+	var route = { action : null };
 	switch(true) {
 		case window.location.pathname.indexOf('/category/create') === 0:
-			action = 'create';
+			route.action = 'create';
 			break;
 		case window.location.pathname.indexOf('/category/update') === 0:
-			action = 'update';
+			route.action = 'update';
 			break;
 		case window.location.pathname.indexOf('/category/remove') === 0:
-			action = 'remove';
+			route.action = 'remove';
 			break;
 		case window.location.pathname.indexOf('/category/restore') === 0:
-			action = 'restore';
+			route.action = 'restore';
 			break;
 		case window.location.pathname.indexOf('/category/bulk') === 0:
-			action = 'bulk';
+			route.action = 'bulk';
 			break;
-		case window.location.pathname.indexOf('/category/child') === 0:
-			action = 'child';
+		case window.location.pathname == '/category' || 
+			 window.location.pathname.indexOf('/category/child') === 0 :
+			 
+			route.action = 'index';
 			break;
 	}
 	
-	action = controller.path('category/action') + '/' + action + '.js';
+	// if there is no route
+	if(!route.action) {
+		// just do nothing
+		return;
+	}
+
+	route.path = controller.path('category/action') + '/' + route.action + '.js';
+
+	//event when the category action is about to render
+	controller.trigger('category-action-' + route.action + '-before', route);
 	
 	//load up the action
-	require([action], function(action) {
+	require([route.path], function(action) {
 		action.load().render();
+		
+		//event when the category action is rendered
+		controller.trigger('category-action-' + route.action + '-after', route);
 	});
 
+	// event when the category request is finished
+	controller.trigger('category-request-after');
+
+})
+
+// when body is fully loaded
+.listen('body', function() {
+	var url = window.location.pathname;
+	var id  = controller.getUrlSegment(-1);
+
+	// if tab is already rendered
+	if(jQuery('section.category-update ul.nav-tabs li.category-info-tab').length !== 0) {
+		// just do nothing
+		return;
+	}
+
+	require(['text!' + controller.path('category/template') + '/tabs.html'], function(html) {
+		html = Handlebars.compile(html)({ id : id, url : url });
+		jQuery('section.category-update ul.nav.nav-tabs').append(html)
+	});
 });

@@ -100,11 +100,6 @@ module.exports = (function() {
 					action 	 			= require('./list');
 					request.method 		= 'GET';
 					break;
-				case batch[i].url.toLowerCase().indexOf('/category/child') === 0:
-					action 	 			= require('./child');
-					request.method 		= 'GET';
-					request.variables	= batch[i].url.replace('/category/child/', '').split('/');
-					break;
 				default:
 					action 	 			= null;
 					break;

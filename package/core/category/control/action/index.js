@@ -8,7 +8,7 @@ define(function() {
 	public.title 		= 'Categories';
 	public.header 		= 'Categories';
 	public.subheader 	= 'List of Categories';
-	public.crumbs 		= [{ icon: 'post', label: 'Categories' }];
+	public.crumbs 		= [{ icon: 'sitemap', label: 'Categories' }];
 	public.data 		= {};
 	
 	public.start		= 0;
@@ -49,6 +49,16 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _setData = function(next) {
+		this.data.id = 0;
+
+		// if last url segment is not
+		// equal to /category and /category/child
+		if(controller.getUrlSegment(-1) !== 'category' &&
+		   controller.getUrlSegment(-1) !== 'child') {
+			// assign it as category id
+			this.data.id = controller.getUrlSegment(-1);
+		}
+
 		//use a batch call
 		var batch = [], query = $.getUrlQuery();
 		
@@ -61,9 +71,6 @@ define(function() {
 		//3. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		
-		//4. get all count
-		batch.push({ url: _getAllCountRequest.call(this, query) });
-		
 		$.post(
 			controller.getServerUrl() + '/category/batch', 
 			JSON.stringify(batch), function(response) { 
@@ -73,19 +80,13 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-				var updated = new Date(response.batch[0].results[i].updated);
-				var created = new Date(response.batch[0].results[i].created);
-				var format = $.timeToDate(updated.getTime(), true, true);
-				var createdFormat = $.timeToDate(created.getTime(), true, true);
-                
                 //add it to row
 				rows.push({
 					id      	  : response.batch[0].results[i]._id,
 					name    	  : response.batch[0].results[i].name,
 					type    	  : response.batch[0].results[i].type,
-					active		  : response.batch[0].results[i].active,
-					created 	  : createdFormat,
-					updated		  : format });
+					slug 		  : response.batch[0].results[i].slug,
+					active		  : response.batch[0].results[i].active });
             }
 			
 			var showing = query.mode || 'active';
@@ -96,13 +97,13 @@ define(function() {
 			//3. Trash Count
 			//4. All Count
 			this.data = {
+				id 			: this.data.id,
 				showing 	: showing,
 				rows		: rows,
 				mode		: query.mode || 'active',
 				keyword		: query.keyword || null,
 				active		: response.batch[1].results,
 				trash		: response.batch[2].results,
-				all			: response.batch[3].results,
 				range		: this.range };
             
 			next();
@@ -127,12 +128,6 @@ define(function() {
 	};
 	
 	var _listen = function(next) {
-		//listen to remove restore
-		$('section.category-list a.remove, section.category-list a.restore').click(function(e) {
-			e.preventDefault();
-			$(this).parent().parent().remove();
-		});
-		
 		$('section.category-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
@@ -165,9 +160,6 @@ define(function() {
 		}
 		
 		switch(request.mode || 'active') {
-			case 'all':
-				query.filter.active = 1;
-				break;
 			case 'active':
 				query.filter.active = 1;
 				break;
@@ -176,22 +168,8 @@ define(function() {
 				break;
 		}
 
-		query.filter.parent = 'undefined';
-		
-		return '/category/list?' + $.hashToQuery(query);
-	};
-	
-	var _getAllCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.active = 1;
+		// add category parent as filter
+		query.filter.parent = this.data.id;
 		
 		return '/category/list?' + $.hashToQuery(query);
 	};
@@ -205,9 +183,12 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 		
-		query.count = 1;
+		query.count 		= 1;
 		query.filter.active = 0;
 		
+		// add category parent as filter
+		query.filter.parent = this.data.id;
+
 		return '/category/list?' + $.hashToQuery(query);
 	};
 
@@ -220,8 +201,11 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 
-		query.count = 1;
+		query.count 		= 1;
 		query.filter.active = 1;
+
+		// add category parent as filter
+		query.filter.parent = this.data.id;
 
 		return '/category/list?' + $.hashToQuery(query);
 	};

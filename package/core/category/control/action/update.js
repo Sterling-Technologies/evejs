@@ -11,7 +11,7 @@ define(function() {
 	
     public.crumbs = [{ 
         path: '/category',
-        icon: 'category', 
+        icon: 'sitemap', 
         label: 'Categories' 
     }, {  label: 'Create Category' }];
 	
@@ -59,6 +59,7 @@ define(function() {
 		if(category && category.length) {
 			//query to hash
 			this.data.category = $.queryToHash(category);
+			this.data.parent   = this.data.category.parent;
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -76,29 +77,12 @@ define(function() {
 		
 		//if no data category set
 		if(!this.data.category) {
-			//get it from the server
-			//get category id
-			var id =  window.location.pathname.split('/')[3];
-			var url = controller.getServerUrl() + '/category/detail/'+id;
+			var id =  controller.getUrlSegment(-1);
+			var url = controller.getServerUrl() + '/category/detail/' + id;
 			
 			$.getJSON(url, function(response) {
-				//format the birth to the HTML5 date format
-				if(response.results.published 
-				&& (new Date(response.results.published)).getTime() > 0) {
-					//convert date format
-					var published 	= new Date(response.results.published);
-					
-					var year 	= birth.getFullYear(),
-						month 	= birth.getMonth() < 9 ? '0'+(birth.getMonth() + 1) : (birth.getMonth() + 1),
-						day 	= birth.getDate() < 10 ? '0'+(birth.getDate()) : (birth.getDate());
-					
-					response.results.published = [year, month, day].join('-');
-				} else {
-					response.results.published = null;
-				}
-				
 				this.data.category = response.results;
-				
+				this.data.parent   = this.data.category.parent;
 				next();
 			}.bind(this));
 			
@@ -109,27 +93,15 @@ define(function() {
     };
     
     var _output = function(next) {
-		//store form templates path to array
-        var templates = [
-        'text!' + controller.path('category/template') +  '/form.html',
-        'text!' + controller.path('category/template') +  '/form/publish.html',
-        'text!' + controller.path('category/template') +  '/form/copy.html'];
-
         //require form templates
         //assign it to main form
-        require(templates, function(form, publish, copy) {
-            //load publish form template 
-            this.data.publish = Handlebars.compile(publish)(this.data);
-
-            //load copy form template
-            this.data.copy = Handlebars.compile(copy)(this.data);
-
+        require(['text!' + public.template], function(form) {
 			//render the body
 			var body = Handlebars.compile(form)(this.data);
 			
 			controller
-				.setTitle(this.title.replace('{CATEGORY}', this.data.category.title))
-				.setHeader(this.header.replace('{CATEGORY}', this.data.category.title)) 
+				.setTitle(this.title.replace('{CATEGORY}', this.data.category.name))
+				.setHeader(this.header.replace('{CATEGORY}', this.data.category.name)) 
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
@@ -179,9 +151,8 @@ define(function() {
 	};
 	
 	var _process = function(next) {
-		var id 		=  window.location.pathname.split('/')[3],
-			url 	= controller.getServerUrl() + '/category/update/'+id;
-		
+		var id 	= controller.getUrlSegment(-1),
+			url = controller.getServerUrl() + '/category/update/' + id;
 		
 		//save data to database
 		$.post(url, this.data.category, function(response) {
@@ -190,12 +161,13 @@ define(function() {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', 'Category successfully created!', 'success')
-					//go to listing
-					.redirect('/category');
+					.notify('Success', 'Category successfully updated!', 'success');
 				
-				//no need to next since we are redirecting out
-				return;
+				if(this.data.parent == 0) {
+					return controller.redirect('/category');
+				}
+
+				return controller.redirect('/category/child/' + this.data.parent);
 			}
 			
 			this.data.errors = response.validation || {};

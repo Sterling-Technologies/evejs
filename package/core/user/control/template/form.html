@@ -1,8 +1,10 @@
 <section class="user-profile user-update row">
     <div class="col-sm-12">
         <div class="tabbable">
+            {{#when mode '==' 'update'}}
             <ul class="nav nav-tabs padding-16">
             </ul>
+            {{/when}}
             <div class="tab-content profile-edit-tab-content">
                 <div id="profile" class="tab-pane active">
                     <form class="package-user-form form-horizontal " method="post" enctype="multipart/form-data">

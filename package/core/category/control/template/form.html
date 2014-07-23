@@ -1,24 +1,32 @@
-<div class="widget-box">
-	<div class="widget-header header-color-grey">
-        <h5>Category</h5>
-    </div>
-
-    <div class="widget-body">
-    	<div class="widget-main">
-	    	<form method="post" class="package-category-form form-horizontal">
-			    {{#block 'form/fieldset' 'Name <span>*</span>' errors.name.message}}
-			        {{{block 'field/text' 'name' ../category.name 'placeholder="Category name"'}}}
+<section class="category-info {{#when mode '==' 'update'}}category-update{{/when}} row">
+    <div class="col-sm-12">
+        <div class="tabbable">
+        	{{#when mode '==' 'update'}}
+            <ul class="nav nav-tabs padding-16">
+            </ul>
+            {{/when}}
+            <div class="tab-content category-info-tab-content">
+	            <form method="post" class="package-category-form form-horizontal">
+			    {{#block 'form/fieldset' 'Name <span class="red">*</span>' errors.name.message}}
+			        {{{block 'field/text' 'name' ../category.name 'placeholder="Category Name"'}}}
 			    {{/block}}
 
-			    {{#block 'form/fieldset' 'Slug <span>*</span>' errors.slug.message}}
-			        {{{block 'field/text' 'slug' ../category.slug 'placeholder="Category slug"'}}}
+			    {{#block 'form/fieldset' 'Slug <span class="red">*</span>' errors.slug.message}}
+			        {{{block 'field/text' 'slug' ../category.slug 'placeholder="Category Slug"'}}}
 			    {{/block}}
 
-			    {{#block 'form/fieldset' 'Type <span>*</span>' errors.type.message}}
-			        {{{block 'field/text' 'type' ../category.type 'placeholder="Category type"'}}}
+			    {{#block 'form/fieldset' 'Type <span class="red">*</span>' errors.type.message}}
+			        {{{block 'field/text' 'type' ../category.type 'placeholder="Category Type"'}}}
 			    {{/block}}
 
-			    <input type="hidden" value="" />
+			    {{#when parent '!=' '0'}}
+			    <input type="hidden" name="parent" value="{{parent}}" />
+			    {{/when}}
+
+			    {{#when parent '==' '0'}}
+			    <input type="hidden" name="parent" value="0" />
+			    {{/when}}
+
 			    <div class="clearfix form-actions">
 					<div class="col-md-12">
 					    {{#block 'field/button' 'class="btn-primary"'}}
@@ -29,6 +37,7 @@
 					</div>
 				</div>
 			</form>
-		</div>
+            </div>
+        </div>
     </div>
-</div>
+</section>

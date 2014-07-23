@@ -31,7 +31,7 @@ define(function() {
     -------------------------------*/
 	var _process = function(next) {
 		var url = controller.getServerUrl() + '/category/restore/';
-		var id 	= window.location.pathname.split('/')[3];
+		var id 	= controller.getUrlSegment(-1);
 		
 		$.getJSON(url + id, function(response) {
     		//if error

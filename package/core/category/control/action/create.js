@@ -11,7 +11,7 @@ define(function() {
 	
     public.crumbs = [{ 
         path: '/category',
-        icon: 'category', 
+        icon: 'sitemap', 
         label: 'Category' 
     }, {  label: 'Create Category' }];
 	
@@ -54,21 +54,20 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		parentId =  window.location.pathname.split('/')[3];
-		
-		var category = controller.getPost();
+		this.data.parent 	= 0;
 
-		if(category && category.length) {
-			if(parentId !== '') {
-				category = 'parent=' + parentId + '&' + category;
-			} else {
-				category = 'parent=&' + category;
-			}
+		// if last url segment is not
+		// equal to /category and /category/create
+		if(controller.getUrlSegment(-1) !== 'category' &&
+		   controller.getUrlSegment(-1) !== 'create') {
+			this.data.parent = controller.getUrlSegment(-1);
+		}
 
-			console.log(category);
-		
+		var data = controller.getPost();
+
+		if(data && data.length) {
 			//query to hash
-			this.data.category = $.queryToHash(category);
+			this.data.category = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -87,22 +86,8 @@ define(function() {
         next();
     };
     
-    var _output = function(next) {
-		//store form templates path to array
-        var templates = [
-        'text!' + controller.path('category/template') +  '/form.html',
-        'text!' + controller.path('category/template') +  '/form/publish.html',
-        'text!' + controller.path('category/template') +  '/form/copy.html'];
-
-        //require form templates
-        //assign it to main form
-        require(templates, function(form, publish, copy) {
-            //load publish form template 
-            this.data.publish = Handlebars.compile(publish)(this.data);
-
-            //load copy form template
-            this.data.copy = Handlebars.compile(copy)(this.data);
-
+    var _output = function(next) {;
+        require(['text!' + public.template], function(form) {
 			//render the body
 			var body = Handlebars.compile(form)(this.data);
 			
@@ -142,7 +127,7 @@ define(function() {
 		
 		//local validate
 		if(!this.data.category.name || !this.data.category.name.length) {
-			this.data.errors.name = { message: 'category name cannot be empty.'};
+			this.data.errors.name = { message: 'Category name cannot be empty.'};
 		}
 		
 		if(!this.data.category.slug || !this.data.category.slug.length) {
@@ -167,12 +152,13 @@ define(function() {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', 'Category successfully created!', 'success')
-					//go to listing
-					.redirect('/category/child/' + parentId);
+					.notify('Success', 'Category successfully created!', 'success');
 				
-				//no need to next since we are redirecting out
-				return;
+				if(this.data.parent === 0) {
+					return controller.redirect('/category');
+				}
+
+				return  controller.redirect('/category/child/' + this.data.parent);
 			}
 			
 			this.data.errors = response.validation || {};

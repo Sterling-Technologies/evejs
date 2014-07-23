@@ -1,6 +1,6 @@
-module.exports = function() {
-	var c = function() {
-		this.__construct.call(this);
+module.exports = function(controller) {
+	var c = function(controller) {
+		this.__construct.call(this, controller);
 	}, public = c.prototype;
 	
 	/* Public Properties
@@ -9,12 +9,10 @@ module.exports = function() {
 		name	: { type: String, required: true },
 		slug	: { type: String, required: true },
 		type	: { type: String, required: true },
-
-		parent	: {type: String},
-
-		active		: { type: Boolean, default: true },
-		created		: { type: Date, default: Date.now },
-		updated		: { type: Date, default: Date.now }
+		parent	: { type: String },
+		active	: { type: Boolean, default: true },
+		created	: { type: Date, default: Date.now },
+		updated	: { type: Date, default: Date.now }
 	};
 	
 	/* Private Properties
@@ -23,9 +21,9 @@ module.exports = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	public.__load = c.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new c(controller);
 		}
 		
 		return this.__instance;
@@ -33,7 +31,9 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	public.__construct = function(controller) {
+		this.controller = controller;
+
 		var schema = mongoose.Schema;
 		
 		//define schema
@@ -302,7 +302,6 @@ module.exports = function() {
 			}
 			
 			//if null value, just test if it exists
-			
 			query[key] = { $exists: true };
 		}
 		

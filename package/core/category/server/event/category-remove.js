@@ -1,9 +1,6 @@
 module.exports = function(controller, id) {
 	//remove
-	controller
-	.category()
-	.store()
-	.remove(id, function(error, row) {
+	controller.category().store().remove(id, function(error, row) {
 		//if there are errors
 		if(error) {
 			//trigger an error

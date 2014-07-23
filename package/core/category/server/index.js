@@ -7,9 +7,9 @@ module.exports = function() {
 	
 	//on init set the paths
 	this.listen('init', function() {
-		this.path('category', __dirname)
-			.path('category/action', __dirname + '/action')
-			.path('category/event', __dirname + '/event');
+		this.path('category', 			__dirname)
+			.path('category/action', 	__dirname + '/action')
+			.path('category/event', 	__dirname + '/event');
 	
 	}.bind(this))
 	 
