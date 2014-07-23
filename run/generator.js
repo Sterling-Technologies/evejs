@@ -1,4 +1,4 @@
-module.exports = function(eve, local, config, parameter) {
+module.exports = function(eve, local, args) {
     var eden        = require('edenjs');
     
     var paths = {
@@ -8,6 +8,8 @@ module.exports = function(eve, local, config, parameter) {
         package     : local + '/package/',
         generator   : __dirname + '/../build/generator/' };
     
+	var parameter = args[0];
+	
     //is there a parameter?
     if(!parameter || !parameter.length) {
         console.log('\x1b[31m%s\x1b[0m', 'Invalid parameter. Must be in the form of vendor or vendor/package');
