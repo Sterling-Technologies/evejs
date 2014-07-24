@@ -95,7 +95,7 @@ module.exports = function(eve, local, args) {
 		});
 	})
 	
-	// 2. Copy [DEV]/build/server folder to [CONTROL]
+	// 2. Copy [DEV]/build/control folder to [CONTROL]
 	.then(function(next) {
 		eden('folder', eve.root + '/build/control')
 		.copy(deployTo, function() {
@@ -104,7 +104,7 @@ module.exports = function(eve, local, args) {
 		});
 	})
 	
-	// 3. Copy [DEV]/config/server folder to [CONTROL]/config
+	// 3. Copy [DEV]/config/control folder to [CONTROL]/config
 	.then(function(next) {
 		eden('folder', eve.root + '/config/control')
 		.copy(deployTo + '/application/config', function() {

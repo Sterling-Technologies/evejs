@@ -65,7 +65,7 @@ module.exports = function(eve, local, args) {
 				
 				//if there is already a web path
 				if(json.web && json.web.path) {
-					deployTo = json.control.path;
+					deployTo = json.web.path;
 					//goto next
 					next();
 					return;
@@ -95,7 +95,7 @@ module.exports = function(eve, local, args) {
 		});
 	})
 	
-	// 2. Copy [DEV]/build/server folder to [CONTROL]
+	// 2. Copy [DEV]/build/web folder to [CONTROL]
 	.then(function(next) {
 		eden('folder', eve.root + '/build/web')
 		.copy(deployTo, function() {
@@ -104,7 +104,7 @@ module.exports = function(eve, local, args) {
 		});
 	})
 	
-	// 3. Copy [DEV]/config/server folder to [CONTROL]/config
+	// 3. Copy [DEV]/config/web folder to [CONTROL]/config
 	.then(function(next) {
 		eden('folder', eve.root + '/config/web')
 		.copy(deployTo + '/application/config', function() {
@@ -159,7 +159,7 @@ module.exports = function(eve, local, args) {
 						eden('folder', source).copy(destination, function() {
 							next3();
 						});
-					// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/control/ to caller
+					// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/web/ to caller
 					}).then(function(next3) {
 						var source = package.path + '/web';
 						var destination = local 

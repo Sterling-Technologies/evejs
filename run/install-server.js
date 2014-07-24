@@ -17,8 +17,7 @@ module.exports = function(eve, local, config) {
 			json.server.lint = json.server.lint || {
 				bitwise : false,
 				strict 	: false,
-				node 	: true
-			};
+				node 	: true };
 			
 			var copy = [{
 				name 		: 'server',
@@ -54,9 +53,9 @@ module.exports = function(eve, local, config) {
 				
 				var json = JSON.parse(content);	
 				
-				//if there is already a control path
-				if(json.control && json.control.path) {
-					deployTo = json.control.path;
+				//if there is already a server path
+				if(json.server && json.server.path) {
+					deployTo = json.server.path;
 					//goto next
 					next();
 					return;
@@ -152,7 +151,7 @@ module.exports = function(eve, local, config) {
 						});
 					// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/server/ to caller
 					}).then(function(next3) {
-						var source = package.path + '/control';
+						var source = package.path + '/server';
 						var destination = local 
 							+ '/package/' 
 							+ vendor.getName() + '/' 

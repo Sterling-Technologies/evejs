@@ -10,8 +10,7 @@ module.exports = function(eve, local, args) {
 				return;
 			}
 			
-			var config = JSON.parse(content);
-				
+			var config = JSON.parse(content);	
 			var watcher = require('chokidar')
 			.watch(local, { ignored: /[\/\\]\./, persistent: true, ignoreInitial: true })
 			.on('all', function(event, path, stats) {
