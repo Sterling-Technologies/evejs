@@ -17,7 +17,23 @@ module.exports = function(eve, local, config) {
 			json.server.lint = json.server.lint || {
 				bitwise : false,
 				strict 	: false,
-				node 	: true };
+				node 	: true
+			};
+			json.server.lint_mocha = json.server.lint_mocha || {
+				bitwise : false,
+				strict 	: false,
+				node 	: true,
+				globals : {
+					describe   : true,
+					it         : true,
+					before     : true,
+					beforeEach : true,
+					after      : true,
+					afterEach  : true
+                                }
+			};
+			json.server.mocha = '--reporter list --recursive';
+			json.server.nodemon = {};
 			
 			var copy = [{
 				name 		: 'server',
