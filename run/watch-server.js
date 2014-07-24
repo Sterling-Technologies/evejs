@@ -75,7 +75,6 @@ module.exports = function(eve, local, args) {
 				eve.trigger('watch-server-update', event, 
 				path, destination, eve, local, config, 
 				function(event, path, destination, callback) {
-                                    callback = callback || function() {};
 					switch(event) {
 						case 'unlink':
 							eden('file', destination).remove(callback);

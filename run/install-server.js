@@ -33,8 +33,8 @@ module.exports = function(eve, local, config) {
                                 }
 			};
 			json.server.mocha = '--reporter list --recursive';
-			json.server.nodemon = {};
-			
+			json.server.nodemon = { ignore: ['test/'] };
+
 			var copy = [{
 				name 		: 'server',
 				description : 'Where should eve deploy server to ? (default: ' + local +'/deploy/server)',
