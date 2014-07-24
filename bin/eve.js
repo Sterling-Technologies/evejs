@@ -126,7 +126,7 @@ require('../lib/')
         .listen('watch-server-init', function(eve, local, config) {
             console.log('\x1b[32m%s\x1b[0m', 'Watching for server changes ...');
 
-            // build the settings
+            /*// build the settings
             var settings = config.server.nodemon || { };
 
             // if settings.cwd is not defined
@@ -136,7 +136,7 @@ require('../lib/')
             }
 
             // starts the nodemon
-            nodemon(settings);
+            nodemon(settings);*/
         })
         .listen('watch-server-update', function(event, path, destination, eve, local, config, push) {
             //we only care if something has changed
