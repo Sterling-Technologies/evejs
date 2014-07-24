@@ -1,32 +1,110 @@
-{{#block 'form/fieldset' 'Title'}}
-	{{{block 'field/text' 'title' '' 'placeholder="Please enter a title"'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'This is the title'}}
-	{{{block 'field/wysiwyg' 'detail' '' 'placeholder="Please enter a detail"'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Email'}}
-	{{#block 'field/text' 'email' '' 'placeholder="john@doe.com"'}}jerielmari@gmail.com{{/block}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Phone'}}
-	{{{block 'field/mask' 'phone' 'aaa-11-aaa' '' 'placeholder="(415) 555-2424"'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Bio'}}
-	{{{block 'field/textarea' 'bio' 'class="testinglang" placeholder="Please enter some bio"'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Active'}}
-	{{{block 'field/checkbox' 'active'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Published'}}
-	{{{block 'field/date' 'published' '' '' 'placeholder="01/01/2014"'}}}
-{{/block}}
-
-{{#block 'form/fieldset' 'Status'}}
-	{{{block 'field/select' 'status' 'draft|review|published|other' '' ''}}}
-{{/block}}
-
+<section class="{SLUG}-list">
+    <!-- START: SEARCH FORM -->
+    <form class="pull-right search form-inline" method="get">
+        <div class="form-group">
+            <input name="keyword" placeholder="Search {PLURAL}" type="text"
+            value="{{#if keyword}}{{keyword}}{{/if}}" class="form-control" />
+            {{#if mode}}
+            <input type="hidden" name="mode" value="{{mode}}" /> 
+            {{/if}} 	
+        </div>
+        <button class="btn"><i class="icon-search"></i></button>	
+    </form>
+    <!-- END: SEARCH FORM -->
+    
+    <!-- START: BULK FORM -->
+    <form action="/{SLUG}/bulk" method="post" class="form-inline bulk-form">
+        <!-- START: i18n HEADER TITLE -->
+        <div class="table-header">
+            Showing {{#if keyword}}Results for &quot;{{keyword}}&quot; in {{/if}}{{showing}}
+        </div>
+        <!-- END: i18n HEADER TITLE -->
+        <div class="table-responsive">
+            <div class="dataTables_wrapper table-filters" role="grid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- START: ADD NEW POST -->
+                        <div class="pull-right create"><a class="btn btn-info btn-sm" 
+                        href="/{SLUG}/create">Create New {SINGULAR}</a></div>
+                        <!-- END: ADD NEW POST -->
+                        {{#if rows}}
+                        <!-- START: BULK ACTION -->
+                        <select name="action" style="width:auto;" class="form-control">
+                            <option value="" selected="selected">Bulk Actions</option>
+                            <option value="remove">Remove</option>
+                            <option value="restore">Restore</option>
+                        </select>
+                        <button class="btn-primary btn-sm btn">Apply</button>
+                        <!-- END: BULK ACTION -->
+                        {{/if}}
+                        
+                        <!-- START: FILTER BUTTONS -->
+                        <span class="filter">
+                            <a class="btn btn-sm{{#when mode '==' 'active'}} btn-light{{/when}}" 
+                            href="/{SLUG}?mode=active{{#if keyword}}&keyword={{keyword}}{{/if}}">Active &nbsp;
+                            <span class="badge badge-grey">{{active}}</span></a> 
+                            
+                            <a class="btn btn-sm{{#when mode '==' 'trash'}} btn-light{{/when}}" 
+                            href="/{SLUG}?mode=trash{{#if keyword}}&keyword={{keyword}}{{/if}}">Trash &nbsp;
+                            <span class="badge badge-grey">{{trash}}</span></a> 
+                        </span>
+                        <!-- END: FILTER BUTTONS -->
+                    </div>
+                </div>
+            </div> 
+            {{#if rows}}
+            <!-- START: POST TABLE -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><input class="checkall" type="checkbox" /></th>
+                        <th>Action</th>
+                        <th>ID</th>
+                        {HEADERS}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each rows}}
+                    <tr data-id="{{id}}">
+                        <td><input name="id[]" value="{{id}}" type="checkbox" class="form-control" /></td>
+                        <td>
+                            {{#if active}}
+                            <a title="Edit" href="/{SLUG}/update/{{id}}">
+                            <i class="icon-edit"></i></a> &nbsp; 
+                            <a title="Remove" href="/{SLUG}/remove/{{id}}"
+                            class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
+                            {{else}}
+                            <a title="Restore" href="/{SLUG}/restore/{{id}}" class="text-success restore">
+                            <i class="icon-external-link"></i></a>
+                            {{/if}}
+                        </td>
+                        {COLUMNS}
+                    </tr>	
+                    {{/each}}
+                </tbody>	
+            </table>
+            <!-- END: POST TABLE -->
+            {{else}}
+            <!-- START: NO RESULTS -->
+            <div class="well no-results">No {PLURAL} Found</div>
+            <!-- END: NO RESULTS -->
+            {{/if}}
+        </div>
+        
+        {{#when mode '==' 'active'}}
+        <ul class="pagination">
+            {{#pagination active range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+        
+        {{#when mode '==' 'trash'}}
+        <ul class="pagination">
+            {{#pagination trash range}}
+            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+            {{/pagination}}
+        </ul>
+        {{/when}}
+    </form>
+</section>

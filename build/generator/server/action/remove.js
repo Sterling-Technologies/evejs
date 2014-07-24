@@ -39,36 +39,36 @@ module.exports = (function() {
 		
 		this.controller
 			//when there is an error
-			.once('sample-remove-error', _error.bind(this))
+			.once('{SLUG}-remove-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-remove-success', _success.bind(this))
-			//Now call to remove the Sample
-			.trigger('sample-remove', this.controller, this.request.variables[0]);
+			.once('{SLUG}-remove-success', _success.bind(this))
+			//Now call to remove the {SLUG}
+			.trigger('{SLUG}-remove', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _success = function(row) {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false, results: row });
+		//dont listen for error anymore
+		this.controller.unlisten('{SLUG}-remove-error');
+		//trigger that a response has been made
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+	};
+	
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
 			error: true, 
 			message: error.message });
-		
+			
 		//dont listen for success anymore
-		this.controller.unlisten('sample-remove-success');
+		this.controller.unlisten('{SLUG}-remove-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
-	var _success = function(row) {
-		//set up a success response
-		this.response.message = JSON.stringify({ error: false, results: row });
-		//dont listen for error anymore
-		this.controller.unlisten('{TEMPORARY}-remove-error');
-		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
-	};
-			
 	/* Adaptor
 	-------------------------------*/
 	return c; 

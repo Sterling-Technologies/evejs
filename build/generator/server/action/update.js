@@ -44,24 +44,15 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('sample-update-error', _error.bind(this))
+			.once('{SLUG}-update-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-update-success', _success.bind(this))
-			//Now call to update the Sample
-			.trigger('sample-update', this.controller, this.request.variables[0], query);
+			.once('{SLUG}-update-success', _success.bind(this))
+			//Now call to update the {SLUG}
+			.trigger('{SLUG}-update', this.controller, this.request.variables[0], query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
-	var _success = function() {
-		//set up a success response
-		this.response.message = JSON.stringify({ error: false });
-		//dont listen for error anymore
-		this.controller.unlisten('sample-update-error');
-		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
-	};
-	
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
@@ -70,11 +61,20 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('sample-update-success');
+		this.controller.unlisten('{SLUG}-update-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 			
+	var _success = function() {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false });
+		//dont listen for error anymore
+		this.controller.unlisten('{SLUG}-update-error');
+		//trigger that a response has been made
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+	};
+	
 	/* Adaptor
 	-------------------------------*/
 	return c; 

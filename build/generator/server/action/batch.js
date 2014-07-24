@@ -38,7 +38,7 @@ module.exports = (function() {
 				message: 'No request data found.'});
 			
 			//trigger that a response has been made
-			this.controller.trigger('sample-action-response', this.request, this.response);
+			this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 			
 			return this;
 		}
@@ -59,7 +59,7 @@ module.exports = (function() {
 			//create default request object;
 			request 			= Object.create(this.request);
 			
-			request.url 		= batch[i].url || '/sample';
+			request.url 		= batch[i].url || '/{SLUG}';
 			request.path 		= this.controller.eden.load('string').toPath(request.url);
 			request.pathArray	= this.controller.eden.load('string').pathToArray(request.url);
 			request.query 		= this.controller.eden.load('string').pathToQuery(request.url);
@@ -72,31 +72,31 @@ module.exports = (function() {
 			
 			//now call the actions based on the method
             switch(true) {
-                case batch[i].url.toLowerCase().indexOf('/sample/create') === 0:  	
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/create') === 0:  	
 					action 	 			= require('./create');
 					request.method 		= 'POST';
 					break;
-                case batch[i].url.toLowerCase().indexOf('/sample/remove/') === 0:
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/remove/') === 0:
 					action 	 			= require('./remove');
 					request.method 		= 'DELETE';
-					request.variables	= batch[i].url.replace('/sample/remove/', '').split('/');
+					request.variables	= batch[i].url.replace('/{SLUG}/remove/', '').split('/');
 					break;
-                case batch[i].url.toLowerCase().indexOf('/sample/restore/') === 0:
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/restore/') === 0:
 					action 	 			= require('./restore');
 					request.method 		= 'PUT';
-					request.variables	= batch[i].url.replace('/sample/restore/', '').split('/');
+					request.variables	= batch[i].url.replace('/{SLUG}/restore/', '').split('/');
 					break;
-                case batch[i].url.toLowerCase().indexOf('/sample/update/') === 0:
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/update/') === 0:
 					action 	 			= require('./update');
 					request.method 		= 'PUT';
-					request.variables	= batch[i].url.replace('/sample/update/', '').split('/');
+					request.variables	= batch[i].url.replace('/{SLUG}/update/', '').split('/');
 					break;
-                case batch[i].url.toLowerCase().indexOf('/sample/detail/') === 0:
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/detail/') === 0:
 					action 	 			= require('./detail');
 					request.method 		= 'GET';
-					request.variables	= batch[i].url.replace('/sample/detail/', '').split('/');
+					request.variables	= batch[i].url.replace('/{SLUG}/detail/', '').split('/');
 					break;
-                case batch[i].url.toLowerCase().indexOf('/sample/list') === 0:
+                case batch[i].url.toLowerCase().indexOf('/{SLUG}/list') === 0:
 					action 	 			= require('./list');
 					request.method 		= 'GET';
 					break;
@@ -116,7 +116,7 @@ module.exports = (function() {
 							//All batch results will be JSON stringify
 							self.response.message = JSON.stringify({ batch: self.results });
 				
-							//Been trigger to the sample action
+							//Been trigger to the {SLUG} action
 							self.controller.server.trigger('response', self.request, self.response);
 						}
 						
@@ -124,8 +124,8 @@ module.exports = (function() {
 						return;
 					}
 					
-					//listen for a sample action
-        			self.controller.once('sample-action-response', function(request, response) {
+					//listen for a {SLUG} action
+        			self.controller.once('{SLUG}-action-response', function(request, response) {
 						//All results will be push to the array results
 						this.results.push(JSON.parse(response.message));
 						
@@ -134,7 +134,7 @@ module.exports = (function() {
 							//All batch results will be JSON stringify
 							response.message = JSON.stringify({ batch: this.results });
 				
-							//Been trigger to the sample action
+							//Been trigger to the {SLUG} action
 							this.controller.server.trigger('response', request, response);
 						}
 					

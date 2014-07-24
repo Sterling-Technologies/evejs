@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Create Sample';
-    public.header       = 'Create Sample';
-    public.subheader    = '';
+    public.title        = 'Create {SINGULAR}';
+    public.header       = 'Create {SINGULAR}';
+    public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
-        path: '/sample',
-        icon: 'facebook', 
-        label: 'Samples' 
-    }, {  label: 'Create Sample' }];
+        path: '/{SLUG}',
+        icon: '{ICON}', 
+        label: '{PLURAL}' 
+    }, {  label: 'Create {SINGULAR}' }];
 	
     public.data     = {};
 	
-    public.template = controller.path('sample/template') + '/form.html';
+    public.template = controller.path('{SLUG}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -42,8 +42,7 @@ define(function() {
         $.sequence()
 			.setScope(this)
         	.then(_setData)
-        	.then(_output)
-			.then(_listen);
+        	.then(_output);
         
         return this;
     };
@@ -53,17 +52,20 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
-		var post = controller.getPost();
+		var data = controller.getPost();
 		
-		if(post && post.length) {
+		if(data && data.length) {
 			//query to hash
-			this.data.sample = $.queryToHash(post);
+			this.data.{SLUG} = $.queryToHash(data);
+			
+			//ENUMS
+			{ENUMS}
 			
 			if(!_valid.call(this)) {			
 				//display message status
 				controller.notify('Error', 'There was an error in the form.', 'error');
+				
 				next();
 				
 				return;
@@ -71,6 +73,8 @@ define(function() {
 			
 			//we are good to send this up
 			_process.call(this, next);
+			
+			next();
 			
 			return;
 		}
@@ -80,12 +84,13 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = [ 'text!' + this.template ];
+        var templates = ['text!' + controller.path('{SLUG}/template') +  '/form.html'];
 
         //require form templates
         //assign it to main form
         require(templates, function(form) {
-            var body = Handlebars.compile(form)(this.data);
+            //render the body
+			var body = Handlebars.compile(form)(this.data);
 			
 			controller
 				.setTitle(this.title)
@@ -97,75 +102,30 @@ define(function() {
 			next();
 		}.bind(this));
     };
-
-    var _listen = function(next) {
-	   	
-	    next();
-    };
 	
 	var _valid = function() {
 		//clear errors
 		this.data.errors = {};
 		
-		//local validations
-		if (isNaN(this.data.sample.title) || this.data.sample.title > 4) {
-			this.data.errors.title = { message: 'Title should be a number greater than 4'};
-		}
-		if(!this.data.sample.title || !this.data.sample.title.length) {
-			this.data.errors.title = { message: 'Title cannot be empty.' };
-		}
-
-		if (isNaN(this.data.sample.detail) || this.data.sample.detail < 7) {
-			this.data.errors.detail = { message: 'Detail should be a number lesser than 7'};
-		}
-		if(!this.data.sample.detail || !this.data.sample.detail.length) {
-			this.data.errors.detail = { message: 'Detail cannot be empty.' };
-		}
-
-		if ((new RegExp('/^(?:(?:(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|\x5c(?=[@,"\[\]'
-				+ '\x5c\x00-\x20\x7f-\xff]))(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]'
-				+ '\x5c\x00-\x20\x7f-\xff]|\x5c(?=[@,"\[\]\x5c\x00-\x20\x7f-\xff])|\.(?=[^\.])){1,62'
-				+ '}(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]\x5c\x00-\x20\x7f-\xff])|'
-				+ '[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]{1,2})|"(?:[^"]|(?<=\x5c)"){1,62}")@(?:(?!.{64})'
-				+ '(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.?|[a-zA-Z0-9]\.?)+\.(?:xn--[a-zA-Z0-9]'
-				+ '+|[a-zA-Z]{2,6})|\[(?:[0-1]?\d?\d|2[0-4]\d|25[0-5])(?:\.(?:[0-1]?\d?\d|2[0-4]\d|25'
-				+ '[0-5])){3}\])$/', 'ig')).test(this.data.sample.email)) {
-			this.data.errors.email = { message: 'Email should be a valid email.' };
-		}
-
-		if(!this.data.sample.bio || !this.data.sample.bio.length) {
-			this.data.errors.bio = { message: 'Bio cannot be empty.' };
-		}
-
-		try {
-			$.datepicker.parseDate('dd/dd/dddd', this.data.sample.published);
-		}
-		catch(er) {
-			this.data.errors.published = { message: 'Published must be date as dd/dd/dddd'};
-		}
-
-
+		//TODO: ADD VALIDATION HERE
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';
 	};
 	
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/sample/create';
-		
-		//don't store the confirm
-		delete this.data.sample.confirm;
+		var url = controller.getServerUrl() + '/{SLUG}/create';
 		
 		//save data to database
-		$.post(url, this.data.sample, function(response) {
+		$.post(url, this.data.{SLUG}, function(response) {
 			response = JSON.parse(response);
 			
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', 'Sample successfully created!', 'success')
+					.notify('Success', '{SINGULAR} successfully created!', 'success')
 					//go to listing
-					.redirect('/sample');
+					.redirect('/{SLUG}');
 				
 				//no need to next since we are redirecting out
 				return;

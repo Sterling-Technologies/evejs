@@ -33,15 +33,15 @@ module.exports = (function() {
 		var query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
-		
+			
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('sample-create-error', _error.bind(this))
+			.once('{SLUG}-create-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-create-success', _success.bind(this))
-			//Now call to remove the Sample
-			.trigger('sample-create', this.controller, query);
+			.once('{SLUG}-create-success', _success.bind(this))
+			//Now call to remove the {SLUG}
+			.trigger('{SLUG}-create', this.controller, query);
 	};
 	
 	/* Private Methods
@@ -50,11 +50,11 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('sample-create-error');
+		this.controller.unlisten('{SLUG}-create-error');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
-	
+			
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
@@ -63,11 +63,11 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('sample-create-success');
+		this.controller.unlisten('{SLUG}-create-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
-			
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

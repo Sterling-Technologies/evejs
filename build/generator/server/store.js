@@ -5,15 +5,7 @@ module.exports = function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.schema = {
-		title: { type: String, required: true }, 
-		detail: { type: String, required: true }, 
-		email: String, 
-		phone: String, 
-		bio: { type: String, required: true }, 
-		active: { type: Boolean, default: true }, 
-		published: { type: Date, default: Date.now }, 
-		status: { type: String, enum: ['draft', 'review', 'published', 'other'] }};
+	{SCHEMA}
 	
 	/* Private Properties
 	-------------------------------*/
@@ -38,7 +30,7 @@ module.exports = function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('sample', this.definition);
+		this.store = mongoose.model('{SINGULAR}', this.definition);
 	};
 	
 	/* Public Methods
@@ -273,13 +265,14 @@ module.exports = function() {
 		
 		var not, or = [];
 		
+		//TODO: ADD KEYWORD SEARCH
 		//keyword search
-		if(keyword) {
-			or.push([
-				{ name	: new RegExp(keyword, 'ig') },
-				{ username: new RegExp(keyword, 'ig') },
-				{ email	: new RegExp(keyword, 'ig') } ]);
-		}
+		// if(keyword) {
+		//	 or.push([
+		//		{ field1	: new RegExp(keyword, 'ig') },
+		//		{ field2	: new RegExp(keyword, 'ig') },
+		//		{ field3	: new RegExp(keyword, 'ig') } ]);
+		// }
 		
 		
 		for(var key in query) {

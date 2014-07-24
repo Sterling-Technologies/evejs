@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating Sample';
-    public.header       = 'Updating Sample';
+    public.title        = 'Updating {SINGULAR}';
+    public.header       = 'Updating {SINGULAR}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
-        path: '/sample',
-        icon: 'facebook', 
-        label: 'Samples' 
-    }, {  label: 'Create Sample' }];
+        path: '/{SLUG}',
+        icon: '{ICON}', 
+        label: '{PLURAL}' 
+    }, {  label: 'Update {SINGULAR}' }];
 	
     public.data     = {};
 	
-    public.template = controller.path('sample/template') + '/form.html';
+    public.template = controller.path('{SLUG}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -41,10 +41,8 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
-			.then(_setCountries)
         	.then(_setData)
-        	.then(_output)
-			.then(_listen);
+        	.then(_output);
         
         return this;
     };
@@ -54,13 +52,15 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
-		this.data.country 	= this.countries;
 		
-		var post = controller.getPost();
+		var data = controller.getPost();
 		
-		if(post && post.length) {
+		if(data && data.length) {
 			//query to hash
-			this.data.user = $.queryToHash(post);
+			this.data.{SLUG} = $.queryToHash(data);
+			
+			//ENUMS
+			{ENUMS}
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -76,16 +76,15 @@ define(function() {
 			return;
 		}
 		
-		//if no data user set
-		if(!this.data.user) {
+		//if no data {SLUG} set
+		if(!this.data.{SLUG}) {
 			//get it from the server
-			//get user id
+			//get {SLUG} id
 			var id =  window.location.pathname.split('/')[3];
-			var url = controller.getServerUrl() + '/sample/detail/'+id;
+			var url = controller.getServerUrl() + '/{SLUG}/detail/'+id;
 			
 			$.getJSON(url, function(response) {
-				
-				this.data.sample = response.results;
+				this.data.{SLUG} = response.results;
 				next();
 			}.bind(this));
 			
@@ -97,12 +96,12 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = [ 'text!' + this.template ];
+        var templates = ['text!' + controller.path('{SLUG}/template') +  '/form.html'];
 
         //require form templates
         //assign it to main form
         require(templates, function(form) {
-            //render the body
+			//render the body
 			var body = Handlebars.compile(form)(this.data);
 			
 			controller
@@ -111,58 +110,19 @@ define(function() {
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
-				
+			
+			// fire this event whenever the update page of {SLUG} is available and fully loaded
+			controller.trigger('{SLUG}-update-ready');
+
 			next();
 		}.bind(this));
     };
 
-    var _listen = function(next) {
-	   	
-	    next();
-    };
-	
 	var _valid = function() {
 		//clear errors
 		this.data.errors = {};
 		
-		//local validations
-		if (isNaN(this.data.sample.title) || this.data.sample.title > 4) {
-			this.data.errors.title = { message: 'Title should be a number greater than 4'};
-		}
-		if(!this.data.sample.title || !this.data.sample.title.length) {
-			this.data.errors.title = { message: 'Title cannot be empty.' };
-		}
-
-		if (isNaN(this.data.sample.detail) || this.data.sample.detail < 7) {
-			this.data.errors.detail = { message: 'Detail should be a number lesser than 7'};
-		}
-		if(!this.data.sample.detail || !this.data.sample.detail.length) {
-			this.data.errors.detail = { message: 'Detail cannot be empty.' };
-		}
-
-		if ((new RegExp('/^(?:(?:(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|\x5c(?=[@,"\[\]'
-				+ '\x5c\x00-\x20\x7f-\xff]))(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]'
-				+ '\x5c\x00-\x20\x7f-\xff]|\x5c(?=[@,"\[\]\x5c\x00-\x20\x7f-\xff])|\.(?=[^\.])){1,62'
-				+ '}(?:[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]|(?<=\x5c)[@,"\[\]\x5c\x00-\x20\x7f-\xff])|'
-				+ '[^@,"\[\]\x5c\x00-\x20\x7f-\xff\.]{1,2})|"(?:[^"]|(?<=\x5c)"){1,62}")@(?:(?!.{64})'
-				+ '(?:[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.?|[a-zA-Z0-9]\.?)+\.(?:xn--[a-zA-Z0-9]'
-				+ '+|[a-zA-Z]{2,6})|\[(?:[0-1]?\d?\d|2[0-4]\d|25[0-5])(?:\.(?:[0-1]?\d?\d|2[0-4]\d|25'
-				+ '[0-5])){3}\])$/', 'ig')).test(this.data.sample.email)) {
-			this.data.errors.email = { message: 'Email should be a valid email.' };
-		}
-
-		if(!this.data.sample.bio || !this.data.sample.bio.length) {
-			this.data.errors.bio = { message: 'Bio cannot be empty.' };
-		}
-
-		try {
-			$.datepicker.parseDate('dd/dd/dddd', this.data.sample.published);
-		}
-		catch(er) {
-			this.data.errors.published = { message: 'Published must be date as dd/dd/dddd'};
-		}
-
-
+		//TODO: ADD VALIDATION HERE
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) == '{}';
@@ -170,18 +130,18 @@ define(function() {
 	
 	var _process = function(next) {
 		var id 		=  window.location.pathname.split('/')[3],
-			url 	= controller.getServerUrl() + '/sample/update/'+id;
+			url 	= controller.getServerUrl() + '/{SLUG}/update/'+id;
 		
 		//save data to database
-		$.post(url, this.data.sample, function(response) {
+		$.post(url, this.data.{SLUG}, function(response) {
 			response = JSON.parse(response);
 			
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', 'Sample successfully created!', 'success')
+					.notify('Success', '{SINGULAR} successfully updated!', 'success')
 					//go to listing
-					.redirect('/sample');
+					.redirect('/{SLUG}');
 				
 				//no need to next since we are redirecting out
 				return;

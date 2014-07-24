@@ -30,7 +30,7 @@ module.exports = function() {
 	};
 	
 	public.path = function(key) {
-		return this.controller.path('sample/' + key);
+		return this.controller.path('{SLUG}/' + key);
 	};
 	
 	/* Private Methods

@@ -35,16 +35,16 @@ module.exports = (function() {
 			order 	= this.request.query.order 		|| {},
 			count	= this.request.query.count 		|| 0,
 			keyword	= this.request.query.keyword 	|| null;
-			
+		
 		if(count) {
-			this.controller.sample().store().getTotal(
+			this.controller.{SLUG}().store().getTotal(
 				filter, 	keyword, 
 				_response.bind(this));
 			
 			return;
 		}
 		
-		this.controller.sample().store().getList(
+		this.controller.{SLUG}().store().getList(
 			filter, 	keyword, 
 			order, 		start, 
 			range,		_response.bind(this));
@@ -55,32 +55,23 @@ module.exports = (function() {
 	var _response = function(error, data) {
 		//if there are errors
 		if(error) {
-			_error.call(this, error);
+			//setup an error response
+			this.response.message = JSON.stringify({ 
+				error: true, 
+				message: error.message });
+			
+			//trigger that a response has been made
+			this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 			return;
 		}
 		
-		//no error
-		_success.call(this, data);
-	};
-	
-	var _success = function(data) {
-		//then prepare the package
+		//no error, then prepare the package
 		this.response.message = JSON.stringify({ 
 			error: false, 
 			results: data });
 		
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
-	};
-	
-	var _error = function(error) {
-		//setup an error response
-		this.response.message = JSON.stringify({ 
-			error: true, 
-			message: error.message });
-		
-		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	/* Adaptor

@@ -5,17 +5,17 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'Samples';
-	public.header 		= 'Samples';
-	public.subheader 	= '';
-	public.crumbs 		= [{ icon: 'facebook', label: 'Samples' }];
+	public.title 		= '{PLURAL}';
+	public.header 		= '{PLURAL}';
+	public.subheader 	= 'CRM';
+	public.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
 	public.data 		= {};
 	
 	public.start		= 0;
 	public.page 		= 1;
 	public.range 		= 25;
 	
-	public.template 	= controller.path('sample/template') + '/index.html';
+	public.template 	= controller.path('{SLUG}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -61,13 +61,18 @@ define(function() {
 		//4. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		
-		//5. get all count
-		batch.push({ url: _getAllCountRequest.call(this, query) });
-		
 		$.post(
-			controller.getServerUrl() + '/sample/batch', 
+			controller.getServerUrl() + '/{SLUG}/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
+			
+			var i, rows = [];
+			
+			//loop through data
+			for(i in response.batch[0].results) {
+                //add it to row
+				rows.push(response.batch[0].results[i]);
+            }
 			
 			var showing = query.mode || 'active';
 			showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
@@ -75,16 +80,14 @@ define(function() {
 			//1. List
 			//2. Active Count
 			//3. Trash Count
-			//4. All Count
 			
 			this.data = {
 				showing : showing,
-				rows	: response.batch[0].results,
+				rows	: rows,
 				mode	: query.mode || 'active',
 				keyword	: query.keyword || null,
 				active	: response.batch[1].results,
 				trash	: response.batch[2].results,
-				all		: response.batch[3].results,
 				range	: this.range };
             
 			next();
@@ -110,12 +113,12 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.sample-list a.remove, section.sample-list a.restore').click(function(e) {
+		$('section.{SLUG}-list a.remove, section.{SLUG}-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.sample-list  tbody input[type="checkbox"]').click(function() {
+		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
 				jQuery('tbody input[type="checkbox"]').each(function() {
@@ -148,17 +151,14 @@ define(function() {
 		
 		switch(request.mode || 'active') {
 			case 'active':
-				query.filter.active = 1;
+				query.filter.password = null;
 				break;
 			case 'trash':
 				query.filter.active = 0;
 				break;
-			case 'all':
-				query.filter.active = -1;
-				break;
 		}
 		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getActiveCountRequest = function(request) {
@@ -171,9 +171,9 @@ define(function() {
 		}
 	
 		query.count = 1;
-		query.filter.active = 1;
+		query.filter.password = null;
 		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getTrashCountRequest = function(request) {
@@ -188,22 +188,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 0;
 		
-		return '/sample/list?' + $.hashToQuery(query);
-	};
-	
-	var _getAllCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.active = -1;
-		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	/* Adaptor
