@@ -52,45 +52,30 @@ define(function() {
 	/* Private Methods
 	-------------------------------*/
 	var _setData = function(next) {
-		var batch = [], query = $.getUrlQuery();
+		this.data.id  = controller.getUrlSegment(-1);
+		this.data.url = controller.getServerUrl() + '/user/detail/' + this.data.id + 
+						'?join[to]=addresses&join[using]=addresses._id';
 
-		// get user id
-		this.data.id = controller.getUrlSegment(-1);
+		$.getJSON(this.data.url, function(response) {
+			var addresses = response.results.addresses;
 
-		// get list request
-		batch.push({ url : _getListRequest.call(this, query) });
-		// get active count
-		batch.push({ url : _getActiveCountRequest.call(this, query) });
+			if(addresses.length !== 0) {
+				this.data.rows = [], length = addresses.length;
 
-		$.post(
-			controller.getServerUrl() + '/address/batch', 
-			JSON.stringify(batch), function(response) { 
-			response = JSON.parse(response);
-			
-			var i, rows = [];
-			
-			//loop through data
-			for(i in response.batch[0].results) {
-                //add it to row
-				rows.push({
-					id      	  : response.batch[0].results[i]._id,
-					label 	      : response.batch[0].results[i].label,
-					contact_name  : response.batch[0].results[i].contact_name,
-					city    	  : response.batch[0].results[i].city,
-					country		  : response.batch[0].results[i].country,
-					active		  : response.batch[0].results[i].active,
-					user 	  	  : response.batch[0].results[i].users[0]._id });
-            }
-			
-			//1. List
-			//2. Active Count
-			//3. Trash Count
-			//4. All Count
-			this.data = {
-				id 			: this.data.id,
-				rows		: rows,
-				active 		: response.batch[1].results,
-				range		: this.range };
+				for(var i = 0; i < length; i ++) {
+					if(addresses[i]._id !== null && addresses[i]._id.active) {
+						this.data.rows.push({
+							id 				: addresses[i]._id._id,
+							label 			: addresses[i]._id.label,
+							contact_name 	: addresses[i]._id.contact_name,
+							city 			: addresses[i]._id.city,
+							country 		: addresses[i]._id.country,
+							active 			: addresses[i]._id.active,
+							user_id 		: response.results._id
+						});
+					}
+				}
+			}
 
 			next();
 		}.bind(this));
@@ -109,38 +94,6 @@ define(function() {
 
 			next();
 		}.bind(this));
-	};
-
-	var _getListRequest = function(request) {
-		// request query
-		var query = {};
-		
-		// query filter
-		query.filter 	= { active : 1 };
-		// query range
-		query.range		= this.range;
-		// query start
-		query.start 	= this.start;
-		// query join
-		query.join		= { to : 'users', using : 'users._id', value : this.data.id };
-		
-		if(request.page) {
-			query.start = (request.page - 1) * this.range;
-		}
-		
-		return '/address/list?' + $.hashToQuery(query);
-	};
-
-	var _getActiveCountRequest = function(request) {
-		var query = {};
-
-		query.filter = { active : 1 };
-		query.join	 = { to : 'users', using : 'users._id', value : this.data.id };
-
-		query.count 		= 1;
-		query.filter.active = 1;
-
-		return '/address/list?' + $.hashToQuery(query);
 	};
 
 	/* Adaptor

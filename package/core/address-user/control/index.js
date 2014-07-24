@@ -21,7 +21,7 @@ controller
 	}
 	
 	//router -> action
-	var route = { action: 'index' };
+	var route = { action: null };
 	switch(true) {
 		case window.location.pathname.indexOf('/user/address/create') === 0:
 			route.action = 'create';
@@ -29,11 +29,20 @@ controller
 		case window.location.pathname.indexOf('/user/address/update') === 0:
 			route.action = 'update';
 			break;
+		case window.location.pathname.indexOf('/user/address/remove') === 0:
+			route.action = 'remove';
+			break;
 		case window.location.pathname.indexOf('/user/address') === 0:
 			route.action = 'index';
 			break;
 	}
-	
+		
+	// if there is no action
+	if(!route.action) {
+		// just do nothing
+		return;
+	}
+
 	route.path = controller.path('address-user/action') + '/' + route.action + '.js';
 	
 	//event when the user action is about to render
