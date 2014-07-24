@@ -45,6 +45,52 @@ module.exports = function(controller) {
 	
 	/* Public Methods
 	-------------------------------*/
+	public.join = function(document) {
+		// load stores for dbref
+		for(var i in this.controller) {
+			if(typeof this.controller[i] === 'function' && 
+			   this.controller.hasOwnProperty(i)) {
+			  	// load store
+			  	this.controller[i]().store && this.controller[i]().store();
+			}
+		}
+
+		var schema = mongoose.Schema;
+
+		// define reference field
+		var field = {};
+		
+		// NOTE: we need to manually do this to use
+		// custom object keys before adding this to
+		// schema definition
+		field[document] = [{ _id : { type : schema.Types.ObjectId, ref : document } }];
+
+		// add reference field to schema definition
+		this.definition.add(field);
+
+		// re-define store with reference
+		this.store = mongoose.model('categories', this.definition);
+
+		return this;
+	};
+
+	/**
+	 * Inserts the data if id was supplied
+	 * otherwise it will update a record 
+	 * based on id
+	 *
+	 * @param 	object
+	 * @param 	function
+	 * @return 	this
+	 */
+	public.upsert = function(query, callback) {
+		if(!query._id) {
+			return this.insert(query, callback);
+		}
+
+		return this.update(query._id, query, callback);
+	};
+
 	/**
 	 * Returns count based on the query
 	 *

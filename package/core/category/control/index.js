@@ -94,6 +94,6 @@ controller
 
 	require(['text!' + controller.path('category/template') + '/tabs.html'], function(html) {
 		html = Handlebars.compile(html)({ id : id, url : url });
-		jQuery('section.category-update ul.nav.nav-tabs').append(html)
+		jQuery('section.category-update ul.nav.nav-tabs').prepend(html)
 	});
 });
