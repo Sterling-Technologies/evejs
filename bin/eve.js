@@ -11,13 +11,13 @@
  * eve watch server		- Watches changes in server only
  * eve generate ecommerce/product
  */
-var eden = require('edenjs'),
-        lint = require('../lib/lint'),
+var eden 		= require('edenjs'),
+        lint 	= require('../lib/lint'),
         nodemon = require('../lib/nodemon'),
-        local = process.env.PWD || process.cwd(),
+        local 	= process.env.PWD || process.cwd(),
         //NOTE: maybe find a better way to find the root folder
-        root = process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
-        action = process.argv[2] || 'watch';
+        root 	= process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
+        action 	= process.argv[2] || 'watch';
 
 require('../lib/')
         .setRoot(root)
@@ -127,7 +127,7 @@ require('../lib/')
             console.log('\x1b[32m%s\x1b[0m', 'Watching for server changes ...');
 
             // build the settings
-            var settings = config.server.nodemon || { };
+            var settings = config.server.nodemon || {};
 
             // if settings.cwd is not defined
             if (!settings.cwd) {
@@ -136,7 +136,7 @@ require('../lib/')
             }
 
             // starts the nodemon
-            nodemon(settings);
+            nodemon(eve, settings);
         })
         .listen('watch-server-update', function(event, path, destination, eve, local, config, push) {
             //we only care if something has changed
@@ -181,6 +181,17 @@ require('../lib/')
                 push(event, path, destination);
             });
         })
+		
+		//nodemon events
+		.listen('nodemon-start', function() {
+        	console.log('\x1b[35m%s\x1b[0m', 'Server has started ...');
+		})
+		.listen('nodemon-quit', function() {
+        	console.log('\x1b[35m%s\x1b[0m', 'Server has stopped ...');
+		})
+		.listen('nodemon-restart', function() {
+			console.log('\x1b[35m%s\x1b[0m', 'Server has restarted ...');
+		})
 
         //web events
         .listen('install-web-step-1', function() {

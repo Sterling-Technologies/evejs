@@ -17,8 +17,7 @@ module.exports = function(eve, local, config) {
 			json.server.lint = json.server.lint || {
 				bitwise : false,
 				strict 	: false,
-				node 	: true
-			};
+				node 	: true };
 			
 			var copy = [{
 				name 		: 'server',
@@ -54,9 +53,9 @@ module.exports = function(eve, local, config) {
 				
 				var json = JSON.parse(content);	
 				
-				//if there is already a control path
-				if(json.control && json.control.path) {
-					deployTo = json.control.path;
+				//if there is already a server path
+				if(json.server && json.server.path) {
+					deployTo = json.server.path;
 					//goto next
 					next();
 					return;
@@ -113,74 +112,81 @@ module.exports = function(eve, local, config) {
 		});
 	})
 	
-	// 5. Loop through each vendor folder [ROOT]/package/[VENDOR]
 	.then(function(next) {
-		eden('folder', eve.root + '/package')
-		.getFolders(null, false, function(folders) {
-			//make a sub sequence
-			var subSequence = eden('sequence');
-			
-			for(var i = 0; i < folders.length; folders ++) {
-				// 5a. Create [VENDOR] in [SERVER]/package
-				subSequence.then(function(folder, subNext) {
-					eden('folder', deployTo + '/package/' + folder.getName())
-						.mkdir(0777, function() {
-							subNext();
-						});	
-				}.bind(this, folders[i]));
+		eden('folder', eve.root + '/package').getFolders(null, false, next);
+	})
+	
+	.then(function(vendors, next) {
+		//make a sub sequence
+		var sequence2 = eden('sequence');
+		
+		eden('array').each(vendors, function(i, vendor) {
+			// 5a. Create [VENDOR] in [CONTROL]/application/package
+			sequence2.then(function(next2) {
+				var path = deployTo + '/package/' + vendor.getName();
 				
-				// 5b. Loop through each package folder [ROOT]/package/[VENDOR]/[PACKAGE]
-				eden('folder', eve.root + '/package/' + folders[i].getName())
-				.getFolders(null, false, function(vendor, packages) {
-					for(var j = 0; j < packages.length; j++) {	
-						// 5b1. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/server/ to [SERVER]/package/[VENDOR]/[PACKAGE]
-						subSequence.then(function(package, subNext) {
-							var deployPackage = deployTo 
-								+ '/package/' 
-								+ vendor.getName() + '/' 
-								+ package.getName();
-							
-							eden('folder', package.path + '/server')
-							.copy(deployPackage, function() {
-								subNext();
-							});
-						}.bind(this, packages[j]));
-						
-						// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/server/ to local
-						subSequence.then(function(package, subNext) {
-							var localPackage = local 
-								+ '/package/' 
-								+ vendor.getName() + '/' 
-								+ package.getName() 
-								+ '/server';
-							
-							eden('folder', package.path + '/server')
-							.copy(localPackage, function() {
-								subNext();
-							});
-						}.bind(this, packages[j]));
-					}			
-				}.bind(this, folders[i]));
-					
-			}
-			
-			//npm install
-			subSequence.then(function(subNext) {
-				eve.trigger('install-server-step-6', eve, local, deployTo);
-				exec('cd ' + deployTo + ' && npm install', subNext);
-			});
-			
-			//alas
-			subSequence.then(function(error, stdout, stderr, subNext) {
-				if(error) {
-					eve.trigger('error', error);
-					return;
-				}
+				eden('folder', path).mkdir(0777, function() {
+					next2();
+				});	
+			}).then(function(next2) {
+				var path = eve.root + '/package/' + vendor.getName();
 				
-				eve.trigger('install-server-complete', eve, local, deployTo);
-				subNext();
-				next();
+				eden('folder', path).getFolders(null, false, next2);
+			// 5b. Loop through each package folder [ROOT]/package/[VENDOR]/[PACKAGE]
+			}).then(function(packages, next2) {
+				//make a sub sequence
+				var sequence3 = eden('sequence');
+				
+				eden('array').each(packages, function(i, package) {
+					// 5b1. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/server/ to [SERVER]/package/[VENDOR]/[PACKAGE]
+					sequence3.then(function(next3) {
+						var source = package.path + '/server';
+						var destination = deployTo 
+							+ '/package/' 
+							+ vendor.getName() + '/' 
+							+ package.getName();
+							
+						eden('folder', source).copy(destination, function() {
+							next3();
+						});
+					// 5b2. Copy [ROOT]/package/[VENDOR]/[PACKAGE]/server/ to caller
+					}).then(function(next3) {
+						var source = package.path + '/server';
+						var destination = local 
+							+ '/package/' 
+							+ vendor.getName() + '/' 
+							+ package.getName() 
+							+ '/server';
+							
+						eden('folder', source).copy(destination, function() {
+							next3();
+						});
+					});
+				});
+				
+				//we are done with sequence 3
+				sequence3.then(function() {
+					//call next 2
+					next2();
+				});
 			});
 		});
+		
+		//we are done with sequence 2
+		sequence2.then(function() {
+			//call next 
+			next();
+		});
+	})
+	
+	//npm install
+	.then(function(next) {
+		eve.trigger('install-server-step-6', eve, local, deployTo);
+		exec('cd ' + deployTo + ' && npm install', next);
+	})
+	
+	//alas
+	.then(function() {
+		eve.trigger('install-server-complete', eve, local, deployTo);
 	});
 };
