@@ -13,15 +13,14 @@ $ npm install -g evejs
 ```
 
 ## Quick Start
+1 - Install 
 
-  1. Install and watch
-
+```bash
+$ eve
 ```
-eve
-```
 
-  2. Follow instructions.
-  3. Point Apache to the control and web folders in the build environments you specified.
+2 - Follow instructions.
+3 - Point Apache to the control and web folders in the build environments you specified.
 
 ### Features
 
