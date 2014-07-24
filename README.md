@@ -14,24 +14,14 @@ $ npm install -g evejs
 
 ## Quick Start
 
-  1. Install an eve build in current directory
+  1. Install and watch
 
 ```
-eve install
+eve
 ```
 
-  This does 2 things. Deploys a build in your specified folder and creates default packages and config in your current directory.
-
-  3. Follow instructions.
-  4. Point Apache to the control and web folders in the build environments you specified.
-  5. Watch for changes in the current directory
-
-```
-eve watch
-```
-  6. Use nodemon on the server folder located in your specified build folder.
-  
-  All changes made in the current directory will be evaluated and redistributed to your build folder.
+  2. Follow instructions.
+  3. Point Apache to the control and web folders in the build environments you specified.
 
 ### Features
 
