@@ -18,8 +18,28 @@ module.exports = function(eve, local, args) {
 				//path test
 				var destination, pathArray = path.substr(local.length).split('/');
 				
+				//update if [CALLER]/package/[VENDOR]/[PACKAGE]/server/test/*
+				if (pathArray[1] && pathArray[4] 
+				&& pathArray[1] == 'package'
+				&& pathArray[4] == 'server'
+				&& pathArray[5] === 'test') {
+					destination = config.server.path
+						+ '/test/'
+                                                + pathArray[2] + '/'
+						+ pathArray[3] + '/'
+						+ pathArray.slice(6).join('/');
+                                } else if (event == 'unlinkDir'
+				&& pathArray[1] && pathArray[4] 
+				&& pathArray[1] == 'package'
+				&& pathArray[4] == 'server'
+				&& pathArray[5] === 'test'
+				&& pathArray[6] === '') {
+					destination = config.server.path
+						+ '/test/'
+                                                + pathArray[2];
+
 				//update if [CALLER]/package/[VENDOR]/[PACKAGE]/server/*
-				if(pathArray[1] && pathArray[4] 
+                                } else if(pathArray[1] && pathArray[4] 
 				&& pathArray[1] == 'package'
 				&& pathArray[4] == 'server') {
 					destination = config.server.path 
@@ -43,32 +63,33 @@ module.exports = function(eve, local, args) {
 					destination = config.server.path
 						+ '/config/'
 						+ pathArray.slice(3).join('/');
-				}
+                                }
 				
 				//destination cannot be determined
 				if(!destination) {
 					eve.trigger('watch-server-404', event, eve, local, config);
 					return;
 				}
-				
+                                
 				//we are updating now
 				eve.trigger('watch-server-update', event, 
 				path, destination, eve, local, config, 
-				function(event, path, destination) {
+				function(event, path, destination, callback) {
+                                    callback = callback || function() {};
 					switch(event) {
 						case 'unlink':
-							eden('file', destination).remove();
+							eden('file', destination).remove(callback);
 							break;
 						case 'add':
 						case 'change':
 							eden('file', path)
-							.copy(destination);
+							.copy(destination, callback);
 							break;
 						case 'unlinkDir':
-							eden('folder', destination).remove();
+							eden('folder', destination).remove(callback);
 							break;
 						case 'addDir':
-							eden('folder', destination).mkdir();
+							eden('folder', destination).mkdir(callback);
 							break;
 					}
 				});
