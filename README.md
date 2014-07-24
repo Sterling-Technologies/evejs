@@ -20,6 +20,7 @@ $ eve
 ```
 
 2 - Follow instructions.
+
 3 - Point Apache to the control and web folders in the build environments you specified.
 
 ### Features
