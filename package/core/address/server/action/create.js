@@ -59,9 +59,9 @@ module.exports = (function() {
 		this.controller.trigger('address-action-response', this.request, this.response);
 	};
 			
-	var _success = function() {
+	var _success = function(results) {
 		//set up a success response
-		this.response.message = JSON.stringify({ error: false });
+		this.response.message = JSON.stringify({ error: false, results : results });
 		//dont listen for error anymore
 		this.controller.unlisten('address-create-error');
 		//trigger that a response has been made
