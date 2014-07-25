@@ -1,25 +1,25 @@
 module.exports = (function() { 
-	var c = function(controller, request, response) {
+	var Definition = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
-    }, public = c.prototype;
+    }, prototype = Definition.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  	= null;
-    public.request   	= null;
-    public.response  	= null;
+    prototype.controller  	= null;
+    prototype.request   	= null;
+    prototype.response  	= null;
     
 	/* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
-        return new c(controller, request, response);
+    prototype.__load = Definition.load = function(controller, request, response) {
+        return new Definition(controller, request, response);
     };
     
 	/* Construct
     -------------------------------*/
-	public.__construct = function(controller, request, response) {
+	prototype.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
 		this.request  	= request;
@@ -28,20 +28,20 @@ module.exports = (function() {
 	
 	/* Public Methods
     -------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		//1. SETUP: change the string into a native object
 		var query = this
 			.controller.eden.load('string')
 			.queryToHash(this.request.message);
-		
+			
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('sample-create-error', _error.bind(this))
+			.once('{SLUG}-create-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-create-success', _success.bind(this))
-			//Now call to remove the Sample
-			.trigger('sample-create', this.controller, query);
+			.once('{SLUG}-create-success', _success.bind(this))
+			//Now call to remove the {SLUG}
+			.trigger('{SLUG}-create', this.controller, query);
 	};
 	
 	/* Private Methods
@@ -50,11 +50,11 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('sample-create-error');
+		this.controller.unlisten('{SLUG}-create-error');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
-	
+			
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
@@ -63,12 +63,12 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('sample-create-success');
+		this.controller.unlisten('{SLUG}-create-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
-			
+
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 })();

@@ -1,25 +1,25 @@
 module.exports = (function() { 
-	var c = function(controller, request, response) {
+	var Definition = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
-    }, public = c.prototype;
+    }, prototype = Definition.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  	= null;
-    public.request   	= null;
-    public.response  	= null;
+    prototype.controller  	= null;
+    prototype.request   	= null;
+    prototype.response  	= null;
     
 	/* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
-        return new c(controller, request, response);
+    prototype.__load = Definition.load = function(controller, request, response) {
+        return new Definition(controller, request, response);
     };
     
 	/* Construct
     -------------------------------*/
-	public.__construct = function(controller, request, response) {
+	prototype.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
 		this.request  	= request;
@@ -28,7 +28,7 @@ module.exports = (function() {
 	
 	/* Public Methods
     -------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
 			//setup an error
@@ -39,37 +39,37 @@ module.exports = (function() {
 		
 		this.controller
 			//when there is an error
-			.once('sample-remove-error', _error.bind(this))
+			.once('{SLUG}-remove-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-remove-success', _success.bind(this))
-			//Now call to remove the Sample
-			.trigger('sample-remove', this.controller, this.request.variables[0]);
+			.once('{SLUG}-remove-success', _success.bind(this))
+			//Now call to remove the {SLUG}
+			.trigger('{SLUG}-remove', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _success = function(row) {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false, results: row });
+		//dont listen for error anymore
+		this.controller.unlisten('{SLUG}-remove-error');
+		//trigger that a response has been made
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+	};
+	
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
 			error: true, 
 			message: error.message });
-		
+			
 		//dont listen for success anymore
-		this.controller.unlisten('sample-remove-success');
+		this.controller.unlisten('{SLUG}-remove-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
-	var _success = function(row) {
-		//set up a success response
-		this.response.message = JSON.stringify({ error: false, results: row });
-		//dont listen for error anymore
-		this.controller.unlisten('{TEMPORARY}-remove-error');
-		//trigger that a response has been made
-		this.controller.trigger('{TEMPORARY}-action-response', this.request, this.response);
-	};
-			
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 })();

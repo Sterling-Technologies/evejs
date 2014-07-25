@@ -1,9 +1,9 @@
 define(function() {
-	var c = function() {}, public = c.prototype;
+	var Definition = function() {}, prototype = Definition.prototype;
 	
 	/* Public Properties 
 	-------------------------------*/
-	public.data 	= {};
+	prototype.data 	= {};
 
 	/* Private Properties
 	-------------------------------*/
@@ -11,15 +11,15 @@ define(function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
+	prototype.__load = Definition.load = function() {
+		return new Definition();
 	};
 
 	/* Construct
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
-	public.render = function() { 
+	prototype.render = function() { 
         $.sequence()
 			.setScope(this)
         	.then(_process);
@@ -30,19 +30,19 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var post = controller.getPost();
+		var data = controller.getPost();
 		
-		if(!post || !post.length) {
+		if(!data || !data.length) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
 			return;
 		}
 		
-		post = $.queryToHash(post);
+		data = $.queryToHash(data);
 		
 		//if nothing was checked
-		if(!post.action) {
+		if(!data.action) {
 			controller.notify('Error', 'No bulk action chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -51,7 +51,7 @@ define(function() {
 		
 		
 		//if nothing was checked
-		if(!post.id || !post.id.length) {
+		if(!data.id || !data.id.length) {
 			controller.notify('Error', 'No items were chosen.', 'error');
 			window.history.back();
 			//do nothing
@@ -59,16 +59,16 @@ define(function() {
 		}
 		
 		//what is the url base
-		var url =  '/sample/' + post.action + '/';
+		var url =  '/{SLUG}/' + data.action + '/';
 		
 		//prepare the batch query
-		for(var batch = [], i = 0; i < post.id.length; i++) {
-			batch.push({ url: url + post.id[i] });
+		for(var batch = [], i = 0; i < data.id.length; i++) {
+			batch.push({ url: url + data.id[i] });
 		}
 		
 		//call the batch remove
 		$.post(
-		controller.getServerUrl() + '/sample/batch', 
+		controller.getServerUrl() + '/{SLUG}/batch', 
 		JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			for(var errors = false, i = 0; i < response.length; i++) {
@@ -79,7 +79,7 @@ define(function() {
 			}
 			
 			if(!errors) {
-				controller.notify('Success', 'Bulk Action ' + post.action + ' successful!', 'success');
+				controller.notify('Success', 'Bulk Action ' + data.action + ' successful!', 'success');
 			}
 			
 			window.history.back();
@@ -88,6 +88,6 @@ define(function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 
 });

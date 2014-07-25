@@ -1,29 +1,29 @@
 module.exports = function() {
 	//set a goto handler incase other packages
 	//want to access this
-	this.sample = function() {
+	this.{SLUG} = function() {
 		return require('./factory').load(this);
 	};
 	
 	//on init set the paths
 	this.listen('init', function() {
-		this.path('sample', __dirname)
-			.path('sample/action', __dirname + '/action')
-			.path('sample/event', __dirname + '/event');
+		this.path('{SLUG}', __dirname)
+			.path('{SLUG}/action', __dirname + '/action')
+			.path('{SLUG}/event', __dirname + '/event');
 	
 	}.bind(this))
 	 
 	//when the server starts listen to file events
 	.listen('start', function() {
 		//get event path
-		var self = this, events = this.sample().path('event');
+		var self = this, events = this.{SLUG}().path('event');
 		
 		//get files in the event folder
 		this.eden.load('folder', events).getFiles(null, false, function(files) {
 			//loop through files  
 			for(var callback, i = 0; i < files.length; i++) {
 				//accept only js
-				if(files[i].getExtension() != 'js') {
+				if(files[i].getExtension() !== 'js') {
 					continue;
 				}
 				
@@ -31,7 +31,7 @@ module.exports = function() {
 				callback = require(files[i].path);
 				
 				//only listen if it is a callback
-				if(typeof callback != 'function') {
+				if(typeof callback !== 'function') {
 					continue;
 				}
 				
@@ -43,8 +43,8 @@ module.exports = function() {
 	
 	//when a server request has been made
 	.listen('server-request', function(control, request, response) {
-		//if path does not starts with /sample
-		if(request.path != '/sample' && request.path.indexOf('/sample/') !== 0) {
+		//if path does not starts with /{SLUG}
+		if(request.path !== '/{SLUG}' && request.path.indexOf('/{SLUG}/') !== 0) {
 			//do nothing
 			return;
 		}
@@ -52,8 +52,8 @@ module.exports = function() {
 		response.processing = true;
 		
 		//trim the prefix
-		var root 		= this.sample().path('action'),
-			path 		= request.path.replace('/sample', ''),
+		var root 		= this.{SLUG}().path('action'),
+			path 		= request.path.replace('/{SLUG}', ''),
 			buffer 		= path.split('/'),
 			action 		= root + '/index',
 			variables 	= [];
@@ -73,7 +73,7 @@ module.exports = function() {
 		//set the variables
 		request.variables = variables;
 		//listen for response
-		control.once('sample-action-response', function(request, response) {
+		control.once('{SLUG}-action-response', function(request, response) {
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response
