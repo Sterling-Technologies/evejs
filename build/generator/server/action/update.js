@@ -1,25 +1,25 @@
 module.exports = (function() {
-	var c = function(controller, request, response) {
+	var Definition = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
-    }, public = c.prototype;
+    }, prototype = Definition.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  	= null;
-    public.request   	= null;
-    public.response  	= null;
+    prototype.controller  	= null;
+    prototype.request   	= null;
+    prototype.response  	= null;
     
 	/* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
-        return new c(controller, request, response);
+    prototype.__load = Definition.load = function(controller, request, response) {
+        return new Definition(controller, request, response);
     };
     
 	/* Construct
     -------------------------------*/
-	public.__construct = function(controller, request, response) {
+	prototype.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
 		this.request  	= request;
@@ -28,7 +28,7 @@ module.exports = (function() {
 	
 	/* Public Methods
     -------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
 			//setup an error
@@ -44,24 +44,15 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('sample-update-error', _error.bind(this))
+			.once('{SLUG}-update-error', _error.bind(this))
 			//when it is successfull
-			.once('sample-update-success', _success.bind(this))
-			//Now call to update the Sample
-			.trigger('sample-update', this.controller, this.request.variables[0], query);
+			.once('{SLUG}-update-success', _success.bind(this))
+			//Now call to update the {SLUG}
+			.trigger('{SLUG}-update', this.controller, this.request.variables[0], query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
-	var _success = function() {
-		//set up a success response
-		this.response.message = JSON.stringify({ error: false });
-		//dont listen for error anymore
-		this.controller.unlisten('sample-update-error');
-		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
-	};
-	
 	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
@@ -70,12 +61,21 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('sample-update-success');
+		this.controller.unlisten('{SLUG}-update-success');
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 			
+	var _success = function() {
+		//set up a success response
+		this.response.message = JSON.stringify({ error: false });
+		//dont listen for error anymore
+		this.controller.unlisten('{SLUG}-update-error');
+		//trigger that a response has been made
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+	};
+	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 })();

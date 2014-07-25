@@ -1,7 +1,7 @@
-module.exports = function() {
-	var c = function(controller) {
+module.exports = (function() {
+	var Definition = function(controller) {
 		this.__construct.call(this, controller);	
-	}, public = c.prototype;
+	}, prototype = Definition.prototype;
 	
 	/* Properties
 	-------------------------------*/
@@ -9,9 +9,9 @@ module.exports = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function(controller) {
+	prototype.__load = Definition.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c(controller);
+			this.__instance = new Definition(controller);
 		}
 		
 		return this.__instance;
@@ -19,23 +19,23 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function(controller) {
+	prototype.__construct = function(controller) {
 		this.controller = controller;
 	};
 	
 	/* Public Methods
 	-------------------------------*/
-	public.store = function() {
+	prototype.store = function() {
 		return store.load();
 	};
 	
-	public.path = function(key) {
-		return this.controller.path('sample/' + key);
+	prototype.path = function(key) {
+		return this.controller.path('{SLUG}/' + key);
 	};
 	
 	/* Private Methods
 	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c;  
-}();
+	return Definition;  
+})();

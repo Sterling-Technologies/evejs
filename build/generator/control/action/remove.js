@@ -1,9 +1,9 @@
 define(function() {
-	var c = function() {}, public = c.prototype;
+	var Definition = function() {}, prototype = Definition.prototype;
 	
 	/* Public Properties 
 	-------------------------------*/
-	public.data 	= {};
+	prototype.data 	= {};
 
 	/* Private Properties
 	-------------------------------*/
@@ -11,15 +11,15 @@ define(function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
+	prototype.__load = Definition.load = function() {
+		return new Definition();
 	};
 
 	/* Construct
     -------------------------------*/
     /* Public Methods
     -------------------------------*/
-	public.render = function() { 
+	prototype.render = function() { 
         $.sequence()
 			.setScope(this)
         	.then(_process);
@@ -30,7 +30,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/sample/remove/';
+		var url = controller.getServerUrl() + '/{SLUG}/remove/';
 		var id 	= window.location.pathname.split('/')[3];
 		
 		$.getJSON(url + id, function(response) {
@@ -49,6 +49,6 @@ define(function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 
 });

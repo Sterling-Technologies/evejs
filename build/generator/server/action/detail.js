@@ -1,25 +1,25 @@
 module.exports = (function() {
-	var c = function(controller, request, response) {
+	var Definition = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
-    }, public = c.prototype;
+    }, prototype = Definition.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  	= null;
-    public.request   	= null;
-    public.response  	= null;
+    prototype.controller  	= null;
+    prototype.request   	= null;
+    prototype.response  	= null;
     
 	/* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
-        return new c(controller, request, response);
+    prototype.__load = Definition.load = function(controller, request, response) {
+        return new Definition(controller, request, response);
     };
     
 	/* Construct
     -------------------------------*/
-	public.__construct = function(controller, request, response) {
+	prototype.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
 		this.request  	= request;
@@ -28,7 +28,7 @@ module.exports = (function() {
 
 	/* Public Methods
 	-------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
 			//setup an error
@@ -37,7 +37,7 @@ module.exports = (function() {
 			return;
 		}
 		
-		this.controller.sample().store().getDetail(this.request.variables[0], _response.bind(this));
+		this.controller.{SLUG}().store().getDetail(this.request.variables[0], _response.bind(this));
 
 		return this;
 	};
@@ -47,10 +47,11 @@ module.exports = (function() {
 	var _response = function(error, row) {
 		//if there are errors
 		if(error) {
-			_error.call(this, error)
+			_error.call(this, error);
 			return;
 		}
 		
+		//no error, then prepare the package
 		_success.call(this, row);
 	};
 	
@@ -61,7 +62,7 @@ module.exports = (function() {
 			results: row });
 		
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -71,10 +72,10 @@ module.exports = (function() {
 			message: error.message });
 		
 		//trigger that a response has been made
-		this.controller.trigger('sample-action-response', this.request, this.response);
+		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
 	};
 	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 })();

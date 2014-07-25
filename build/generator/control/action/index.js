@@ -1,21 +1,21 @@
 define(function() {
-    var c = function() {
+    var Definition = function() {
 		this.__construct.call(this);
-	}, public = c.prototype;
+	}, prototype = Definition.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'Samples';
-	public.header 		= 'Samples';
-	public.subheader 	= '';
-	public.crumbs 		= [{ icon: 'facebook', label: 'Samples' }];
-	public.data 		= {};
+	prototype.title 		= '{PLURAL}';
+	prototype.header 		= '{PLURAL}';
+	prototype.subheader 	= 'CRM';
+	prototype.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
+	prototype.data 		= {};
 	
-	public.start		= 0;
-	public.page 		= 1;
-	public.range 		= 25;
+	prototype.start		= 0;
+	prototype.page 		= 1;
+	prototype.range 		= 25;
 	
-	public.template 	= controller.path('sample/template') + '/index.html';
+	prototype.template 	= controller.path('{SLUG}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -23,20 +23,20 @@ define(function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
+	prototype.__load = Definition.load = function() {
+		return new Definition();
 	};
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	prototype.__construct = function() {
 		//reset data because of "pass by ref"
 		this.data = {};
 	};
 	
 	/* Public Methods
 	-------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		$.sequence()
 			.setScope(this)
 			.then(_setData)
@@ -61,13 +61,22 @@ define(function() {
 		//4. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		
-		//5. get all count
-		batch.push({ url: _getAllCountRequest.call(this, query) });
-		
 		$.post(
-			controller.getServerUrl() + '/sample/batch', 
+			controller.getServerUrl() + '/{SLUG}/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
+			
+			var i, rows = [];
+			
+			//loop through data
+			for(i in response.batch[0].results) {
+                //OUTPUT
+				//NOTE: BULK GENERATE
+				{OUTPUT_FORMAT}
+				
+				//add it to row
+				rows.push(response.batch[0].results[i]);
+            }
 			
 			var showing = query.mode || 'active';
 			showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
@@ -75,16 +84,14 @@ define(function() {
 			//1. List
 			//2. Active Count
 			//3. Trash Count
-			//4. All Count
 			
 			this.data = {
 				showing : showing,
-				rows	: response.batch[0].results,
+				rows	: rows,
 				mode	: query.mode || 'active',
 				keyword	: query.keyword || null,
 				active	: response.batch[1].results,
 				trash	: response.batch[2].results,
-				all		: response.batch[3].results,
 				range	: this.range };
             
 			next();
@@ -110,22 +117,30 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.sample-list a.remove, section.sample-list a.restore').click(function(e) {
+		$('section.{SLUG}-list a.remove, section.{SLUG}-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.sample-list  tbody input[type="checkbox"]').click(function() {
+		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
-				jQuery('tbody input[type="checkbox"]').each(function() {
+				$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
 					if(!this.checked) {
 						allChecked = false;
 					}
 				});
 				
-				jQuery('th .checkall')[0].checked = allChecked;
+				$('section.{SLUG}-list th input.checkall')[0].checked = allChecked;
 			}, 1);
+		});
+		
+		//listen to remove restore
+		$('section.{SLUG}-list th input.checkall').click(function() {
+			var checked = this.checked;
+			$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
+				this.checked = checked;
+			});
 		});
 		
 		next();
@@ -153,12 +168,9 @@ define(function() {
 			case 'trash':
 				query.filter.active = 0;
 				break;
-			case 'all':
-				query.filter.active = -1;
-				break;
 		}
 		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getActiveCountRequest = function(request) {
@@ -173,7 +185,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 1;
 		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getTrashCountRequest = function(request) {
@@ -188,25 +200,10 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 0;
 		
-		return '/sample/list?' + $.hashToQuery(query);
-	};
-	
-	var _getAllCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.active = -1;
-		
-		return '/sample/list?' + $.hashToQuery(query);
+		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 });
