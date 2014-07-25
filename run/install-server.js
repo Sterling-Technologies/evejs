@@ -19,6 +19,7 @@ module.exports = function(eve, local, config) {
 				strict 	: false,
 				node 	: true
 			};
+			
 			json.server.lint_mocha = json.server.lint_mocha || {
 				bitwise : false,
 				strict 	: false,
@@ -29,9 +30,8 @@ module.exports = function(eve, local, config) {
 					before     : true,
 					beforeEach : true,
 					after      : true,
-					afterEach  : true
-                                }
-			};
+					afterEach  : true }};
+			
 			json.server.mocha = '--reporter list --recursive';
 			json.server.nodemon = { ignore: ['test/'] };
 
