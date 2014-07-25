@@ -1,0 +1,44 @@
+<section class="user-category user-update row">
+    <div class="col-sm-12">
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-16">
+            </ul>
+            <div class="tab-content category-edit-tab-content">
+			    <!-- START: BULK FORM -->
+			    <form action="#" method="post" class="form-horizontal category-form">
+		            <div class="dataTables_wrapper table-filters" role="grid">
+		            	<div class="row">
+	                    	<div class="col-sm-12">
+	                        	<!-- START: ADD NEW Category -->
+	                        	<div class="pull-right create"><a class="btn btn-info btn-sm" 
+	                        	href="/category/create">Create New Category</a></div>
+	                        	<!-- END: ADD NEW Category -->
+	                    	</div>
+		            	</div>
+		        	</div>
+		        	<div class="space-12"></div>
+		        	<div class="form-group clearfix">
+		        		<label class="col-lg-3 control-label">Categories</label>
+		        		<div class="col-lg-9">
+		        			<select class="chosen chosen-select tag-input-style col-lg-9" multiple="true"
+		        				data-placeholder="Choose a Category">
+		        				{{#each categories}}
+	        						<option value="{{_id}}" {{#if selected}}selected{{/if}}>{{tree}}</option>
+		        				{{/each}}
+							</select>
+						</div>
+		        	</div>
+		        	<div class="space-1"></div>
+		        	<div class="clearfix form-actions">
+						<div class="col-md-12">
+						    {{#block 'field/button' 'class="btn-primary"'}}
+						    	<i class="icon-ok bigger-110"></i>
+						    	Save
+						    {{/block}}
+						</div>
+					</div>
+			    </form>
+            </div>
+        </div>
+    </div>
+</section>
