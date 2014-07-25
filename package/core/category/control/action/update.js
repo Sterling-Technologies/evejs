@@ -13,7 +13,7 @@ define(function() {
         path: '/category',
         icon: 'sitemap', 
         label: 'Categories' 
-    }, {  label: 'Create Category' }];
+    }, {  label: 'Update Category' }];
 	
     public.data     = {};
 	
