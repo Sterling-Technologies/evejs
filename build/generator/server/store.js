@@ -1,10 +1,11 @@
-module.exports = function() {
-	var c = function() {
+module.exports = (function() {
+	var Definition = function() {
 		this.__construct.call(this);
-	}, public = c.prototype;
+	}, prototype = Definition.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
+	//NOTE: BULK GENERATE
 	{SCHEMA}
 	
 	/* Private Properties
@@ -13,9 +14,9 @@ module.exports = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	prototype.__load = Definition.load = function() {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new Definition();
 		}
 		
 		return this.__instance;
@@ -23,7 +24,7 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	prototype.__construct = function() {
 		var schema = mongoose.Schema;
 		
 		//define schema
@@ -42,7 +43,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.count = function(query, callback) {
+	prototype.count = function(query, callback) {
 		this.store.count(query, callback);
 		return this;
 	};
@@ -54,7 +55,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.insert = function(data, callback) {
+	prototype.insert = function(data, callback) {
 		this.model(data).save(callback);
 		return this;
 	};
@@ -65,7 +66,7 @@ module.exports = function() {
 	 * @param object
 	 * @return Mongoose
 	 */
-	public.find = function(query) {
+	prototype.find = function(query) {
 		return this.store.find(query);
 	};
 	
@@ -75,7 +76,7 @@ module.exports = function() {
 	 * @param ID
 	 * @return Mongoose
 	 */
-	public.findById = function(id) {
+	prototype.findById = function(id) {
 		return this.store.findById(id);
 	};
 	
@@ -85,7 +86,7 @@ module.exports = function() {
 	 * @param object
 	 * @return Mongoose
 	 */
-	public.findOne = function(query) {
+	prototype.findOne = function(query) {
 		return this.store.findOne(query);
 	};
 	
@@ -97,7 +98,7 @@ module.exports = function() {
 	 * @param bool
 	 * @return this
 	 */
-	public.getDetail = function(id, callback, lean) {
+	prototype.getDetail = function(id, callback, lean) {
 		var query = this.findOne({ _id: id, active: true });
 		
 		if(lean) {
@@ -120,7 +121,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.getList = function(query, keyword, order, start, range, callback) {
+	prototype.getList = function(query, keyword, order, start, range, callback) {
 		query 		= query 	|| {};
 		range 		= range 	|| 50;
 		start 		= start 	|| 0;
@@ -129,23 +130,23 @@ module.exports = function() {
 		callback	= callback 	|| function() {};
 		
 		switch(true) {
-			case typeof arguments[0] == 'function': //query
+			case typeof arguments[0] === 'function': //query
 				callback 	= arguments[0];
 				query = {};
 				break;
-			case typeof arguments[1] == 'function': //keyword
+			case typeof arguments[1] === 'function': //keyword
 				callback = arguments[1];
 				keyword	= null;
 				break;
-			case typeof arguments[2] == 'function': //order
+			case typeof arguments[2] === 'function': //order
 				callback = arguments[2];
 				order = {};
 				break;
-			case typeof arguments[3] == 'function': //start
+			case typeof arguments[3] === 'function': //start
 				callback = arguments[3];
 				start = 0;
 				break;
-			case typeof arguments[4] == 'function': //range
+			case typeof arguments[4] === 'function': //range
 				callback = arguments[4];
 				range = 50;
 				break;
@@ -158,8 +159,8 @@ module.exports = function() {
 			.skip(start)
 			.limit(range);
 		
-		for(key in order) {
-			store.sort(key, order[key] != -1 ? 1: -1);
+		for(var key in order) {
+			store.sort(key, order[key] !== -1 ? 1: -1);
 		}
 		
 		//query for results
@@ -176,17 +177,17 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.getTotal = function(query, keyword, callback) {
+	prototype.getTotal = function(query, keyword, callback) {
 		query 		= query 	|| {};
 		keyword		= keyword 	|| null;
 		callback	= callback 	|| function() {};
 		
 		switch(true) {
-			case typeof arguments[0] == 'function': //query
+			case typeof arguments[0] === 'function': //query
 				callback 	= arguments[0];
 				query = {};
 				break;
-			case typeof arguments[1] == 'function': //keyword
+			case typeof arguments[1] === 'function': //keyword
 				callback = arguments[1];
 				keyword	= null;
 				break;
@@ -203,7 +204,7 @@ module.exports = function() {
 	 * @param object
 	 * @return Mongoose
 	 */
-	public.model = function(data) {
+	prototype.model = function(data) {
 		return new (this.store)(data);
 	};
 	
@@ -216,7 +217,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.remove = function(id, callback) {
+	prototype.remove = function(id, callback) {
 		this.store.findOneAndUpdate(
 			{_id: id, active: true }, 
 			{ $set: { active: false } }, callback);
@@ -231,7 +232,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.restore = function(id, callback) {
+	prototype.restore = function(id, callback) {
 		this.store.findOneAndUpdate(
 			{_id: id, active: false }, 
 			{ $set: { active: true } }, callback);
@@ -247,7 +248,7 @@ module.exports = function() {
 	 * @param function
 	 * @return this
 	 */
-	public.update = function(id, data, callback) {
+	prototype.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
 			{_id: id, active: true}, 
 			{ $set: data }, callback);
@@ -259,21 +260,18 @@ module.exports = function() {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
 		
-		if(query.active != -1) {
-			query.active = query.active != 0;
+		if(query.active !== -1 && query.active !== '-1') {
+			query.active = query.active !== 0 && query.active !== '0';
 		}
 		
 		var not, or = [];
 		
 		//TODO: ADD KEYWORD SEARCH
 		//keyword search
-		// if(keyword) {
-		//	 or.push([
-		//		{ field1	: new RegExp(keyword, 'ig') },
-		//		{ field2	: new RegExp(keyword, 'ig') },
-		//		{ field3	: new RegExp(keyword, 'ig') } ]);
-		// }
-		
+		if(keyword) {
+			//NOTE: BULK GENERATE
+			{SEARCHABLE}
+		}
 		
 		for(var key in query) {
 			//if prefixed with !, just test if it does not exist
@@ -298,7 +296,7 @@ module.exports = function() {
 			query[key] = { $exists: true };
 		}
 		
-		if(or.length == 1) {
+		if(or.length === 1) {
 			query['$or'] = or[0];
 		} else if(or.length) {
 			query['$and'] = [];
@@ -312,5 +310,5 @@ module.exports = function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c;  
-}();
+	return Definition;  
+})();

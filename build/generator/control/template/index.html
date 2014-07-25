@@ -60,24 +60,27 @@
                         <th><input class="checkall" type="checkbox" /></th>
                         <th>Action</th>
                         <th>ID</th>
+                        <!-- NOTE: BULK GENERATE -->
                         {HEADERS}
                     </tr>
                 </thead>
                 <tbody>
                     {{#each rows}}
-                    <tr data-id="{{id}}">
-                        <td><input name="id[]" value="{{id}}" type="checkbox" class="form-control" /></td>
+                    <tr data-id="{{_id}}">
+                        <td><input name="id[]" value="{{_id}}" type="checkbox" class="form-control" /></td>
                         <td>
                             {{#if active}}
-                            <a title="Edit" href="/{SLUG}/update/{{id}}">
+                            <a title="Edit" href="/{SLUG}/update/{{_id}}">
                             <i class="icon-edit"></i></a> &nbsp; 
-                            <a title="Remove" href="/{SLUG}/remove/{{id}}"
-                            class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
+                            <a title="Remove" href="/{SLUG}/remove/{{_id}}"
+                            class="text-danger remove"><i class="icon-remove" value="{{_id}}"></i></a>
                             {{else}}
-                            <a title="Restore" href="/{SLUG}/restore/{{id}}" class="text-success restore">
+                            <a title="Restore" href="/{SLUG}/restore/{{_id}}" class="text-success restore">
                             <i class="icon-external-link"></i></a>
                             {{/if}}
                         </td>
+                        <td>{{_id}}</td>
+                        <!-- NOTE: BULK GENERATE -->
                         {COLUMNS}
                     </tr>	
                     {{/each}}

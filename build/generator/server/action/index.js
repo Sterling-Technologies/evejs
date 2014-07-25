@@ -1,25 +1,25 @@
 module.exports = (function() { 
-	var c = function(controller, request, response) {
+	var Definition = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
-    }, public = c.prototype;
+    }, prototype = Definition.prototype;
 
 	/* Public Properties
     -------------------------------*/
-    public.controller  	= null;
-    public.request   	= null;
-    public.response  	= null;
+    prototype.controller  	= null;
+    prototype.request   	= null;
+    prototype.response  	= null;
 	
     /* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
-    public.__load = c.load = function(controller, request, response) {
-        return new c(controller, request, response);
+    prototype.__load = Definition.load = function(controller, request, response) {
+        return new Definition(controller, request, response);
     };
     
 	/* Construct
     -------------------------------*/
-	public.__construct = function(controller, request, response) {
+	prototype.__construct = function(controller, request, response) {
 		//set request and other usefull data
 		this.controller = controller;
 		this.request  	= request;
@@ -28,17 +28,17 @@ module.exports = (function() {
 	
 	/* Public Methods
     -------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		var action = null;
 		
 		//if there is an idea
 		if(this.request.variables[0]) {
 			//and a put is made
-			if(this.request.method.toUpperCase() == 'PUT') {
+			if(this.request.method.toUpperCase() === 'PUT') {
 				//it must be an update
 				action = require('./update');
 			//is it a delete ?
-			} else if(this.request.method.toUpperCase() == 'DELETE') {
+			} else if(this.request.method.toUpperCase() === 'DELETE') {
 				//it must be an removal
 				action = require('./remove');
 			} else {
@@ -46,7 +46,7 @@ module.exports = (function() {
 				action = require('./detail');
 			}
 		//is there a post ?
-		} else if(this.request.method.toUpperCase() == 'POST') {
+		} else if(this.request.method.toUpperCase() === 'POST') {
 			//it must be a create
 			action = require('./create');
 		//by default 
@@ -62,5 +62,5 @@ module.exports = (function() {
     -------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 })();

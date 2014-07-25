@@ -23,7 +23,7 @@ module.exports = function() {
 			//loop through files  
 			for(var callback, i = 0; i < files.length; i++) {
 				//accept only js
-				if(files[i].getExtension() != 'js') {
+				if(files[i].getExtension() !== 'js') {
 					continue;
 				}
 				
@@ -31,7 +31,7 @@ module.exports = function() {
 				callback = require(files[i].path);
 				
 				//only listen if it is a callback
-				if(typeof callback != 'function') {
+				if(typeof callback !== 'function') {
 					continue;
 				}
 				
@@ -44,7 +44,7 @@ module.exports = function() {
 	//when a server request has been made
 	.listen('server-request', function(control, request, response) {
 		//if path does not starts with /{SLUG}
-		if(request.path != '/{SLUG}' && request.path.indexOf('/{SLUG}/') !== 0) {
+		if(request.path !== '/{SLUG}' && request.path.indexOf('/{SLUG}/') !== 0) {
 			//do nothing
 			return;
 		}

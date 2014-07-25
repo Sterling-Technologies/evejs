@@ -96,7 +96,7 @@ controller
 		return;
 	}
 
-	require(['text!' + controller.path('{SLUG}/template') + '/form/tabs.html'], function(html) {
+	require(['text!' + controller.path('{SLUG}/template') + '/tabs.html'], function(html) {
 		html = Handlebars.compile(html)({ id : id, url : url });
 		jQuery('section.{SLUG}-update ul.nav.nav-tabs').prepend(html)
 	});

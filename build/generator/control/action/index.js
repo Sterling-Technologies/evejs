@@ -1,21 +1,21 @@
 define(function() {
-    var c = function() {
+    var Definition = function() {
 		this.__construct.call(this);
-	}, public = c.prototype;
+	}, prototype = Definition.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= '{PLURAL}';
-	public.header 		= '{PLURAL}';
-	public.subheader 	= 'CRM';
-	public.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
-	public.data 		= {};
+	prototype.title 		= '{PLURAL}';
+	prototype.header 		= '{PLURAL}';
+	prototype.subheader 	= 'CRM';
+	prototype.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
+	prototype.data 		= {};
 	
-	public.start		= 0;
-	public.page 		= 1;
-	public.range 		= 25;
+	prototype.start		= 0;
+	prototype.page 		= 1;
+	prototype.range 		= 25;
 	
-	public.template 	= controller.path('{SLUG}/template') + '/index.html';
+	prototype.template 	= controller.path('{SLUG}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -23,20 +23,20 @@ define(function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
-		return new c();
+	prototype.__load = Definition.load = function() {
+		return new Definition();
 	};
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	prototype.__construct = function() {
 		//reset data because of "pass by ref"
 		this.data = {};
 	};
 	
 	/* Public Methods
 	-------------------------------*/
-	public.render = function() {
+	prototype.render = function() {
 		$.sequence()
 			.setScope(this)
 			.then(_setData)
@@ -70,7 +70,11 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-                //add it to row
+                //OUTPUT
+				//NOTE: BULK GENERATE
+				{OUTPUT_FORMAT}
+				
+				//add it to row
 				rows.push(response.batch[0].results[i]);
             }
 			
@@ -121,14 +125,22 @@ define(function() {
 		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
-				jQuery('tbody input[type="checkbox"]').each(function() {
+				$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
 					if(!this.checked) {
 						allChecked = false;
 					}
 				});
 				
-				jQuery('th .checkall')[0].checked = allChecked;
+				$('section.{SLUG}-list th input.checkall')[0].checked = allChecked;
 			}, 1);
+		});
+		
+		//listen to remove restore
+		$('section.{SLUG}-list th input.checkall').click(function() {
+			var checked = this.checked;
+			$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
+				this.checked = checked;
+			});
 		});
 		
 		next();
@@ -151,7 +163,7 @@ define(function() {
 		
 		switch(request.mode || 'active') {
 			case 'active':
-				query.filter.password = null;
+				query.filter.active = 1;
 				break;
 			case 'trash':
 				query.filter.active = 0;
@@ -171,7 +183,7 @@ define(function() {
 		}
 	
 		query.count = 1;
-		query.filter.password = null;
+		query.filter.active = 1;
 		
 		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
@@ -193,5 +205,5 @@ define(function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c; 
+	return Definition; 
 });
