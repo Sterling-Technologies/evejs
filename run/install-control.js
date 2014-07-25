@@ -28,7 +28,8 @@ module.exports = function(eve, local, args) {
 				jquery 	: true,
 				node 	: false
 			};
-                        json.control.lint_mocha = json.control.lint_mocha || {
+            
+			json.control.lint_mocha = json.control.lint_mocha || {
 				bitwise : false,
 				strict 	: false,
 				browser : true,
@@ -45,9 +46,8 @@ module.exports = function(eve, local, args) {
 					before     : true,
 					beforeEach : true,
 					after      : true,
-					afterEach  : true
-                                }
-			};
+					afterEach  : true }};
+					
 			json.control.mocha = '--reporter list --recursive';
 			
 			var copy = [{

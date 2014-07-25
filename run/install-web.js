@@ -13,6 +13,7 @@ module.exports = function(eve, local, args) {
 		var setPath = function(settings, next, json) {
 			json = json || {};
 			json.web = json.web || {};
+			
 			json.web.lint = json.web.lint || {
 				globals : {
 					define 		: true,
@@ -28,7 +29,8 @@ module.exports = function(eve, local, args) {
 				jquery 	: true,
 				node 	: false
 			};
-                        json.web.lint_mocha = json.web.lint_mocha || {
+            
+			json.web.lint_mocha = json.web.lint_mocha || {
 				bitwise : false,
 				strict 	: false,
 				browser : true,
@@ -45,9 +47,8 @@ module.exports = function(eve, local, args) {
 					before     : true,
 					beforeEach : true,
 					after      : true,
-					afterEach  : true
-                                }
-			};
+					afterEach  : true }};
+			
 			json.web.mocha = '--reporter list --recursive';
 			
 			var copy = [{
