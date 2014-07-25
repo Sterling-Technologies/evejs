@@ -14,6 +14,7 @@
 var eden 		= require('edenjs'),
         lint 	= require('../lib/lint'),
         nodemon = require('../lib/nodemon'),
+        mocha = require('../lib/mocha'),
         local 	= process.env.PWD || process.cwd(),
         //NOTE: maybe find a better way to find the root folder
         root 	= process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
@@ -57,6 +58,7 @@ require('../lib/')
             }
 
             var file = eden('file', path);
+            var controlConfig = config.control;
 
             //we only care if this is a js file
             if (file.getExtension() !== 'js') {
@@ -71,6 +73,9 @@ require('../lib/')
                     eve.trigger('error', 'Control: Error getting the content of file:' + path);
                     return;
                 }
+                
+                var isTest = destination.indexOf(controlConfig.path + '/test/') === 0;
+                var config = isTest ? controlConfig.lint_mocha : controlConfig.lint;
 
                 config = eden('hash').merge({
                     globals : {
@@ -85,7 +90,7 @@ require('../lib/')
                     browser : true,
                     jquery : true,
                     node : false
-                }, config.control.lint || { });
+                }, config || { });
 
                 //make sure node is false
                 config.node = false;
@@ -97,7 +102,15 @@ require('../lib/')
 
                 //push it
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, path, destination, function(err) {
+                    if (err || !isTest) {
+                        return;
+                    }
+
+                    var file = controlConfig.mocha + ' ' + destination;
+                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Control): ' + destination);
+                    mocha.run(file, { cwd : controlConfig.path, stdio : 'inherit' });
+                });
             });
         })
 
@@ -147,6 +160,7 @@ require('../lib/')
             }
 
             var file = eden('file', path);
+            var serverConfig = config.server;
 
             //we only care if this is a js file
             if (file.getExtension() !== 'js') {
@@ -162,11 +176,14 @@ require('../lib/')
                     return;
                 }
 
+                var isTest = destination.indexOf(serverConfig.path + '/test/') === 0;
+                var config = isTest ? serverConfig.lint_mocha : serverConfig.lint;
+
                 config = eden('hash').merge({
                     bitwise : false,
                     strict : false,
                     node : true
-                }, config.control.lint || { });
+                }, config || { });
 
                 //make sure node is true
                 config.node = true;
@@ -178,7 +195,15 @@ require('../lib/')
 
                 //push it
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, path, destination, function(err) {
+                    if (err || !isTest) {
+                        return;
+                    }
+
+                    var file = serverConfig.mocha + ' ' + destination;
+                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Server): ' + destination);
+                    mocha.run(file, { cwd : serverConfig.path, stdio : 'inherit' });
+                });
             });
         })
 		
@@ -224,6 +249,7 @@ require('../lib/')
             }
 
             var file = eden('file', path);
+            var webConfig = config.server;
 
             //we only care if this is a js file
             if (file.getExtension() !== 'js') {
@@ -238,6 +264,9 @@ require('../lib/')
                     eve.trigger('error', 'Web: Error getting the content of file:' + path);
                     return;
                 }
+                
+                var isTest = destination.indexOf(webConfig.path + '/test/') === 0;
+                var config = isTest ? webConfig.lint_mocha : webConfig.lint;
 
                 config = eden('hash').merge({
                     globals : {
@@ -252,7 +281,7 @@ require('../lib/')
                     browser : true,
                     jquery : true,
                     node : false
-                }, config.control.lint || { });
+                }, config || { });
 
                 //make sure node is false
                 config.node = false;
@@ -264,7 +293,15 @@ require('../lib/')
 
                 //push it
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, path, destination, function(err) {
+                    if (err || !isTest) {
+                        return;
+                    }
+
+                    var file = webConfig.mocha + ' ' + destination;
+                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Web): ' + destination);
+                    mocha.run(file, { cwd : webConfig.path, stdio : 'inherit' });
+                });
             });
         })
 

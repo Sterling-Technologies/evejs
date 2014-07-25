@@ -19,8 +19,28 @@ module.exports = function(eve, local, args) {
 				//path test
 				var destination, pathArray = path.substr(local.length).split('/');
 				
+				//update if [CALLER]/package/[VENDOR]/[PACKAGE]/web/test/*
+				if (pathArray[1] && pathArray[4] 
+				&& pathArray[1] == 'package'
+				&& pathArray[4] == 'web'
+				&& pathArray[5] === 'test') {
+					destination = config.web.path
+						+ '/test/'
+                                                + pathArray[2] + '/'
+						+ pathArray[3] + '/'
+						+ pathArray.slice(6).join('/');
+                                } else if (event == 'unlinkDir'
+				&& pathArray[1] && pathArray[4] 
+				&& pathArray[1] == 'package'
+				&& pathArray[4] == 'web'
+				&& pathArray[5] === 'test'
+				&& pathArray[6] === '') {
+					destination = config.web.path
+						+ '/test/'
+                                                + pathArray[2];
+
 				//update if [CALLER]/package/[VENDOR]/[PACKAGE]/web/*
-				if(pathArray[1] && pathArray[4] 
+                                } else if(pathArray[1] && pathArray[4] 
 				&& pathArray[1] == 'package'
 				&& pathArray[4] == 'web') {
 					destination = config.web.path 
@@ -55,21 +75,21 @@ module.exports = function(eve, local, args) {
 				//we are updating now
 				eve.trigger('watch-web-update', event, 
 				path, destination, eve, local, config, 
-				function(event, path, destination) {
+				function(event, path, destination, callback) {
 					switch(event) {
 						case 'unlink':
-							eden('file', destination).remove();
+							eden('file', destination).remove(callback);
 							break;
 						case 'add':
 						case 'change':
 							eden('file', path)
-							.copy(destination);
+							.copy(destination, callback);
 							break;
 						case 'unlinkDir':
-							eden('folder', destination).remove();
+							eden('folder', destination).remove(callback);
 							break;
 						case 'addDir':
-							eden('folder', destination).mkdir();
+							eden('folder', destination).mkdir(callback);
 							break;
 					}
 				});

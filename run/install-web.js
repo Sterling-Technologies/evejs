@@ -28,6 +28,27 @@ module.exports = function(eve, local, args) {
 				jquery 	: true,
 				node 	: false
 			};
+                        json.web.lint_mocha = json.web.lint_mocha || {
+				bitwise : false,
+				strict 	: false,
+				browser : true,
+				jquery 	: true,
+				node 	: false,
+				globals : {
+					define 	   : true,
+					controller : true,
+					console    : true,
+					require    : true,
+					Handlebars : true,
+					describe   : true,
+					it         : true,
+					before     : true,
+					beforeEach : true,
+					after      : true,
+					afterEach  : true
+                                }
+			};
+			json.web.mocha = '--reporter list --recursive';
 			
 			var copy = [{
 				name 		: 'web',
