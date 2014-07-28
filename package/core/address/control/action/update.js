@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Updating Address';
     public.header       = 'Updating Address';
-    public.subheader    = 'Update Address';
+    public.subheader    = 'GPS';
 	
     public.crumbs = [{ 
         path: '/address',

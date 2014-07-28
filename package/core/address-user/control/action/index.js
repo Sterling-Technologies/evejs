@@ -5,8 +5,8 @@ define(function() {
 
 	/* Public Properties
 	-------------------------------*/
-	public.title        = 'Updating Address Book';
-    public.header       = 'Updating Address Book';
+	public.title        = 'Updating {USER}';
+    public.header       = 'Updating {USER}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -57,9 +57,13 @@ define(function() {
 						'?join[to]=addresses&join[using]=addresses._id';
 
 		$.getJSON(this.data.url, function(response) {
+			// get user information
+			this.data.user = response.results;
+
+			// get address the user has
 			var addresses = response.results.addresses;
 
-			if(addresses.length !== 0) {
+			if(addresses !== undefined && addresses.length !== 0) {
 				this.data.rows = [], length = addresses.length;
 
 				for(var i = 0; i < length; i ++) {
@@ -86,8 +90,8 @@ define(function() {
 			var body = Handlebars.compile(template)(this.data);
 
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
