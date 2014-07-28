@@ -1,4 +1,4 @@
-module.exports = (function() {
+module.exports = (function() { 
 	var c = function(controller, request, response) {
         this.__construct.call(this, controller, request, response);
     }, public = c.prototype;
@@ -8,8 +8,8 @@ module.exports = (function() {
     public.controller  	= null;
     public.request   	= null;
     public.response  	= null;
-    
-	/* Private Properties
+	
+    /* Private Properties
     -------------------------------*/
     /* Loader
     -------------------------------*/
@@ -29,52 +29,49 @@ module.exports = (function() {
 	/* Public Methods
     -------------------------------*/
 	public.render = function() {
-		//if no ID
-		if(!this.request.variables[0]) {
-			//setup an error
-			_error.call(this, { message: 'No ID set' });
-			
-			return;
+		var collection = this.request.query.collection, 
+			query  	   = this.controller.eden.load('string')
+						 .queryToHash(this.request.message);
+
+		// if collection parameter
+		// is not present
+		if(!collection) {
+			return _error.call(this, { message : 'collection parameter is required' });
 		}
-		
-		var query = this
-			.controller.eden.load('string')
-			.queryToHash(this.request.message);
-		
-		//TRIGGER
+
 		this.controller
-			//when there is an error
-			.once('category-update-error', _error.bind(this))
-			//when it is successfull
-			.once('category-update-success', _success.bind(this))
-			//Now call to update the user
-			.trigger('category-update', this.controller, this.request.variables[0], query);
+			// on category join error
+			.once('category-join-error', _error.bind(this))
+			// on category create success
+			.once('category-join-success', _success.bind(this))
+			// trigger category join action
+			.trigger('category-join', this.controller, collection, query);
 	};
 	
 	/* Private Methods
     -------------------------------*/
-    var _error = function(error) {
+   	var _error = function(error) {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
-			error: true, 
-			message: error.message,
-			validation: error.errors || [] });
+			error 		: true, 
+			message		: error.message,
+			validation	: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('category-update-success');
+		this.controller.unlisten('category-join-success');
 		//trigger that a response has been made
 		this.controller.trigger('category-action-response', this.request, this.response);
 	};
 			
-	var _success = function(result) {
+	var _success = function() {
 		//set up a success response
-		this.response.message = JSON.stringify({ error: false, results: result });
+		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('category-update-error');
+		this.controller.unlisten('category-join-error');
 		//trigger that a response has been made
 		this.controller.trigger('category-action-response', this.request, this.response);
 	};
-    
+
 	/* Adaptor
 	-------------------------------*/
 	return c; 

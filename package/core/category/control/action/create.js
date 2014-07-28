@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Create Category';
     public.header       = 'Create Category';
-    public.subheader    = 'Creating a new category';
+    public.subheader    = 'Catalog';
 	
     public.crumbs = [{ 
         path: '/category',
@@ -145,10 +145,16 @@ define(function() {
 	var _process = function(next) {
 		var url = controller.getServerUrl() + '/category/create';
 		
+		// trigger category create before
+		controller.trigger('category-create-before');
+
 		//save data to database
 		$.post(url, this.data.category, function(response) {
 			response = JSON.parse(response);
 			
+			// trigger category create after
+			controller.trigger('category-create-after', response.results);
+
 			if(!response.error) {		
 				controller				
 					//display message status
@@ -169,7 +175,7 @@ define(function() {
 			next();
 	   }.bind(this));
 	};
-    
+
     /* Adaptor
     -------------------------------*/
     return c; 
