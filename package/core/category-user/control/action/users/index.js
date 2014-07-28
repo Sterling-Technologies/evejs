@@ -5,8 +5,8 @@ define(function() {
 
 	/* Public Properties
 	-------------------------------*/
-	public.title        = 'Updating User Category';
-    public.header       = 'Updating User Category';
+	public.title        = 'Updating {USER}';
+    public.header       = 'Updating {USER}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -58,8 +58,10 @@ define(function() {
 				  '?join[to]=categories&join[using]=categories._id';
 
 		$.getJSON(url, function(response) {
+			// get user information
+			this.data.user 	  = response.results;
+			// get current categories user has
 			this.data.current = response.results.categories;
-
 			next();
 		}.bind(this));
 	};
@@ -78,7 +80,7 @@ define(function() {
 			// has selected
 			for(var i in this.data.categories) {
 				for(var k in this.data.current) {
-					if(this.data.current[k] === null) {
+					if(this.data.current[k]._id === null) {
 						continue;
 					}
 
@@ -87,6 +89,7 @@ define(function() {
 					}
 				}
 			}
+
 			next();
 		}.bind(this));
 	};
@@ -96,8 +99,8 @@ define(function() {
 			var body = Handlebars.compile(template)(this.data);
 
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
@@ -112,6 +115,7 @@ define(function() {
 		// initialize chosen
 		$('.chosen').chosen();
 
+		// listen on form submit
 		$('form.category-form').on('submit', function(e) {
 			e.preventDefault();
 
@@ -148,7 +152,63 @@ define(function() {
 			}, 'json');
 		});
 
+		// listen on category create
+		controller
+			// unlisten to category create first
+			.unlisten('category-create-before', _categoryCreateBefore)
+			// listen to category create again
+			.once('category-create-before', _categoryCreateBefore.bind(this));
+
+		// listen on category create
+		controller
+			// unlisten to category create first
+			.unlisten('category-create-after', _categoryCreateAfter)
+			// listen to category create again
+			.once('category-create-after', _categoryCreateAfter.bind(this));
+
 		next();
+	};
+
+	var _categoryCreateBefore = function() {
+		// ..
+	};
+
+	var _categoryCreateAfter = function(e, category) {
+		// if category creation is from user update
+		if(window.location.pathname.indexOf('/category/create/user') === 0) {
+			var id   = category._id,
+				user = controller.getUrlSegment(-2),
+				url  = controller.getServerUrl() + '/user/join?collection=categories';
+
+			// if there are current categories
+			var join = [];
+
+			if(this.data.current) {
+				for(var i in this.data.current) {
+					// if id is not null
+					if(this.data.current[i]._id !== null) {
+						join.push({ _id : this.data.current[i]._id._id });
+					}
+				}
+			}
+
+			// push newly created category
+			join.push({ _id : id });
+
+			// build join payload
+			join = { _id : user, join : { categories : join }};
+
+			// send request to join with users
+			$.post(url, join, function(response) {
+				if(!response.error) {
+					// we need to redirect it this
+					// way cause we need to referesh
+					// the template
+					window.location.href = '/user/category/' + user;
+					return;
+				}
+			}, 'json');
+		}
 	};
 
 	var _buildCategory = function(categories) {
