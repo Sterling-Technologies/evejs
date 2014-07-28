@@ -220,7 +220,7 @@ define(function() {
 
 		$.getJSON(url, function(response) {
 			// reset crumbs
-			this.crumbs = [{ icon : 'sitemap', label : 'Categories' }];
+			this.crumbs = [{ path : '/category', icon : 'sitemap', label : 'Categories' }];
 
 			// get category parents
 			var category = _traverseCategory(id, response.results);
