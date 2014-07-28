@@ -218,9 +218,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.remove = function(id, callback) {
-		this.store.findOneAndUpdate(
-			{_id: id, active: true }, 
-			{ $set: { active: false } }, callback);
+		{USE_ACTIVE_STORE}
 		
 		return this;
 	};

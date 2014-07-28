@@ -4,16 +4,12 @@ module.exports = {
 	plural		: 'Samples',
 	icon		: 'facebook',
 	
-	use_slug		: true,
-	use_active		: true,
-	use_created		: true,
-	use_updated		: true,
-	
-	use_revision	: true,
-	use_children	: true,
-	
-	use_import		: true,
-	use_export		: true,
+	revision	: true,
+	children	: true,
+	slug		: true,
+	active		: true,
+	created		: true,
+	updated		: true,
 	
 	fields: {
 		title: {
@@ -67,7 +63,7 @@ module.exports = {
 		published: {
 			label	: 'Published',
 			type	: 'date',
-			default	: 'now()',
+			default	: 'now',
 			field	: 'date',
 			holder	: '01/01/2014',
 			valid	: [['regex', 'dd/dd/dddd']]
@@ -76,11 +72,7 @@ module.exports = {
 		status: {
 			label	: 'Status',
 			type	: 'string',
-			options	: [
-				{ label: 'Draft'	, value: 'draft' },
-				{ label: 'Review'	, value: 'review' },
-				{ label: 'Published', value: 'published' },
-				{ label: 'Other'	, value: 'other' }],
+			options	: ['draft', 'review', 'published', 'other'],
 			field	: 'select'
 		},
 		
