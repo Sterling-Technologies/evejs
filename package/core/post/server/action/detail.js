@@ -38,8 +38,8 @@ module.exports = (function() {
 		}
 		
 		this.controller.post().store().getDetail(
-			this.request.variables[0], 
-			_response.bind(this));
+			this.request.variables[0], _response.bind(this), true,
+			this.request.query.join);
 
 		return this;
 	};

@@ -1,6 +1,6 @@
-module.exports = function() {
-	var c = function() {
-		this.__construct.call(this);
+module.exports = function(controller) {
+	var c = function(controller) {
+		this.__construct.call(this, controller);
 	}, public = c.prototype;
 	
 	/* Public Properties
@@ -31,9 +31,9 @@ module.exports = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	public.__load = c.load = function(controller) {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new c(controller);
 		}
 		
 		return this.__instance;
@@ -41,11 +41,13 @@ module.exports = function() {
 	
 	/* Construct
 	-------------------------------*/
-	public.__construct = function() {
+	public.__construct = function(controller) {
+		this.controller = controller;
+
 		var schema = mongoose.Schema;
 		
 		//define schema
-		this.definition = new schema(this.schema);
+		this.definition = new schema(this.schema, { collection : 'posts' });
 		//NOTE: add custom schema methods here
 		
 		this.store = mongoose.model('posts', this.definition);
@@ -53,6 +55,49 @@ module.exports = function() {
 	
 	/* Public Methods
 	-------------------------------*/
+	public.join = function(document) {
+		// load stores for dbref
+		for(var i in this.controller) {
+			if(typeof this.controller[i] === 'function' && 
+			   this.controller.hasOwnProperty(i)) {
+			  	// load store
+			  	this.controller[i]().store && this.controller[i]().store();
+			}
+		}
+
+		var schema = mongoose.Schema;
+
+		// define reference field
+		var field = {};
+		
+		// NOTE: we need to manually do this to use
+		// custom object keys before adding this to
+		// schema definition
+		field[document] = [{ _id : { type : schema.Types.ObjectId, ref : document } }];
+
+		// add reference field to schema definition
+		this.definition.add(field);
+
+		// re-define store with reference
+		this.store = mongoose.model('posts', this.definition);
+
+		return this;
+	};
+
+	/**
+	 * Inserts the data if id was supplied
+	 * otherwise it will update a record 
+	 * based on id
+	 *
+	 * @param 	object
+	 * @param 	function
+	 * @return 	this
+	 */
+	public.upsert = function(query, callback) {
+		return this.store.update(
+			{ _id : query._id }, { $set : query.join }, { upsert : false }, callback);
+	};
+
 	/**
 	 * Returns count based on the query
 	 *
@@ -115,16 +160,24 @@ module.exports = function() {
 	 * @param bool
 	 * @return this
 	 */
-	public.getDetail = function(id, callback, lean) {
-		var query = this.findOne({ _id: id, active: true });
-		
+	public.getDetail = function(id, callback, lean, join) {
+		var query = this
+	
+		if(join && join.to && join.using) {
+			query = query.join(join.to)
+					.findOne({ _id: id, active: true })
+				    .populate(join.using);
+		} else {
+			query = query.findOne({ _id : id, active : true });
+		}
+
 		if(lean) {
 			query = query.lean();
 		}
-		
+
 		query.exec(callback);
 			
-		return this;
+		return this;	
 	};
 	
 	/**
