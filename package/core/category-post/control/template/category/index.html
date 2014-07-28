@@ -1,0 +1,63 @@
+<section class="category-post category-update row">
+    <div class="col-sm-12">
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-16">
+            </ul>
+            <div class="tab-content category-edit-tab-content">
+		        <div class="table-responsive">
+		            <div class="dataTables_wrapper table-filters" role="grid">
+		                <div class="row">
+		                    <div class="col-sm-12">
+		                        <!-- START: ADD NEW post -->
+		                        <div class="pull-right create"><a class="btn btn-info btn-sm" 
+		                        href="/post/create/category/{{id}}">Create New Post</a></div>
+		                        <!-- END: ADD NEW post -->
+		                    </div>
+		                </div>
+		            </div> 
+		            {{#if rows}}
+		            <!-- START: post TABLE -->
+		            <table class="table table-striped">
+		                <thead>
+		                    <tr>
+		                    	<th>Action</th>
+		                        <th>ID</th>
+		                        <th>Title</th>
+		                        <th>Status</th>
+		                        <th>Updated</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    {{#each rows}}
+		                    <tr data-id="{{id}}">
+		                        <td align="center">
+		                        	<a title="Edit" href="/post/update/{{id}}">
+		                            <i class="icon-edit"></i></a> &nbsp; 
+		                            <a title="Remove" href="/post/remove/{{id}}"
+		                            class="text-danger remove"><i class="icon-remove" value="{{id}}"></i></a>
+		                        </td>
+		                        <td>{{id}}</td>
+		                        <td>{{title}}</td>
+		                        <td>{{status}}</td>
+		                        <td>{{updated}}</td>
+		                    </tr>	
+		                    {{/each}}
+		                </tbody>	
+		            </table>
+		            <!-- END: POST TABLE -->
+		            {{else}}
+		            <!-- START: NO RESULTS -->
+		            <div class="well no-results">No Post Found</div>
+		            <!-- END: NO RESULTS -->
+		            {{/if}}
+		        </div>
+		        
+		        <ul class="pagination">
+		            {{#pagination active range}}
+		            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
+		            {{/pagination}}
+		        </ul>
+            </div>
+        </div>
+    </div>
+</section>

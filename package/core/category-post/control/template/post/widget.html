@@ -1,0 +1,17 @@
+<aside class="col col-md-3 widget-container-span category-post-widget">
+	<div class="widget-box panel-primary">
+		<div class="widget-header header-color-purple">
+			<h5>Category</h5>
+		</div>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main">
+			<select class="chosen category-post-chosen chosen-select tag-input-style col-lg-9" multiple="true"
+				data-placeholder=" ">
+				{{#each categories}}
+	        		<option value="{{_id}}" {{#if selected}}selected{{/if}}>{{tree}}</option>
+		        {{/each}}
+			</select>
+		</div>
+	</div>
+</aside>
