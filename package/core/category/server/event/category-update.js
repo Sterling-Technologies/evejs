@@ -1,6 +1,6 @@
 module.exports = function(controller, id, query) {
 	//find and update
-	controller.category().store().update(id, query, function(error) {
+	controller.category().store().update(id, query, function(error, result) {
 		//if there are errors
 		if(error) {
 			//trigger an error
@@ -9,6 +9,6 @@ module.exports = function(controller, id, query) {
 		}
 		
 		//trigger that we are good
-		controller.trigger('category-update-success');
+		controller.trigger('category-update-success', result);
 	});
 };

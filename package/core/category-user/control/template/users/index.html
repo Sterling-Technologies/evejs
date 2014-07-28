@@ -4,21 +4,20 @@
             <ul class="nav nav-tabs padding-16">
             </ul>
             <div class="tab-content category-edit-tab-content">
-			    <!-- START: BULK FORM -->
-			    <form action="#" method="post" class="form-horizontal category-form">
-		            <div class="dataTables_wrapper table-filters" role="grid">
-		            	<div class="row">
-	                    	<div class="col-sm-12">
-	                        	<!-- START: ADD NEW Category -->
-	                        	<div class="pull-right create"><a class="btn btn-info btn-sm" 
-	                        	href="/category/create">Create New Category</a></div>
-	                        	<!-- END: ADD NEW Category -->
-	                    	</div>
-		            	</div>
-		        	</div>
-		        	<div class="space-12"></div>
+	            <div class="dataTables_wrapper table-filters" role="grid">
+	            	<div class="row">
+                    	<div class="col-sm-12">
+                        	<!-- START: ADD NEW CATEGORY -->
+                        	<div class="pull-right create"><a class="btn btn-info btn-sm" 
+                        	href="/category/create/user/{{id}}/0">Create New Category</a></div>
+                        	<!-- END: ADD NEW CATEGORY -->
+                    	</div>
+	            	</div>
+	        	</div>
+	        	<div class="space-12"></div>
+	        	<form class="category-form">
 		        	<div class="form-group clearfix">
-		        		<label class="col-lg-3 control-label">Categories</label>
+		        		<label class="col-lg-3 control-label text-right">Categories</label>
 		        		<div class="col-lg-9">
 		        			<select class="chosen chosen-select tag-input-style col-lg-9" multiple="true"
 		        				data-placeholder="Choose a Category">
@@ -37,7 +36,7 @@
 						    {{/block}}
 						</div>
 					</div>
-			    </form>
+				</form>
             </div>
         </div>
     </div>

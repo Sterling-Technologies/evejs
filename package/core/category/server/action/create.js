@@ -44,11 +44,11 @@ module.exports = (function() {
 	
 	/* Private Methods
     -------------------------------*/	
-	var _success = function(row) {
+	var _success = function(result) {
 		//no error, then prepare the package
 		this.response.message = JSON.stringify({ 
 			error 	: false, 
-			results : row });
+			results : result });
 		
 		// dont listen to error anymore
 		this.controller.unlisten('category-create-error');

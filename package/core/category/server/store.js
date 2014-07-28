@@ -84,11 +84,8 @@ module.exports = function(controller) {
 	 * @return 	this
 	 */
 	public.upsert = function(query, callback) {
-		if(!query._id) {
-			return this.insert(query, callback);
-		}
-
-		return this.update(query._id, query, callback);
+		return this.store.update(
+			{ _id : query._id }, { $set : query.join }, { upsert : false }, callback);
 	};
 
 	/**
