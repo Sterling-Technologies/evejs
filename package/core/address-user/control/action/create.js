@@ -5,8 +5,8 @@ define(function() {
 
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'User Address - Create';
-	public.header       = 'User Address - Create';
+	public.title 		= 'Updating {USER}';
+	public.header       = 'Updating {USER}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -39,6 +39,7 @@ define(function() {
 	public.render = function() {
 		$.sequence()
 		 .setScope(this)
+		 .then(_getAddresses)
 		 .then(_setData)
 		 .then(_output);
 
@@ -47,11 +48,38 @@ define(function() {
 
 	/* Private Methods
 	-------------------------------*/
+	var _getAddresses = function(next) {
+		var id  = controller.getUrlSegment(-1);
+		var url = controller.getServerUrl() + '/user/detail/' + id +
+				 '?join[to]=addresses&join[using]=addresses._id';
+		
+		// current address the user has
+		this.data.addresses = [];
+
+		// get user details
+		$.getJSON(url, function(response) {
+			// get user information
+			this.data.user = response.results;
+
+			// get addresses that the user has
+			var addresses = response.results.addresses;
+
+			// push current addresses
+			for(var i in addresses) {
+				if(addresses[i]._id !== null) {
+					this.data.addresses.push({ _id : addresses[i]._id._id });
+				}
+			}
+
+			next();
+		}.bind(this));
+	};
+
 	var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
 		this.data.id 		= controller.getUrlSegment(-1);
-		
+
 		var data = controller.getPost();
 
 		if(data && data.length) {
@@ -72,7 +100,7 @@ define(function() {
 			next();
 			return;
 		}
-		
+
         next();
     };
 
@@ -82,8 +110,8 @@ define(function() {
 			var body = Handlebars.compile(form)(this.data);
 
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
@@ -122,31 +150,52 @@ define(function() {
 	};
 
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/address/join?collection=users',
+		var url = controller.getServerUrl() + '/address/create',
 			id  = controller.getUrlSegment(-1);
 		
-		//save data to database
-		$.post(url, this.data.address, function(response) {
-			response = JSON.parse(response);
-			
-			if(!response.error) {		
-				controller				
-					//display message status
-					.notify('Success', 'address successfully created!', 'success')
-					//go to listing
-					.redirect('/user/address/' + id);
+		$.sequence()
+
+		// save address first
+		.then(function(nextstep) {
+			//save data to database
+			$.post(url, this.data.address, function(response) {
+				response = JSON.parse(response);
 				
-				//no need to next since we are redirecting out
-				return;
-			} 
+				if(!response.error) {		
+					return nextstep(response.results);
+				} 
+				
+				this.data.errors = response.validation || {};
+				
+				//display message status
+				controller.notify('Error', 'There was an error in the form.', 'error');
+
+				next();
+		  	}.bind(this));
+		}.bind(this))
+
+		// after saving the address join it
+		// to users record
+		.then(function(results, nextstep) {
+			// add new address
+			this.data.addresses.push({ _id : results._id });
+
+			var id   = controller.getUrlSegment(-1),
+			 	url  = controller.getServerUrl() + '/user/join?collection=addresses',
+				join = { _id : id, join : { addresses : this.data.addresses }};
 			
-			this.data.errors = response.validation || {};
-			
-			//display message status
-			controller.notify('Error', 'There was an error in the form.', 'error');
-			
-			next();
-	   }.bind(this));
+			$.post(url, join, function(response) {
+				if(!response.error) {
+					return controller
+						   .notify('Success', 'Address Succesfully created!', 'success')
+						   .redirect('/user/address/' + id);
+				}
+
+				controller.notify('Error', 'There was an error in the form.', 'error');
+
+				nextstep();
+			}, 'json');
+		}.bind(this));
 	};
 
 	/* Adaptor

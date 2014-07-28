@@ -5,9 +5,9 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    public.title        = 'Updating Address Book';
-    public.header       = 'Updating Address Book';
-    public.subheader    = 'Update Address Book';
+    public.title        = 'Updating {USER}';
+    public.header       = 'Updating {USER}';
+    public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
         path: '/user',
@@ -40,6 +40,7 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this) 
+			.then(_getAddresses)
         	.then(_setData)
         	.then(_output);
         
@@ -48,6 +49,33 @@ define(function() {
 
     /* Private Methods
     -------------------------------*/
+    var _getAddresses = function(next) {
+		var id  = controller.getUrlSegment(-1);
+		var url = controller.getServerUrl() + '/user/detail/' + id +
+				 '?join[to]=addresses&join[using]=addresses._id';
+		
+		// current address the user has
+		this.data.addresses = [];
+
+		// get user details
+		$.getJSON(url, function(response) {
+			// get user information
+			this.data.user = response.results;
+
+			// get addresses that the user has
+			var addresses = response.results.addresses;
+
+			// push current addresses
+			for(var i in addresses) {
+				if(addresses[i]._id !== null) {
+					this.data.addresses.push({ _id : addresses[i]._id._id });
+				}
+			}
+
+			next();
+		}.bind(this));
+	};
+
     var _setData = function(next) {
 		this.data.mode 		= 'update';
 		this.data.url 		= window.location.pathname;
@@ -95,8 +123,8 @@ define(function() {
 			var body = Handlebars.compile(form)(this.data);
 
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
