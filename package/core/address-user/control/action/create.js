@@ -5,8 +5,8 @@ define(function() {
 
 	/* Public Properties
 	-------------------------------*/
-	public.title 		= 'User Address - Create';
-	public.header       = 'User Address - Create';
+	public.title 		= 'Updating {USER}';
+	public.header       = 'Updating {USER}';
     public.subheader    = 'CRM';
 	
     public.crumbs = [{ 
@@ -58,6 +58,10 @@ define(function() {
 
 		// get user details
 		$.getJSON(url, function(response) {
+			// get user information
+			this.data.user = response.results;
+
+			// get addresses that the user has
 			var addresses = response.results.addresses;
 
 			// push current addresses
@@ -106,8 +110,8 @@ define(function() {
 			var body = Handlebars.compile(form)(this.data);
 
 			controller
-				.setTitle(this.title)
-				.setHeader(this.header)
+				.setTitle(this.title.replace('{USER}', this.data.user.name))
+				.setHeader(this.header.replace('{USER}', this.data.user.name))
 				.setSubheader(this.subheader)
 				.setCrumbs(this.crumbs)
 				.setBody(body);
