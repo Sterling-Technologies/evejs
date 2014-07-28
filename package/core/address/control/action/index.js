@@ -7,7 +7,7 @@ define(function() {
 	-------------------------------*/
 	public.title 		= 'Address';
 	public.header 		= 'Address';
-	public.subheader 	= 'List of Address';
+	public.subheader 	= 'GPS';
 	public.crumbs 		= [{ icon: 'home', label: 'Address' }];
 	public.data 		= {};
 	

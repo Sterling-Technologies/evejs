@@ -3,7 +3,7 @@ module.exports = function(controller, id, query) {
 	controller
 	.address()
 	.store()
-	.update(id, query, function(error) {
+	.update(id, query, function(error, result) {
 		//if there are errors
 		if(error) {
 			//trigger an error
@@ -12,6 +12,6 @@ module.exports = function(controller, id, query) {
 		}
 		
 		//trigger that we are good
-		controller.trigger('address-update-success');
+		controller.trigger('address-update-success', result);
 	});
 };
