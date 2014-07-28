@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Create Category';
     public.header       = 'Create Category';
-    public.subheader    = 'Creating a new category';
+    public.subheader    = 'Catalog';
 	
     public.crumbs = [{ 
         path: '/category',
@@ -22,8 +22,9 @@ define(function() {
     /* Private Properties
     -------------------------------*/
     var $ = jQuery;
-    var parentId;
 	
+	var tree = [];
+
     /* Loader
     -------------------------------*/
     public.__load = c.load = function() {
@@ -42,6 +43,7 @@ define(function() {
     public.render = function() {
         $.sequence()
 			.setScope(this)
+			.then(_updateCrumbs)
         	.then(_setData)
         	.then(_output)
 			.then(_listen);
@@ -145,10 +147,16 @@ define(function() {
 	var _process = function(next) {
 		var url = controller.getServerUrl() + '/category/create';
 		
+		// trigger category create before
+		controller.trigger('category-create-before');
+
 		//save data to database
 		$.post(url, this.data.category, function(response) {
 			response = JSON.parse(response);
 			
+			// trigger category create after
+			controller.trigger('category-create-after', response.results);
+
 			if(!response.error) {		
 				controller				
 					//display message status
@@ -169,7 +177,69 @@ define(function() {
 			next();
 	   }.bind(this));
 	};
-    
+
+	var _updateCrumbs = function(next) {
+		var id  = controller.getUrlSegment(-1),
+			url = controller.getServerUrl() + '/category/list?filter[active]=1';
+
+		$.getJSON(url, function(response) {
+			// reset crumbs
+			this.crumbs = [{ path : '/category', icon : 'sitemap', label : 'Categories' }];
+
+			// get category parents
+			var category = _traverseCategory(id, response.results);
+			
+			// clear up category tree
+			tree = [];
+
+			// if there is a category
+			if(category !== undefined) {
+				// for each category
+				for(var i in category) {
+					// push it to crumbs
+					this.crumbs.push(category[i]);
+				}
+			}
+
+			// push create category crumbs
+			this.crumbs.push({ label : 'Create Category' });
+
+			next();
+		}.bind(this));
+	};
+
+	var _traverseCategory = function(parent, categories) {
+		// find out given category
+		// parent
+		for(var i in categories) {
+			// current category id
+			var id 	 = categories[i]._id;
+			// current category parent
+			var root = categories[i].parent;
+			// current category name
+			var name = categories[i].name;
+
+			// if current id is
+			// equal to the given
+			// parent id
+			if(id == parent) {
+				tree.push({ path : '/category/child/' + id, label : name });
+
+				// it means that we need to
+				// re-call this function again
+				return _traverseCategory(root, categories);
+			}
+
+			// if parent of current category
+			// is 0, it means this is
+			// the root category
+			if(parent == 0) {
+				// return category tree
+				return tree.reverse();
+			}
+		}
+	};
+
     /* Adaptor
     -------------------------------*/
     return c; 
