@@ -192,11 +192,17 @@ define(function() {
 		//don't store the confirm
 		delete this.data.user.confirm;
 		
+		// trigger user create before
+		controller.trigger('user-create-before');
+
 		//save data to database
 		$.post(url, this.data.user, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {		
+			if(!response.error) {
+				// trigger user create after and passed in response
+				controller.trigger('user-create-after', response.results);
+
 				controller				
 					//display message status
 					.notify('Success', 'User successfully created!', 'success')

@@ -36,8 +36,10 @@ module.exports = (function() {
 			
 			return;
 		}
-		
-		this.controller.user().store().getDetail(this.request.variables[0], _response.bind(this));
+
+		this.controller.user().store().getDetail(
+			this.request.variables[0], _response.bind(this), true,
+			this.request.query.join);
 
 		return this;
 	};

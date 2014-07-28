@@ -46,9 +46,9 @@ module.exports = (function() {
 	
 	/* Private Methods
     -------------------------------*/
-	var _success = function() {
+	var _success = function(result) {
 		//set up a success response
-		this.response.message = JSON.stringify({ error: false });
+		this.response.message = JSON.stringify({ error: false, results : result });
 		//dont listen for error anymore
 		this.controller.unlisten('user-create-error');
 		//trigger that a response has been made

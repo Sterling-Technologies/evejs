@@ -26,7 +26,7 @@ module.exports = function() {
 	/* Public Methods
 	-------------------------------*/
 	public.store = function() {
-		return store.load();
+		return store.load(this.controller);
 	};
 	
 	public.path = function(key) {
