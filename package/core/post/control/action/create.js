@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Create Post';
     public.header       = 'Create Post';
-    public.subheader    = 'CRM';
+    public.subheader    = 'CMS';
 	
     public.crumbs = [{ 
         path: '/post',
@@ -154,22 +154,23 @@ define(function() {
 	var _process = function(next) {
 		var url = controller.getServerUrl() + '/post/create';
 		
+		// trigger post create before
+		controller.trigger('post-create-before');
+
 		//save data to database
 		$.post(url, this.data.post, function(response) {
 			response = JSON.parse(response);
-			
+
 			if(!response.error) {		
+				// trigger post create after
+				controller.trigger('post-create-after', response);
+
 				controller				
 					//display message status
 					.notify('Success', 'Post successfully created!', 'success')
 					//go to listing
 					.redirect('/post');
 
-				// fire an event to notify all the listeners
-				// that a new post have been modified
-				var res = {data: this.data.post, _post: response._id };
-
-				controller.trigger('post-created', res);
 				//no need to next since we are redirecting out
 				return;
 			}

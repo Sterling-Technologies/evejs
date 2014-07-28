@@ -7,7 +7,7 @@ define(function() {
     -------------------------------*/
     public.title        = 'Updating {POST}';
     public.header       = 'Updating {POST}';
-    public.subheader    = 'CRM';
+    public.subheader    = 'CMS';
 	
     public.crumbs = [{ 
         path: '/post',
@@ -204,16 +204,18 @@ define(function() {
 		$.post(url, this.data.post, function(response) {
 			response = JSON.parse(response);
 			
+			// trigger post update before
+			controller.trigger('post-update-before');
+
 			if(!response.error) {
+				// trigger post update after
+				controller.trigger('post-update-after', this.data.post);
+
 				controller				
 					//display message status
 					.notify('Success', 'Post successfully updated!', 'success')
 					//go to listing
 					.redirect('/post');
-
-				// fire an event to notify listeners that
-				// a post have been modified
-				controller.trigger('post-updated', this.data.post);
 				
 				//no need to next since we are redirecting out
 				return;

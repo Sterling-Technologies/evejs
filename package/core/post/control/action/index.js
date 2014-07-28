@@ -7,7 +7,7 @@ define(function() {
 	-------------------------------*/
 	public.title 		= 'Posts';
 	public.header 		= 'Posts';
-	public.subheader 	= 'CRM';
+	public.subheader 	= 'CMS';
 	public.crumbs 		= [{ icon: 'pencil', label: 'Posts' }];
 	public.data 		= {};
 	

@@ -223,11 +223,17 @@ define(function() {
 			this.data.user.birthdate += 'T00:00:00Z';
 		}
 		
+		// trigger user update before
+		controller.trigger('user-update-before');
+
 		//save data to database
 		$.post(url, this.data.user, function(response) {
 			response = JSON.parse(response);
 			
-			if(!response.error) {		
+			if(!response.error) {
+				// trigger user update after
+				controller.trigger('user-update-after', response.results);
+
 				controller				
 					//display message status
 					.notify('Success', 'User successfully created!', 'success')
