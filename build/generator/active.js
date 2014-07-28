@@ -26,19 +26,19 @@ module.exports = {
 			 				''],
 	
 	actions : [				"{{#when active '==' 'Yes'}}\n\
-                            <a title=\"Edit\" href=\"/sample/update/{{_id}}\">\n\
+                            <a title=\"Edit\" href=\"/{SLUG}/update/{{_id}}\">\n\
                             <i class=\"icon-edit\"></i></a> &nbsp; \n\
-                            <a title=\"Remove\" href=\"/sample/remove/{{_id}}\"\n\
+                            <a title=\"Remove\" href=\"/{SLUG}/remove/{{_id}}\"\n\
                             class=\"text-danger remove\"><i class=\"icon-remove\" value=\"{{_id}}\"></i></a>\n\
                             {{/when}}\n\
                             {{#when active '==' 'No'}}\n\
-                            <a title=\"Restore\" href=\"/sample/restore/{{_id}}\" class=\"text-success restore\">\n\
+                            <a title=\"Restore\" href=\"/{SLUG}/restore/{{_id}}\" class=\"text-success restore\">\n\
                             <i class=\"icon-external-link\"></i></a>\n\
                             {{/when}}",
 							
-							"<a title=\"Edit\" href=\"/sample/update/{{_id}}\">\n\
+							"<a title=\"Edit\" href=\"/{SLUG}/update/{{_id}}\">\n\
                             <i class=\"icon-edit\"></i></a> &nbsp; \n\
-                            <a title=\"Remove\" href=\"/sample/remove/{{_id}}\"\n\
+                            <a title=\"Remove\" href=\"/{SLUG}/remove/{{_id}}\"\n\
                             class=\"text-danger remove\"><i class=\"icon-remove\" value=\"{{_id}}\"></i></a>"],
 							
 	pagination : [
