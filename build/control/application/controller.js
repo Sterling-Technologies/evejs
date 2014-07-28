@@ -95,7 +95,7 @@ var controller = function() {
 	 * @return this
 	 */
 	public.once = function(event, callback) {
-		$(window).once(event, callback);
+		$(window).one(event, callback);
 		return this;
 	};
 
@@ -104,9 +104,14 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.unlisten = function(event) {
+	public.unlisten = function(event, handler) {
+		if(handler) {
+			$(window).unbind(event, handler);
+			return this;
+		}
+
 		$(window).unbind(event);
-		return this;	
+		return this;
 	};
 	
 	/**
