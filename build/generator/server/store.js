@@ -99,7 +99,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.getDetail = function(id, callback, lean) {
-		var query = this.findOne({ _id: id, active: true });
+		{USE_ACTIVE_DETAIL}
 		
 		if(lean) {
 			query = query.lean();
@@ -218,7 +218,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.remove = function(id, callback) {
-		{USE_ACTIVE_STORE}
+		{USE_ACTIVE_REMOVE}
 		
 		return this;
 	};
@@ -232,7 +232,7 @@ module.exports = (function() {
 	 */
 	prototype.restore = function(id, callback) {
 		this.store.findOneAndUpdate(
-			{_id: id, active: false }, 
+			{USE_ACTIVE_RESTORE}
 			{ $set: { active: true } }, callback);
 		
 		return this;
@@ -248,7 +248,7 @@ module.exports = (function() {
 	 */
 	prototype.update = function(id, data, callback) {
 		return this.store.findOneAndUpdate(
-			{_id: id, active: true}, 
+			{USE_ACTIVE_UPDATE}
 			{ $set: data }, callback);
 	};
 	
@@ -258,9 +258,7 @@ module.exports = (function() {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
 		
-		if(query.active !== -1 && query.active !== '-1') {
-			query.active = query.active !== 0 && query.active !== '0';
-		}
+		{USE_ACTIVE_QUERY}
 		
 		var not, or = [];
 		

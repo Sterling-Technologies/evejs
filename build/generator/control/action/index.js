@@ -160,14 +160,7 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 		
-		switch(request.mode || 'active') {
-			case 'active':
-				query.filter.active = 1;
-				break;
-			case 'trash':
-				query.filter.active = 0;
-				break;
-		}
+		{USE_ACTIVE_LIST}
 		
 		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
@@ -182,7 +175,7 @@ define(function() {
 		}
 	
 		query.count = 1;
-		query.filter.active = 1;
+		{USE_ACTIVE_COUNT}
 		
 		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};

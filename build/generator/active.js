@@ -71,7 +71,18 @@ module.exports = {
 		''],
 	
 	data : ['trash	: response.batch[2].results,', ''],
-							
+	
+	list: ["switch(request.mode || 'active') {\n\
+			case 'active':\n\
+				query.filter.active = 1;\n\
+				break;\n\
+			case 'trash':\n\
+				query.filter.active = 0;\n\
+				break;\n\
+		}", ''],
+	
+	count: ['query.filter.active = 1;', ''],
+	
 	trash : [
 	"var _getTrashCountRequest = function(request) {\n\
 		var query = {};\n\
@@ -88,7 +99,19 @@ module.exports = {
 		return '/{SLUG}/list?' + $.hashToQuery(query);\n\
 	};", ''],
 	
-	store : ["this.store.findOneAndUpdate(\n\
+	detail: [
+		'var query = this.findOne({ _id: id, active: true });', 
+		'var query = this.findOne({ _id: id });'],
+	
+	restore: ['{ _id: id, active: false }, ','{ _id: id }, '],
+	
+	update: ['{ _id: id, active: true }, ', '{ _id: id }, '],
+	
+	query: ["if(query.active !== -1 && query.active !== '-1') {\n\
+			query.active = query.active !== 0 && query.active !== '0';\n\
+		}", ''],
+	
+	remove : ["this.store.findOneAndUpdate(\n\
 			{_id: id, active: true },\n\
 			{ $set: { active: false } }, callback);",
 			
