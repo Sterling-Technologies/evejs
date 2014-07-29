@@ -19,6 +19,7 @@ module.exports = function(eve, local, args) {
 	var copy = {
 		field: require(paths.generator + '/field.js'),
 		valid: require(paths.generator + '/valid.js'),
+		slug: require(paths.generator + '/slug.js'),
 		active: require(paths.generator + '/active.js'),
 		created: require(paths.generator + '/created.js'),
 		updated: require(paths.generator + '/updated.js'),
@@ -337,6 +338,15 @@ module.exports = function(eve, local, args) {
 	};
 	
 	var render = function(content, data) {
+		//add slug field if wanted
+		if(data.use_slug) {
+			data.fields.slug = {
+				label	: 'Slug',
+				type	: 'string',
+				field	: false
+			};
+		}
+		
 		//add active field if wanted
 		if(data.use_active) {
 			data.fields.active = {
@@ -409,6 +419,10 @@ module.exports = function(eve, local, args) {
 		
 		if(content.indexOf('{OUTPUT_FORMAT}') !== -1) {
 			content = renderOutputFormat(content, data);
+		}
+		
+		if(content.indexOf('{USE_SLUG') !== -1) {
+			content = renderUseSlug(content, data);
 		}
 		
 		if(content.indexOf('{USE_ACTIVE') !== -1) {
@@ -872,6 +886,18 @@ module.exports = function(eve, local, args) {
 		});
 		
 		return eden('string').replace(content, /{OUTPUT_FORMAT}/g	, output.join("\n		   		"));
+	};
+	
+	var renderUseSlug = function(content, data) {
+		for(var key in copy.slug) {
+			if(data.use_slug) {
+				content = eden('string').replace(content, new RegExp('{USE_SLUG_'+key.toUpperCase()+'}', 'g'), copy.slug[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_SLUG_'+key.toUpperCase()+'}', 'g'), copy.slug[key][1]);
+		}
+		
+		return content;
 	};
 	
 	var renderUseActive = function(content, data) {

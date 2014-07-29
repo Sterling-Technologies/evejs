@@ -56,7 +56,8 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.insert = function(data, callback) {
-		this.model(data).save(callback);
+		{USE_SLUG_INSERT}
+		
 		return this;
 	};
 	
@@ -247,14 +248,15 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.update = function(id, data, callback) {
-		{USE_UPDATED_UPDATE}
-		return this.store.findOneAndUpdate(
-			{USE_ACTIVE_UPDATE}
-			{ $set: data }, callback);
+		{USE_SLUG_UPDATE}
+		
+		return this;
 	};
 	
 	/* Private Methods
 	-------------------------------*/
+	{USE_SLUG_GETSLUG}
+	
 	var _buildQuery = function(query, keyword) {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
