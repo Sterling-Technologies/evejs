@@ -83,13 +83,15 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-                //add it to row
-				rows.push({
-					id      	  : response.batch[0].results[i]._id,
-					name    	  : response.batch[0].results[i].name,
-					type    	  : response.batch[0].results[i].type,
-					slug 		  : response.batch[0].results[i].slug,
-					active		  : response.batch[0].results[i].active });
+				if(response.batch[0].results[i] !== undefined) {
+	                //add it to row
+					rows.push({
+						id      	  : response.batch[0].results[i]._id,
+						name    	  : response.batch[0].results[i].name,
+						type    	  : response.batch[0].results[i].type,
+						slug 		  : response.batch[0].results[i].slug,
+						active		  : response.batch[0].results[i].active });
+				}
             }
 			
 			var showing = query.mode || 'active';
@@ -223,16 +225,21 @@ define(function() {
 
 			// get category parents
 			var category = _traverseCategory(id, response.results);
-			
+								
 			// clear up category tree
 			tree = [];
 
 			// if there is a category
 			if(category !== undefined) {
+				// add link to category crumbs
+				this.crumbs[0].path = '/category';
+
 				// for each category
 				for(var i in category) {
-					// push it to crumbs
-					this.crumbs.push(category[i]);
+					if(category.hasOwnProperty(i)) {
+						// push it to crumbs
+						this.crumbs.push(category[i]);
+					}
 				}
 			}
 
@@ -244,36 +251,38 @@ define(function() {
 		// find out given category
 		// parent
 		for(var i in categories) {
-			// current category id
-			var id 	 = categories[i]._id;
-			// current category parent
-			var root = categories[i].parent;
-			// current category name
-			var name = categories[i].name;
+			if(categories.hasOwnProperty(i)) {
+				// current category id
+				var id 	 = categories[i]._id;
+				// current category parent
+				var root = categories[i].parent;
+				// current category name
+				var name = categories[i].name;
 
-			// if current id is
-			// equal to the given
-			// parent id
-			if(id == parent) {
-				// if current category
-				if(controller.getUrlSegment(-1) == parent) {
-					tree.push({ label : name });
-				} else {
-					// else let crumb to have link
-					tree.push({ path : '/category/child/' + id, label : name });
+				// if current id is
+				// equal to the given
+				// parent id
+				if(id === parent) {
+					// if current category
+					if(controller.getUrlSegment(-1) === parent) {
+						tree.push({ label : name });
+					} else {
+						// else let crumb to have link
+						tree.push({ path : '/category/child/' + id, label : name });
+					}
+
+					// it means that we need to
+					// re-call this function again
+					return _traverseCategory(root, categories);
 				}
 
-				// it means that we need to
-				// re-call this function again
-				return _traverseCategory(root, categories);
-			}
-
-			// if parent of current category
-			// is 0, it means this is
-			// the root category
-			if(parent == 0) {
-				// return category tree
-				return tree.reverse();
+				// if parent of current category
+				// is 0, it means this is
+				// the root category
+				if(parseInt(parent) === 0) {
+					// return category tree
+					return tree.reverse();
+				}
 			}
 		}
 	};
