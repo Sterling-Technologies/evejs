@@ -247,6 +247,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.update = function(id, data, callback) {
+		{USE_UPDATED_UPDATE}
 		return this.store.findOneAndUpdate(
 			{USE_ACTIVE_UPDATE}
 			{ $set: data }, callback);

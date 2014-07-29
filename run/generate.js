@@ -20,6 +20,8 @@ module.exports = function(eve, local, args) {
 		field: require(paths.generator + '/field.js'),
 		valid: require(paths.generator + '/valid.js'),
 		active: require(paths.generator + '/active.js'),
+		created: require(paths.generator + '/created.js'),
+		updated: require(paths.generator + '/updated.js'),
 	};
 
 	// END: VARIABLE LIST
@@ -345,6 +347,26 @@ module.exports = function(eve, local, args) {
 			};
 		}
 		
+		//add created field if wanted
+		if(data.use_created) {
+			data.fields.created = {
+				label	: 'Created',
+				type	: 'date',
+				default	: 'now()',
+				field	: false
+			};
+		}
+		
+		//add updated field if wanted
+		if(data.use_updated) {
+			data.fields.updated = {
+				label	: 'Updated',
+				type	: 'date',
+				default	: 'now()',
+				field	: false
+			};
+		}
+		
 		if(content.indexOf('{SCHEMA}') !== -1) {
 			content = renderSchema(content, data);
 		}
@@ -391,6 +413,14 @@ module.exports = function(eve, local, args) {
 		
 		if(content.indexOf('{USE_ACTIVE') !== -1) {
 			content = renderUseActive(content, data);
+		}
+		
+		if(content.indexOf('{USE_CREATED') !== -1) {
+			content = renderUseCreated(content, data);
+		}
+		
+		if(content.indexOf('{USE_UPDATED') !== -1) {
+			content = renderUseUpdated(content, data);
 		}
 		
 		//Change variables
@@ -851,6 +881,30 @@ module.exports = function(eve, local, args) {
 			}
 			
 			content = eden('string').replace(content, new RegExp('{USE_ACTIVE_'+key.toUpperCase()+'}', 'g'), copy.active[key][1]);
+		}
+		
+		return content;
+	};
+	
+	var renderUseCreated = function(content, data) {
+		for(var key in copy.created) {
+			if(data.use_created) {
+				content = eden('string').replace(content, new RegExp('{USE_CREATED_'+key.toUpperCase()+'}', 'g'), copy.created[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_CREATED_'+key.toUpperCase()+'}', 'g'), copy.created[key][1]);
+		}
+		
+		return content;
+	};
+	
+	var renderUseUpdated = function(content, data) {
+		for(var key in copy.updated) {
+			if(data.use_updated) {
+				content = eden('string').replace(content, new RegExp('{USE_UPDATED_'+key.toUpperCase()+'}', 'g'), copy.updated[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_UPDATED_'+key.toUpperCase()+'}', 'g'), copy.updated[key][1]);
 		}
 		
 		return content;
