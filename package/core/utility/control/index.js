@@ -192,6 +192,11 @@ controller
 		 */
 		timeToDate: function(time, addTime, longformat) {
 			var date = new Date(parseInt(time));
+			
+			if(isNaN(date.getTime())) {
+				return '';
+			}
+			
 			var day = date.getDate();
 	
 			if(day < 10) {
@@ -248,7 +253,7 @@ controller
 		timeToRelative: function(time) {
 			var dateNow	= new Date();
 			var now 	= dateNow.getTime();
-	
+			
 			var passed 	=  now - parseInt(time);
 	
 			var tokens 	= [

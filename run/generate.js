@@ -15,55 +15,16 @@ module.exports = function(eve, local, args) {
         schema      : local + '/schema/',
         package     : local + '/package/',
         generator   : __dirname + '/../build/generator/' };
+		
+	var copy = {
+		field: require(paths.generator + '/field.js'),
+		valid: require(paths.generator + '/valid.js'),
+		slug: require(paths.generator + '/slug.js'),
+		active: require(paths.generator + '/active.js'),
+		created: require(paths.generator + '/created.js'),
+		updated: require(paths.generator + '/updated.js'),
+	};
 
-	var fieldset = '{{#block \'form/fieldset\' \'{LABEL}\' errors.{SLUG}}}{FIELD}{{/block}}';
-	
-	var text 			= '{{{block \'field/text\' \'{SLUG}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}}';
-	var password 		= '{{{block \'field/password\' \'{SLUG}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}}';
-    var file 			= '{{{block \'field/file\' \'{SLUG}\'}}}';
-    var slider 			= '{{{block \'field/slider\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var number 			= '{{{block \'field/number\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var mask 			= '{{{block \'field/mask\' \'{SLUG}\' \'{PATTERN}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}}';
-    var color 			= '{{{block \'field/color\' \'{SLUG}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}}';
-    var tag 			= '{{{block \'field/tag\' \'{SLUG}\' ../{PACKAGE}.{SLUG} {LIST}{PLACEHOLDER}}}}';
-    var datetime 		= '{{{block \'field/datetime\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var date 			= '{{{block \'field/date\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var time 			= '{{{block \'field/time\' \'{SLUG}\' ../{PACKAGE}.{SLUG}∂}}}';
-    var autocomplete 	= '{{{block \'field/autocomplete\' \'{SLUG}\' ../{PACKAGE}.{SLUG} {LIST}{PLACEHOLDER}}}}';
-    var combobox 		= '{{{block \'field/combobox\' \'{SLUG}\' ../{PACKAGE}.{SLUG} {LIST}{PLACEHOLDER}}}}';
-    var select 			= '{{{block \'field/select\' \'{SLUG}\' {LIST} ../{PACKAGE}.{SLUG}}}}';
-    var country 		= '{{{block \'field/country\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var textarea 		= '{{#block \'field/textarea\' \'{SLUG}\'{PLACEHOLDER}}}{{../../{PACKAGE}.{SLUG}}}{{/block}}';
-    var radio 			= '{{#block \'field/radio\' \'{SLUG}\' \'{CHOICE}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}{LABEL}{{/block}}';
-    var checkbox 		= '{{#block \'field/checkbox\' \'{SLUG}\' \'{CHOICE}\' ../{PACKAGE}.{SLUG}{PLACEHOLDER}}}{LABEL}{{/block}}';
-    var switched 		= '{{{block \'field/switch\' \'{SLUG}\' ../{PACKAGE}.{SLUG}}}}';
-    var markdown 		= '{{#block \'field/markdown\' \'{SLUG}\'{PLACEHOLDER}}}{{../../{PACKAGE}.{SLUG}}}{{/block}}';
-    var wysiwyg 		= '{{#block \'field/wysiwyg\' \'{SLUG}\'{PLACEHOLDER}}}{{../../{PACKAGE}.{SLUG}}}{{/block}}';
-	
-	var validCC				= '^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3'
-							+ '[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\\\d{3})\\\\d{11})$$';
-	
-	var validEmail			= '^(([^<>()[\\\\]\\\\.,;:\\\\s@\\\\"]+(\\\\.[^<>()[\\\\]\\\\.,;:\\\\s@\\\\"]+)*)|'
-							+ '(\\\\".+\\\\"))@((\\\\[[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}'
-							+ '\\\\])|(([a-zA-Z\\\\-0-9]+\\\\.)+[a-zA-Z]{2,}))$$';
-							
-	var validHex			= '^[0-9a-fA-F]{6}\$';
-	
-	var validHtml			= '<\\\\/?\\\\w+((\\\\s+(\\\\w|\\\\w[\\\\w-]*\\\\w)(\\\\s*=\\\\s*(?:\\\\".*?\\\\"|\'.'
-							+ '*?\'|[^\'\\\\">\\\\s]+))?)+\\\\s*|\\\\s*)\\\\/?>';
-	
-	var validUrl			= '^(http|https|ftp):\\\\/\\\\/([A-Z0-9][A-Z0-9_-]*(?:.[A-Z0-9][A-Z0-9_-]*)+):?(d+)?\\\\/?';
-	
-	var validAlphaNum		= '^[a-zA-Z0-9]+$$';
-	
-	var validAlphaNumScore	= '^[a-zA-Z0-9_]+$$';
-	
-	var validAlphaNumHyphen	= '^[a-zA-Z0-9-]+';
-	
-	var validAlphaNumLine	= '^[a-zA-Z0-9-_]+$$';
-	
-	var validSlug			= '^[a-z0-9-]+';
-	
 	// END: VARIABLE LIST
 	//---------------------------------------
 	
@@ -322,13 +283,99 @@ module.exports = function(eve, local, args) {
 		});
 	};
 	
+	var normalizeField = function(field) {
+		var normal = { type: field.type || 'string' };
+		
+		normal.field 	= field.field 	|| ['text'];
+		normal.valid 	= field.valid 	|| [];
+		normal.label 	= field.label 	|| '';
+		normal.holder 	= field.holder 	|| '';
+		
+		if(field.field === false) {
+			normal.field = false;
+		} else if(typeof normal.field === 'string') {
+			normal.field = [normal.field];
+		}
+		
+		if(typeof normal.valid === 'string') {
+			normal.valid = [[normal.valid]];
+		}
+		
+		if(typeof field.default != 'undefined') {
+			normal.default = field.default;
+		}
+		
+		var valid = [];
+		
+		for(var i = 0; i < normal.valid.length; i++) {
+			if(normal.valid[i] instanceof Array) {
+				valid.push(normal.valid[i]);
+				continue;
+			}
+			
+			valid.push([normal.valid[i]]);
+		}
+		
+		normal.valid = valid;
+		
+		if(field.options instanceof Array) {
+			normal.options = [];
+			for(var i = 0; i < field.options.length; i++) {
+				if(typeof field.options[i] == 'string') {
+					normal.options.push({
+						value: field.options[i],
+						label: field.options[i][0].toUpperCase() + field.options[i].substr(1)
+					});
+					
+					continue;
+				}
+				
+				normal.options.push(field.options[i]);
+			}
+		}
+		
+		return normal;
+	};
+	
 	var render = function(content, data) {
-		//Change variables
-		content = eden('string').replace(content, /{SLUG}/g		, data.slug);
-		content = eden('string').replace(content, /{ICON}/g		, data.icon);
-		content = eden('string').replace(content, /{SINGULAR}/g	, data.singular);
-		content = eden('string').replace(content, /{PLURAL}/g	, data.plural);
-		content = eden('string').replace(content, /{VENDOR}/g	, vendor);
+		//add slug field if wanted
+		if(data.use_slug) {
+			data.fields.slug = {
+				label	: 'Slug',
+				type	: 'string',
+				field	: false
+			};
+		}
+		
+		//add active field if wanted
+		if(data.use_active) {
+			data.fields.active = {
+				label	: 'Active',
+				type	: 'boolean',
+				default	: true,
+				field	: false
+			};
+		}
+		
+		//add created field if wanted
+		if(data.use_created) {
+			data.fields.created = {
+				label	: 'Created',
+				type	: 'date',
+				default	: 'now()',
+				field	: false
+			};
+		}
+		
+		//add updated field if wanted
+		if(data.use_updated) {
+			data.fields.updated = {
+				label	: 'Updated',
+				type	: 'date',
+				default	: 'now()',
+				field	: false
+			};
+		}
 		
 		if(content.indexOf('{SCHEMA}') !== -1) {
 			content = renderSchema(content, data);
@@ -374,6 +421,29 @@ module.exports = function(eve, local, args) {
 			content = renderOutputFormat(content, data);
 		}
 		
+		if(content.indexOf('{USE_SLUG') !== -1) {
+			content = renderUseSlug(content, data);
+		}
+		
+		if(content.indexOf('{USE_ACTIVE') !== -1) {
+			content = renderUseActive(content, data);
+		}
+		
+		if(content.indexOf('{USE_CREATED') !== -1) {
+			content = renderUseCreated(content, data);
+		}
+		
+		if(content.indexOf('{USE_UPDATED') !== -1) {
+			content = renderUseUpdated(content, data);
+		}
+		
+		//Change variables
+		content = eden('string').replace(content, /{SLUG}/g		, data.slug);
+		content = eden('string').replace(content, /{ICON}/g		, data.icon);
+		content = eden('string').replace(content, /{SINGULAR}/g	, data.singular);
+		content = eden('string').replace(content, /{PLURAL}/g	, data.plural);
+		content = eden('string').replace(content, /{VENDOR}/g	, vendor);
+		
 		return content;
 	};
 	
@@ -381,24 +451,43 @@ module.exports = function(eve, local, args) {
 		//determine the schema
 		var schema = {};
 		eden('hash').each(data.fields, function(name, field) {
-			schema[name] = Object.create(field.meta);
+			field = normalizeField(field);
+			var meta = { type: field.type };
+			var more = false;
 			
-			//if meta is a native object
-			if(typeof schema[name] === 'function' 
-			&& typeof schema[name].name === 'string') {
-				schema[name] = '{'+field.meta.name.toUpperCase()+'}';
-			//if type is a native object
-			} else if(field.meta.type 
-			&& typeof field.meta.type === 'function' 
-			&& typeof field.meta.type.name === 'string') {
-				schema[name].type = '{'+field.meta.type.name.toUpperCase()+'}';
+			if(field.options) {
+				meta.enum = [];
+				for(var i = 0 ; i < field.options.length; i++) {
+					meta.enum.push(field.options[i].value);
+				}
+				
+				more = true;
 			}
 			
-			//if default is a native object
-			if(schema[name].default 
-			&& typeof schema[name].default === 'function' 
-			&& schema[name].default.name === 'now') {
-				schema[name].default = '{NOW}';
+			if(typeof field.default != 'undefined') {
+				meta.default = field.default;
+				more = true;
+				
+				//if default is a native object
+				if(meta.default === 'now()') {
+					meta.default = '{NOW}';
+				}
+			}
+			
+			for(var i = 0; i < field.valid.length; i ++) {
+				if(field.valid[i][0] === 'required') {
+					meta.required = true;
+					more = true;
+					break;
+				}
+			}
+			
+			schema[name] = meta;
+			
+			schema[name].type = '{' + schema[name].type.toUpperCase() + '}';
+			
+			if(!more) {
+				schema[name] = schema[name].type;
 			}
 		});
 		
@@ -429,7 +518,7 @@ module.exports = function(eve, local, args) {
 				return;
 			}
 			
-			headers.push('<th>'+name.substr(0, 1).toUpperCase() + name.substr(1)+'</th>');
+			headers.push('<th>'+normalizeField(field).label+'</th>');
 		});
 		
 		return eden('string').replace(content, /{HEADERS}/g	, headers.join("\n                        "));
@@ -456,24 +545,13 @@ module.exports = function(eve, local, args) {
 		var enums = [];
 		//for each fields
 		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
 			//if there is no enum
-			if(!field.meta.enum || !(field.meta.enum instanceof Array)) {
+			if(!field.options || !(field.options instanceof Array)) {
 				return;
 			}
 			
-			var list = [];
-			
-			eden('hash').each(field.meta.enum, function(i, choice) {
-				var title = choice + '';
-				
-				if(title.length > 1) {
-					title = choice[0].toUpperCase() + choice.substr(1);
-				}
-				
-				list.push({ value: choice, label: title });
-			});
-			
-			list = JSON.stringify([[list]], null, 4);
+			list = JSON.stringify([[field.options]], null, 4);
 			list = list.substr(16, list.length - 24);
 			
 			enums.push('this.data.' + name + 'List = ' + list + ';');
@@ -487,16 +565,14 @@ module.exports = function(eve, local, args) {
 		
 		//for each fields
 		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
 			var variable = 'this.data.' + data.slug + '.' + name;
 			
-			if(field.meta.default) {
-				var value = field.meta.default;
+			if(field.default) {
+				var value = field.default;
 				
-				//if default is a native object
-				if(typeof value === 'function' 
-				&& value.name === 'now') {
-					defaults.push(variable + ' = ' + '_convertToControlDate(Date.now());');
-					return;
+				if(value == 'now()') {
+					value = '_convertToControlDate(Date.now());';
 				}
 				
 				defaults.push(variable + ' = ' + value + ';');
@@ -510,23 +586,25 @@ module.exports = function(eve, local, args) {
 		var convert = [];
 		//for each fields
 		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
+			
 			var variable = 'this.data.' + data.slug + '.' + name;
 			
-			if(field.field && field.field[0] === 'datetime') {
+			if(field.field[0] === 'datetime') {
 				convert.push('if(this.data.' + data.slug + ' && ' + variable + ') {');
 				convert.push('    ' + variable + ' = ' + '_convertToControlDate(' + variable + ');');
 				convert.push('}');
 				return;
 			}
 			
-			if(field.field && field.field[0] === 'date') {
+			if(field.field[0] === 'date') {
 				convert.push('if(this.data.' + data.slug + ' && ' + variable + ') {');
 				convert.push('    ' + variable + ' = ' + '_convertToControlDate(' + variable + ', false, true);');
 				convert.push('}');
 				return;
 			}
 			
-			if(field.field && field.field[0] === 'time') {
+			if(field.field[0] === 'time') {
 				convert.push('if(this.data.' + data.slug + ' && ' + variable + ') {');
 				convert.push('    ' + variable + ' = ' + '_convertToControlDate(' + variable + ', true);');
 				convert.push('}');
@@ -541,12 +619,13 @@ module.exports = function(eve, local, args) {
 		var convert = [];
 		//for each fields
 		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
+			
 			var variable = 'this.data.' + data.slug + '.' + name;
 			
-			if(field.field 
-			&& (field.field[0] === 'datetime'
+			if(field.field[0] === 'datetime'
 			|| field.field[0] === 'date'
-			|| field.field[0] === 'time')) {
+			|| field.field[0] === 'time') {
 				convert.push(variable + ' = ' + '_convertToServerDate(' + variable + ');');
 				return;
 			}
@@ -558,79 +637,44 @@ module.exports = function(eve, local, args) {
 	var renderFieldset = function(content, data) {
 		var fields = [];
 		
-		eden('hash').each(data.fields, function(name, config) {
-			var field 		= 'text';
-			var placeholder = config.holder || '';
-			var pattern 	= '';
+		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
 			
-			if(config.field && config.field[0]) {
-				field = config.field[0];
+			if(field.field === false || !copy.field[field.field[0]]) {
+				return;
 			}
 			
-			if(config.field && config.field[1]) {
-				pattern = config.field[1];
+			var holder 	= field.holder || '';
+			var pattern = field.field[1] || '';
+			
+			if(holder.length) {
+				holder = ' \'placeholder="' + holder + '"\'';
 			}
 			
-			if(placeholder.length) {
-				placeholder = ' \'placeholder="' + placeholder + '"\'';
-			}
-			
-			switch(field) {
-				case 'text': 			field = text;			break;
-				case 'password':		field = password;		break;
-				case 'file':			field = file;			break;
-				case 'slider':			field = slider;			break;
-				case 'number':			field = number;			break;
-				case 'mask':			field = mask;			break;
-				case 'color':			field = color;			break;
-				case 'tag':				field = tag;			break;
-				case 'datetime':		field = datetime;		break;
-				case 'date':			field = date;			break;
-				case 'time':			field = time;			break;
-				case 'autocomplete':	field = autocomplete;	break;
-				case 'combobox':		field = combobox;		break;
-				case 'select':			field = select;			break;
-				case 'country':			field = country;		break;
-				case 'radio':			field = radio;			break;
-				case 'checkbox':		field = checkbox;		break;
-				case 'switch':			field = switched;		break;
-				case 'textarea':		field = textarea;		break;
-				case 'markdown':		field = markdown;		break;
-				case 'wysiwyg':			field = wysiwyg;		break;
-			}
-			
-			field = field
+			var html = copy.field[field.field[0]]
 				.replace(/{SLUG}/g 			, name)
 				.replace(/{PACKAGE}/g 		, data.slug)
-				.replace(/{PLACEHOLDER}/g 	, placeholder)
+				.replace(/{PLACEHOLDER}/g 	, holder)
 				.replace(/{PATTERN}/g		, pattern)
 				.replace(/{LIST}/g			, '../'+name+'List');
 				
-			if(config.meta.enum 
-			&& config.meta.enum instanceof Array
-			&& config.field && config.field[0] != 'select') {
+			if(field.options && field.field[0] !== 'select') {
 				var items = [];
-				eden('array').each(config.meta.enum, function(i, item) {
-					var title = item + '';
-				
-					if(item.length > 1) {
-						title = item[0].toUpperCase() + item.substr(1);
-					}
-					
-					items.push(field.replace('{CHOICE}', item).replace('{LABEL}', title));
+				eden('array').each(field.options, function(i, item) {
+					items.push(html.replace('{CHOICE}', item.value).replace('{LABEL}', item.label));
 				});
 				
-				field = items.join("\n");
+				html = html.join("\n");
 			} else {
-				field = field.replace('{CHOICE}', 1).replace('{LABEL}', 'Yes');
+				html = html.replace('{CHOICE}', 1).replace('{LABEL}', 'Yes');
 			}
 			
-			field = fieldset
-				.replace('{LABEL}', name.substr(0, 1).toUpperCase() + name.substr(1))
+			html = copy.field.fieldset
+				.replace('{LABEL}', field.label)
 				.replace('{SLUG}', name)
-				.replace('{FIELD}', "\n                    	"+field+"\n                    ");
+				.replace('{FIELD}', "\n                    	"+html+"\n                    ");
 				
-			fields.push(field);
+			fields.push(html);
 		});
 		
 		return eden('string').replace(content, /{FIELDSET}/g	, fields.join("\n\n		    		"));
@@ -640,27 +684,23 @@ module.exports = function(eve, local, args) {
 		var validation = [];
 		//for each fields
 		eden('hash').each(data.fields, function(name, field) {
+			field = normalizeField(field);
+			
 			var variable 	= 'this.data.' + data.slug + '.' + name;
-			var title 		= name.substr(0, 1).toUpperCase() + name.substr(1);
 			var conditional = [];
 			
-			//required
-			if(field.meta.required) {
-				conditional.push([
-					'!' + variable + ' || !' + variable + '.length', 
-					title + ' is required!']);
-			}
-			
 			//enum
-			if(field.meta.enum instanceof Array) {
+			if(field.options instanceof Array) {
 				var equalsOne = [];
-				for(var i = 0; i < field.meta.enum.length; i++) {
-					equalsOne.push(variable + ' !== \'' + field.meta.enum[i] + '\'');
+				var values = [];
+				for(var i = 0; i < field.options.length; i++) {
+					values.push(field.options[i].value);
+					equalsOne.push(variable + ' !== \'' + field.options[i].value + '\'');
 				}
 				
 				conditional.push([
 					variable + ' && ' + equalsOne.join(" \n		&& "), 
-					title + ' must be one of ' + field.meta.enum.join(', ')]);
+					field.label + ' must be one of ' + values.join(', ')]);
 			}
 			
 			eden('array').each(field.valid || [], function(i, method) {
@@ -669,108 +709,113 @@ module.exports = function(eve, local, args) {
 				}
 				
 				switch(method[0]) {
+					case 'required':
+						conditional.push([
+							'!' + variable + ' || !' + variable + '.length', 
+							field.label + ' is required!']);
+							break;
 					case 'gt':
-						if(field.meta.name === 'Number' || (field.meta.type && field.meta.type.name === 'Number')) {
+						if(field.type === 'number') {
 							conditional.push([
 								variable + ' && ' + variable + ' <= ' + method[1], 
-								title + ' must be greater than ' + method[1]]);
+								field.label + ' must be greater than ' + method[1]]);
 							break;
 						}
 						
 						conditional.push([
 							variable + ' && ' + variable + '.length <= ' + method[1], 
-							title + ' characters must be greater than ' + method[1]]);
+							field.label + ' characters must be greater than ' + method[1]]);
 						break;
 					case 'gte':
-						if(field.meta.name === 'Number' || (field.meta.type && field.meta.type.name === 'Number')) {
+						if(field.type === 'number') {
 							conditional.push([
 								variable + ' && ' + variable + ' < ' + method[1], 
-								title + ' must be greater than or equal to ' + method[1]]);
+								field.label + ' must be greater than or equal to ' + method[1]]);
 							break;
 						}
 						
 						conditional.push([
 							variable + ' && ' + variable + '.length < ' + method[1], 
-							title + ' characters must be greater than or equal to' + method[1]]);
+							field.label + ' characters must be greater than or equal to' + method[1]]);
 						break;
 					case 'lt':
-						if(field.meta.name === 'Number' || (field.meta.type && field.meta.type.name === 'Number')) {
+						if(field.type === 'number') {
 							conditional.push([
 								variable + ' && ' + variable + ' >= ' + method[1], 
-								title + ' must be less than ' + method[1]]);
+								field.label + ' must be less than ' + method[1]]);
 							break;
 						}
 						
 						conditional.push([
 							variable + ' && ' + variable + '.length >= ' + method[1], 
-							title + ' characters must be less than ' + method[1]]);
+							field.label + ' characters must be less than ' + method[1]]);
 						break;
 					case 'lte':
-						if(field.meta.name === 'Number' || (field.meta.type && field.meta.type.name === 'Number')) {
+						if(field.type === 'number') {
 							conditional.push([
 								variable + ' && ' + variable + ' > ' + method[1], 
-								title + ' must be less than or equal to ' + method[1]]);
+								field.label + ' must be less than or equal to ' + method[1]]);
 							break;
 						}
 						
 						conditional.push([
 							variable + ' && ' + variable + '.length > ' + method[1], 
-							title + ' characters must be less than or equal to' + method[1]]);
+							field.label + ' characters must be less than or equal to' + method[1]]);
 						break;
 					case 'email':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validEmail+"', 'ig')).test("+variable+")", 
-							title + ' must be a valid email.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.email+"', 'ig')).test("+variable+")", 
+							field.label + ' must be a valid email.']);
 						break;
 					case 'hex':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validHex+"', 'ig')).test("+variable+")", 
-							title + ' must be a valid hex.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.hex+"', 'ig')).test("+variable+")", 
+							field.label + ' must be a valid hex.']);
 						break;
 					case 'cc':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validCC+"', 'ig')).test("+variable+")",
-							title + ' must be a valid credit card.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.cc+"', 'ig')).test("+variable+")",
+							field.label + ' must be a valid credit card.']);
 						break;
 					case 'html':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validHtml+"', 'ig')).test("+variable+")", 
-							title + ' must be valid html.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.html+"', 'ig')).test("+variable+")", 
+							field.label + ' must be valid html.']);
 						break;
 					case 'url':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validUrl+"', 'ig')).test("+variable+")", 
-							title + ' must be a valid url.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.url+"', 'ig')).test("+variable+")", 
+							field.label + ' must be a valid url.']);
 						break;
 					case 'slug':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validSlug+"', 'ig')).test("+variable+")", 
-							title + ' must be a valid slug.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.slug+"', 'ig')).test("+variable+")", 
+							field.label + ' must be a valid slug.']);
 						break;
 					case 'alphanum':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validAlphaNum+"', 'ig')).test("+variable+")", 
-							title + ' must be alpha-numeric.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.alphanum+"', 'ig')).test("+variable+")", 
+							field.label + ' must be alpha-numeric.']);
 						break;
 					case 'alphanumhyphen':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validAlphaNumHyphen+"', 'ig')).test("+variable+")", 
-							title + ' must be alpha-numeric-hyphen.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.alphanumhyphen+"', 'ig')).test("+variable+")", 
+							field.label + ' must be alpha-numeric-hyphen.']);
 						break;
 					case 'alphanumscore':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validAlphaNumScore+"', 'ig')).test("+variable+")", 
-							title + ' must be alpha-numeric-underscore.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.alphanumscore+"', 'ig')).test("+variable+")", 
+							field.label + ' must be alpha-numeric-underscore.']);
 						break;
 					case 'alphanumline':
 						conditional.push([
-							variable + ' && ' + "!(new RegExp('"+validAlphaNumLine+"', 'ig')).test("+variable+")", 
-							title + ' must be alpha-numeric-hyphen-underscore.']);
+							variable + ' && ' + "!(new RegExp('"+copy.valid.alphanumline+"', 'ig')).test("+variable+")", 
+							field.label + ' must be alpha-numeric-hyphen-underscore.']);
 						break;
 					case 'regex':
 						conditional.push([
 							variable + ' && ' + "!(new RegExp('"+method[1]+"', 'ig')).test("+variable+")", 
-							title + ' is invalid.']);
+							field.label + ' is invalid.']);
 						break;
 				}
 			});
@@ -826,28 +871,68 @@ module.exports = function(eve, local, args) {
 		var output = [];
 		
 		eden('hash').each(data.fields, function(name, field) {
-			if(!(field.field instanceof Array)) {
-				return;
-			}
-			
-			var type = field.meta.name;
-			
-			if(field.meta.type && field.meta.type.name) {
-				type = field.meta.type.name;
-			}
+			field = normalizeField(field);
 			
 			var variable = 'response.batch[0].results[i].' + name;
 			
-			switch(type) {
-				case 'Date':
+			switch(field.type) {
+				case 'date':
 					output.push(variable + ' = $.timeToDate((new Date('+variable+')).getTime());');
 					break;
-				case 'Boolean':
+				case 'boolean':
 					output.push(variable + ' = ' + variable+' ? \'Yes\': \'No\'');
 					break;
 			}
 		});
 		
 		return eden('string').replace(content, /{OUTPUT_FORMAT}/g	, output.join("\n		   		"));
+	};
+	
+	var renderUseSlug = function(content, data) {
+		for(var key in copy.slug) {
+			if(data.use_slug) {
+				content = eden('string').replace(content, new RegExp('{USE_SLUG_'+key.toUpperCase()+'}', 'g'), copy.slug[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_SLUG_'+key.toUpperCase()+'}', 'g'), copy.slug[key][1]);
+		}
+		
+		return content;
+	};
+	
+	var renderUseActive = function(content, data) {
+		for(var key in copy.active) {
+			if(data.use_active) {
+				content = eden('string').replace(content, new RegExp('{USE_ACTIVE_'+key.toUpperCase()+'}', 'g'), copy.active[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_ACTIVE_'+key.toUpperCase()+'}', 'g'), copy.active[key][1]);
+		}
+		
+		return content;
+	};
+	
+	var renderUseCreated = function(content, data) {
+		for(var key in copy.created) {
+			if(data.use_created) {
+				content = eden('string').replace(content, new RegExp('{USE_CREATED_'+key.toUpperCase()+'}', 'g'), copy.created[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_CREATED_'+key.toUpperCase()+'}', 'g'), copy.created[key][1]);
+		}
+		
+		return content;
+	};
+	
+	var renderUseUpdated = function(content, data) {
+		for(var key in copy.updated) {
+			if(data.use_updated) {
+				content = eden('string').replace(content, new RegExp('{USE_UPDATED_'+key.toUpperCase()+'}', 'g'), copy.updated[key][0]);
+			}
+			
+			content = eden('string').replace(content, new RegExp('{USE_UPDATED_'+key.toUpperCase()+'}', 'g'), copy.updated[key][1]);
+		}
+		
+		return content;
 	};
 };

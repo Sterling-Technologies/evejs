@@ -16,7 +16,7 @@
     <form action="/{SLUG}/bulk" method="post" class="form-inline bulk-form">
         <!-- START: i18n HEADER TITLE -->
         <div class="table-header">
-            Showing {{#if keyword}}Results for &quot;{{keyword}}&quot; in {{/if}}{{showing}}
+            {USE_ACTIVE_SHOWING}
         </div>
         <!-- END: i18n HEADER TITLE -->
         <div class="table-responsive">
@@ -29,24 +29,13 @@
                         <!-- END: ADD NEW POST -->
                         {{#if rows}}
                         <!-- START: BULK ACTION -->
-                        <select name="action" style="width:auto;" class="form-control">
-                            <option value="" selected="selected">Bulk Actions</option>
-                            <option value="remove">Remove</option>
-                            <option value="restore">Restore</option>
-                        </select>
-                        <button class="btn-primary btn-sm btn">Apply</button>
+                        {USE_ACTIVE_BULK}
                         <!-- END: BULK ACTION -->
                         {{/if}}
                         
                         <!-- START: FILTER BUTTONS -->
                         <span class="filter">
-                            <a class="btn btn-sm{{#when mode '==' 'active'}} btn-light{{/when}}" 
-                            href="/{SLUG}?mode=active{{#if keyword}}&keyword={{keyword}}{{/if}}">Active &nbsp;
-                            <span class="badge badge-grey">{{active}}</span></a> 
-                            
-                            <a class="btn btn-sm{{#when mode '==' 'trash'}} btn-light{{/when}}" 
-                            href="/{SLUG}?mode=trash{{#if keyword}}&keyword={{keyword}}{{/if}}">Trash &nbsp;
-                            <span class="badge badge-grey">{{trash}}</span></a> 
+                        	{USE_ACTIVE_BUTTONS}
                         </span>
                         <!-- END: FILTER BUTTONS -->
                     </div>
@@ -69,16 +58,7 @@
                     <tr data-id="{{_id}}">
                         <td><input name="id[]" value="{{_id}}" type="checkbox" class="form-control" /></td>
                         <td>
-                        	{{#when active '==' 'Yes'}}
-                            <a title="Edit" href="/sample/update/{{_id}}">
-                            <i class="icon-edit"></i></a> &nbsp; 
-                            <a title="Remove" href="/sample/remove/{{_id}}"
-                            class="text-danger remove"><i class="icon-remove" value="{{_id}}"></i></a>
-                            {{/when}}
-                            {{#when active '==' 'No'}}
-                            <a title="Restore" href="/sample/restore/{{_id}}" class="text-success restore">
-                            <i class="icon-external-link"></i></a>
-                            {{/when}}
+                        	{USE_ACTIVE_ACTIONS}
                         </td>
                         <td>{{_id}}</td>
                         <!-- NOTE: BULK GENERATE -->
@@ -95,20 +75,6 @@
             {{/if}}
         </div>
         
-        {{#when mode '==' 'active'}}
-        <ul class="pagination">
-            {{#pagination active range}}
-            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
-            {{/pagination}}
-        </ul>
-        {{/when}}
-        
-        {{#when mode '==' 'trash'}}
-        <ul class="pagination">
-            {{#pagination trash range}}
-            <li{{#if active}} class="active"{{/if}}><a href="?{{query}}">{{page}}</a></li>
-            {{/pagination}}
-        </ul>
-        {{/when}}
+        {USE_ACTIVE_PAGINATION}
     </form>
 </section>

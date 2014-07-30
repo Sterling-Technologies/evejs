@@ -192,6 +192,11 @@ controller
 		 */
 		timeToDate: function(time, addTime, longformat) {
 			var date = new Date(parseInt(time));
+			
+			if(isNaN(date.getTime())) {
+				return '';
+			}
+			
 			var day = date.getDate();
 	
 			if(day < 10) {

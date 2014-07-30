@@ -9,11 +9,11 @@ define(function() {
 	prototype.header 		= '{PLURAL}';
 	prototype.subheader 	= 'CRM';
 	prototype.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
-	prototype.data 		= {};
+	prototype.data 			= {};
 	
 	prototype.start		= 0;
 	prototype.page 		= 1;
-	prototype.range 		= 25;
+	prototype.range 	= 25;
 	
 	prototype.template 	= controller.path('{SLUG}/template') + '/index.html';
 	
@@ -58,8 +58,7 @@ define(function() {
 		//2. get the active count
 		batch.push({ url: _getActiveCountRequest.call(this, query) });
 		
-		//4. get the trash count
-		batch.push({ url: _getTrashCountRequest.call(this, query) });
+		{USE_ACTIVE_BATCH}
 		
 		$.post(
 			controller.getServerUrl() + '/{SLUG}/batch', 
@@ -91,7 +90,7 @@ define(function() {
 				mode	: query.mode || 'active',
 				keyword	: query.keyword || null,
 				active	: response.batch[1].results,
-				trash	: response.batch[2].results,
+				{USE_ACTIVE_DATA}
 				range	: this.range };
             
 			next();
@@ -161,14 +160,7 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 		
-		switch(request.mode || 'active') {
-			case 'active':
-				query.filter.active = 1;
-				break;
-			case 'trash':
-				query.filter.active = 0;
-				break;
-		}
+		{USE_ACTIVE_LIST}
 		
 		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
@@ -183,25 +175,12 @@ define(function() {
 		}
 	
 		query.count = 1;
-		query.filter.active = 1;
+		{USE_ACTIVE_COUNT}
 		
 		return '/{SLUG}/list?' + $.hashToQuery(query);
 	};
 	
-	var _getTrashCountRequest = function(request) {
-		var query = {};
-		
-		query.filter = request.filter || {};
-		
-		if(request.keyword) {
-			query.keyword = request.keyword;
-		}
-		
-		query.count = 1;
-		query.filter.active = 0;
-		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
-	};
+	{USE_ACTIVE_TRASH}
 	
 	/* Adaptor
 	-------------------------------*/

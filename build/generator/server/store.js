@@ -56,7 +56,8 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.insert = function(data, callback) {
-		this.model(data).save(callback);
+		{USE_SLUG_INSERT}
+		
 		return this;
 	};
 	
@@ -99,7 +100,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.getDetail = function(id, callback, lean) {
-		var query = this.findOne({ _id: id, active: true });
+		{USE_ACTIVE_DETAIL}
 		
 		if(lean) {
 			query = query.lean();
@@ -218,9 +219,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.remove = function(id, callback) {
-		this.store.findOneAndUpdate(
-			{_id: id, active: true }, 
-			{ $set: { active: false } }, callback);
+		{USE_ACTIVE_REMOVE}
 		
 		return this;
 	};
@@ -234,7 +233,7 @@ module.exports = (function() {
 	 */
 	prototype.restore = function(id, callback) {
 		this.store.findOneAndUpdate(
-			{_id: id, active: false }, 
+			{USE_ACTIVE_RESTORE}
 			{ $set: { active: true } }, callback);
 		
 		return this;
@@ -249,20 +248,20 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.update = function(id, data, callback) {
-		return this.store.findOneAndUpdate(
-			{_id: id, active: true}, 
-			{ $set: data }, callback);
+		{USE_SLUG_UPDATE}
+		
+		return this;
 	};
 	
 	/* Private Methods
 	-------------------------------*/
+	{USE_SLUG_GETSLUG}
+	
 	var _buildQuery = function(query, keyword) {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
 		
-		if(query.active !== -1 && query.active !== '-1') {
-			query.active = query.active !== 0 && query.active !== '0';
-		}
+		{USE_ACTIVE_QUERY}
 		
 		var not, or = [];
 		
