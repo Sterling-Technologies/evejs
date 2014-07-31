@@ -13,7 +13,7 @@ module.exports = (function() {
 	-------------------------------*/
 	prototype.__load = Definition.load = function() {
 		if(!this.__instance) {
-			this.__instance = new c();
+			this.__instance = new Definition();
 		}
 		
 		return this.__instance;
