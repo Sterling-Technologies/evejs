@@ -1,5 +1,5 @@
 var controller = function() {
-	var c = function() {}, public = c.prototype;
+	var Definition = function() {}, prototype = Definition.prototype;
 	
 	/* Public Properties
 	-------------------------------*/
@@ -11,7 +11,7 @@ var controller = function() {
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	prototype.__load = Definition.load = function() {
 		if(!this.__instance) {
 			this.__instance = new c();
 		}
@@ -28,7 +28,7 @@ var controller = function() {
 	 *
 	 * @return array
 	 */
-	public.args = function() {
+	prototype.args = function() {
 		return Array.prototype.slice.apply(arguments.callee.caller.arguments);
 	};
 	
@@ -38,7 +38,7 @@ var controller = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.config = function(key, callback) {
+	prototype.config = function(key, callback) {
 		require([this.path('config') + '/' + key + '.js'], callback);
 		return this;
 	};
@@ -48,7 +48,7 @@ var controller = function() {
 	 *
 	 * @return string
 	 */
-	public.getPost = function() {
+	prototype.getPost = function() {
 		return window.history.state || '';
 	};
 	
@@ -58,7 +58,7 @@ var controller = function() {
 	 *
 	 * @return string
 	 */
-	public.getServerUrl = function() {
+	prototype.getServerUrl = function() {
 		return this.settings.server.protocol 
 		+ '://' + this.settings.server.host 
 		+ ':'	+ this.settings.server.port;
@@ -70,7 +70,7 @@ var controller = function() {
 	 *
 	 * @return string
 	 */
-	public.getSocketUrl = function() {
+	prototype.getSocketUrl = function() {
 		return this.settings.socket.protocol 
 		+ '://' + this.settings.socket.host 
 		+ ':'	+ this.settings.socket.port;
@@ -81,7 +81,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.listen = function(event, callback) {
+	prototype.listen = function(event, callback) {
 		$(window).on(event, callback);
 		return this;
 	};
@@ -92,7 +92,7 @@ var controller = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.path = function(key, value) {
+	prototype.path = function(key, value) {
 		if(value) {
 			_paths[key] = value;
 			return this;
@@ -108,7 +108,7 @@ var controller = function() {
 	 * @param string post string data
 	 * @return this
 	 */
-	public.redirect = function(path, post) {
+	prototype.redirect = function(path, post) {
 		post = post || '';
 		window.history.pushState(post, '', path);
 		return this;
@@ -120,7 +120,7 @@ var controller = function() {
 	 * @param string partial name
 	 * @param string template
 	 */
-	public.setPartial = function(key, template) {
+	prototype.setPartial = function(key, template) {
 		Handlebars.registerPartial(key, template);
 		return this;
 	};
@@ -130,7 +130,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.trigger = function() {
+	prototype.trigger = function() {
 		$(window).trigger.apply($(window), arguments);
 		return this;
 	};
@@ -142,7 +142,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.renderPage = function() {
+	prototype.renderPage = function() {
 		var self 		= this, 
 			//get args for sequence
 			args 		= arguments, 
@@ -176,7 +176,7 @@ var controller = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.sequenceTrigger = function(event, next) {
+	prototype.sequenceTrigger = function(event, next) {
 		this.trigger(event);
 		next();
 		
@@ -188,7 +188,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.startPackages = function() {
+	prototype.startPackages = function() {
 		//get args for sequence
 		var self = this, args = arguments;
 		
@@ -221,7 +221,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.setLoader = function() {
+	prototype.setLoader = function() {
 		require.config({
 			paths: { text: '/scripts/text' },
 			config: {
@@ -248,7 +248,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.setPaths = function() {
+	prototype.setPaths = function() {
 		this.path('root'	, '/application')
 			.path('config'	, '/application/config')
 			.path('template', '/application/template')
@@ -267,7 +267,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.setSettings = function() {
+	prototype.setSettings = function() {
 		var args = this.args();
 		
 		//get settings
@@ -287,7 +287,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.setTemplateEngine = function() {
+	prototype.setTemplateEngine = function() {
 		Handlebars.registerHelper('when', function (value1, operator, value2, options) {
 			var valid = false;
 			
@@ -336,7 +336,7 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	public.startClient = function() {
+	prototype.startClient = function() {
 		//from a refresh - quirk
 		_refresh = true;
 		
@@ -370,7 +370,7 @@ var controller = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.setBody = function(html) {
+	prototype.setBody = function(html) {
 		$('#body').html(html);
 			
 		//trigger body event
@@ -383,7 +383,7 @@ var controller = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.setTitle = function(title) {
+	prototype.setTitle = function(title) {
 		$('head title').html(title);
 		return this;
 	};
@@ -408,7 +408,7 @@ var controller = function() {
 			$(window).trigger(event);
 			
 			return results;
-		}
+		};
 	};
 	
 	var _hijackPopState = function() {
@@ -483,5 +483,5 @@ var controller = function() {
 	
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
+	return Definition.load(); 
 }();

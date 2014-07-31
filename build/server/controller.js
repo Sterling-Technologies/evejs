@@ -1,17 +1,17 @@
-module.exports = function() {
-	var c = function() {}, public = c.prototype;
+module.exports = (function() {
+	var Definition = function() {}, prototype = Definition.prototype;
 	
-	public.eden 	= require('edenjs')();
+	prototype.eden 	= require('edenjs')();
 	
 	/* Properties
 	-------------------------------*/
 	var _paths 		= {};
 	var _databases 	= {};
-	var _events 	= new (require('events').EventEmitter);
+	var _events 	= new (require('events').EventEmitter)();
 	
 	/* Loader
 	-------------------------------*/
-	public.__load = c.load = function() {
+	prototype.__load = Definition.load = function() {
 		if(!this.__instance) {
 			this.__instance = new c();
 		}
@@ -29,7 +29,7 @@ module.exports = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.config = function(key) {
+	prototype.config = function(key) {
 		return require(_paths.config + '/' + key);
 	};
 	
@@ -38,7 +38,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.listen = function(event, callback) {
+	prototype.listen = function(event, callback) {
 		_events.on(event, callback);
 		return this;
 	};
@@ -48,7 +48,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.once = function(event, callback) {
+	prototype.once = function(event, callback) {
 		_events.once(event, callback);
 		return this;
 	};
@@ -59,7 +59,7 @@ module.exports = function() {
 	 * @param string
 	 * @return this
 	 */
-	public.path = function(key, value) {
+	prototype.path = function(key, value) {
 		if(value) {
 			_paths[key] = value;
 			return this;
@@ -73,7 +73,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.setDatabases = function() {
+	prototype.setDatabases = function() {
 		var databases = this.config('databases'),
 			database, authentication;
 		
@@ -108,7 +108,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.startPackages = function() {
+	prototype.startPackages = function() {
 		var packages = this.config('packages');
 		
 		for(var i = 0; i < packages.length; i++) {
@@ -123,7 +123,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.setPaths = function() {
+	prototype.setPaths = function() {
 		this.path('root'	, __dirname)
 			.path('config'	, __dirname + '/config')
 			.path('package'	, __dirname + '/package');
@@ -136,7 +136,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.startServer = function() {
+	prototype.startServer = function() {
 		var self = this, settings = this.config('settings').server;
 		
 		this.server = this.eden.load('server')
@@ -156,7 +156,7 @@ module.exports = function() {
 				//the client is just pinging what's possible
 				if(request.method.toLowerCase() == 'options') {
 					//send a default response
-					response.headers['Allow'] = 'HEAD,GET,POST,PUT,DELETE,OPTIONS'; 
+					response.headers.Allow = 'HEAD,GET,POST,PUT,DELETE,OPTIONS'; 
 					response.state = 200;
 					
 					self.server.trigger('response', request, response);
@@ -187,7 +187,7 @@ module.exports = function() {
 	 *
 	 * @return 	this
 	 */
-	public.startSocket = function() {
+	prototype.startSocket = function() {
 		// Initialize socket io connection
 		this.socket = this.eden.load('socket')
 			// on client connection
@@ -206,7 +206,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.trigger = function() {
+	prototype.trigger = function() {
 		_events.emit.apply(_events, arguments);
 		return this;
 	};
@@ -216,7 +216,7 @@ module.exports = function() {
 	 *
 	 * @return this
 	 */
-	public.unlisten = function() {
+	prototype.unlisten = function() {
 		_events.removeAllListeners.apply(_events, arguments);
 		return this;	
 	};
@@ -225,5 +225,5 @@ module.exports = function() {
 	-------------------------------*/
 	/* Adaptor
 	-------------------------------*/
-	return c.load(); 
-}();
+	return Definition.load(); 
+})();
