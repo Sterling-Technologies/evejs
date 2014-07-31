@@ -97,11 +97,11 @@ define(function() {
 		
 		//ENUMS
 		//NOTE: BULK GENERATE
-		{ENUMS}
+		{CONTROL_ENUMS}
 		
 		//CONTROL CONVERT
 		//NOTE: BULK GENERATE
-		{CONTROL_CONVERT}
+		{CONTROL_APP_CONVERT}
 		
         //require form templates
         //assign it to main form
@@ -129,7 +129,7 @@ define(function() {
 		
 		//VALIDATION
 		//NOTE: BULK GENERATE
-		{VALIDATION}
+		{CONTROL_VALIDATION}
 		//if we have no errors
 		return JSON.stringify(this.data.errors) === '{}';
 	};
@@ -140,7 +140,7 @@ define(function() {
 		
 		//SERVER CONVERT
 		//NOTE: BULK GENERATE
-		{SERVER_CONVERT}
+		{CONTROL_SERVER_CONVERT}
 		
 		//save data to database
 		$.post(url, this.data.{SLUG}, function(response) {

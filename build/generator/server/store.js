@@ -6,7 +6,7 @@ module.exports = (function() {
 	/* Public Properties
 	-------------------------------*/
 	//NOTE: BULK GENERATE
-	{SCHEMA}
+	{SERVER_SCHEMA}
 	
 	/* Private Properties
 	-------------------------------*/
@@ -269,7 +269,7 @@ module.exports = (function() {
 		//keyword search
 		if(keyword) {
 			//NOTE: BULK GENERATE
-			{SEARCHABLE}
+			{SERVER_SEARCHABLE}
 		}
 		
 		for(var key in query) {

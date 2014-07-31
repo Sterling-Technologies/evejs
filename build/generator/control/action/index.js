@@ -71,7 +71,7 @@ define(function() {
 			for(i in response.batch[0].results) {
                 //OUTPUT
 				//NOTE: BULK GENERATE
-				{OUTPUT_FORMAT}
+				{CONTROL_OUTPUT_FORMAT}
 				
 				//add it to row
 				rows.push(response.batch[0].results[i]);
