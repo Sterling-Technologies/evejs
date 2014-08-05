@@ -11,14 +11,86 @@
  * eve watch server		- Watches changes in server only
  * eve generate ecommerce/product
  */
-var eden 		= require('edenjs'),
-        lint 	= require('../lib/lint'),
-        nodemon = require('../lib/nodemon'),
-        mocha = require('../lib/mocha'),
-        local 	= process.env.PWD || process.cwd(),
-        //NOTE: maybe find a better way to find the root folder
-        root 	= process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
-        action 	= process.argv[2] || 'watch';
+var eden 	= require('edenjs'),
+	lint 	= require('../lib/lint'),
+	nodemon = require('../lib/nodemon'),
+	mocha 	= require('../lib/mocha'),
+	local 	= process.env.PWD || process.cwd(),
+	//NOTE: maybe find a better way to find the root folder
+	root 	= process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
+	action 	= process.argv[2] || 'watch';
+
+var defaults = {
+	server: {
+		bitwise : false,
+		strict 	: false,
+		node 	: true
+	},
+	
+	control: {
+		globals: {
+			define 		: true,
+			controller 	: true,
+			console 	: true,
+			require 	: true,
+			Handlebars 	: true,
+			
+			describe   	: true,
+			it         	: true,
+			before     	: true,
+			beforeEach 	: true,
+			after      	: true,
+			afterEach  	: true 
+		},
+		
+		bitwise 	: false,
+		strict 		: false,
+		browser 	: true,
+		jquery 		: true,
+		node 		: false
+	},
+	
+	web: {
+		globals : {
+			define 		: true,
+			controller 	: true,
+			console 	: true,
+			require 	: true,
+			Handlebars 	: true,
+			
+			describe   	: true,
+			it         	: true,
+			before     	: true,
+			beforeEach 	: true,
+			after      	: true,
+			afterEach  	: true 
+		},
+		
+		bitwise : false,
+		strict 	: false,
+		browser : true,
+		jquery 	: true,
+		node 	: false
+	}
+};
+
+var _getContent = function(source, destination, callback) {
+	eden('file', source).getContent(function(error, to) {
+		if (error) {
+			eve.trigger('error', 'Error getting the content of file:' + source);
+			return;
+		}
+		
+		eden('file', destination).getContent(function(error, from) {
+			if (error) {
+				eve.trigger('error', 'Error getting the content of file:' + destination);
+				return;
+			}
+			
+			callback(to.toString(), from.toString());
+		});
+	});
+};
 
 require('../lib/')
         .setRoot(root)
@@ -49,71 +121,71 @@ require('../lib/')
         .listen('watch-control-init', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Watching for control changes ...');
         })
-        .listen('watch-control-update', function(event, path, destination, eve, local, config, push) {
+		
+		.listen('watch-control-update', function(event, source, destination, eve, local, config, push) {
             //we only care if something has changed
             if (event !== 'change' && event !== 'add') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
-
-            var file = eden('file', path);
-            var controlConfig = config.control;
 
             //we only care if this is a js file
-            if (file.getExtension() !== 'js') {
+            if (eden('file', source).getExtension() !== 'js') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
+			
+			//if this is a test file
+			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
+				//do not push just run the test
+				console.log('\x1b[33m%s\x1b[0m', 'Testing');
+				
+				//delete the cache to reload again
+				delete require.cache[source];
+
+				mocha.reset().run(local, 'control', config.control);
+				return;
+			}
 
             //get the code
-            file.getContent(function(error, code) {
-                if (error) {
-                    eve.trigger('error', 'Control: Error getting the content of file:' + path);
-                    return;
-                }
-                
-                var isTest = destination.indexOf(controlConfig.path + '/test/') === 0;
-                var config = isTest ? controlConfig.lint_mocha : controlConfig.lint;
-
-                config = eden('hash').merge({
-                    globals : {
-                        define : true,
-                        controller : true,
-                        console : true,
-                        require : true,
-                        Handlebars : true
-                    },
-                    bitwise : false,
-                    strict : false,
-                    browser : true,
-                    jquery : true,
-                    node : false
-                }, config || { });
-
-                //make sure node is false
-                config.node = false;
-
-                //if there is an error
-                if (!lint(code.toString(), config, path)) {
-                    return;
-                }
-
-                //push it
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination, function(err) {
-                    if (err || !isTest) {
-                        return;
-                    }
-
-                    var file = controlConfig.mocha + ' ' + destination;
-                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Control): ' + destination);
-                    mocha.run(file, { cwd : controlConfig.path, stdio : 'inherit' });
-                });
-            });
+			_getContent(source, destination, function(to, from) {
+				config.control.lint = eden('hash').merge(defaults.control, config.control.lint || {});
+					
+				 //make sure node is false
+				config.control.lint.node = false;
+				
+				//if there is an error
+				if (!lint(to.toString(), config.control.lint, source)) {
+					return;
+				}
+				
+				//push it
+				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+				
+				push(event, source, destination, function(error) {
+					if (error) {
+						eve.trigger('error', error);
+						return;
+					}
+					
+					if(!(config.control.test instanceof Array)) {
+						return;
+					}
+					
+					console.log('\x1b[33m%s\x1b[0m', 'Testing');
+					mocha.run(local, 'control', config.control, function(failed) {
+						//if there was a fail and this is not a mocha test
+						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
+							//revert
+							eden('file', destination).setContent(from);
+						}
+					});
+				});
+			});
         })
-
+		
         //server events
         .listen('install-server-step-1', function() {
             console.log('\x1b[33m%s\x1b[0m', 'Creating Server Folder ...');
@@ -151,60 +223,68 @@ require('../lib/')
             // starts the nodemon
             nodemon(eve, settings);
         })
-        .listen('watch-server-update', function(event, path, destination, eve, local, config, push) {
+        .listen('watch-server-update', function(event, source, destination, eve, local, config, push) {
             //we only care if something has changed
             if (event !== 'change' && event !== 'add') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
-
-            var file = eden('file', path);
-            var serverConfig = config.server;
 
             //we only care if this is a js file
-            if (file.getExtension() !== 'js') {
+            if (eden('file', source).getExtension() !== 'js') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
-
-            //get the code
-            file.getContent(function(error, code) {
-                if (error) {
-                    eve.trigger('error', 'Server: Error getting the content of file:' + path);
-                    return;
-                }
-
-                var isTest = destination.indexOf(serverConfig.path + '/test/') === 0;
-                var config = isTest ? serverConfig.lint_mocha : serverConfig.lint;
-
-                config = eden('hash').merge({
-                    bitwise : false,
-                    strict : false,
-                    node : true
-                }, config || { });
-
-                //make sure node is true
-                config.node = true;
-
-                //if there is an error
-                if (!lint(code.toString(), config, path)) {
-                    return;
-                }
-
-                //push it
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination, function(err) {
-                    if (err || !isTest) {
-                        return;
-                    }
-
-                    var file = serverConfig.mocha + ' ' + destination;
-                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Server): ' + destination);
-                    mocha.run(file, { cwd : serverConfig.path, stdio : 'inherit' });
-                });
-            });
+			
+			//if this is a test file
+			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
+				//do not push just run the test
+				console.log('\x1b[33m%s\x1b[0m', 'Testing');
+				
+				//delete the cache to reload again
+				delete require.cache[source];
+				
+				mocha.reset().run(local, 'server', config.server);
+				return;
+			}
+			
+			//get the code
+			_getContent(source, destination, function(to, from) {
+				config.server.lint = eden('hash').merge(defaults.server, config.server.lint || {});
+					
+				 //make sure node is false
+				config.server.lint.node = true;
+				
+				//if there is an error
+				if (!lint(to.toString(), config.server.lint, source)) {
+					return;
+				}
+				
+				//push it
+				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+				
+				push(event, source, destination, function(error) {
+					if (error) {
+						eve.trigger('error', error);
+						return;
+					}
+					
+					if(!(config.server.test instanceof Array)) {
+						return;
+					}
+					
+					console.log('\x1b[33m%s\x1b[0m', 'Testing');
+					mocha.run(local, 'server', config.server, function(failed) {
+						//if there was a fail and this is not a mocha test
+						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
+							//revert
+							eden('file', destination).setContent(from);
+						}
+					});
+				});
+			});
         })
 		
 		//nodemon events
@@ -240,69 +320,68 @@ require('../lib/')
         .listen('watch-web-init', function() {
             console.log('\x1b[32m%s\x1b[0m', 'Watching for web changes ...');
         })
-        .listen('watch-web-update', function(event, path, destination, eve, local, config, push) {
+        .listen('watch-web-update', function(event, source, destination, eve, local, config, push) {
             //we only care if something has changed
             if (event !== 'change' && event !== 'add') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
-
-            var file = eden('file', path);
-            var webConfig = config.server;
 
             //we only care if this is a js file
-            if (file.getExtension() !== 'js') {
+            if (eden('file', source).getExtension() !== 'js') {
                 console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination);
+                push(event, source, destination);
                 return;
             }
+			
+			//if this is a test file
+			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
+				//do not push just run the test
+				console.log('\x1b[33m%s\x1b[0m', 'Testing');
+				
+				//delete the cache to reload again
+				delete require.cache[source];
+				
+				mocha.reset().run(local, 'web', config.web);
+				return;
+			}
 
             //get the code
-            file.getContent(function(error, code) {
-                if (error) {
-                    eve.trigger('error', 'Web: Error getting the content of file:' + path);
-                    return;
-                }
-                
-                var isTest = destination.indexOf(webConfig.path + '/test/') === 0;
-                var config = isTest ? webConfig.lint_mocha : webConfig.lint;
-
-                config = eden('hash').merge({
-                    globals : {
-                        define : true,
-                        controller : true,
-                        console : true,
-                        require : true,
-                        Handlebars : true
-                    },
-                    bitwise : false,
-                    strict : false,
-                    browser : true,
-                    jquery : true,
-                    node : false
-                }, config || { });
-
-                //make sure node is false
-                config.node = false;
-
-                //if there is an error
-                if (!lint(code.toString(), config, path)) {
-                    return;
-                }
-
-                //push it
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, path, destination, function(err) {
-                    if (err || !isTest) {
-                        return;
-                    }
-
-                    var file = webConfig.mocha + ' ' + destination;
-                    console.log('\x1b[35m%s\x1b[0m', 'Mocha Test Suite (Web): ' + destination);
-                    mocha.run(file, { cwd : webConfig.path, stdio : 'inherit' });
-                });
-            });
+			_getContent(source, destination, function(to, from) {
+				config.web.lint = eden('hash').merge(defaults.web, config.web.lint || {});
+					
+				 //make web node is false
+				config.control.lint.node = false;
+				
+				//if there is an error
+				if (!lint(to.toString(), config.web.lint, source)) {
+					return;
+				}
+				
+				//push it
+				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+				
+				push(event, source, destination, function(error) {
+					if (error) {
+						eve.trigger('error', error);
+						return;
+					}
+					
+					if(!(config.web.test instanceof Array)) {
+						return;
+					}
+					
+					console.log('\x1b[33m%s\x1b[0m', 'Testing');
+					mocha.run(local, 'web', config.web, function(failed) {
+						//if there was a fail and this is not a mocha test
+						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
+							//revert
+							eden('file', destination).setContent(from);
+						}
+					});
+				});
+			});
         })
 
         .run(local, action);
