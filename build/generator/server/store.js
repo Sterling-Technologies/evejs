@@ -257,6 +257,8 @@ module.exports = (function() {
 	-------------------------------*/
 	{USE_SLUG_GETSLUG}
 	
+	{USE_REVISION_FINDANDREVISION}
+	
 	var _buildQuery = function(query, keyword) {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;

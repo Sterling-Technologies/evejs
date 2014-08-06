@@ -1,0 +1,41 @@
+<section class="{SLUG}-revision {SLUG}-update row">
+    <div class="col-sm-12">
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-16">
+            </ul>
+            <div class="tab-content address-revision-tab-content">
+	            <div class="table-responsive">
+                    {{#if {SLUG}.revision}}
+                    <!-- START: POST TABLE -->
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <!-- NOTE: BULK GENERATE -->
+                                {CONTROL_HEADERS}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each {SLUG}.revision}}
+                            <tr data-id="{{../{SLUG}._id}}">
+                                <td>
+                                    <a title="Restore" href="/{SLUG}/revision/{{../{SLUG}._id}}/{{@index}}" class="text-success restore">
+                                    <i class="icon-external-link"></i></a>
+                                </td>
+                                <!-- NOTE: BULK GENERATE -->
+                                {CONTROL_COLUMNS}
+                            </tr>	
+                            {{/each}}
+                        </tbody>	
+                    </table>
+                    <!-- END: POST TABLE -->
+                    {{else}}
+                    <!-- START: NO RESULTS -->
+                    <div class="well no-results">No Revisions Found</div>
+                    <!-- END: NO RESULTS -->
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

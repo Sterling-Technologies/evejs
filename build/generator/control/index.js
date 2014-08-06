@@ -57,6 +57,7 @@ controller
 		case window.location.pathname.indexOf('/{SLUG}/bulk') === 0:
 			route.action = 'bulk';
 			break;
+		{USE_REVISION_ROUTE}
 		case window.location.pathname === '/{SLUG}':
 			route.action = 'index';
 			break;
@@ -88,16 +89,16 @@ controller
 // when body is fully loaded
 .listen('body', function() {
 	var url = window.location.pathname;
-	var id  = controller.getUrlSegment(-1);
+	var id  = controller.getUrlSegment(3);
 
 	// if tab is already rendered
-	if(jQuery('section.{SLUG}-update ul.nav-tabs li.{SLUG}-profile-tab').length !== 0) {
+	if(jQuery('section.{SLUG}-update ul.nav-tabs li.{SLUG}-update-tab').length !== 0) {
 		// just do nothing
 		return;
 	}
 
 	require(['text!' + controller.path('{SLUG}/template') + '/tabs.html'], function(html) {
 		html = Handlebars.compile(html)({ id : id, url : url });
-		jQuery('section.{SLUG}-update ul.nav.nav-tabs').prepend(html)
+		jQuery('section.{SLUG}-update ul.nav.nav-tabs').prepend(html);
 	});
 });

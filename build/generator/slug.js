@@ -65,13 +65,13 @@ module.exports = {
 		_getNextSlug.call(this, data.title, function(slug) {\n\
 			data.slug = slug;\n\
 			{USE_UPDATED_UPDATE}\n\
-			this.store.findOneAndUpdate(\n\
+			{USE_REVISION_UPDATE}\n\
 				{USE_ACTIVE_UPDATE}\n\
 				{ $set: data }, callback);\n\
 		}.bind(this), id);', 
 		
 		'{USE_UPDATED_UPDATE}\n\
-		this.store.findOneAndUpdate(\n\
+		{USE_REVISION_UPDATE}\n\
 			{USE_ACTIVE_UPDATE}\n\
 			{ $set: data }, callback);']
 };

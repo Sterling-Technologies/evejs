@@ -77,14 +77,13 @@ var defaults = {
 var _getContent = function(source, destination, callback) {
 	eden('file', source).getContent(function(error, to) {
 		if (error) {
-			eve.trigger('error', 'Error getting the content of file:' + source);
+			eve.trigger('error', error);
 			return;
 		}
 		
 		eden('file', destination).getContent(function(error, from) {
 			if (error) {
-				eve.trigger('error', 'Error getting the content of file:' + destination);
-				return;
+				from = '';
 			}
 			
 			callback(to.toString(), from.toString());
@@ -92,7 +91,7 @@ var _getContent = function(source, destination, callback) {
 	});
 };
 
-require('../lib/')
+var eve = require('../lib/')
         .setRoot(root)
         //global events
         .listen('error', function(message) {
