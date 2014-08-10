@@ -69,8 +69,7 @@ module.exports = {
 			type	: 'date',
 			default	: 'now()',
 			field	: 'date',
-			holder	: '01/01/2014',
-			valid	: [['regex', 'dd/dd/dddd']]
+			holder	: '01/01/2014'
 		},
 		
 		status: {

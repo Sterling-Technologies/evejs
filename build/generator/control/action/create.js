@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    prototype.title        = 'Create {SINGULAR}';
-    prototype.header       = 'Create {SINGULAR}';
+    prototype.title        = 'Create {{singular}}';
+    prototype.header       = 'Create {{singular}}';
     prototype.subheader    = 'CRM';
 	
     prototype.crumbs = [{ 
-        path: '/{SLUG}',
-        icon: '{ICON}', 
-        label: '{PLURAL}' 
-    }, {  label: 'Create {SINGULAR}' }];
+        path: '/{{slug}}',
+        icon: '{{icon}}', 
+        label: '{{plural}}' 
+    }, {  label: 'Create {{singular}}' }];
 	
     prototype.data     = {};
 	
-    prototype.template = controller.path('{SLUG}/template') + '/form.html';
+    prototype.template = controller.path('{{slug}}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -52,16 +52,25 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		this.data.{SLUG}	= {};
+		this.data.{{slug}}	= {};
 		
 		//NOTE: BULK GENERATE
-		{CONTROL_DEFAULTS}
+		{{~#loop fields ~}} 
+			{{~#if value.default ~}} 
+				{{~#when value.default '==' 'now()'}}
+		this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(Date.now());
+				{{~/when~}} 
+				{{~#when value.default '!=' 'now()'}}
+		this.data.{{../../../slug}}.{{../../key}} = {{../../value.default}};
+				{{~/when~}} 
+			{{~/if~}} 
+		{{~/loop}}
 		
 		var data = controller.getPost();
 		
 		if(data && data.length) {
 			//query to hash
-			this.data.{SLUG} = $.queryToHash(data);
+			this.data.{{slug}} = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -75,8 +84,6 @@ define(function() {
 			//we are good to send this up
 			_process.call(this, next);
 			
-			next();
-			
 			return;
 		}
 		
@@ -85,15 +92,48 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = ['text!' + controller.path('{SLUG}/template') +  '/form.html'];
+        var templates = ['text!' + controller.path('{{slug}}/template') +  '/form.html'];
 		
 		//ENUMS
 		//NOTE: BULK GENERATE
-		{CONTROL_ENUMS}
+		{{#loop fields ~}} 
+			{{~#if value.options ~}} 
+			
+		this.data.{{../key}}List = [
+			{{#loop ../value.options ~}}
+			{ label: '{{value.label}}', value: '{{value.value}}' }
+			{{~#unless last}},
+			{{/unless~}}
+			{{/loop~}}
+		];
+				 
+			{{~/if~}} 
+		{{~/loop}}
 		
 		//CONTROL CONVERT
 		//NOTE: BULK GENERATE
-		{CONTROL_APP_CONVERT}
+		{{#loop fields ~}}
+		{{~#if value.field ~}}
+		{{~#when value.field.[0] '==' 'datetime' ~}}
+		if(this.data.{{../../../slug}} && this.data.{{../../../slug}}.{{../../key}}) {
+			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}});
+		}
+		
+		{{/when~}}
+		{{~#when value.field.[0] '==' 'date' ~}}
+		if(this.data.{{../../../slug}} && this.data.{{../../../slug}}.{{../../key}}) {
+			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}}, false, true);
+		}
+		
+		{{/when~}}
+		{{~#when value.field.[0] '==' 'time' ~}}
+		if(this.data.{{../../../slug}} && this.data.{{../slug}}.{{../../key}}) {
+			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}}, true);
+		}
+		
+		{{/when~}}
+		{{~/if~}}
+		{{~/loop}}
 			
         //require form templates
         //assign it to main form
@@ -113,39 +153,36 @@ define(function() {
     };
 	
 	var _valid = function() {
-		//clear errors
-		this.data.errors = {};
-		
 		//VALIDATION
-		//NOTE: BULK GENERATE
-		{CONTROL_VALIDATION}
+		this.data.errors = controller.{{slug}}.getErrors(this.data.{{slug}});
+		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) === '{}';
 	};
 	
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/{SLUG}/create';
-		
-		//SERVER CONVERT
-		//NOTE: BULK GENERATE
-		{CONTROL_SERVER_CONVERT}
-		
-		//save data to database
-		$.post(url, this.data.{SLUG}, function(response) {
-			response = JSON.parse(response);
-			
+		controller.{{slug}}.create(this.data.{{slug}}, function(response) {
 			if(!response.error) {		
 				controller				
 					//display message status
-					.notify('Success', '{SINGULAR} successfully created!', 'success')
+					.notify('Success', '{{singular}} successfully created!', 'success')
 					//go to listing
-					.redirect('/{SLUG}');
+					.redirect('/{{slug}}');
 				
 				//no need to next since we are redirecting out
 				return;
 			}
 			
-			this.data.errors = response.validation || {};
+			if(response.validation && response.validation instanceof Array) {
+				this.data.errors = {};
+				for(var j, i = 0; i < response.validation.length; i++) {
+					for(j in response.validation[i]) {
+						if(response.validation[i].hasOwnProperty(j)) {
+							this.data.errors[j] = response.validation[i][j];
+						}
+					}	
+				}
+			}
 			
 			//display message status
 			controller.notify('Error', 'There was an error in the form.', 'error');
@@ -198,53 +235,6 @@ define(function() {
 		}
 		
 		return date + ' ' + time;
-	};
-	
-	var _convertToServerDate = function(string) {
-		if(typeof string !== 'number') {
-			string = '' + string;
-			if(!string || !string.length) {
-				return '';
-			}
-		}
-		
-		var date 	= new Date(string);
-		var offset	= (new Date()).getTimezoneOffset() * 60000;
-		
-		date = new Date( date.getTime() + offset);
-		
-		var month 	= (date.getMonth() + 1) + '';
-		var day 	= date.getDate() + '';
-		var year 	= date.getFullYear();	
-		
-		var hour 	= date.getHours() + '';
-		var minute = date.getMinutes() + '';
-		var second = date.getSeconds() + '';
-		
-		if(month.length === 1) {
-			month = '0' + month;
-		}
-		
-		if(day.length === 1) {
-			day = '0' + day;
-		}
-		
-		if(hour.length === 1) {
-			hour = '0' + hour;
-		}
-		
-		if(minute.length === 1) {
-			minute = '0' + minute;
-		}
-		
-		if(second.length === 1) {
-			second = '0' + second;
-		}
-		
-		date = year + '-' + month + '-' + day;
-		var time = hour + ':' + minute + ':' + second;
-		
-		return date + 'T' + time + 'Z';
 	};
     
     /* Adaptor

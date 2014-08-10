@@ -3,38 +3,42 @@ controller
 .listen('init', function() {
 	//set paths
 	controller
-		.path('{SLUG}'			, controller.path('package') + '/{VENDOR}/{SLUG}')
-		.path('{SLUG}/action'	, controller.path('package') + '/{VENDOR}/{SLUG}/action')
-		.path('{SLUG}/asset'	, controller.path('package') + '/{VENDOR}/{SLUG}/asset')
-		.path('{SLUG}/template'	, controller.path('package') + '/{VENDOR}/{SLUG}/template');
+		.path('{{slug}}'			, controller.path('package') + '/{{vendor}}/{{slug}}')
+		.path('{{slug}}/action'		, controller.path('package') + '/{{vendor}}/{{slug}}/action')
+		.path('{{slug}}/asset'		, controller.path('package') + '/{{vendor}}/{{slug}}/asset')
+		.path('{{slug}}/template'	, controller.path('package') + '/{{vendor}}/{{slug}}/template');
 
-	controller.trigger('{SLUG}-init');
+	//load the factory
+	require([controller.path('{{slug}}') + '/factory.js'], function(factory) {
+		controller.{{slug}} = factory;
+		controller.trigger('{{slug}}-init');
+	});
 })
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
-	// event when the {SLUG} menu is starting
-	controller.trigger('{SLUG}-menu-before');
+	// event when the {{slug}} menu is starting
+	controller.trigger('{{slug}}-menu-before');
 
 	//add our menu item
 	menu.push({
-		path	: '/{SLUG}',
-		icon	: '{ICON}',
-		label	: '{PLURAL}',
+		path	: '/{{slug}}',
+		icon	: '{{icon}}',
+		label	: '{{plural}}',
 		children: [{
-			path	: '/{SLUG}/create',
-			label	: 'Create {SINGULAR}' }]
+			path	: '/{{slug}}/create',
+			label	: 'Create {{singular}}' }]
 		});
 
-	// event when the {SLUG} menu is finished
-	controller.trigger('{SLUG}-menu-after');
+	// event when the {{slug}} menu is finished
+	controller.trigger('{{slug}}-menu-after');
 })
 //when a url request has been made
 .listen('request', function() {
-	//event when the {SLUG} request is starting
-	controller.trigger('{SLUG}-request-before');
+	//event when the {{slug}} request is starting
+	controller.trigger('{{slug}}-request-before');
 
-	//if it doesn't start with {SLUG}
-	if(window.location.pathname.indexOf('/{SLUG}') !== 0) {
+	//if it doesn't start with {{slug}}
+	if(window.location.pathname.indexOf('/{{slug}}') !== 0) {
 		//we don't care about it
 		return;
 	}
@@ -42,23 +46,27 @@ controller
 	//router -> action
 	var route = { action: null };
 	switch(true) {
-		case window.location.pathname.indexOf('/{SLUG}/create') === 0:
+		case window.location.pathname.indexOf('/{{slug}}/create') === 0:
 			route.action = 'create';
 			break;
-		case window.location.pathname.indexOf('/{SLUG}/update') === 0:
+		case window.location.pathname.indexOf('/{{slug}}/update') === 0:
 			route.action = 'update';
 			break;
-		case window.location.pathname.indexOf('/{SLUG}/remove') === 0:
+		case window.location.pathname.indexOf('/{{slug}}/remove') === 0:
 			route.action = 'remove';
 			break;
-		case window.location.pathname.indexOf('/{SLUG}/restore') === 0:
+		case window.location.pathname.indexOf('/{{slug}}/restore') === 0:
 			route.action = 'restore';
 			break;
-		case window.location.pathname.indexOf('/{SLUG}/bulk') === 0:
+		case window.location.pathname.indexOf('/{{slug}}/bulk') === 0:
 			route.action = 'bulk';
 			break;
-		{USE_REVISION_ROUTE}
-		case window.location.pathname === '/{SLUG}':
+		{{#if use_revision ~}}
+		case window.location.pathname.indexOf('/{{slug}}/revision') === 0:
+			route.action = 'revision';
+			break;
+		{{/if~}}
+		case window.location.pathname === '/{{slug}}':
 			route.action = 'index';
 			break;
 	}
@@ -69,21 +77,21 @@ controller
 		return;
 	}
 	
-	route.path = controller.path('{SLUG}/action') + '/' + route.action + '.js';
+	route.path = controller.path('{{slug}}/action') + '/' + route.action + '.js';
 	
-	//event when the {SLUG} action is about to render
-	controller.trigger('{SLUG}-action-' + route.action + '-before', route);
+	//event when the {{slug}} action is about to render
+	controller.trigger('{{slug}}-action-' + route.action + '-before', route);
 	
 	//load up the action
 	require([route.path], function(action) {
 		action.load().render();
 		
-		//event when the {SLUG} action is rendered
-		controller.trigger('{SLUG}-action-' + route.action + '-after', route);
+		//event when the {{slug}} action is rendered
+		controller.trigger('{{slug}}-action-' + route.action + '-after', route);
 	});
 
-	// event when the {SLUG} request is finished
-	controller.trigger('{SLUG}-request-after');
+	// event when the {{slug}} request is finished
+	controller.trigger('{{slug}}-request-after');
 })
 
 // when body is fully loaded
@@ -92,13 +100,13 @@ controller
 	var id  = controller.getUrlSegment(3);
 
 	// if tab is already rendered
-	if(jQuery('section.{SLUG}-update ul.nav-tabs li.{SLUG}-update-tab').length !== 0) {
+	if(jQuery('section.{{slug}}-update ul.nav-tabs li.{{slug}}-update-tab').length !== 0) {
 		// just do nothing
 		return;
 	}
 
-	require(['text!' + controller.path('{SLUG}/template') + '/tabs.html'], function(html) {
+	require(['text!' + controller.path('{{slug}}/template') + '/tabs.html'], function(html) {
 		html = Handlebars.compile(html)({ id : id, url : url });
-		jQuery('section.{SLUG}-update ul.nav.nav-tabs').prepend(html);
+		jQuery('section.{{slug}}-update ul.nav.nav-tabs').prepend(html);
 	});
 });

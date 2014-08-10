@@ -6,7 +6,7 @@ module.exports = (function() {
 	/* Public Properties
 	-------------------------------*/
 	//NOTE: BULK GENERATE
-	{SERVER_SCHEMA}
+	prototype.schema = {{{schema}}};
 	
 	/* Private Properties
 	-------------------------------*/
@@ -31,7 +31,7 @@ module.exports = (function() {
 		this.definition = new schema(this.schema);
 		//NOTE: add custom schema methods here
 		
-		this.store = mongoose.model('{SINGULAR}', this.definition);
+		this.store = mongoose.model('{{singular}}', this.definition);
 	};
 	
 	/* Public Methods
@@ -56,8 +56,15 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.insert = function(data, callback) {
-		{USE_SLUG_INSERT}
-		
+		{{#if use_slug~}}
+		//case for slug
+		_getNextSlug.call(this, data.title, function(slug) {
+			data.slug = slug;
+			this.model(data).save(callback);
+		}.bind(this));
+		{{~else~}}
+		this.model(data).save(callback);
+		{{~/if}}
 		return this;
 	};
 	
@@ -100,8 +107,11 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.getDetail = function(id, callback, lean) {
-		{USE_ACTIVE_DETAIL}
-		
+		{{#if use_active~}}
+		var query = this.findOne({ _id: id, active: true });
+		{{~else~}}
+		var query = this.findOne({ _id: id });
+		{{/if~}}
 		if(lean) {
 			query = query.lean();
 		}
@@ -219,7 +229,13 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.remove = function(id, callback) {
-		{USE_ACTIVE_REMOVE}
+		{{#if use_active ~}}
+		this.store.findOneAndUpdate(
+			{_id: id, active: true },
+			{ $set: { active: false } }, callback);
+		{{else~}}
+		this.store.findOneAndRemove({ _id: id }, callback);
+		{{/if~}}
 		
 		return this;
 	};
@@ -233,7 +249,11 @@ module.exports = (function() {
 	 */
 	prototype.restore = function(id, callback) {
 		this.store.findOneAndUpdate(
-			{USE_ACTIVE_RESTORE}
+			{{#if use_active ~}}
+			{ _id: id, active: false }, 
+			{{~else~}}
+			{ _id: id }, 
+			{{~/if}}
 			{ $set: { active: true } }, callback);
 		
 		return this;
@@ -248,22 +268,101 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.update = function(id, data, callback) {
-		{USE_SLUG_UPDATE}
+		{{#if use_slug}}
+		//case for slug
+		_getNextSlug.call(this, data.title, function(slug) {
+			data.slug = slug;
+			{{#if use_updated}}data.updated = new Date();{{/if}}
+			{{#if use_revision}}_findAndRevision.call(this, 
+			{{~else~}}this.store.findOneAndUpdate({{/if}}
+				{{#if use_active}}{ _id: id, active: true },
+				{{~else~}}{ _id: id },{{/if}}
+				{ $set: data }, callback);
+		}.bind(this), id);
+		{{else}}
+		{{#if use_updated}}data.updated = new Date();{{/if}}
+		{{#if use_revision}}_findAndRevision.call(this, 
+		{{~else~}}this.store.findOneAndUpdate({{/if}}
+			{{#if use_active}}{ _id: id, active: true },
+			{{~else~}}{ _id: id },{{/if}}
+			{ $set: data }, callback);
+		{{/if}}
 		
 		return this;
 	};
 	
 	/* Private Methods
 	-------------------------------*/
-	{USE_SLUG_GETSLUG}
+	var _getNextSlug = function(slug, callback, id) {
+		//turn it into a slug
+		slug = slug.toString().toLowerCase()
+		  .replace(/\\s+/g, '-')        // Replace spaces with -
+		  .replace(/[^\\w\\-]+/g, '')   // Remove all non-word chars
+		  .replace(/\\-\\-+/g, '-')      // Replace multiple - with single -
+		  .replace(/^-+/, '')          // Trim - from start of text
+		  .replace(/-+$$/, '');         // Trim - from end of text
+		//get all slugs that start with argument
+		//'^something\\-cool(\\-[0-9]+){0,1}$$'
+		var regex = new RegExp('^' + slug.replace(/\\-/g, '\\\\-') + '(\\\\-[0-9]+){0,1}$$', 'g');
+		this.find({ slug: regex }).lean().exec(function(error, list) {
+			list = list || [];
+			
+			for(var number, count = -1, i = 0; i < list.length; i++) {
+				//if the id is given and found
+				//if the slug prefix is the same
+				//as the prescribed one
+				if(list[i]._id.toString() === id 
+				&& list[i].slug.indexOf(slug) === 0) {
+					//call the callback
+					callback(list[i].slug);
+					//that's it
+					return;	
+				}
+				
+				//FROM: somthing-cool-2 TO: -2
+				//FROM: something-cool TO ''
+				number = list[i].slug.substr(slug.length);
+				//there should be a hyphen at the start now
+				if(number.indexOf('-') !== 0) {
+					//it's 0 anyways
+					number = '-0';
+				}
+				
+				// now remove the hyphen so we can 
+				// make it into an integer
+				number = parseInt(number.substr(1));
+				
+				//all that just for this...
+				if(number > count) {
+					count = number;
+				}
+			}
+			
+			if(count >= 0) {
+				callback(slug + '-' + (count + 1));
+				return;
+			}
+			
+			callback(slug);
+		});
+	};
 	
-	{USE_REVISION_FINDANDREVISION}
+	var _findAndRevision = function(where, set, callback) {
+		this.getDetail(where._id, function(error, row) {
+			set['$push'] = { revision: row };
+			this.store.findOneAndUpdate(where, set, callback);
+		}.bind(this), true);
+	};
 	
 	var _buildQuery = function(query, keyword) {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
 		
-		{USE_ACTIVE_QUERY}
+		{{#if use_active ~}}
+		if(query.active !== -1 && query.active !== '-1') {
+			query.active = query.active !== 0 && query.active !== '0';
+		}
+		{{~/if}}
 		
 		var not, or = [];
 		
@@ -271,7 +370,7 @@ module.exports = (function() {
 		//keyword search
 		if(keyword) {
 			//NOTE: BULK GENERATE
-			{SERVER_SEARCHABLE}
+			{{{searchable}}}
 		}
 		
 		for(var key in query) {

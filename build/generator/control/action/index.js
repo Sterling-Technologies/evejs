@@ -5,17 +5,17 @@ define(function() {
 	
 	/* Public Properties
 	-------------------------------*/
-	prototype.title 		= '{PLURAL}';
-	prototype.header 		= '{PLURAL}';
+	prototype.title 		= '{{plural}}';
+	prototype.header 		= '{{plural}}';
 	prototype.subheader 	= 'CRM';
-	prototype.crumbs 		= [{ icon: '{SLUG}', label: '{PLURAL}' }];
+	prototype.crumbs 		= [{ icon: '{{slug}}', label: '{{plural}}' }];
 	prototype.data 			= {};
 	
 	prototype.start		= 0;
 	prototype.page 		= 1;
 	prototype.range 	= 25;
 	
-	prototype.template 	= controller.path('{SLUG}/template') + '/index.html';
+	prototype.template 	= controller.path('{{slug}}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -58,10 +58,13 @@ define(function() {
 		//2. get the active count
 		batch.push({ url: _getActiveCountRequest.call(this, query) });
 		
-		{USE_ACTIVE_BATCH}
+		{{#if use_active ~}}
+		//3. get the trash count
+		batch.push({ url: _getTrashCountRequest.call(this, query) });
+		{{~/if}}
 		
 		$.post(
-			controller.getServerUrl() + '/{SLUG}/batch', 
+			controller.getServerUrl() + '/{{slug}}/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
@@ -69,13 +72,19 @@ define(function() {
 			
 			//loop through data
 			for(i in response.batch[0].results) {
-                //OUTPUT
+				//OUTPUT
 				//NOTE: BULK GENERATE
-				{CONTROL_OUTPUT_FORMAT}
-				
+				{{#loop fields ~}}
+				{{~#when value.type '==' 'date' ~}}
+				response.batch[0].results[i].{{../key}} = $.timeToDate((new Date(response.batch[0].results[i].{{../key}})).getTime());
+				{{/when~}}
+				{{~#when value.type '==' 'boolean' ~}}
+				response.batch[0].results[i].{{../key}} = response.batch[0].results[i].{{../key}} ? 'Yes': 'No';
+				{{/when~}}
+				{{~/loop}}
 				//add it to row
 				rows.push(response.batch[0].results[i]);
-            }
+			}
 			
 			var showing = query.mode || 'active';
 			showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
@@ -90,7 +99,9 @@ define(function() {
 				mode	: query.mode || 'active',
 				keyword	: query.keyword || null,
 				active	: response.batch[1].results,
-				{USE_ACTIVE_DATA}
+				{{#if use_active ~}}
+				trash	: response.batch[2].results,
+				{{/if~}}
 				range	: this.range };
             
 			next();
@@ -116,28 +127,28 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.{SLUG}-list a.remove, section.{SLUG}-list a.restore').click(function(e) {
+		$('section.{{slug}}-list a.remove, section.{{slug}}-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.{SLUG}-list  tbody input[type="checkbox"]').click(function() {
+		$('section.{{slug}}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
-				$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
+				$('section.{{slug}}-list tbody input[type="checkbox"]').each(function() {
 					if(!this.checked) {
 						allChecked = false;
 					}
 				});
 				
-				$('section.{SLUG}-list th input.checkall')[0].checked = allChecked;
+				$('section.{{slug}}-list th input.checkall')[0].checked = allChecked;
 			}, 1);
 		});
 		
 		//listen to remove restore
-		$('section.{SLUG}-list th input.checkall').click(function() {
+		$('section.{{slug}}-list th input.checkall').click(function() {
 			var checked = this.checked;
-			$('section.{SLUG}-list tbody input[type="checkbox"]').each(function() {
+			$('section.{{slug}}-list tbody input[type="checkbox"]').each(function() {
 				this.checked = checked;
 			});
 		});
@@ -160,9 +171,18 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 		
-		{USE_ACTIVE_LIST}
+		{{#if use_active ~}}
+		switch(request.mode || 'active') {
+			case 'active':
+				query.filter.active = 1;
+				break;
+			case 'trash':
+				query.filter.active = 0;
+				break;
+		}
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		{{/if~}}
+		return '/{{slug}}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getActiveCountRequest = function(request) {
@@ -175,13 +195,31 @@ define(function() {
 		}
 	
 		query.count = 1;
-		{USE_ACTIVE_COUNT}
+		{{#if use_active ~}}
+		query.filter.active = 1;
 		
-		return '/{SLUG}/list?' + $.hashToQuery(query);
+		{{/if~}}
+		
+		return '/{{slug}}/list?' + $.hashToQuery(query);
 	};
 	
-	{USE_ACTIVE_TRASH}
+	{{#if use_active ~}}
+	var _getTrashCountRequest = function(request) {
+		var query = {};
+		
+		query.filter = request.filter || {};
+		
+		if(request.keyword) {
+			query.keyword = request.keyword;
+		}
+		
+		query.count = 1;
+		query.filter.active = 0;
+		
+		return '/{{../slug}}/list?' + $.hashToQuery(query);
+	};
 	
+	{{/if~}}
 	/* Adaptor
 	-------------------------------*/
 	return Definition; 

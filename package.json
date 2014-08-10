@@ -14,7 +14,8 @@
         "jshint": "2.5.2",
         "prompt": "0.2.13",
         "nodemon": "1.2.1",
-        "mocha": "1.20.1"
+        "mocha": "1.20.1",
+		"handlebars": "2.0.0-alpha.4"
     },
     "bin": {
         "eve": "./bin/eve.js"

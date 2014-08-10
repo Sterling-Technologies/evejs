@@ -5,19 +5,19 @@ define(function() {
     
     /* Public Properties 
     -------------------------------*/
-    prototype.title        = 'Updating {SINGULAR} - Revisions';
-    prototype.header       = 'Updating {SINGULAR}';
+    prototype.title        = 'Updating {{singular}} - Revisions';
+    prototype.header       = 'Updating {{singular}}';
     prototype.subheader    = 'Revisions';
 	
     prototype.crumbs = [{ 
-        path: '/{SLUG}',
-        icon: '{ICON}', 
-        label: '{PLURAL}' 
-    }, {  label: 'Update {SINGULAR}' }];
+        path: '/{{slug}}',
+        icon: '{{icon}}', 
+        label: '{{plural}}' 
+    }, {  label: 'Update {{singular}}' }];
 	
     prototype.data     = {};
 	
-    prototype.template = controller.path('{SLUG}/template') + '/revision.html';
+    prototype.template = controller.path('{{slug}}/template') + '/revision.html';
     
     /* Private Properties
     -------------------------------*/
@@ -51,15 +51,15 @@ define(function() {
     -------------------------------*/
     var _setData = function(next) {
 		var id =  window.location.pathname.split('/')[3];
-		var url = controller.getServerUrl() + '/{SLUG}/detail/'+id;
+		var url = controller.getServerUrl() + '/{{slug}}/detail/'+id;
 		
 		$.getJSON(url, function(response) {
-			this.data.{SLUG} = response.results;
+			this.data.{{slug}} = response.results;
 			
 			if(window.location.pathname.split('/')[4]) {
 				var revision = window.location.pathname.split('/')[4];
 				
-				if(!this.data.{SLUG}.revision[revision]) {
+				if(!this.data.{{slug}}.revision[revision]) {
 					//display message status
 					controller.notify('Error', 'Revision does not exist.', 'error');
 					next();
@@ -69,21 +69,21 @@ define(function() {
 				//it exists
 				var route = { action: 'update' };
 				
-				route.path = controller.path('{SLUG}/action') + '/' + route.action + '.js';
+				route.path = controller.path('{{slug}}/action') + '/' + route.action + '.js';
 	
-				//event when the {SLUG} action is about to render
-				controller.trigger('{SLUG}-action-' + route.action + '-before', route);
+				//event when the {{slug}} action is about to render
+				controller.trigger('{{slug}}-action-' + route.action + '-before', route);
 				
 				//load up the action
 				require([route.path], function(action) {
 					action = action.load();
 					
-					action.data.{SLUG} = this.data.{SLUG}.revision[revision];
+					action.data.{{slug}} = this.data.{{slug}}.revision[revision];
 					
 					action.render();
 					
-					//event when the {SLUG} action is rendered
-					controller.trigger('{SLUG}-action-' + route.action + '-after', route);
+					//event when the {{slug}} action is rendered
+					controller.trigger('{{slug}}-action-' + route.action + '-after', route);
 				}.bind(this));
 				
 				return;
@@ -99,10 +99,31 @@ define(function() {
 		
 		//CONTROL CONVERT
 		//NOTE: BULK GENERATE
-		var revisions = this.data.{SLUG}.revision;
+		var revisions = this.data.{{slug}}.revision;
 		if(revisions instanceof Array) {
 			for(var i = 0; i < revisions.length; i++) {
-				{USE_REVISION_APP_CONVERT}
+				{{#loop fields ~}}
+				{{~#if value.field ~}}
+				{{~#when value.field.[0] '==' 'datetime' ~}}
+				if(revisions[i].{{../../key}}) {
+					revisions[i].{{../../key}} = _convertToControlDate(revisions[i].{{../../key}});
+				}
+				
+				{{/when~}}
+				{{~#when value.field.[0] '==' 'date' ~}}
+				if(revisions[i].{{../../key}}) {
+					revisions[i].{{../../key}} = _convertToControlDate(revisions[i].{{../../key}}, false, true);
+				}
+				
+				{{/when~}}
+				{{~#when value.field.[0] '==' 'time' ~}}
+				if(revisions[i].{{../../key}}) {
+					revisions[i].{{../../key}} = _convertToControlDate(revisions[i].{{../../key}}, true);
+				}
+				
+				{{/when~}}
+				{{~/if~}}
+				{{~/loop}}
 			}
 		}
 		
@@ -119,8 +140,8 @@ define(function() {
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
 			
-			// fire this event whenever the update page of {SLUG} is available and fully loaded
-			controller.trigger('{SLUG}-revision-ready');
+			// fire this event whenever the update page of {{slug}} is available and fully loaded
+			controller.trigger('{{slug}}-revision-ready');
 
 			next();
 		}.bind(this));

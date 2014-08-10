@@ -1,80 +1,151 @@
-<section class="{SLUG}-list">
-    <!-- START: SEARCH FORM -->
-    <form class="pull-right search form-inline" method="get">
-        <div class="form-group">
-            <input name="keyword" placeholder="Search {PLURAL}" type="text"
-            value="{{#if keyword}}{{keyword}}{{/if}}" class="form-control" />
-            {{#if mode}}
-            <input type="hidden" name="mode" value="{{mode}}" /> 
-            {{/if}} 	
-        </div>
-        <button class="btn"><i class="icon-search"></i></button>	
-    </form>
-    <!-- END: SEARCH FORM -->
-    
-    <!-- START: BULK FORM -->
-    <form action="/{SLUG}/bulk" method="post" class="form-inline bulk-form">
-        <!-- START: i18n HEADER TITLE -->
-        <div class="table-header">
-            {USE_ACTIVE_SHOWING}
-        </div>
-        <!-- END: i18n HEADER TITLE -->
-        <div class="table-responsive">
-            <div class="dataTables_wrapper table-filters" role="grid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <!-- START: ADD NEW POST -->
-                        <div class="pull-right create"><a class="btn btn-info btn-sm" 
-                        href="/{SLUG}/create">Create New {SINGULAR}</a></div>
-                        <!-- END: ADD NEW POST -->
-                        {{#if rows}}
-                        <!-- START: BULK ACTION -->
-                        {USE_ACTIVE_BULK}
-                        <!-- END: BULK ACTION -->
-                        {{/if}}
-                        
-                        <!-- START: FILTER BUTTONS -->
-                        <span class="filter">
-                        	{USE_ACTIVE_BUTTONS}
-                        </span>
-                        <!-- END: FILTER BUTTONS -->
-                    </div>
-                </div>
-            </div> 
-            {{#if rows}}
-            <!-- START: POST TABLE -->
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th><input class="checkall" type="checkbox" /></th>
-                        <th>Action</th>
-                        <th>ID</th>
-                        <!-- NOTE: BULK GENERATE -->
-                        {CONTROL_HEADERS}
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each rows}}
-                    <tr data-id="{{_id}}">
-                        <td><input name="id[]" value="{{_id}}" type="checkbox" class="form-control" /></td>
-                        <td>
-                        	{USE_ACTIVE_ACTIONS}
-                        </td>
-                        <td>{{_id}}</td>
-                        <!-- NOTE: BULK GENERATE -->
-                        {CONTROL_COLUMNS}
-                    </tr>	
-                    {{/each}}
-                </tbody>	
-            </table>
-            <!-- END: POST TABLE -->
-            {{else}}
-            <!-- START: NO RESULTS -->
-            <div class="well no-results">No {PLURAL} Found</div>
-            <!-- END: NO RESULTS -->
-            {{/if}}
-        </div>
-        
-        {USE_ACTIVE_PAGINATION}
-    </form>
+<section class="{{slug}}-list">
+	<!-- START: SEARCH FORM -->
+	<form class="pull-right search form-inline" method="get">
+		<div class="form-group">
+			<input name="keyword" placeholder="Search {{plural}}" type="text"
+			value="\{{#if keyword}}\{{keyword}}\{{/if}}" class="form-control" />
+			\{{#if mode}}
+			<input type="hidden" name="mode" value="\{{mode}}" /> 
+			\{{/if}} 	
+		</div>
+		<button class="btn"><i class="icon-search"></i></button>	
+	</form>
+	<!-- END: SEARCH FORM -->
+	
+	<!-- START: BULK FORM -->
+	<form action="/{{slug}}/bulk" method="post" class="form-inline bulk-form">
+		<!-- START: i18n HEADER TITLE -->
+		<div class="table-header">
+			{{#if use_active ~}}
+			Showing \{{#if keyword}}Results for &quot;\{{keyword}}&quot; in \{{/if}}\{{showing}}
+			{{~else~}}
+			Showing \{{#if keyword}}Results for &quot;\{{keyword}}&quot; \{{/if}}
+			{{~/if}}
+		</div>
+		<!-- END: i18n HEADER TITLE -->
+		<div class="table-responsive">
+			<div class="dataTables_wrapper table-filters" role="grid">
+				<div class="row">
+					<div class="col-sm-12">
+						<!-- START: ADD NEW POST -->
+						<div class="pull-right create"><a class="btn btn-info btn-sm" 
+						href="/{{slug}}/create">Create New {{singular}}</a></div>
+						<!-- END: ADD NEW POST -->
+						\{{#if rows}}
+						<!-- START: BULK ACTION -->
+						{{#if use_active ~}}
+						<select name="action" style="width:auto;" class="form-control">
+							<option value="" selected="selected">Bulk Actions</option>
+							<option value="remove">Remove</option>
+							<option value="restore">Restore</option>
+						</select>
+						<button class="btn-primary btn-sm btn">Apply</button>
+						{{~else~}}
+						<select name="action" style="width:auto;" class="form-control">
+							<option value="" selected="selected">Bulk Actions</option>
+							<option value="remove">Remove</option>
+						</select>
+						<button class="btn-primary btn-sm btn">Apply</button>
+						{{~/if}}
+						<!-- END: BULK ACTION -->
+						\{{/if}}
+						
+						<!-- START: FILTER BUTTONS -->
+						<span class="filter">
+							{{#if use_active ~}}
+							<a class="btn btn-sm\{{#when mode '==' 'active'}} btn-light\{{/when}}" 
+							href="/{{slug}}?mode=active\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Active &nbsp;
+							<span class="badge badge-grey">\{{active}}</span></a> 
+							
+							<a class="btn btn-sm\{{#when mode '==' 'trash'}} btn-light\{{/when}}" 
+							href="/{{slug}}?mode=trash\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Trash &nbsp;
+							<span class="badge badge-grey">\{{trash}}</span></a>
+							{{~/if}}
+						</span>
+						<!-- END: FILTER BUTTONS -->
+					</div>
+				</div>
+			</div> 
+			\{{#if rows}}
+			<!-- START: POST TABLE -->
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th><input class="checkall" type="checkbox" /></th>
+						<th>Action</th>
+						<th>ID</th>
+						<!-- NOTE: BULK GENERATE -->
+						{{#loop fields ~}}
+						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown'}} 
+						<th>{{value.label}}</th>
+						{{~/notin ~}}
+						{{~/loop}}
+					</tr>
+				</thead>
+				<tbody>
+					\{{#each rows}}
+					<tr data-id="\{{_id}}">
+						<td><input name="id[]" value="\{{_id}}" type="checkbox" class="form-control" /></td>
+						<td>
+							{{#if use_active~}}
+							\{{#when active '==' 'Yes'}}
+							<a title="Edit" href="/{{slug}}/update/\{{_id}}">
+							<i class="icon-edit"></i></a> &nbsp; 
+							<a title="Remove" href="/{{slug}}/remove/\{{_id}}"
+							class="text-danger remove"><i class="icon-remove" value="\{{_id}}"></i></a>
+							\{{/when}}
+							\{{#when active '==' 'No'}}
+							<a title="Restore" href="/{{slug}}/restore/\{{_id}}" class="text-success restore">
+							<i class="icon-external-link"></i></a>
+							\{{/when}}
+							{{~else~}}
+							<a title="Edit" href="/{{slug}}/update/\{{_id}}">
+							<i class="icon-edit"></i></a> &nbsp; 
+							<a title="Remove" href="/{{slug}}/remove/\{{_id}}"
+							class="text-danger remove"><i class="icon-remove" value="\{{_id}}"></i></a>
+							{{~/if}}
+						</td>
+						<td>\{{_id}}</td>
+						<!-- NOTE: BULK GENERATE -->
+						{{#loop fields ~}}
+						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown'}} 
+						<td>\{\{ {{../key}}\}\}</td>
+						{{~/notin ~}}
+						{{~/loop}}
+					</tr>	
+					\{{/each}}
+				</tbody>	
+			</table>
+			<!-- END: POST TABLE -->
+			\{{else}}
+			<!-- START: NO RESULTS -->
+			<div class="well no-results">No {{plural}} Found</div>
+			<!-- END: NO RESULTS -->
+			\{{/if}}
+		</div>
+		
+		{{#if use_active ~}}
+		\{{#when mode '==' 'active'}}
+		<ul class="pagination">
+			\{{#pagination active range}}
+			<li\{{#if active}} class="active"\{{/if}}><a href="?\{{query}}">\{{page}}</a></li>
+			\{{/pagination}}
+		</ul>
+		\{{/when}}
+		
+		\{{#when mode '==' 'trash'}}
+		<ul class="pagination">
+			\{{#pagination trash range}}
+			<li\{{#if active}} class="active"\{{/if}}><a href="?\{{query}}">\{{page}}</a></li>
+			\{{/pagination}}
+		</ul>
+		\{{/when}}
+		{{~else~}}
+		<ul class="pagination">
+			\{{#pagination active range}}
+			<li\{{#if active}} class="active"\{{/if}}><a href="?\{{query}}">\{{page}}</a></li>
+			\{{/pagination}}
+		</ul>
+		{{~/if}}
+	</form>
 </section>

@@ -39,11 +39,11 @@ module.exports = (function() {
 		
 		this.controller
 			//when there is an error
-			.once('{SLUG}-remove-error', _error.bind(this))
+			.once('{{slug}}-remove-error', _error.bind(this))
 			//when it is successfull
-			.once('{SLUG}-remove-success', _success.bind(this))
-			//Now call to remove the {SLUG}
-			.trigger('{SLUG}-remove', this.controller, this.request.variables[0]);
+			.once('{{slug}}-remove-success', _success.bind(this))
+			//Now call to remove the {{slug}}
+			.trigger('{{slug}}-remove', this.controller, this.request.variables[0]);
 	};
 	
 	/* Private Methods
@@ -52,9 +52,9 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false, results: row });
 		//dont listen for error anymore
-		this.controller.unlisten('{SLUG}-remove-error');
+		this.controller.unlisten('{{slug}}-remove-error');
 		//trigger that a response has been made
-		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
 	};
 	
 	var _error = function(error) {
@@ -64,9 +64,9 @@ module.exports = (function() {
 			message: error.message });
 			
 		//dont listen for success anymore
-		this.controller.unlisten('{SLUG}-remove-success');
+		this.controller.unlisten('{{slug}}-remove-success');
 		//trigger that a response has been made
-		this.controller.trigger('{SLUG}-action-response', this.request, this.response);
+		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
 	};
 	
 	/* Adaptor
