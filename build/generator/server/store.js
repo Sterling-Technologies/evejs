@@ -49,26 +49,6 @@ module.exports = (function() {
 	};
 	
 	/**
-	 * Inserts an object to the collection
-	 *
-	 * @param object
-	 * @param function
-	 * @return this
-	 */
-	prototype.insert = function(data, callback) {
-		{{#if use_slug~}}
-		//case for slug
-		_getNextSlug.call(this, data.title, function(slug) {
-			data.slug = slug;
-			this.model(data).save(callback);
-		}.bind(this));
-		{{~else~}}
-		this.model(data).save(callback);
-		{{~/if}}
-		return this;
-	};
-	
-	/**
 	 * Returns the raw mongoose find protocol
 	 *
 	 * @param object
@@ -210,6 +190,26 @@ module.exports = (function() {
 	};
 	
 	/**
+	 * Inserts an object to the collection
+	 *
+	 * @param object
+	 * @param function
+	 * @return this
+	 */
+	prototype.insert = function(data, callback) {
+		{{#if use_slug~}}
+		//case for slug
+		_getNextSlug.call(this, data.title, function(slug) {
+			data.slug = slug;
+			this.model(data).save(callback);
+		}.bind(this));
+		{{~else~}}
+		this.model(data).save(callback);
+		{{~/if}}
+		return this;
+	};
+	
+	/**
 	 * Returns the raw mongoose model
 	 *
 	 * @param object
@@ -296,14 +296,15 @@ module.exports = (function() {
 	var _getNextSlug = function(slug, callback, id) {
 		//turn it into a slug
 		slug = slug.toString().toLowerCase()
-		  .replace(/\\s+/g, '-')        // Replace spaces with -
-		  .replace(/[^\\w\\-]+/g, '')   // Remove all non-word chars
-		  .replace(/\\-\\-+/g, '-')      // Replace multiple - with single -
+		  .replace(/\s+/g, '-')        // Replace spaces with -
+		  .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+		  .replace(/\-\-+/g, '-')      // Replace multiple - with single -
 		  .replace(/^-+/, '')          // Trim - from start of text
-		  .replace(/-+$$/, '');         // Trim - from end of text
+		  .replace(/-+$/, '');         // Trim - from end of text
+		  
 		//get all slugs that start with argument
 		//'^something\\-cool(\\-[0-9]+){0,1}$$'
-		var regex = new RegExp('^' + slug.replace(/\\-/g, '\\\\-') + '(\\\\-[0-9]+){0,1}$$', 'g');
+		var regex = new RegExp('^' + slug.replace(/\-/g, '\\-') + '(\\-[0-9]+){0,1}$', 'g');
 		this.find({ slug: regex }).lean().exec(function(error, list) {
 			list = list || [];
 			

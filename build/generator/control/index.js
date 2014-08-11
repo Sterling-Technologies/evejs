@@ -66,7 +66,7 @@ controller
 			route.action = 'revision';
 			break;
 		{{/if~}}
-		case window.location.pathname === '/{{slug}}':
+		default:
 			route.action = 'index';
 			break;
 	}
