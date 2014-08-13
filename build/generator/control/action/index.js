@@ -58,7 +58,7 @@ define(function() {
 		//2. get the active count
 		batch.push({ url: _getActiveCountRequest.call(this, query) });
 		
-		{{#if use_active ~}}
+		{{#if active ~}}
 		//3. get the trash count
 		batch.push({ url: _getTrashCountRequest.call(this, query) });
 		{{~/if}}
@@ -99,7 +99,7 @@ define(function() {
 				mode	: query.mode || 'active',
 				keyword	: query.keyword || null,
 				active	: response.batch[1].results,
-				{{#if use_active ~}}
+				{{#if active ~}}
 				trash	: response.batch[2].results,
 				{{/if~}}
 				range	: this.range };
@@ -171,7 +171,7 @@ define(function() {
 			query.keyword = request.keyword;
 		}
 		
-		{{#if use_active ~}}
+		{{#if active ~}}
 		switch(request.mode || 'active') {
 			case 'active':
 				query.filter.active = 1;
@@ -195,7 +195,7 @@ define(function() {
 		}
 	
 		query.count = 1;
-		{{#if use_active ~}}
+		{{#if active ~}}
 		query.filter.active = 1;
 		
 		{{/if~}}
@@ -203,7 +203,7 @@ define(function() {
 		return '/{{name}}/list?' + $.hashToQuery(query);
 	};
 	
-	{{#if use_active ~}}
+	{{#if active ~}}
 	var _getTrashCountRequest = function(request) {
 		var query = {};
 		

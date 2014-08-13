@@ -87,7 +87,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.getDetail = function(id, callback, lean) {
-		{{#if use_active~}}
+		{{#if active~}}
 		var query = this.findOne({ _id: id, active: true });
 		{{~else~}}
 		var query = this.findOne({ _id: id });
@@ -229,7 +229,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.remove = function(id, callback) {
-		{{#if use_active ~}}
+		{{#if active ~}}
 		this.store.findOneAndUpdate(
 			{_id: id, active: true },
 			{ $set: { active: false } }, callback);
@@ -249,7 +249,7 @@ module.exports = (function() {
 	 */
 	prototype.restore = function(id, callback) {
 		this.store.findOneAndUpdate(
-			{{#if use_active ~}}
+			{{#if active ~}}
 			{ _id: id, active: false }, 
 			{{~else~}}
 			{ _id: id }, 
@@ -275,7 +275,7 @@ module.exports = (function() {
 			{{#if use_updated}}data.updated = new Date();{{/if}}
 			{{#if use_revision}}_findAndRevision.call(this, 
 			{{~else~}}this.store.findOneAndUpdate({{/if}}
-				{{#if use_active}}{ _id: id, active: true },
+				{{#if active}}{ _id: id, active: true },
 				{{~else~}}{ _id: id },{{/if}}
 				{ $set: data }, callback);
 		}.bind(this), id);
@@ -283,7 +283,7 @@ module.exports = (function() {
 		{{#if use_updated}}data.updated = new Date();{{/if}}
 		{{#if use_revision}}_findAndRevision.call(this, 
 		{{~else~}}this.store.findOneAndUpdate({{/if}}
-			{{#if use_active}}{ _id: id, active: true },
+			{{#if active}}{ _id: id, active: true },
 			{{~else~}}{ _id: id },{{/if}}
 			{ $set: data }, callback);
 		{{/if}}
@@ -359,7 +359,7 @@ module.exports = (function() {
 		query 	= query 	|| {};
 		keyword = keyword 	|| null;
 		
-		{{#if use_active ~}}
+		{{#if active ~}}
 		if(query.active !== -1 && query.active !== '-1') {
 			query.active = query.active !== 0 && query.active !== '0';
 		}

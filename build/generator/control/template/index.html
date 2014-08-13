@@ -16,7 +16,7 @@
 	<form action="/{{name}}/bulk" method="post" class="form-inline bulk-form">
 		<!-- START: i18n HEADER TITLE -->
 		<div class="table-header">
-			{{#if use_active ~}}
+			{{#if active ~}}
 			Showing \{{#if keyword}}Results for &quot;\{{keyword}}&quot; in \{{/if}}\{{showing}}
 			{{~else~}}
 			Showing \{{#if keyword}}Results for &quot;\{{keyword}}&quot; \{{/if}}
@@ -33,7 +33,7 @@
 						<!-- END: ADD NEW POST -->
 						\{{#if rows}}
 						<!-- START: BULK ACTION -->
-						{{#if use_active ~}}
+						{{#if active ~}}
 						<select name="action" style="width:auto;" class="form-control">
 							<option value="" selected="selected">Bulk Actions</option>
 							<option value="remove">Remove</option>
@@ -52,7 +52,7 @@
 						
 						<!-- START: FILTER BUTTONS -->
 						<span class="filter">
-							{{#if use_active ~}}
+							{{#if active ~}}
 							<a class="btn btn-sm\{{#when mode '==' 'active'}} btn-light\{{/when}}" 
 							href="/{{name}}?mode=active\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Active &nbsp;
 							<span class="badge badge-grey">\{{active}}</span></a> 
@@ -87,7 +87,7 @@
 					<tr data-id="\{{_id}}">
 						<td><input name="id[]" value="\{{_id}}" type="checkbox" class="form-control" /></td>
 						<td>
-							{{#if use_active~}}
+							{{#if active~}}
 							\{{#when active '==' 'Yes'}}
 							<a title="Edit" href="/{{name}}/update/\{{_id}}">
 							<i class="icon-edit"></i></a> &nbsp; 
@@ -124,7 +124,7 @@
 			\{{/if}}
 		</div>
 		
-		{{#if use_active ~}}
+		{{#if active ~}}
 		\{{#when mode '==' 'active'}}
 		<ul class="pagination">
 			\{{#pagination active range}}
