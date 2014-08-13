@@ -1,11 +1,11 @@
-<section class="{{slug}}-revision {{slug}}-update row">
+<section class="{{name}}-revision {{name}}-update row">
     <div class="col-sm-12">
         <div class="tabbable">
             <ul class="nav nav-tabs padding-16">
             </ul>
             <div class="tab-content address-revision-tab-content">
 	            <div class="table-responsive">
-                    \{\{#if {{slug}}.revision\}\}
+                    \{\{#if {{name}}.revision\}\}
                     <!-- START: POST TABLE -->
                     <table class="table table-striped">
                         <thead>
@@ -20,10 +20,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            \{{#each {{slug}}.revision}}
-                            <tr data-id="\{\{../{{slug}}._id\}\}">
+                            \{{#each {{name}}.revision}}
+                            <tr data-id="\{\{../{{name}}._id\}\}">
                                 <td>
-                                    <a title="Restore" href="/{{slug}}/revision/\{\{../{{slug}}._id\}\}/\{{@index}}" class="text-success restore">
+                                    <a title="Restore" href="/{{name}}/revision/\{\{../{{name}}._id\}\}/\{{@index}}" class="text-success restore">
                                     <i class="icon-external-link"></i></a>
                                 </td>
                                 <!-- NOTE: BULK GENERATE -->

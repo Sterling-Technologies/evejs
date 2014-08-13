@@ -50,11 +50,11 @@ module.exports = (function() {
 		//TRIGGER
 		this.controller
 			//when there is an error
-			.once('{{slug}}-update-error', _error.bind(this))
+			.once('{{name}}-update-error', _error.bind(this))
 			//when it is successfull
-			.once('{{slug}}-update-success', _success.bind(this))
-			//Now call to update the {{slug}}
-			.trigger('{{slug}}-update', this.controller, this.request.variables[0], query);
+			.once('{{name}}-update-success', _success.bind(this))
+			//Now call to update the {{name}}
+			.trigger('{{name}}-update', this.controller, this.request.variables[0], query);
 	};
 	
 	/* Private Methods
@@ -67,18 +67,18 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('{{slug}}-update-success');
+		this.controller.unlisten('{{name}}-update-success');
 		//trigger that a response has been made
-		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
 			
 	var _success = function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('{{slug}}-update-error');
+		this.controller.unlisten('{{name}}-update-error');
 		//trigger that a response has been made
-		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
 	
 	var _valid = function(query) {

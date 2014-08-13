@@ -30,7 +30,7 @@ define(function() {
     /* Private Methods
     -------------------------------*/
 	var _process = function(next) {
-		var url = controller.getServerUrl() + '/{{slug}}/remove/';
+		var url = controller.getServerUrl() + '/{{name}}/remove/';
 		var id 	= window.location.pathname.split('/')[3];
 		
 		$.getJSON(url + id, function(response) {

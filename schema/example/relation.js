@@ -1,1 +1,0 @@
-module.exports = ['core/user', 'sample/sample'];

@@ -59,7 +59,7 @@ define(function() {
 		}
 		
 		//what is the url base
-		var url =  '/{{slug}}/' + data.action + '/';
+		var url =  '/{{name}}/' + data.action + '/';
 		
 		//prepare the batch query
 		for(var batch = [], i = 0; i < data.id.length; i++) {
@@ -68,7 +68,7 @@ define(function() {
 		
 		//call the batch remove
 		$.post(
-		controller.getServerUrl() + '/{{slug}}/batch', 
+		controller.getServerUrl() + '/{{name}}/batch', 
 		JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			for(var errors = false, i = 0; i < response.length; i++) {

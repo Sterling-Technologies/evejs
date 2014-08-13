@@ -37,14 +37,14 @@ module.exports = (function() {
 			keyword	= this.request.query.keyword 	|| null;
 		
 		if(count) {
-			this.controller.{{slug}}().store().getTotal(
+			this.controller.{{name}}().store().getTotal(
 				filter, 	keyword, 
 				_response.bind(this));
 			
 			return;
 		}
 		
-		this.controller.{{slug}}().store().getList(
+		this.controller.{{name}}().store().getList(
 			filter, 	keyword, 
 			order, 		start, 
 			range,		_response.bind(this));
@@ -61,7 +61,7 @@ module.exports = (function() {
 				message: error.message });
 			
 			//trigger that a response has been made
-			this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+			this.controller.trigger('{{name}}-action-response', this.request, this.response);
 			return;
 		}
 		
@@ -71,7 +71,7 @@ module.exports = (function() {
 			results: data });
 		
 		//trigger that a response has been made
-		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
 	
 	/* Adaptor

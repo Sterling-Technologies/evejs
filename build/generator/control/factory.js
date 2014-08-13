@@ -16,13 +16,13 @@ define(function() {
 	/* Public Methods
 	-------------------------------*/
 	prototype.path = function(key) {
-		return controller.path('{{slug}}/'+key);
+		return controller.path('{{name}}/'+key);
 	};
 	
 	prototype.getList = function(query, callback) {
 		query = query || {};
 		
-		var url = controller.getServerUrl() + '/{{slug}}';
+		var url = controller.getServerUrl() + '/{{name}}';
 		
 		//if there is something in the query
 		if(JSON.stringify(query) !== '{}') {
@@ -39,7 +39,7 @@ define(function() {
 	};
 	
 	prototype.getDetail = function(id, callback) {
-		var url = controller.getServerUrl() + '/{{slug}}/'+id;
+		var url = controller.getServerUrl() + '/{{name}}/'+id;
 		
 		if(!callback) {
 			return url;
@@ -261,7 +261,7 @@ define(function() {
 	};
 	
 	prototype.create = function(data, callback) {
-		var url = controller.getServerUrl() + '/{{slug}}/create';
+		var url = controller.getServerUrl() + '/{{name}}/create';
 		
 		//SERVER CONVERT
 		//NOTE: BULK GENERATE
@@ -296,7 +296,7 @@ define(function() {
 	};
 	
 	prototype.update = function(id, data, callback) {
-		var url = controller.getServerUrl() + '/{{slug}}/update/' + id;
+		var url = controller.getServerUrl() + '/{{name}}/update/' + id;
 		
 		//SERVER CONVERT
 		//NOTE: BULK GENERATE

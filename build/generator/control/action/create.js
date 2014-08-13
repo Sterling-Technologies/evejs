@@ -10,14 +10,14 @@ define(function() {
     prototype.subheader    = 'CRM';
 	
     prototype.crumbs = [{ 
-        path: '/{{slug}}',
+        path: '/{{name}}',
         icon: '{{icon}}', 
         label: '{{plural}}' 
     }, {  label: 'Create {{singular}}' }];
 	
     prototype.data     = {};
 	
-    prototype.template = controller.path('{{slug}}/template') + '/form.html';
+    prototype.template = controller.path('{{name}}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -52,7 +52,7 @@ define(function() {
     var _setData = function(next) {
 		this.data.mode 		= 'create';
 		this.data.url 		= window.location.pathname;
-		this.data.{{slug}}	= {};
+		this.data.{{name}}	= {};
 		
 		//NOTE: BULK GENERATE
 		{{~#loop fields ~}} 
@@ -70,7 +70,7 @@ define(function() {
 		
 		if(data && data.length) {
 			//query to hash
-			this.data.{{slug}} = $.queryToHash(data);
+			this.data.{{name}} = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -92,7 +92,7 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = ['text!' + controller.path('{{slug}}/template') +  '/form.html'];
+        var templates = ['text!' + controller.path('{{name}}/template') +  '/form.html'];
 		
 		//ENUMS
 		//NOTE: BULK GENERATE
@@ -154,20 +154,20 @@ define(function() {
 	
 	var _valid = function() {
 		//VALIDATION
-		this.data.errors = controller.{{slug}}.getErrors(this.data.{{slug}});
+		this.data.errors = controller.{{name}}.getErrors(this.data.{{name}});
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) === '{}';
 	};
 	
 	var _process = function(next) {
-		controller.{{slug}}.create(this.data.{{slug}}, function(response) {
+		controller.{{name}}.create(this.data.{{name}}, function(response) {
 			if(!response.error) {		
 				controller				
 					//display message status
 					.notify('Success', '{{singular}} successfully created!', 'success')
 					//go to listing
-					.redirect('/{{slug}}');
+					.redirect('/{{name}}');
 				
 				//no need to next since we are redirecting out
 				return;

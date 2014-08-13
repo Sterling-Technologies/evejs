@@ -1,11 +1,11 @@
-<li class="{{slug}}-update-tab\{{#when url 'startsWith' '/{{slug}}/update'}} active\{{/when}}">
-	<a href="/{{slug}}/update/\{{id}}">
+<li class="{{name}}-update-tab\{{#when url 'startsWith' '/{{name}}/update'}} active\{{/when}}">
+	<a href="/{{name}}/update/\{{id}}">
 		<i class="green icon-pencil bigger-125"></i>
 		Basic Info
 	</a>
 </li>
 {{#if use_revision}}
-<li class="{{slug}}-revision-tab\{{#when url 'startsWith' '/{{slug}}/revision'}} active\{{/when}}">
+<li class="{{name}}-revision-tab\{{#when url 'startsWith' '/{{name}}/revision'}} active\{{/when}}">
 	<a href="/sample/revision/\{{id}}">
 		<i class="purple icon-signin bigger-125"></i>
 		Revisions 

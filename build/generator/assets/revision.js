@@ -10,14 +10,14 @@ define(function() {
     prototype.subheader    = 'Revisions';
 	
     prototype.crumbs = [{ 
-        path: '/{{slug}}',
+        path: '/{{name}}',
         icon: '{{icon}}', 
         label: '{{plural}}' 
     }, {  label: 'Update {{singular}}' }];
 	
     prototype.data     = {};
 	
-    prototype.template = controller.path('{{slug}}/template') + '/revision.html';
+    prototype.template = controller.path('{{name}}/template') + '/revision.html';
     
     /* Private Properties
     -------------------------------*/
@@ -51,15 +51,15 @@ define(function() {
     -------------------------------*/
     var _setData = function(next) {
 		var id =  window.location.pathname.split('/')[3];
-		var url = controller.getServerUrl() + '/{{slug}}/detail/'+id;
+		var url = controller.getServerUrl() + '/{{name}}/detail/'+id;
 		
 		$.getJSON(url, function(response) {
-			this.data.{{slug}} = response.results;
+			this.data.{{name}} = response.results;
 			
 			if(window.location.pathname.split('/')[4]) {
 				var revision = window.location.pathname.split('/')[4];
 				
-				if(!this.data.{{slug}}.revision[revision]) {
+				if(!this.data.{{name}}.revision[revision]) {
 					//display message status
 					controller.notify('Error', 'Revision does not exist.', 'error');
 					next();
@@ -69,21 +69,21 @@ define(function() {
 				//it exists
 				var route = { action: 'update' };
 				
-				route.path = controller.path('{{slug}}/action') + '/' + route.action + '.js';
+				route.path = controller.path('{{name}}/action') + '/' + route.action + '.js';
 	
-				//event when the {{slug}} action is about to render
-				controller.trigger('{{slug}}-action-' + route.action + '-before', route);
+				//event when the {{name}} action is about to render
+				controller.trigger('{{name}}-action-' + route.action + '-before', route);
 				
 				//load up the action
 				require([route.path], function(action) {
 					action = action.load();
 					
-					action.data.{{slug}} = this.data.{{slug}}.revision[revision];
+					action.data.{{name}} = this.data.{{name}}.revision[revision];
 					
 					action.render();
 					
-					//event when the {{slug}} action is rendered
-					controller.trigger('{{slug}}-action-' + route.action + '-after', route);
+					//event when the {{name}} action is rendered
+					controller.trigger('{{name}}-action-' + route.action + '-after', route);
 				}.bind(this));
 				
 				return;
@@ -99,7 +99,7 @@ define(function() {
 		
 		//CONTROL CONVERT
 		//NOTE: BULK GENERATE
-		var revisions = this.data.{{slug}}.revision;
+		var revisions = this.data.{{name}}.revision;
 		if(revisions instanceof Array) {
 			for(var i = 0; i < revisions.length; i++) {
 				{{#loop fields ~}}
@@ -140,8 +140,8 @@ define(function() {
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
 			
-			// fire this event whenever the update page of {{slug}} is available and fully loaded
-			controller.trigger('{{slug}}-revision-ready');
+			// fire this event whenever the update page of {{name}} is available and fully loaded
+			controller.trigger('{{name}}-revision-ready');
 
 			next();
 		}.bind(this));

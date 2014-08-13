@@ -3,27 +3,27 @@ controller
 .listen('init', function() {
 	//set paths
 	controller
-		.path('{{slug}}'			, controller.path('package') + '/{{vendor}}/{{slug}}/')
-		.path('{{slug}}/action'		, controller.path('package') + '/{{vendor}}/{{slug}}/action/')
-		.path('{{slug}}/block'		, controller.path('package') + '/{{vendor}}/{{slug}}/block/')
-		.path('{{slug}}/template'	, controller.path('package') + '/{{vendor}}/{{slug}}/template/');	
+		.path('{{name}}'			, controller.path('package') + '/{{vendor}}/{{name}}/')
+		.path('{{name}}/action'		, controller.path('package') + '/{{vendor}}/{{name}}/action/')
+		.path('{{name}}/block'		, controller.path('package') + '/{{vendor}}/{{name}}/block/')
+		.path('{{name}}/template'	, controller.path('package') + '/{{vendor}}/{{name}}/template/');	
 	
 	//load the factory
-	require([controller.path('{{slug}}') + '/factory.js'], function(factory) {
-		controller.{{slug}} = factory;
-		controller.trigger('{{slug}}-init');
+	require([controller.path('{{name}}') + '/factory.js'], function(factory) {
+		controller.{{name}} = factory;
+		controller.trigger('{{name}}-init');
 	});
 })
 
 //when a url request has been made
 .listen('request', function() {
-	//event when the {{slug}} request is starting
-	controller.trigger('{{slug}}-request-before');
+	//event when the {{name}} request is starting
+	controller.trigger('{{name}}-request-before');
 
 	//if the package has not initialized
-	//if it doesn't start with {{slug}}
-	if(!controller.{{slug}} 
-	|| window.location.pathname.indexOf('/{{slug}}') !== 0) {
+	//if it doesn't start with {{name}}
+	if(!controller.{{name}} 
+	|| window.location.pathname.indexOf('/{{name}}') !== 0) {
 		//we don't care about it
 		return;
 	}
@@ -32,7 +32,7 @@ controller
 	var route = { action: null };
 	switch(true) {
 		// TODO: ADD ROUTES HERE
-		case window.location.pathname === '/{{slug}}':
+		case window.location.pathname === '/{{name}}':
 			route.action = 'index';
 			break;
 	}
@@ -43,19 +43,19 @@ controller
 		return;
 	}
 	
-	route.path = controller.path('{{slug}}/action') + '/' + route.action + '.js';
+	route.path = controller.path('{{name}}/action') + '/' + route.action + '.js';
 	
-	//event when the {{slug}} action is about to render
-	controller.trigger('{{slug}}-action-' + route.action + '-before', route);
+	//event when the {{name}} action is about to render
+	controller.trigger('{{name}}-action-' + route.action + '-before', route);
 	
 	//load up the action
 	require([route.path], function(action) {
 		action.load().render();
 		
-		//event when the {{slug}} action is rendered
-		controller.trigger('{{slug}}-action-' + route.action + '-after', route);
+		//event when the {{name}} action is rendered
+		controller.trigger('{{name}}-action-' + route.action + '-after', route);
 	});
 
-	// event when the {{slug}} request is finished
-	controller.trigger('{{slug}}-request-after');
+	// event when the {{name}} request is finished
+	controller.trigger('{{name}}-request-after');
 });

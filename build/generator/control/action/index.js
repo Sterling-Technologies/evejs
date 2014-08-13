@@ -8,14 +8,14 @@ define(function() {
 	prototype.title 		= '{{plural}}';
 	prototype.header 		= '{{plural}}';
 	prototype.subheader 	= 'CRM';
-	prototype.crumbs 		= [{ icon: '{{slug}}', label: '{{plural}}' }];
+	prototype.crumbs 		= [{ icon: '{{name}}', label: '{{plural}}' }];
 	prototype.data 			= {};
 	
 	prototype.start		= 0;
 	prototype.page 		= 1;
 	prototype.range 	= 25;
 	
-	prototype.template 	= controller.path('{{slug}}/template') + '/index.html';
+	prototype.template 	= controller.path('{{name}}/template') + '/index.html';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -64,7 +64,7 @@ define(function() {
 		{{~/if}}
 		
 		$.post(
-			controller.getServerUrl() + '/{{slug}}/batch', 
+			controller.getServerUrl() + '/{{name}}/batch', 
 			JSON.stringify(batch), function(response) { 
 			response = JSON.parse(response);
 			
@@ -127,28 +127,28 @@ define(function() {
 	
 	var _listen = function(next) {
 		//listen to remove restore
-		$('section.{{slug}}-list a.remove, section.{{slug}}-list a.restore').click(function(e) {
+		$('section.{{name}}-list a.remove, section.{{name}}-list a.restore').click(function(e) {
 			e.preventDefault();
 			$(this).parent().parent().remove();
 		});
 		
-		$('section.{{slug}}-list  tbody input[type="checkbox"]').click(function() {
+		$('section.{{name}}-list  tbody input[type="checkbox"]').click(function() {
 			setTimeout(function() {	
 				var allChecked = true;
-				$('section.{{slug}}-list tbody input[type="checkbox"]').each(function() {
+				$('section.{{name}}-list tbody input[type="checkbox"]').each(function() {
 					if(!this.checked) {
 						allChecked = false;
 					}
 				});
 				
-				$('section.{{slug}}-list th input.checkall')[0].checked = allChecked;
+				$('section.{{name}}-list th input.checkall')[0].checked = allChecked;
 			}, 1);
 		});
 		
 		//listen to remove restore
-		$('section.{{slug}}-list th input.checkall').click(function() {
+		$('section.{{name}}-list th input.checkall').click(function() {
 			var checked = this.checked;
-			$('section.{{slug}}-list tbody input[type="checkbox"]').each(function() {
+			$('section.{{name}}-list tbody input[type="checkbox"]').each(function() {
 				this.checked = checked;
 			});
 		});
@@ -182,7 +182,7 @@ define(function() {
 		}
 		
 		{{/if~}}
-		return '/{{slug}}/list?' + $.hashToQuery(query);
+		return '/{{name}}/list?' + $.hashToQuery(query);
 	};
 	
 	var _getActiveCountRequest = function(request) {
@@ -200,7 +200,7 @@ define(function() {
 		
 		{{/if~}}
 		
-		return '/{{slug}}/list?' + $.hashToQuery(query);
+		return '/{{name}}/list?' + $.hashToQuery(query);
 	};
 	
 	{{#if use_active ~}}

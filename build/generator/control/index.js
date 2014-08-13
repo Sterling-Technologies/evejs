@@ -3,42 +3,42 @@ controller
 .listen('init', function() {
 	//set paths
 	controller
-		.path('{{slug}}'			, controller.path('package') + '/{{vendor}}/{{slug}}')
-		.path('{{slug}}/action'		, controller.path('package') + '/{{vendor}}/{{slug}}/action')
-		.path('{{slug}}/asset'		, controller.path('package') + '/{{vendor}}/{{slug}}/asset')
-		.path('{{slug}}/template'	, controller.path('package') + '/{{vendor}}/{{slug}}/template');
+		.path('{{name}}'			, controller.path('package') + '/{{vendor}}/{{name}}')
+		.path('{{name}}/action'		, controller.path('package') + '/{{vendor}}/{{name}}/action')
+		.path('{{name}}/asset'		, controller.path('package') + '/{{vendor}}/{{name}}/asset')
+		.path('{{name}}/template'	, controller.path('package') + '/{{vendor}}/{{name}}/template');
 
 	//load the factory
-	require([controller.path('{{slug}}') + '/factory.js'], function(factory) {
-		controller.{{slug}} = factory;
-		controller.trigger('{{slug}}-init');
+	require([controller.path('{{name}}') + '/factory.js'], function(factory) {
+		controller.{{name}} = factory;
+		controller.trigger('{{name}}-init');
 	});
 })
 //when the menu is about to be rendered
 .listen('menu', function(e, menu) {
-	// event when the {{slug}} menu is starting
-	controller.trigger('{{slug}}-menu-before');
+	// event when the {{name}} menu is starting
+	controller.trigger('{{name}}-menu-before');
 
 	//add our menu item
 	menu.push({
-		path	: '/{{slug}}',
+		path	: '/{{name}}',
 		icon	: '{{icon}}',
 		label	: '{{plural}}',
 		children: [{
-			path	: '/{{slug}}/create',
+			path	: '/{{name}}/create',
 			label	: 'Create {{singular}}' }]
 		});
 
-	// event when the {{slug}} menu is finished
-	controller.trigger('{{slug}}-menu-after');
+	// event when the {{name}} menu is finished
+	controller.trigger('{{name}}-menu-after');
 })
 //when a url request has been made
 .listen('request', function() {
-	//event when the {{slug}} request is starting
-	controller.trigger('{{slug}}-request-before');
+	//event when the {{name}} request is starting
+	controller.trigger('{{name}}-request-before');
 
-	//if it doesn't start with {{slug}}
-	if(window.location.pathname.indexOf('/{{slug}}') !== 0) {
+	//if it doesn't start with {{name}}
+	if(window.location.pathname.indexOf('/{{name}}') !== 0) {
 		//we don't care about it
 		return;
 	}
@@ -46,23 +46,23 @@ controller
 	//router -> action
 	var route = { action: null };
 	switch(true) {
-		case window.location.pathname.indexOf('/{{slug}}/create') === 0:
+		case window.location.pathname.indexOf('/{{name}}/create') === 0:
 			route.action = 'create';
 			break;
-		case window.location.pathname.indexOf('/{{slug}}/update') === 0:
+		case window.location.pathname.indexOf('/{{name}}/update') === 0:
 			route.action = 'update';
 			break;
-		case window.location.pathname.indexOf('/{{slug}}/remove') === 0:
+		case window.location.pathname.indexOf('/{{name}}/remove') === 0:
 			route.action = 'remove';
 			break;
-		case window.location.pathname.indexOf('/{{slug}}/restore') === 0:
+		case window.location.pathname.indexOf('/{{name}}/restore') === 0:
 			route.action = 'restore';
 			break;
-		case window.location.pathname.indexOf('/{{slug}}/bulk') === 0:
+		case window.location.pathname.indexOf('/{{name}}/bulk') === 0:
 			route.action = 'bulk';
 			break;
 		{{#if use_revision ~}}
-		case window.location.pathname.indexOf('/{{slug}}/revision') === 0:
+		case window.location.pathname.indexOf('/{{name}}/revision') === 0:
 			route.action = 'revision';
 			break;
 		{{/if~}}
@@ -77,21 +77,21 @@ controller
 		return;
 	}
 	
-	route.path = controller.path('{{slug}}/action') + '/' + route.action + '.js';
+	route.path = controller.path('{{name}}/action') + '/' + route.action + '.js';
 	
-	//event when the {{slug}} action is about to render
-	controller.trigger('{{slug}}-action-' + route.action + '-before', route);
+	//event when the {{name}} action is about to render
+	controller.trigger('{{name}}-action-' + route.action + '-before', route);
 	
 	//load up the action
 	require([route.path], function(action) {
 		action.load().render();
 		
-		//event when the {{slug}} action is rendered
-		controller.trigger('{{slug}}-action-' + route.action + '-after', route);
+		//event when the {{name}} action is rendered
+		controller.trigger('{{name}}-action-' + route.action + '-after', route);
 	});
 
-	// event when the {{slug}} request is finished
-	controller.trigger('{{slug}}-request-after');
+	// event when the {{name}} request is finished
+	controller.trigger('{{name}}-request-after');
 })
 
 // when body is fully loaded
@@ -100,13 +100,13 @@ controller
 	var id  = controller.getUrlSegment(3);
 
 	// if tab is already rendered
-	if(jQuery('section.{{slug}}-update ul.nav-tabs li.{{slug}}-update-tab').length !== 0) {
+	if(jQuery('section.{{name}}-update ul.nav-tabs li.{{name}}-update-tab').length !== 0) {
 		// just do nothing
 		return;
 	}
 
-	require(['text!' + controller.path('{{slug}}/template') + '/tabs.html'], function(html) {
+	require(['text!' + controller.path('{{name}}/template') + '/tabs.html'], function(html) {
 		html = Handlebars.compile(html)({ id : id, url : url });
-		jQuery('section.{{slug}}-update ul.nav.nav-tabs').prepend(html);
+		jQuery('section.{{name}}-update ul.nav.nav-tabs').prepend(html);
 	});
 });

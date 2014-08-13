@@ -1,22 +1,22 @@
 module.exports = function() {
 	//set a goto handler incase other packages
 	//want to access this
-	this.{{slug}} = function() {
+	this.{{name}} = function() {
 		return require('./factory').load(this);
 	};
 	
 	//on init set the paths
 	this.listen('init', function() {
-		this.path('{{slug}}', __dirname)
-			.path('{{slug}}/action', __dirname + '/action')
-			.path('{{slug}}/event', __dirname + '/event');
+		this.path('{{name}}', __dirname)
+			.path('{{name}}/action', __dirname + '/action')
+			.path('{{name}}/event', __dirname + '/event');
 	
 	}.bind(this))
 	 
 	//when the server starts listen to file events
 	.listen('start', function() {
 		//get event path
-		var self = this, events = this.{{slug}}().path('event');
+		var self = this, events = this.{{name}}().path('event');
 		
 		//get files in the event folder
 		this.eden.load('folder', events).getFiles(null, false, function(files) {
@@ -43,8 +43,8 @@ module.exports = function() {
 	
 	//when a server request has been made
 	.listen('server-request', function(control, request, response) {
-		//if path does not starts with /{{slug}}
-		if(request.path !== '/{{slug}}' && request.path.indexOf('/{{slug}}/') !== 0) {
+		//if path does not starts with /{{name}}
+		if(request.path !== '/{{name}}' && request.path.indexOf('/{{name}}/') !== 0) {
 			//do nothing
 			return;
 		}
@@ -52,8 +52,8 @@ module.exports = function() {
 		response.processing = true;
 		
 		//trim the prefix
-		var root 		= this.{{slug}}().path('action'),
-			path 		= request.path.replace('/{{slug}}', ''),
+		var root 		= this.{{name}}().path('action'),
+			path 		= request.path.replace('/{{name}}', ''),
 			buffer 		= path.split('/'),
 			action 		= root + '/index',
 			variables 	= [];
@@ -73,7 +73,7 @@ module.exports = function() {
 		//set the variables
 		request.variables = variables;
 		//listen for response
-		control.once('{{slug}}-action-response', function(request, response) {
+		control.once('{{name}}-action-response', function(request, response) {
 			//if it is a batch process
 			if(response.batch) {
 				//the batch will trigger the response

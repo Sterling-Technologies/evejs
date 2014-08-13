@@ -1,4 +1,4 @@
-<section class="{{slug}}-list">
+<section class="{{name}}-list">
 	<!-- START: SEARCH FORM -->
 	<form class="pull-right search form-inline" method="get">
 		<div class="form-group">
@@ -13,7 +13,7 @@
 	<!-- END: SEARCH FORM -->
 	
 	<!-- START: BULK FORM -->
-	<form action="/{{slug}}/bulk" method="post" class="form-inline bulk-form">
+	<form action="/{{name}}/bulk" method="post" class="form-inline bulk-form">
 		<!-- START: i18n HEADER TITLE -->
 		<div class="table-header">
 			{{#if use_active ~}}
@@ -29,7 +29,7 @@
 					<div class="col-sm-12">
 						<!-- START: ADD NEW POST -->
 						<div class="pull-right create"><a class="btn btn-info btn-sm" 
-						href="/{{slug}}/create">Create New {{singular}}</a></div>
+						href="/{{name}}/create">Create New {{singular}}</a></div>
 						<!-- END: ADD NEW POST -->
 						\{{#if rows}}
 						<!-- START: BULK ACTION -->
@@ -54,11 +54,11 @@
 						<span class="filter">
 							{{#if use_active ~}}
 							<a class="btn btn-sm\{{#when mode '==' 'active'}} btn-light\{{/when}}" 
-							href="/{{slug}}?mode=active\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Active &nbsp;
+							href="/{{name}}?mode=active\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Active &nbsp;
 							<span class="badge badge-grey">\{{active}}</span></a> 
 							
 							<a class="btn btn-sm\{{#when mode '==' 'trash'}} btn-light\{{/when}}" 
-							href="/{{slug}}?mode=trash\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Trash &nbsp;
+							href="/{{name}}?mode=trash\{{#if keyword}}&keyword=\{{keyword}}\{{/if}}">Trash &nbsp;
 							<span class="badge badge-grey">\{{trash}}</span></a>
 							{{~/if}}
 						</span>
@@ -89,19 +89,19 @@
 						<td>
 							{{#if use_active~}}
 							\{{#when active '==' 'Yes'}}
-							<a title="Edit" href="/{{slug}}/update/\{{_id}}">
+							<a title="Edit" href="/{{name}}/update/\{{_id}}">
 							<i class="icon-edit"></i></a> &nbsp; 
-							<a title="Remove" href="/{{slug}}/remove/\{{_id}}"
+							<a title="Remove" href="/{{name}}/remove/\{{_id}}"
 							class="text-danger remove"><i class="icon-remove" value="\{{_id}}"></i></a>
 							\{{/when}}
 							\{{#when active '==' 'No'}}
-							<a title="Restore" href="/{{slug}}/restore/\{{_id}}" class="text-success restore">
+							<a title="Restore" href="/{{name}}/restore/\{{_id}}" class="text-success restore">
 							<i class="icon-external-link"></i></a>
 							\{{/when}}
 							{{~else~}}
-							<a title="Edit" href="/{{slug}}/update/\{{_id}}">
+							<a title="Edit" href="/{{name}}/update/\{{_id}}">
 							<i class="icon-edit"></i></a> &nbsp; 
-							<a title="Remove" href="/{{slug}}/remove/\{{_id}}"
+							<a title="Remove" href="/{{name}}/remove/\{{_id}}"
 							class="text-danger remove"><i class="icon-remove" value="\{{_id}}"></i></a>
 							{{~/if}}
 						</td>

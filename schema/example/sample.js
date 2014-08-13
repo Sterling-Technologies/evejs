@@ -1,19 +1,19 @@
 module.exports = {
-	slug		: 'sample',
+	name		: 'sample',
 	singular	: 'Sample',
 	plural		: 'Samples',
 	icon		: 'facebook',
 	
-	use_slug		: true,
-	use_active		: true,
-	use_created		: true,
-	use_updated		: true,
+	slug		: true,
+	active		: true,
+	created		: true,
+	updated		: true,
 	
-	use_revision	: true,
-	use_children	: true,
+	revision	: true,
+	relation	: ['sample', 'sample2'],
 	
-	use_import		: true,
-	use_export		: true,
+	import		: true,
+	export		: true,
 	
 	fields: {
 		title: {
@@ -83,36 +83,43 @@ module.exports = {
 			field	: 'select'
 		},
 		
-		meta: [{
-			title: {
-				label	: 'Title',
-				type	: 'string',
-				field	: 'text',
-				holder	: 'Please enter a title',
-				valid	: ['required', ['gt', 4]],
-				search	: true
-			},
+		meta: { 
+			type		: 'array',
+			singular	: 'Meta',
+			plural		: 'Meta',
+			icon		: 'twitter',
 			
-			detail: {
-				label	: 'Detail',
-				type	: 'string',
-				field	: 'text',
-				holder	: 'Please enter a detail',
-				valid	: [['lt', 7]],
-				search	: true
-			}
-		}],
+			slug		: true,
+			active		: true,
+			created		: true,
+			updated		: true,
+			
+			fields: [{
+				title: {
+					label	: 'Title',
+					type	: 'string',
+					field	: 'text',
+					holder	: 'Please enter a title',
+					valid	: ['required', ['gt', 4]],
+					search	: true
+				},
+				
+				detail: {
+					label	: 'Detail',
+					type	: 'string',
+					field	: 'text',
+					holder	: 'Please enter a detail',
+					valid	: [['lt', 7]],
+					search	: true
+				}	
+			}],
+		},
 		
 		file: {
 			label	: 'File',
-			file	: 'multiple',
+			type	: 'file',
+			multiple: true,
 			options	: ['jpg', 'gif']
-		},
-		
-		image: {
-			label	: 'Image',
-			type	: 'id',
-			image	: true
 		},
 	}
 };

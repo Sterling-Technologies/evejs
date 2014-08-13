@@ -10,14 +10,14 @@ define(function() {
     prototype.subheader    = 'CRM';
 	
     prototype.crumbs = [{ 
-        path: '/{{slug}}',
+        path: '/{{name}}',
         icon: '{{icon}}', 
         label: '{{plural}}' 
     }, {  label: 'Update {{singular}}' }];
 	
     prototype.data     = {};
 	
-    prototype.template = controller.path('{{slug}}/template') + '/form.html';
+    prototype.template = controller.path('{{name}}/template') + '/form.html';
     
     /* Private Properties
     -------------------------------*/
@@ -57,7 +57,7 @@ define(function() {
 		
 		if(data && data.length) {
 			//query to hash
-			this.data.{{slug}} = $.queryToHash(data);
+			this.data.{{name}} = $.queryToHash(data);
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -73,14 +73,14 @@ define(function() {
 			return;
 		}
 		
-		//if no data {{slug}} set
-		if(!this.data.{{slug}}) {
+		//if no data {{name}} set
+		if(!this.data.{{name}}) {
 			//get it from the server
-			//get {{slug}} id
+			//get {{name}} id
 			var id =  window.location.pathname.split('/')[3];
 			
-			controller.{{slug}}.getDetail(id, function(response) {
-				this.data.{{slug}} = response.results;
+			controller.{{name}}.getDetail(id, function(response) {
+				this.data.{{name}} = response.results;
 				next();
 			}.bind(this));
 			
@@ -92,7 +92,7 @@ define(function() {
     
     var _output = function(next) {
 		//store form templates path to array
-        var templates = ['text!' + controller.path('{{slug}}/template') +  '/form.html'];
+        var templates = ['text!' + controller.path('{{name}}/template') +  '/form.html'];
 		
 		//ENUMS
 		//NOTE: BULK GENERATE
@@ -148,8 +148,8 @@ define(function() {
 				.setCrumbs(this.crumbs)
 				.setBody(body);            
 			
-			// fire this event whenever the update page of {{slug}} is available and fully loaded
-			controller.trigger('{{slug}}-update-ready');
+			// fire this event whenever the update page of {{name}} is available and fully loaded
+			controller.trigger('{{name}}-update-ready');
 
 			next();
 		}.bind(this));
@@ -157,7 +157,7 @@ define(function() {
 
 	var _valid = function() {
 		//VALIDATION
-		this.data.errors = controller.{{slug}}.getErrors(this.data.{{slug}});
+		this.data.errors = controller.{{name}}.getErrors(this.data.{{name}});
 		
 		//if we have no errors
 		return JSON.stringify(this.data.errors) === '{}';
@@ -167,13 +167,13 @@ define(function() {
 		var id 		=  window.location.pathname.split('/')[3];
 		
 		
-		controller.{{slug}}.update(id, this.data.{{slug}}, function(response) {
+		controller.{{name}}.update(id, this.data.{{name}}, function(response) {
 			if(!response.error) {		
 				controller				
 					//display message status
 					.notify('Success', '{{singular}} successfully updated!', 'success')
 					//go to listing
-					.redirect('/{{slug}}');
+					.redirect('/{{name}}');
 				
 				//no need to next since we are redirecting out
 				return;
