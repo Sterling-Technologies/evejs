@@ -216,7 +216,7 @@ define(function() {
 		query.count = 1;
 		query.filter.active = 0;
 		
-		return '/{{../slug}}/list?' + $.hashToQuery(query);
+		return '/{{../name}}/list?' + $.hashToQuery(query);
 	};
 	
 	{{/if~}}

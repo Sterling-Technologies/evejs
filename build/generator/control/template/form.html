@@ -12,13 +12,13 @@
 					{{~#if value.field}}
 					\{\{#block 'form/fieldset' '{{../value.label}}' errors.{{../key}}\}\}
 						{{~#when value.field.[0] '==' 'text'}}
-						\{\{\{block 'field/text' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/text' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'password'}}
-						\{\{\{block 'field/password' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/password' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
@@ -28,109 +28,109 @@
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'slider'}}
-						\{\{\{block 'field/slider' '{{../../key}}' ../{{../../../slug}}.{{../key}}\}\}\}
+						\{\{\{block 'field/slider' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'number'}}
-						\{\{\{block 'field/number' '{{../../key}}' ../{{../../../slug}}.{{../key}}\}\}\}
+						\{\{\{block 'field/number' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'mask'}}
-						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[0]}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[0]}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'color'}}
-						\{\{\{block 'field/color' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/color' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'tag'}}
-						\{\{\{block 'field/tag' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/tag' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'datetime'}}
-						\{\{\{block 'field/datetime' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/datetime' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'date'}}
-						\{\{\{block 'field/date' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/date' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'time'}}
-						\{\{\{block 'field/time' '{{../../key}}' ../{{../../../slug}}.{{../key}}
+						\{\{\{block 'field/time' '{{../../key}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'autocomplete'}}
-						\{\{\{block 'field/autocomplete' '{{../../key}}' ../{{../../../slug}}.{{../key}} ../{{../key}}
+						\{\{\{block 'field/autocomplete' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'combobox'}}
-						\{\{\{block 'field/combobox' '{{../../key}}' ../{{../../../slug}}.{{../key}} ../{{../key}}List
+						\{\{\{block 'field/combobox' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}List
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'select'}}
-						\{\{\{block 'field/select' '{{../../key}}' ../{{../key}}List ../{{../../../slug}}.{{../key}}\}\}\}
+						\{\{\{block 'field/select' '{{../../key}}' ../{{../key}}List ../{{../../../name}}.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'country'}}
-						\{\{\{block 'field/country' '{{../../key}}' ../{{../../../slug}}.{{../key}}\}\}\}
+						\{\{\{block 'field/country' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'textarea'}}
 						\{\{#block 'field/textarea' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../slug}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'wysiwyg'}}
 						\{\{#block 'field/wysiwyg' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../slug}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'markdown'}}
 						\{\{#block 'field/markdown' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../slug}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'radio'}}
 						{{~#if value.options ~}}
 						{{~#loop value.options}}
-						\{\{#block 'field/radio' '{{../../../key}}' '{{value.value}}' ../{{../../../../../slug}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
+						\{\{#block 'field/radio' '{{../../../key}}' '{{value.value}}' ../{{../../../../../name}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
 						{{~/loop}}
 						{{else}}
-						\{\{#block 'field/radio' '{{../../key}}' '1' ../{{../../../../slug}}.{{../key}}\}\}Yes\{\{/block\}\}
+						\{\{#block 'field/radio' '{{../../key}}' '1' ../{{../../../../name}}.{{../key}}\}\}Yes\{\{/block\}\}
 						{{~/if~}}
 						{{~/when}}
 						
 						{{~#when value.field.[0] '==' 'checkbox'}}
 						{{~#if value.options ~}}
 						{{~#loop value.options}}
-						\{\{#block 'field/checkbox' '{{../../../key}}' '{{value.value}}' ../{{../../../../../slug}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
+						\{\{#block 'field/checkbox' '{{../../../key}}' '{{value.value}}' ../{{../../../../../name}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
 						{{~/loop}}
 						{{else}}
-						\{\{#block 'field/checkbox' '{{../../key}}' '1' ../{{../../../../slug}}.{{../key}}\}\}Yes\{\{/block\}\}
+						\{\{#block 'field/checkbox' '{{../../key}}' '1' ../{{../../../../name}}.{{../key}}\}\}Yes\{\{/block\}\}
 						{{~/if~}}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'switch'}}
-						\{\{\{block 'field/switch' '{{../../key}}' ../{{../../../slug}}.{{../key}}\}\}\}
+						\{\{\{block 'field/switch' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
 						{{~/when}}
 					\{{/block}}
 					{{/if~}}

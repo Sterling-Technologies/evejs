@@ -115,20 +115,20 @@ define(function() {
 		{{#loop fields ~}}
 		{{~#if value.field ~}}
 		{{~#when value.field.[0] '==' 'datetime' ~}}
-		if(this.data.{{../../../slug}} && this.data.{{../../../slug}}.{{../../key}}) {
-			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}});
+		if(this.data.{{../../../name}} && this.data.{{../../../name}}.{{../../key}}) {
+			this.data.{{../../../name}}.{{../../key}} = _convertToControlDate(this.data.{{../../../name}}.{{../../key}});
 		}
 		
 		{{/when~}}
 		{{~#when value.field.[0] '==' 'date' ~}}
-		if(this.data.{{../../../slug}} && this.data.{{../../../slug}}.{{../../key}}) {
-			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}}, false, true);
+		if(this.data.{{../../../name}} && this.data.{{../../../name}}.{{../../key}}) {
+			this.data.{{../../../name}}.{{../../key}} = _convertToControlDate(this.data.{{../../../name}}.{{../../key}}, false, true);
 		}
 		
 		{{/when~}}
 		{{~#when value.field.[0] '==' 'time' ~}}
-		if(this.data.{{../../../slug}} && this.data.{{../slug}}.{{../../key}}) {
-			this.data.{{../../../slug}}.{{../../key}} = _convertToControlDate(this.data.{{../../../slug}}.{{../../key}}, true);
+		if(this.data.{{../../../name}} && this.data.{{../name}}.{{../../key}}) {
+			this.data.{{../../../name}}.{{../../key}} = _convertToControlDate(this.data.{{../../../name}}.{{../../key}}, true);
 		}
 		
 		{{/when~}}
