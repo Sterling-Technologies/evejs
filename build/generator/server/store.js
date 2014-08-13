@@ -273,7 +273,7 @@ module.exports = (function() {
 		_getNextSlug.call(this, data.title, function(slug) {
 			data.slug = slug;
 			{{#if updated}}data.updated = new Date();{{/if}}
-			{{#if use_revision}}_findAndRevision.call(this, 
+			{{#if revision}}_findAndRevision.call(this, 
 			{{~else~}}this.store.findOneAndUpdate({{/if}}
 				{{#if active}}{ _id: id, active: true },
 				{{~else~}}{ _id: id },{{/if}}
@@ -281,7 +281,7 @@ module.exports = (function() {
 		}.bind(this), id);
 		{{else}}
 		{{#if updated}}data.updated = new Date();{{/if}}
-		{{#if use_revision}}_findAndRevision.call(this, 
+		{{#if revision}}_findAndRevision.call(this, 
 		{{~else~}}this.store.findOneAndUpdate({{/if}}
 			{{#if active}}{ _id: id, active: true },
 			{{~else~}}{ _id: id },{{/if}}

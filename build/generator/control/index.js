@@ -61,7 +61,7 @@ controller
 		case window.location.pathname.indexOf('/{{name}}/bulk') === 0:
 			route.action = 'bulk';
 			break;
-		{{#if use_revision ~}}
+		{{#if revision ~}}
 		case window.location.pathname.indexOf('/{{name}}/revision') === 0:
 			route.action = 'revision';
 			break;
