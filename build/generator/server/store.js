@@ -197,7 +197,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.insert = function(data, callback) {
-		{{#if use_slug~}}
+		{{#if slug~}}
 		//case for slug
 		_getNextSlug.call(this, data.title, function(slug) {
 			data.slug = slug;
@@ -268,7 +268,7 @@ module.exports = (function() {
 	 * @return this
 	 */
 	prototype.update = function(id, data, callback) {
-		{{#if use_slug}}
+		{{#if slug}}
 		//case for slug
 		_getNextSlug.call(this, data.title, function(slug) {
 			data.slug = slug;
