@@ -43,11 +43,11 @@ module.exports = (function() {
 		//2. TRIGGER
 		this.controller
 			//when there is an error 
-			.once('{{slug}}-create-error', _error.bind(this))
+			.once('{{name}}-create-error', _error.bind(this))
 			//when it is successfull
-			.once('{{slug}}-create-success', _success.bind(this))
-			//Now call to remove the {{slug}}
-			.trigger('{{slug}}-create', this.controller, query);
+			.once('{{name}}-create-success', _success.bind(this))
+			//Now call to remove the {{name}}
+			.trigger('{{name}}-create', this.controller, query);
 	};
 	
 	/* Private Methods
@@ -56,9 +56,9 @@ module.exports = (function() {
 		//set up a success response
 		this.response.message = JSON.stringify({ error: false });
 		//dont listen for error anymore
-		this.controller.unlisten('{{slug}}-create-error');
+		this.controller.unlisten('{{name}}-create-error');
 		//trigger that a response has been made
-		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
 			
 	var _error = function(error) {
@@ -69,9 +69,9 @@ module.exports = (function() {
 			validation: error.errors || [] });
 		
 		//dont listen for success anymore
-		this.controller.unlisten('{{slug}}-create-success');
+		this.controller.unlisten('{{name}}-create-success');
 		//trigger that a response has been made
-		this.controller.trigger('{{slug}}-action-response', this.request, this.response);
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
 	
 	var _valid = function(query) {
