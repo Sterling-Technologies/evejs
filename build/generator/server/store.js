@@ -293,6 +293,7 @@ module.exports = (function() {
 	
 	/* Private Methods
 	-------------------------------*/
+	{{#if slug}}
 	var _getNextSlug = function(slug, callback, id) {
 		//turn it into a slug
 		slug = slug.toString().toLowerCase()
@@ -347,13 +348,16 @@ module.exports = (function() {
 			callback(slug);
 		});
 	};
+	{{/if}}
 	
+	{{#if revision}}
 	var _findAndRevision = function(where, set, callback) {
 		this.getDetail(where._id, function(error, row) {
 			set['$push'] = { revision: row };
 			this.store.findOneAndUpdate(where, set, callback);
 		}.bind(this), true);
 	};
+	{{/if}}
 	
 	var _buildQuery = function(query, keyword) {
 		query 	= query 	|| {};
