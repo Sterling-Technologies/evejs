@@ -36,7 +36,7 @@
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'mask'}}
-						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[0]}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[1]}}' ../{{../../../name}}.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
