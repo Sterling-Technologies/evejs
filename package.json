@@ -12,7 +12,6 @@
         "edenjs": "0.0.2",
         "chokidar": "0.8.2",
         "jshint": "2.5.2",
-        "prompt": "0.2.13",
         "nodemon": "1.2.1",
         "mocha": "1.20.1",
 		"handlebars": "2.0.0-alpha.4"

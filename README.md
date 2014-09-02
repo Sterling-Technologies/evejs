@@ -19,9 +19,9 @@ $ npm install -g evejs
 $ eve
 ```
 
-2 - Follow instructions.
+2 - Point Apache to deploy/control
 
-3 - Point Apache to the control and web folders in the build environments you specified.
+3 - Point Apache to deploy/web
 
 ### Features
 
