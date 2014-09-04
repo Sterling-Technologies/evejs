@@ -76,7 +76,7 @@
 						<th>ID</th>
 						<!-- NOTE: BULK GENERATE -->
 						{{#loop fields ~}}
-						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown'}} 
+						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
 						<th>{{value.label}}</th>
 						{{~/notin ~}}
 						{{~/loop}}

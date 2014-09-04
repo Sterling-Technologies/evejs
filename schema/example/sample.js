@@ -119,7 +119,7 @@ module.exports = {
 			label	: 'File',
 			type	: 'file',
 			multiple: true,
-			options	: ['jpg', 'gif']
+			options	: ['image/jpg', 'image/gif']
 		},
 	}
 };

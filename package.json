@@ -9,7 +9,7 @@
     "author": "Christian Blanquera",
     "license": "MIT",
     "dependencies": {
-        "edenjs": "0.0.4",
+        "edenjs": "0.0.5",
         "chokidar": "0.8.2",
         "jshint": "2.5.2",
         "nodemon": "1.2.1",

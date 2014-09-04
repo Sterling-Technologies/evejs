@@ -66,6 +66,10 @@ module.exports = (function() {
 	};
 	
 	var _error = function(error) {
+		if(typeof error === 'string') {
+			error = { message: error, errors: [] };
+		}
+		
 		//setup an error response
 		this.response.message = JSON.stringify({ 
 			error: true, 

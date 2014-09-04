@@ -25,9 +25,9 @@ module.exports = (function() {
 		this.request  	= request;
 		this.response  	= response;
 	};
-	
+
 	/* Public Methods
-    -------------------------------*/
+	-------------------------------*/
 	prototype.render = function() {
 		//if no ID
 		if(!this.request.variables[0]) {
@@ -37,22 +37,66 @@ module.exports = (function() {
 			return;
 		}
 		
-		var query = this
-			.controller.eden.load('string')
-			.queryToHash(this.request.message);
+		if(!this.request.variables[1]) {
+			//setup an error
+			_error.call(this, { message: 'No File Name set' });
+			
+			return;
+		}
 		
-		//TRIGGER
-		this.controller
-			//when there is an error
-			.once('{{name}}-update-error', _error.bind(this))
-			//when it is successfull
-			.once('{{name}}-update-success', _success.bind(this))
-			//Now call to update the {{name}}
-			.trigger('{{name}}-update', this.controller, this.request.variables[0], query, this.request.stream);
+		var orm 		= require('mongoose'),
+			database 	= orm.connection.db,
+			gridStore	= orm.mongo.GridStore,
+			objectId	= orm.mongo.ObjectID;
+			
+		
+		var self = this, id  = new objectId(this.request.variables[0]);
+		
+		//setup the gridstore	
+		(new gridStore(database, id, 'r', { root: '{{name}}' })).open(function(error, store) {
+			//if there are errors
+			if(error) {
+				_error.call(self, error);
+				return;
+			}
+			
+			//make sure the filename matches what is found
+			if(store.filename !== self.request.variables[1]) {
+				_error.call(self, { message: 'File request is invalid' });
+				return;
+			}
+			
+			store.read(_response.bind(self, store));
+		});
+
+		return this;
 	};
 	
 	/* Private Methods
     -------------------------------*/
+	var _response = function(store, error, buffer) {
+		//if there are errors
+		if(error) {
+			_error.call(this, error);
+			return;
+		}
+		
+		//set content type
+		this.response.headers['Content-Type'] = store.contentType;
+		this.response.headers['Content-Length'] = store.length;
+		this.response.encoding = 'base64'; 
+		//no error, then prepare the package
+		_success.call(this, buffer.toString('base64'));
+	};
+	
+	var _success = function(data) {
+		//no error, then prepare the package
+		this.response.message = data;
+		
+		//trigger that a response has been made
+		this.controller.trigger('{{name}}-action-response', this.request, this.response);
+	};
+	
 	var _error = function(error) {
 		if(typeof error === 'string') {
 			error = { message: error, errors: [] };
@@ -61,20 +105,8 @@ module.exports = (function() {
 		//setup an error response
 		this.response.message = JSON.stringify({ 
 			error: true, 
-			message: error.message,
-			validation: error.errors || [] });
+			message: error.message });
 		
-		//dont listen for success anymore
-		this.controller.unlisten('{{name}}-update-success');
-		//trigger that a response has been made
-		this.controller.trigger('{{name}}-action-response', this.request, this.response);
-	};
-			
-	var _success = function() {
-		//set up a success response
-		this.response.message = JSON.stringify({ error: false });
-		//dont listen for error anymore
-		this.controller.unlisten('{{name}}-update-error');
 		//trigger that a response has been made
 		this.controller.trigger('{{name}}-action-response', this.request, this.response);
 	};
