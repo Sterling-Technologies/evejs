@@ -108,7 +108,7 @@
 						<td>\{{_id}}</td>
 						<!-- NOTE: BULK GENERATE -->
 						{{#loop fields ~}}
-						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown'}} 
+						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
 						<td>\{\{ {{../key}}\}\}</td>
 						{{~/notin ~}}
 						{{~/loop}}

@@ -54,10 +54,12 @@ define(function() {
 		this.data.url 		= window.location.pathname;
 		
 		var data = controller.getPost();
+		var files = controller.getFiles();
 		
 		if(data && data.length) {
 			//query to hash
 			this.data.{{name}} = $.queryToHash(data);
+			this.data.files = files;
 			
 			if(!_valid.call(this)) {			
 				//display message status
@@ -166,8 +168,24 @@ define(function() {
 	var _process = function(next) {
 		var id 		=  window.location.pathname.split('/')[3];
 		
-		
-		controller.{{name}}.update(id, this.data.{{name}}, function(response) {
+		controller.{{name}}.update(id, 
+			this.data.{{name}}, this.data.files, 
+			function(error, percent, response) {
+			//if there is an error
+			if(error) {
+				//Add to gritter
+				controller.notify('Form Error', error, 'error');
+				next();
+				return;
+			}
+			
+			//if it is in progress
+			if(!response) {
+				//Add to gritter
+				controller.notify('Submitting Form', percent + '%', 'info');
+				return;
+			}
+			
 			if(!response.error) {		
 				controller				
 					//display message status

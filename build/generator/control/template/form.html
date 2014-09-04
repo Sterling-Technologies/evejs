@@ -23,9 +23,13 @@
 						\}\}\}
 						{{~/when~}}
 						
-						{{~#when value.field.[0] '==' 'file'}}
-						\{\{\{block 'field/file' '{{../../key}}'\}\}\}
-						{{~/when~}}
+                        {{~#when value.field.[0] '==' 'file'}}
+						\{\{\{block 'field/file' '{{../../key}}' '' '
+                        {{~#if ../value.multiple}} multiple="multiple" {{/if~}}
+                        {{~#if ../value.options~}}
+                        accept="{{#loop ../value.options~}}
+                        {{~#if last}}{{value}}{{else}}{{value}}, {{/if~}}
+                        {{~/loop}}"{{/if}}'\}\}\}{{/when~}}
 						
 						{{~#when value.field.[0] '==' 'slider'}}
 						\{\{\{block 'field/slider' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}

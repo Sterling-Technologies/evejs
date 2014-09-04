@@ -260,7 +260,7 @@ define(function() {
 		return errors;
 	};
 	
-	prototype.create = function(data, callback) {
+	prototype.create = function(data, files, callback) {
 		var url = controller.getServerUrl() + '/{{name}}/create';
 		
 		//SERVER CONVERT
@@ -288,14 +288,12 @@ define(function() {
 		{{~/if~}}
 		{{~/loop~}}
 		
-		//save data to database
-		$.post(url, data, function(response) {
-			response = JSON.parse(response);
-			callback(response);
-		});
+		_send(url, data, files, callback);
+		
+		return this;
 	};
 	
-	prototype.update = function(id, data, callback) {
+	prototype.update = function(id, data, files, callback) {
 		var url = controller.getServerUrl() + '/{{name}}/update/' + id;
 		
 		//SERVER CONVERT
@@ -323,11 +321,8 @@ define(function() {
 		{{~/if~}}
 		{{~/loop~}}
 		
-		//save data to database
-		$.post(url, data, function(response) {
-			response = JSON.parse(response);
-			callback(response);
-		});
+		//save data to databases
+		_send(url, data, files, callback);
 	};
 	
 	/* Private Methods
@@ -377,6 +372,84 @@ define(function() {
 		var time = hour + ':' + minute + ':' + second;
 		
 		return date + 'T' + time + 'Z';
+	};
+	
+	var _send = function(url, data, files, callback) {
+		data 	= data 	|| {};
+		files 	= files || {}; 
+		
+		var form = new FormData(), key, i;
+		
+		//append the regular field name and value
+		for(key in data) {
+			if(data.hasOwnProperty(key)) {
+				form.append(key, data[key]);
+			}
+		}
+		
+		//append files per name
+		for(key in files) {
+			if(files.hasOwnProperty(key)) {
+				//a field can have multiple files
+				for(i = 0; i < files[key].length; i++) {
+					form.append(key, files[key][i]);
+				}
+			}
+		}
+		
+		// Need to use jquery ajax
+		// so that auth can catch
+		// up request, and append access
+		// token into it
+		$.ajax({
+			url 	: url,
+			type 	: 'POST',
+			// custom xhr
+			xhr 	: function() {
+				var jqxhr = $.ajaxSettings.xhr();
+
+				if(jqxhr.upload) {
+					// On Progress
+					jqxhr.upload.addEventListener('progress', function(e) {
+						var percentComplete = 0;
+						if (e.lengthComputable) {
+							percentComplete = Math.round(e.loaded * 100 / e.total);
+						}
+						
+						callback(null, percentComplete.toString());
+					}, false);
+
+					//on error
+					jqxhr.upload.addEventListener('error', function () {
+						//TODO: Show error message
+						//ex. There was an error attempting to upload the file.
+						callback('An error occured while submitting the form', 0);
+					}, false);
+						
+					// On cancel.
+					jqxhr.upload.addEventListener('abort', function () {
+						//TODO: Show abort message
+						//The upload has been canceled by the user or the browser dropped the connection.
+						callback('Submission aborted, please check internet connection', 0);
+					}, false);
+
+					return jqxhr;
+				}
+			},
+			// form data
+			data  		: form,
+			// disable cache
+			cache 		: false,
+			// do not set content type
+			contentType : false,
+			// do not proccess data
+			processData : false,
+			// on success
+			success : function(response) {
+				response = JSON.parse(response);
+				callback(null, 100, response);
+			}
+		});
 	};
 	
 	/* Adaptor

@@ -151,7 +151,9 @@ module.exports = (function() {
 			.limit(range);
 		
 		for(var key in order) {
-			store.sort(key, order[key] !== -1 ? 1: -1);
+			if(order.hasOwnProperty(key)) {
+				store.sort(key, order[key] !== -1 ? 1: -1);
+			}
 		}
 		
 		//query for results
@@ -379,26 +381,28 @@ module.exports = (function() {
 		}
 		
 		for(var key in query) {
-			//if prefixed with !, just test if it does not exist
-			//SECRET SAUCE:
-			//{ active: true, $or: [ {password: { $exists: false }}, {password: { $type: 10 }}, {password: ""} ] }
-			if(key.indexOf('!') === 0) {
-				not = [ {}, {}, {} ];
-				not[0][key.substr(1)] = { $exists: false };
-				not[1][key.substr(1)] = { $type: 10 };
-				not[2][key.substr(1)] = '';
+			if(query.hasOwnProperty(key)) {
+				//if prefixed with !, just test if it does not exist
+				//SECRET SAUCE:
+				//{ active: true, $or: [ {password: { $exists: false }}, {password: { $type: 10 }}, {password: ""} ] }
+				if(key.indexOf('!') === 0) {
+					not = [ {}, {}, {} ];
+					not[0][key.substr(1)] = { $exists: false };
+					not[1][key.substr(1)] = { $type: 10 };
+					not[2][key.substr(1)] = '';
+					
+					or.push(not);
+					continue;
+				}
 				
-				or.push(not);
-				continue;
+				if(query[key] !== null) {
+					continue;
+				}
+				
+				//if null value, just test if it exists
+				
+				query[key] = { $exists: true };
 			}
-			
-			if(query[key] !== null) {
-				continue;
-			}
-			
-			//if null value, just test if it exists
-			
-			query[key] = { $exists: true };
 		}
 		
 		if(or.length === 1) {

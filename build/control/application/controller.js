@@ -76,7 +76,16 @@ var controller = function() {
 	 * @return string
 	 */
 	prototype.getPost = function() {
-		return window.history.state || '';
+		return window.history.state.data || '';
+	};
+	
+	/**
+	 * Returns post files from push state
+	 *
+	 * @return string
+	 */
+	prototype.getFiles = function() {
+		return window.history.state.files || {};
 	};
 	
 	/**
@@ -620,7 +629,7 @@ var controller = function() {
 				//stop it
 				e.preventDefault();
 				
-				var post = '', url = $(this).attr('action') || window.location.href;
+				var files = {}, post = '', url = $(this).attr('action') || window.location.href;
 				
 				if(!$(this).attr('method') || $(this).attr('method').toUpperCase() == 'GET') {
 					//manually form the HREF
@@ -632,10 +641,21 @@ var controller = function() {
 					url += '?' + $(this).serialize();
 				} else {
 					post = $(this).serialize();
+					//is there files?
+					$('input[type="file"]', this).each(function() {
+						//if there is no name to this
+						if(!this.name || !this.name.length) {
+							//skip it
+							return;
+						}
+						
+						//store the files
+						files[this.name] = this.files;
+					});
 				}
 				
 				//push the state
-				window.history.pushState(post, '', url);
+				window.history.pushState({ data: post, files: files }, '', url);
 			}
 		});
 	};
