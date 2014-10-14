@@ -1,25 +1,21 @@
-module.exports = (function() {
-	var Definition = function() {}, prototype = Definition.prototype;
-	
-	prototype.eden 	= require('edenjs')();
-	
-	/* Properties
+module.exports = require('edenjs').extend(function() {
+	/* Require
 	-------------------------------*/
-	var _paths 		= {};
-	var _databases 	= {};
-	var _events 	= new (require('events').EventEmitter)();
-	
-	/* Loader
+	/* Constants
 	-------------------------------*/
-	prototype.__load = Definition.load = function() {
-		if(!this.__instance) {
-			this.__instance = new Definition();
-		}
-		
-		return this.__instance;
-	};
+	/* Public Properties
+	-------------------------------*/
+	/* Protected Properties
+	-------------------------------*/
+	this._paths 	= {};
+	this._databases = {};
 	
-	/* Construct
+	this._database 	= null;
+	this._server	= null;
+	
+	/* Private Properties
+	-------------------------------*/
+	/* Magic
 	-------------------------------*/
 	/* Public Methods
 	-------------------------------*/
@@ -29,28 +25,24 @@ module.exports = (function() {
 	 * @param string
 	 * @return this
 	 */
-	prototype.config = function(key) {
-		return require(_paths.config + '/' + key);
+	this.config = function(key) {
+		return require(this._paths.config + '/' + key);
 	};
 	
 	/**
-	 * Global event listener for the server
+	 * Returns a database connection
+	 * given the key
 	 *
-	 * @return this
+	 * @param string
+	 * @return object
 	 */
-	prototype.listen = function(event, callback) {
-		_events.on(event, callback);
-		return this;
-	};
-	
-	/**
-	 * Global event once listener for the server
-	 *
-	 * @return this
-	 */
-	prototype.once = function(event, callback) {
-		_events.once(event, callback);
-		return this;
+	this.database = function(key) {
+		//if there is no database
+		if(typeof this._databases[key] === 'undefined') {
+			return this._database;
+		}
+		
+		return this._databases[key];
 	};
 	
 	/**
@@ -59,13 +51,13 @@ module.exports = (function() {
 	 * @param string
 	 * @return this
 	 */
-	prototype.path = function(key, value) {
+	this.path = function(key, value) {
 		if(value) {
-			_paths[key] = value;
+			this._paths[key] = value;
 			return this;
 		}
 		
-		return _paths[key];
+		return this._paths[key];
 	};
 	
 	/**
@@ -73,30 +65,48 @@ module.exports = (function() {
 	 *
 	 * @return this
 	 */
-	prototype.setDatabases = function() {
-		var databases = this.config('databases'),
-			database, authentication;
+	this.setDatabases = function() {
+		var databases = this.config('databases'), database;
 		
 		for(var key in databases) {
-			database = databases[key];
-			
-			switch(database.type) {
-				case 'mongo':
-					authentication = '';
-					if(database.user && database.pass) {
-						authentication = database.user+':'+database.pass+'@';
-					} else if(database.user) {
-						authentication = database.user+'@';
-					}
-					
-					_databases[key] = require('mongoose')
-					.connect('mongodb://' 
-						+ authentication 
-						+ database.host 
-						+ ':' + database.port 
-						+ '/' + database.name);
+			if(databases.hasOwnProperty(key)) {
+				database = databases[key];
+				
+				switch(database.type) {
+					case 'mongo':
+						this._databases[key] = this.Mongo(
+							database.host, 
+							database.port, 
+							database.name);
 						
-					break;
+						break;
+					case 'mysql':
+						this._databases[key] = this.Mysql(
+							database.host, 
+							database.port, 
+							database.name,
+							database.user,
+							database.pass);
+						
+						break;
+					case 'postgres':
+						this._databases[key] = this.Postgres(
+							database.host, 
+							database.port, 
+							database.name,
+							database.user,
+							database.pass);
+						
+						break;
+					case 'sqlite':
+						this._databases[key] = this.Postgres(database.file);
+						
+						break;
+				}
+				
+				if(database.default) {
+					this._database = this._databases[key];
+				}
 			}
 		}
 		
@@ -108,11 +118,11 @@ module.exports = (function() {
 	 *
 	 * @return this
 	 */
-	prototype.startPackages = function() {
+	this.startPackages = function() {
 		var packages = this.config('packages');
 		
 		for(var i = 0; i < packages.length; i++) {
-			require(_paths.package + '/' + packages[i] + '/index.js').call(this);
+			require(this._paths.package + '/' + packages[i] + '/index.js').call(this);
 		}
 		
 		return this;
@@ -123,10 +133,11 @@ module.exports = (function() {
 	 *
 	 * @return this
 	 */
-	prototype.setPaths = function() {
+	this.setPaths = function() {
 		this.path('root'	, __dirname)
 			.path('config'	, __dirname + '/config')
-			.path('package'	, __dirname + '/package');
+			.path('package'	, __dirname + '/package')
+			.path('upload'	, __dirname + '/upload');
 		
 		return this;
 	};
@@ -136,14 +147,14 @@ module.exports = (function() {
 	 *
 	 * @return this
 	 */
-	prototype.startServer = function() {
+	this.startServer = function() {
 		var self = this, settings = this.config('settings').server;
 		
-		this.server = this.eden.load('server')
+		var server = this._server = this.Http()
 			.setHost(settings.host)
 			.setPort(settings.port)
 			//when a request from the client has been made
-			.listen('request', function(request, response) { 
+			.on('request-start', function(request, response) { 
 				//ALLOW CORS
 				response.headers['Access-Control-Allow-Origin'] = '*';
 				
@@ -159,71 +170,60 @@ module.exports = (function() {
 					response.headers.Allow = 'HEAD,GET,POST,PUT,DELETE,OPTIONS'; 
 					response.state = 200;
 					
-					self.server.trigger('response', request, response);
+					this.trigger('response', request, response);
 					
 					return;
 				}
 				
-				self.trigger('server-request', self, request, response);
+				self.trigger('server-request-start', request, response);
+			})
+			
+			//for streaming files
+			.on('request-end', function(request, response) {
+				//pass it along
+				self.trigger('server-request-end', request, response);
+			})
+			
+			//for streaming files
+			.on('file-start', function(file, mime, key) {
+				//pass it along
+				self.trigger('server-file-start', file, mime, key);
+			})
+			
+			//for streaming files
+			.on('file-data', function(data) {
+				//pass it along
+				self.trigger('server-file-data', data);
+			})
+			
+			//for streaming files
+			.on('file-end', function() {
+				//pass it along
+				self.trigger('server-file-end');
 			})
 			
 			//when a response has been given out
-			.listen('output', function(request, response) { 
-				self.trigger('server-response', self, request, response);
+			.on('output', function(request, response) { 
+				//pass it along
+				self.trigger('server-output', request, response);
 			})
 			
 			//when there's nothing found
-			.listen('response-404', function(request, response, error) {
-				self.trigger('server-response-404', self, request, response, error);
+			.on('response-404', function(request, response) {
+				//pass it along
+				self.trigger('server-response-404', request, response);
 			})
 			//begin to connect
 			.connect();
-			
-		return this;
+		
+		return this.on('server-response', function(request, response) {
+			//pass it along
+			server.trigger('response', request, response)
+		});
 	};
 	
-	/**
-	 * Process to start socket.io
-	 *
-	 * @return 	this
-	 */
-	prototype.startSocket = function() {
-		// Initialize socket io connection
-		this.socket = this.eden.load('socket')
-			// on client connection
-			.listen('request', function(socket) {
-				// trigger socket client event
-				this.trigger('socket-request', this, socket);
-			}.bind(this))
-			// start socket io server
-			.connect(this.server.server, {});
-
-		return this;
-	};
-
-	/**
-	 * Global event trigger for the server
-	 *
-	 * @return this
-	 */
-	prototype.trigger = function() {
-		_events.emit.apply(_events, arguments);
-		return this;
-	};
-	
-	/**
-	 * Stops listening to a specific event
-	 *
-	 * @return this
-	 */
-	prototype.unlisten = function() {
-		_events.removeAllListeners.apply(_events, arguments);
-		return this;	
-	};
-	
+	/* Protected Methods
+	-------------------------------*/
 	/* Private Methods
 	-------------------------------*/
-	/* Adaptor
-	-------------------------------*/
-	return Definition.load(); 
-})();
+}).singleton();

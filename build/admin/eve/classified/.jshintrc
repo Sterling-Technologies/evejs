@@ -1,0 +1,13 @@
+{
+  "globals": {
+    "define": true,
+    "console": true,
+    "require": true
+  },
+  "bitwise": false,
+  "strict": false,
+  "browser": true,
+  "node": true,
+  "maxcomplexity": 20,
+  "laxbreak":true
+}

@@ -5,7 +5,7 @@
 
 /* Get Application
 -------------------------------*/
-require('./controller')
+require('./controller')()
 
 /* Set Paths
 -------------------------------*/
@@ -33,12 +33,4 @@ require('./controller')
 
 /* Trigger Start Event
 -------------------------------*/
-.trigger('start')
-
-/* Start Socket IO
---------------------------------*/
-.startSocket()
-
-/* Trigger Socket Event
----------------------------------*/
-.trigger('socket');
+.trigger('start');

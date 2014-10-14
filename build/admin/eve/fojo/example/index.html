@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fojo - Form Object submission with a JS Object</title>
+<style>
+	form div div { padding-left: 150px; }
+	label { float: left; }
+</style>
+</head>
+
+<body>
+	<form method="post">
+    	<h2>Fojo - Form Object submission with a JS Object</h2>
+    	<div>
+        	<label>Upload a Sample File</label>
+            <div><input type="file" name="user[0][auth]" /></div>
+        </div>
+    	<div>
+        	<button>Test</button>
+        </div>
+    </form>
+    <ul id="status"></ul>
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/classified.js"></script>
+	<script type="text/javascript" src="/fojo.js"></script>
+    <script type="text/javascript">
+    (function() {
+		jQuery('form').submit(function(e) {
+			e.preventDefault();
+			var fojo = jQuery.fojo()
+				.setUrl('/sample')
+				.setData('user[0][name]', 'Chris')
+				.setData('user[0][email]', 'chris@fojo.com')
+				
+				.on('start', function(e) {
+					jQuery('#status').append('<li>Submission Started</li>');
+				})
+				
+				.on('progress', function(e, percent) {
+					jQuery('#status').append('<li>Progress '+percent+'%</li>');
+				})
+				
+				.on('abort', function(e) {
+					jQuery('#status').append('<li>Submission Aborted</li>');
+				})
+				
+				.on('error', function(e) {
+					jQuery('#status').append('<li>Submission Error</li>');
+				})
+				
+				.on('response', function(response) {
+					jQuery('#status').append('<li>Submission Complete!</li>');
+					jQuery('#status').append('<li>'+response+'</li>');
+				});
+			
+			$('input[type="file"]', this).each(function() {
+				//if there is no name to this
+				if(!this.name || !this.name.length) {
+					//skip it
+					return;
+				}
+				
+				fojo.setData(this.name, this.files);
+			});
+				
+			fojo.send();
+			
+			jQuery('#status').append('<li>Check Console > Network for the formed request :)</li>');
+		});
+	})();
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chops - Client HTML5 on Push State</title>
+<style>
+	a { display: block; margin-bottom: 10px; }
+	form div div { padding-left: 100px; }
+	label { float: left; }
+</style>
+</head>
+
+<body>
+	<h1>Welcome</h1>
+	<a href="/some/path">Go to Some Path</a>
+	<a href="/some/path/2?user[0][name]&user[0][email]=bar">Go to Some Path 2</a>
+    
+    <form method="post" action="/auth">
+    	<h2>Login</h2>
+    	<div>
+        	<label>Name</label>
+            <div><input type="text" name="user[0][email]" /></div>
+        </div>
+    	<div>
+        	<label>Password</label>
+            <div><input type="possword" name="user[0][password]" /></div>
+        </div>
+    	<div>
+        	<label>Auth Key</label>
+            <div><input type="file" name="user[0][auth]" /></div>
+        </div>
+    	<div>
+        	<button>Login!</button>
+        </div>
+    </form>
+    <script type="text/javascript" src="/require.js"></script>
+    <script type="text/javascript">
+    (function() {
+		requirejs.config({
+			paths: {
+				'jquery': '/jquery',
+				'classified': '/classified',
+				'chops': '/chops',
+			}
+		});
+		
+		require(['chops'], function(chops) {
+			chops().on('request', function(e, url, state) {
+				switch(state.url) {
+					case '/some/path':
+						jQuery('h1').html('Welcome to Some Path!');
+						break;
+					case '/some/path/2?user[0][name]&user[0][email]=bar':
+						jQuery('h1').html('Welcome to Some Path 2!');
+						break;
+					case '/auth':
+						console.log(state);
+						if(state.data.user) {
+							jQuery('h1').html('Welcome ' + state.data.user[0].email);
+						}
+						break;
+				}
+			});
+		});
+		
+	})();
+    </script>
+</body>
+</html>

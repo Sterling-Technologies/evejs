@@ -1,10 +1,11 @@
 module.exports = {
 	eve : {
-		type : 'mongo',
-		host : 'localhost',
-		port : 27017,
+		type : 'mysql',
+		host : '127.0.0.1',
+		port : null,
 		name : 'eve',
-		user : '',
-		pass : ''
+		user : 'root',
+		pass : '',
+		default: true
 	}
 };

@@ -1,386 +1,178 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 /* Sample Commands:
- * eve 					- Alias for "eve watch all"
- * eve install			- Alias for "eve install all"
- * eve install web		- Installs web only
- * eve install control	- Installs control only
- * eve install server	- Installs server only
- * eve watch			- Alias for "eve watch all"
- * eve watch web		- Watches changes in web only
- * eve watch control	- Watches changes in control only
- * eve watch server		- Watches changes in server only
+ * eve 							- Alias for "eve watch all"
+ * eve install					- Alias for "eve install all"
+ * eve install web [name]		- Installs web only
+ * eve install admin [name]		- Installs admin only
+ * eve install server [name]	- Installs server only
+ * eve watch					- Alias for "eve watch all"
+ * eve watch [name]				- Watches changes in web only
  * eve generate ecommerce/product
  */
-var eden 	= require('edenjs'),
-	lint 	= require('../lib/lint'),
-	nodemon = require('../lib/nodemon'),
-	mocha 	= require('../lib/mocha'),
-	local 	= process.env.PWD || process.cwd(),
-	//NOTE: maybe find a better way to find the root folder
-	root 	= process.mainModule.filename.substr(0, process.mainModule.filename.length - '/bin/eve.js'.length),
-	action 	= process.argv[2] || 'watch';
+var eve 		= require('../eve'),
+	nodemon 	= require('../eve/nodemon'),
+	mocha 		= require('../eve/mocha'),
+	command 	= Array.prototype.slice.apply(process.argv),
+	executable	= command.shift(),
+	bin 		= command.shift();
 
-var defaults = {
-	server: {
-		bitwise : false,
-		strict 	: false,
-		node 	: true
-	},
-	
-	control: {
-		globals: {
-			define 		: true,
-			controller 	: true,
-			console 	: true,
-			require 	: true,
-			Handlebars 	: true,
-			
-			describe   	: true,
-			it         	: true,
-			before     	: true,
-			beforeEach 	: true,
-			after      	: true,
-			afterEach  	: true 
-		},
-		
-		bitwise 	: false,
-		strict 		: false,
-		browser 	: true,
-		jquery 		: true,
-		node 		: false
-	},
-	
-	web: {
-		globals : {
-			define 		: true,
-			controller 	: true,
-			console 	: true,
-			require 	: true,
-			Handlebars 	: true,
-			
-			describe   	: true,
-			it         	: true,
-			before     	: true,
-			beforeEach 	: true,
-			after      	: true,
-			afterEach  	: true 
-		},
-		
-		bitwise : false,
-		strict 	: false,
-		browser : true,
-		jquery 	: true,
-		node 	: false
+var processError = function(error) {
+	if (error) {
+		eve().trigger('error', error);
 	}
 };
 
-var _getContent = function(source, destination, callback) {
-	eden('file', source).getContent(function(error, to) {
-		if (error) {
-			eve.trigger('error', error);
+eve()
+	.on('error', function(message) {
+		console.log('\x1b[31m%s\x1b[0m', message);
+	})
+	
+	.on('message', function(message) {
+		console.log('\x1b[33m%s\x1b[0m', message);
+	})
+	
+	.on('install-step', function(step, name, type, deploy) {
+		var message = false;
+		
+		switch(step) {
+			case 1:
+				message = 'installing ' + name + '...';
+				break;
+			case 2:
+				message = 'Copying ' + type + ' to deploy.';
+				break;
+			case 3:
+				message = 'Copying ' + type + ' to build.';
+				break;
+			case 4:
+				message = 'Copying packages.';
+				break;
+			
+		}
+		
+		if(message) {
+			console.log('\x1b[33m%s\x1b[0m', message);
+		}
+	})
+	
+	.on('install-complete', function(name, type, deploy) {
+		console.log('\x1b[32m%s\x1b[0m', name + ' installation complete!');
+		process.exit(0);
+	})
+	
+	.on('generate-complete', function(packages, environments) {
+		console.log('\x1b[32m%s\x1b[0m', packages.join(', ') + ' were successfully generated!');
+		process.exit(0);
+	})
+	
+	.on('watch-init', function(environments) {
+		var settings = this.getSettings();
+		
+		for(var name in settings) {
+			if(settings.hasOwnProperty(name)) {
+				if(settings[name].type === 'server') {
+					// starts the nodemon
+					var config = settings[name].nodemon || {
+						scriptPosition : 1, 
+						script : settings[name].path + '/index.js', 
+						args : ['--harmony']
+					};
+					
+					//tmp fix this with config
+        			nodemon(eve, config);
+				}
+			}
+		}
+		
+		console.log('\x1b[33m%s\x1b[0m', 'watching on ' + environments.join(', '));
+	})
+	
+	.on('watch-update', function(event, type, name, source, destination, push) {
+		//we only care if something has changed
+		if (event !== 'change' && event !== 'add') {
+			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+			push(event, source, destination, processError);
+			return;
+		}
+
+		//we only care if this is a js file
+		if (this.File(source).getExtension() !== 'js') {
+			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+			push(event, source, destination, processError);
 			return;
 		}
 		
-		eden('file', destination).getContent(function(error, from) {
+		var build 		= this.getBuildPath(),
+			settings 	= this.getSettings();
+		
+		//if this is a test file
+		if(source.substr((build + '/package').length).split('/')[4] === 'test') {
+			//do not push just run the test
+			console.log('\x1b[33m%s\x1b[0m', 'Testing');
+			
+			//delete the cache to reload again
+			delete require.cache[source];
+
+			mocha.reset().run(eve, [source]);
+			return;
+		}
+		
+		//we only care if there are tests
+		if(!(settings[name].test instanceof Array)
+		|| !settings[name].test.length) {
+			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+			push(event, source, destination, processError);
+			return;
+		} 
+		
+		//okay it is a js file, it is not a test file and we have testing to do
+		console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+		
+		//generate a list of test folders
+		for(var tests = [], i = 0; i < settings[name].test.length; i++) {
+			//settings[name].test[i] -> sample/sample
+			tests.push(build + '/package/' + settings[name].test[i] + '/' + name + '/test');
+		}
+		
+		//capture the contents of the deploy folder
+		this.sync(function(next) {
+			this.File(destination).getContent(next);
+		})
+		//then call the push command
+		.then(function(error, content, next) {
+			push(event, source, destination, next.bind(this, content));	
+		})
+		//then run the mocha tests
+		.then(function(content, error, next) {
 			if (error) {
-				from = '';
+				eve().trigger('error', error);
+				return;
 			}
 			
-			callback(to.toString(), from.toString());
+			console.log('\x1b[33m%s\x1b[0m', 'Testing2');
+			mocha.run(eve, tests, next.bind(this, content));
+		})
+		//then revert if nessisary
+		.then(function(content, failed, next) {
+			//if there was a fail and this is not a mocha test
+			if(failed) {
+				//revert
+				eve()
+					.trigger('error', 'Reverting ' + destination + ' because of a failed test')
+					.File(destination).setContent(content.toString('utf8'));
+			}
 		});
-	});
-};
-
-var eve = require('../lib/')
-        .setRoot(root)
-        //global events
-        .listen('error', function(message) {
-            console.log('\x1b[31m%s\x1b[0m', message);
-        })
-
-        //control events
-        .listen('install-control-step-1', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Creating Control Folder ...');
-        })
-        .listen('install-control-step-2', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Control Files ...');
-        })
-        .listen('install-control-step-3', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Control Config ...');
-        })
-        .listen('install-control-step-4', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Control Config Locally ...');
-        })
-        .listen('install-control-step-5', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Control Packages ...');
-        })
-        .listen('install-control-complete', function() {
-            console.log('\x1b[32m%s\x1b[0m', 'Control Installation Complete!');
-        })
-        .listen('watch-control-init', function() {
-            console.log('\x1b[32m%s\x1b[0m', 'Watching for control changes ...');
-        })
-		
-		.listen('watch-control-update', function(event, source, destination, eve, local, config, push) {
-            //we only care if something has changed
-            if (event !== 'change' && event !== 'add') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-
-            //we only care if this is a js file
-            if (eden('file', source).getExtension() !== 'js') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-			
-			//if this is a test file
-			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
-				//do not push just run the test
-				console.log('\x1b[33m%s\x1b[0m', 'Testing');
-				
-				//delete the cache to reload again
-				delete require.cache[source];
-
-				mocha.reset().run(local, 'control', config.control);
-				return;
-			}
-
-            //get the code
-			_getContent(source, destination, function(to, from) {
-				config.control.lint = eden('hash').merge(defaults.control, config.control.lint || {});
-					
-				 //make sure node is false
-				config.control.lint.node = false;
-				
-				//if there is an error
-				if (!lint(to.toString(), config.control.lint, source)) {
-					return;
-				}
-				
-				//push it
-				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-				
-				push(event, source, destination, function(error) {
-					if (error) {
-						eve.trigger('error', error);
-						return;
-					}
-					
-					if(!(config.control.test instanceof Array)) {
-						return;
-					}
-					
-					console.log('\x1b[33m%s\x1b[0m', 'Testing');
-					mocha.run(local, 'control', config.control, function(failed) {
-						//if there was a fail and this is not a mocha test
-						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
-							//revert
-							eden('file', destination).setContent(from);
-						}
-					});
-				});
-			});
-        })
-		
-        //server events
-        .listen('install-server-step-1', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Creating Server Folder ...');
-        })
-        .listen('install-server-step-2', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Server Files ...');
-        })
-        .listen('install-server-step-3', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Server Config ...');
-        })
-        .listen('install-server-step-4', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Server Config Locally ...');
-        })
-        .listen('install-server-step-5', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Server Packages ...');
-        })
-        .listen('install-server-step-6', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'npm install ...');
-        })
-        .listen('install-server-complete', function() {
-            console.log('\x1b[32m%s\x1b[0m', 'Server Installation Complete!');
-        })
-        .listen('watch-server-init', function(eve, local, config) {
-            console.log('\x1b[32m%s\x1b[0m', 'Watching for server changes ...');
-
-            // build the settings
-            var settings = config.server.nodemon || {};
-
-            // if settings.cwd is not defined
-            if (!settings.cwd) {
-                // we use the default cwd is the server path
-                settings.cwd = config.server.path;
-            }
-
-            // starts the nodemon
-            nodemon(eve, settings);
-        })
-        .listen('watch-server-update', function(event, source, destination, eve, local, config, push) {
-            //we only care if something has changed
-            if (event !== 'change' && event !== 'add') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-
-            //we only care if this is a js file
-            if (eden('file', source).getExtension() !== 'js') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-			
-			//if this is a test file
-			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
-				//do not push just run the test
-				console.log('\x1b[33m%s\x1b[0m', 'Testing');
-				
-				//delete the cache to reload again
-				delete require.cache[source];
-				
-				mocha.reset().run(local, 'server', config.server);
-				return;
-			}
-			
-			//get the code
-			_getContent(source, destination, function(to, from) {
-				config.server.lint = eden('hash').merge(defaults.server, config.server.lint || {});
-					
-				 //make sure node is false
-				config.server.lint.node = true;
-				
-				//if there is an error
-				if (!lint(to.toString(), config.server.lint, source)) {
-					return;
-				}
-				
-				//push it
-				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-				
-				push(event, source, destination, function(error) {
-					if (error) {
-						eve.trigger('error', error);
-						return;
-					}
-					
-					if(!(config.server.test instanceof Array)) {
-						return;
-					}
-					
-					console.log('\x1b[33m%s\x1b[0m', 'Testing');
-					mocha.run(local, 'server', config.server, function(failed) {
-						//if there was a fail and this is not a mocha test
-						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
-							//revert
-							eden('file', destination).setContent(from);
-						}
-					});
-				});
-			});
-        })
-		
-		//nodemon events
-		.listen('nodemon-start', function() {
-        	console.log('\x1b[35m%s\x1b[0m', 'Server has started ...');
-		})
-		.listen('nodemon-quit', function() {
-        	console.log('\x1b[35m%s\x1b[0m', 'Server has stopped ...');
-		})
-		.listen('nodemon-restart', function() {
-			console.log('\x1b[35m%s\x1b[0m', 'Server has restarted ...');
-		})
-
-        //web events
-        .listen('install-web-step-1', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Creating Web Folder ...');
-        })
-        .listen('install-web-step-2', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Web Files ...');
-        })
-        .listen('install-web-step-3', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Web Config ...');
-        })
-        .listen('install-web-step-4', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Web Config Locally ...');
-        })
-        .listen('install-web-step-5', function() {
-            console.log('\x1b[33m%s\x1b[0m', 'Copying Web Packages ...');
-        })
-        .listen('install-web-complete', function() {
-            console.log('\x1b[32m%s\x1b[0m', 'Web Installation Complete!');
-        })
-        .listen('watch-web-init', function() {
-            console.log('\x1b[32m%s\x1b[0m', 'Watching for web changes ...');
-        })
-        .listen('watch-web-update', function(event, source, destination, eve, local, config, push) {
-            //we only care if something has changed
-            if (event !== 'change' && event !== 'add') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-
-            //we only care if this is a js file
-            if (eden('file', source).getExtension() !== 'js') {
-                console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-                push(event, source, destination);
-                return;
-            }
-			
-			//if this is a test file
-			if(source.substr((local + '/package').length).split('/')[4] == 'test') {
-				//do not push just run the test
-				console.log('\x1b[33m%s\x1b[0m', 'Testing');
-				
-				//delete the cache to reload again
-				delete require.cache[source];
-				
-				mocha.reset().run(local, 'web', config.web);
-				return;
-			}
-
-            //get the code
-			_getContent(source, destination, function(to, from) {
-				config.web.lint = eden('hash').merge(defaults.web, config.web.lint || {});
-					
-				 //make web node is false
-				config.control.lint.node = false;
-				
-				//if there is an error
-				if (!lint(to.toString(), config.web.lint, source)) {
-					return;
-				}
-				
-				//push it
-				console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-				
-				push(event, source, destination, function(error) {
-					if (error) {
-						eve.trigger('error', error);
-						return;
-					}
-					
-					if(!(config.web.test instanceof Array)) {
-						return;
-					}
-					
-					console.log('\x1b[33m%s\x1b[0m', 'Testing');
-					mocha.run(local, 'web', config.web, function(failed) {
-						//if there was a fail and this is not a mocha test
-						if(failed && source.substr((local + '/package').length).split('/')[4] != 'test') {
-							//revert
-							eden('file', destination).setContent(from);
-						}
-					});
-				});
-			});
-        })
-
-        .run(local, action);
+	})
+	
+	//nodemon events
+	.on('nodemon-start', function() {
+		console.log('\x1b[35m%s\x1b[0m', 'Server has started ...');
+	})
+	.on('nodemon-quit', function() {
+		console.log('\x1b[35m%s\x1b[0m', 'Server has stopped ...');
+	})
+	.on('nodemon-restart', function() {
+		console.log('\x1b[35m%s\x1b[0m', 'Server has restarted ...');
+	})
+	
+	.run(command);

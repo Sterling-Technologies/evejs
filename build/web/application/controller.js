@@ -1,146 +1,51 @@
-var controller = function() {
-	var Definition = function() {}, prototype = Definition.prototype;
-	
-	/* Public Properties
+/*
+ * This file is part a custom application package.
+ * (c) 2014-2015 Openovate Labs
+ */
+var controller = jQuery.eve.base.extend(function() {
+	/* Require
 	-------------------------------*/
+	var $ = jQuery;
+	
+	/* Constants
+	-------------------------------*/
+	/* Public.Properties
+	-------------------------------*/
+	/* Protected Properties
+	-------------------------------*/
+	this._menu 		= []; 
+	
 	/* Private Properties
 	-------------------------------*/
-	var $			= jQuery;
-	var _paths 		= {};
-	var _refresh 	= false; //quirk
+	var __settings 	= {};
 	
-	/* Loader
+	/* Magic
 	-------------------------------*/
-	prototype.__load = Definition.load = function() {
-		if(!this.__instance) {
-			this.__instance = new Definition();
-		}
-		
-		return this.__instance;
-	};
-	
-	/* Construct
+	/* Public.Methods
 	-------------------------------*/
-	/* Public Methods
+	/* Page Methods
 	-------------------------------*/
 	/**
-	 * Returns an array form of arguments
-	 *
-	 * @return array
-	 */
-	prototype.args = function() {
-		return Array.prototype.slice.apply(arguments.callee.caller.arguments);
-	};
-	
-	/**
-	 * Get's a configuration
+	 * Sets page body
 	 *
 	 * @param string
 	 * @return this
 	 */
-	prototype.config = function(key, callback) {
-		require([this.path('config') + '/' + key + '.js'], callback);
-		return this;
+	this.setBody = function(html) {
+		$('#body').html(html);
+			
+		//trigger body event
+		return this.trigger('body');
 	};
 	
 	/**
-	 * Returns post data from push state
-	 *
-	 * @return string
-	 */
-	prototype.getPost = function() {
-		return window.history.state.data || '';
-	};
-	
-	/**
-	 * Returns post files from push state
-	 *
-	 * @return string
-	 */
-	prototype.getFiles = function() {
-		return window.history.state.files || {};
-	};
-	
-	/**
-	 * Returns formatted server 
-	 * url from config settings
-	 *
-	 * @return string
-	 */
-	prototype.getServerUrl = function() {
-		return this.settings.server.protocol 
-		+ '://' + this.settings.server.host 
-		+ ':'	+ this.settings.server.port;
-	};
-	
-	/**
-	 * Returns formatted server 
-	 * url from config settings
-	 *
-	 * @return string
-	 */
-	prototype.getSocketUrl = function() {
-		return this.settings.socket.protocol 
-		+ '://' + this.settings.socket.host 
-		+ ':'	+ this.settings.socket.port;
-	};
-	
-	/**
-	 * Global event listener for the server
-	 *
-	 * @return this
-	 */
-	prototype.listen = function(event, callback) {
-		$(window).on(event, callback);
-		return this;
-	};
-	
-	/**
-	 * Returns the path given the key
+	 * Sets page title
 	 *
 	 * @param string
 	 * @return this
 	 */
-	prototype.path = function(key, value) {
-		if(value) {
-			_paths[key] = value;
-			return this;
-		}
-		
-		return _paths[key];
-	};
-	
-	/**
-	 * Local redirect
-	 *
-	 * @param string path
-	 * @param string post string data
-	 * @return this
-	 */
-	prototype.redirect = function(path, post) {
-		post = post || '';
-		window.history.pushState(post, '', path);
-		return this;
-	};
-	
-	/**
-	 * Sets a global template partial
-	 *
-	 * @param string partial name
-	 * @param string template
-	 */
-	prototype.setPartial = function(key, template) {
-		Handlebars.registerPartial(key, template);
-		return this;
-	};
-	
-	/**
-	 * Global event trigger for the server
-	 *
-	 * @return this
-	 */
-	prototype.trigger = function() {
-		$(window).trigger.apply($(window), arguments);
+	this.setTitle = function(title) {
+		$('head title').html(title);
 		return this;
 	};
 	
@@ -151,43 +56,56 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.renderPage = function() {
+	this.renderPage = function(callback) {
+		callback = callback || $.noop;
+		
 		var self 		= this, 
+			_menu		= this._menu,
 			//get args for sequence
 			args 		= arguments, 
 			//default templates
 			templates 	= [
 				'text!' + this.path('template') + '/_page.html',
 				'text!' + this.path('template') + '/_head.html',
-				'text!' + this.path('template') + '/_foot.html'];
+				'text!' + this.path('template') + '/_foot.html',
+				'text!' + this.path('template') + '/_menu.html'];
 		
 		//require all the default templates
-		require(templates, function(page, head, foot) {
+		require(templates, function(page, head, foot, menu) {
+			//allow any package to add to the menu
+			self.trigger('menu', [_menu]);
+			//render head
+			head = Handlebars.compile(head)({ right: true });
+			
+			//render menu
+			menu = Handlebars.compile(menu)({ items: _menu });
+			
 			//render page
 			$(document.body).html(Handlebars.compile(page)({
 				head		: head,
-				foot		: foot
+				foot		: foot,
+				menu		: menu
 			}));
 			
-			//if sequence
-			if(typeof args[0] == 'function') {
-				//call the next
-				args[0]();
-			}
+			//listen for a change in url
+			self.on('request', function(e) {
+				//find all menu items
+				$('#sidebar li')
+				//make them inactive
+				.removeClass('active')
+				//for each link in the items
+				.find('a').each(function() {
+					//if the url starts with whats in the link
+					if(window.location.href.indexOf(this.href) === 0
+					|| window.location.pathname.indexOf(this.href) === 0) {
+						//set the item active
+						$(this).parent('li').addClass('active');
+					}
+				});
+			});
+			
+			callback();
 		});
-		
-		return this;
-	};
-	
-	/**
-	 * Sequence asyncronous event request
-	 *
-	 * @param string
-	 * @return this
-	 */
-	prototype.sequenceTrigger = function(event, next) {
-		this.trigger(event);
-		next();
 		
 		return this;
 	};
@@ -197,7 +115,9 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.startPackages = function() {
+	this.startPackages = function(callback) {
+		callback = callback || $.noop;
+		
 		//get args for sequence
 		var self = this, args = arguments;
 		
@@ -214,11 +134,7 @@ var controller = function() {
 			
 			//now we can bulk require all the packages
 			require(list, function() {			
-				//if sequence
-				if(typeof args[0] == 'function') {
-					//call next
-					args[0]();
-				}
+				callback();
 			});
 		});
 		
@@ -230,9 +146,11 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.setLoader = function() {
+	this.setLoader = function(callback) {
+		callback = callback || $.noop;
+		
 		require.config({
-			paths: { text: '/scripts/text' },
+			paths: { text: '/eve/require/text' },
 			config: {
 				text: {
 					useXhr: function (url, protocol, hostname, port) {
@@ -244,10 +162,7 @@ var controller = function() {
 			}
 		});
 		
-		//if sequence
-		if(typeof arguments[0] == 'function') {
-			arguments[0]();
-		}
+		callback();
 		
 		return this;
 	};
@@ -257,16 +172,15 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.setPaths = function() {
+	this.setPaths = function(callback) {
+		callback = callback || $.noop;
+		
 		this.path('root'	, '/application')
 			.path('config'	, '/application/config')
 			.path('template', '/application/template')
 			.path('package'	, '/application/package');
 		
-		//if sequence
-		if(typeof arguments[0] == 'function') {
-			arguments[0]();
-		}
+		callback();
 		
 		return this;
 	};
@@ -276,68 +190,27 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.setSettings = function() {
-		var args = this.args();
+	this.setSettings = function(callback) {
+		callback = callback || $.noop;
+		
+		var args = Array.prototype.slice.apply(arguments);
 		
 		//get settings
 		return this.config('settings', function(settings) {
-			this.settings = settings;
+			__settings = settings;
 			
-			//if sequence
-			if(typeof args[0] == 'function') {
-				//call next
-				args[0]();
-			}
-		}.bind(this));
-	};
+			this.getServerUrl = function() {
+				return __settings.server.protocol 
+				+ '://' + __settings.server.host 
+				+ ':'	+ __settings.server.port;
+			};
+			
+			//add it to the base class definitions
+			$.eve.base.define({ getServerUrl: this.getServerUrl });
+			$.eve.action.define({ getServerUrl: this.getServerUrl });
 	
-	/**
-	 * Set template engine
-	 *
-	 * @return this
-	 */
-	prototype.setTemplateEngine = function() {
-		Handlebars.registerHelper('when', function (value1, operator, value2, options) {
-			var valid = false;
-			
-			switch (true) {
-				case operator == 'eq' 	&& value1 == value2:
-				case operator == '==' 	&& value1 == value2:
-				case operator == 'req' 	&& value1 === value2:
-				case operator == '===' 	&& value1 === value2:
-				case operator == 'neq' 	&& value1 != value2:	
-				case operator == '!=' 	&& value1 != value2:
-				case operator == 'rneq' && value1 !== value2:
-				case operator == '!==' 	&& value1 !== value2:
-				case operator == 'lt' 	&& value1 < value2:
-				case operator == '<' 	&& value1 < value2:
-				case operator == 'lte' 	&& value1 <= value2:
-				case operator == '<=' 	&& value1 <= value2:
-				case operator == 'gt' 	&& value1 > value2:
-				case operator == '>' 	&& value1 > value2:
-				case operator == 'gte' 	&& value1 >= value2:
-				case operator == '>=' 	&& value1 >= value2:
-				case operator == 'and' 	&& value1 && value2:
-				case operator == '&&' 	&& (value1 && value2):
-				case operator == 'or' 	&& value1 || value2:
-				case operator == '||' 	&& (value1 || value2):
-					valid = true;
-					break;
-			}
-			
-			if(valid) {
-				return options.fn(this);
-			}
-			
-			return options.inverse(this);
-		});
-		
-		//if sequence
-		if(typeof arguments[0] == 'function') {
-			arguments[0]();
-		}
-		
-		return this;
+			callback();
+		}.bind(this));
 	};
 	
 	/**
@@ -345,163 +218,29 @@ var controller = function() {
 	 *
 	 * @return this
 	 */
-	prototype.startClient = function() {
-		//from a refresh - quirk
-		_refresh = true;
+	this.startClient = function(callback) {
+		callback = callback || $.noop;
 		
-		//hijack url changes
-		_hijackPushState();
-		_hijackPopState();
-		//hijack links
-		_hijackLinks();
-		//hijack forms
-		_hijackForms();
+		//that's all it takes to start the server
+		var chops = $.chops();
 		
-		//listen for a url request
-		this.listen('request', function() {
-			//from a refresh - quirk
-			_refresh = false;
-		}).trigger('request');
+		this.getState = function() {
+			return chops.getState();
+		};
 		
-		//if sequence
-		if(typeof arguments[0] == 'function') {
-			arguments[0]();
-		}
+		//add it to the base class definitions
+		$.eve.base.define({ getState: this.getState });
+		$.eve.action.define({ getState: this.getState });
+		
+		this.trigger('request', [window.location.href, this.getState()]);
+		
+		callback();
 		
 		return this;
 	};
 	
-	/* Page Methods
+	/* Protected Methods
 	-------------------------------*/
-	/**
-	 * Sets page body
-	 *
-	 * @param string
-	 * @return this
-	 */
-	prototype.setBody = function(html) {
-		$('#body').html(html);
-			
-		//trigger body event
-		return this.trigger('body');
-	};
-	
-	/**
-	 * Sets page title
-	 *
-	 * @param string
-	 * @return this
-	 */
-	prototype.setTitle = function(title) {
-		$('head title').html(title);
-		return this;
-	};
-	
 	/* Private Methods
 	-------------------------------*/
-	var _hijackPushState = function() {
-		//remember the push state
-		var pushState = window.history.pushState;
-		
-		//override the function
-		window.history.pushState = function(state) {
-			if (typeof window.history.onpushstate == 'function') {
-				window.history.onpushstate({state: state});
-			}
-			
-			var results = pushState.apply(history, arguments);
-			
-			//now trigger something special
-			var event = jQuery.Event('request');
-			event.state = state;
-			$(window).trigger(event);
-			
-			return results;
-		};
-	};
-	
-	var _hijackPopState = function() {
-		window.onpopstate = function (e) {
-			//from a refresh - quirk
-			if(_refresh) {
-				_refresh = false;
-				return;
-			}
-			
-			//now trigger something special
-			var event = jQuery.Event('request');
-			event.state = e.state;
-			$(window).trigger(event);
-		};
-	};
-	
-	var _hijackLinks = function() {
-		//live listen to all links
-		$(document).on('click', 'a', function(e) {
-			//if another event says to do nothing
-			if(e.originalEvent.stop) {
-				//do nothing
-				return;
-			}
-			
-			//if the link is in the same domain
-			if(this.href.indexOf(window.location.origin) === 0) {
-				//stop it
-				e.preventDefault();
-				//push the state
-				window.history.pushState('', '', this.href);
-			}
-		});
-	};
-	
-	var _hijackForms = function() {
-		//listen to form submits
-		$(document.body).on('submit', 'form', function(e) {
-			//if another event says to do nothing
-			if(e.originalEvent.stop) {
-				//do nothing
-				return;
-			}
-			
-			//if the action is in the same domain
-			if(!$(this).attr('action') 
-			|| $(this).attr('action').indexOf(window.location.origin) === 0
-			|| $(this).attr('action').indexOf('/') === 0) {
-				//stop it
-				e.preventDefault();
-				
-				var files = {}, post = '', url = $(this).attr('action') || window.location.href;
-				
-				if(!$(this).attr('method') || $(this).attr('method').toUpperCase() == 'GET') {
-					//manually form the HREF
-					//if there is a ?
-					if(url.indexOf('?') != -1) {
-						url = url.split('?')[0];
-					} 
-					
-					url += '?' + $(this).serialize();
-				} else {
-					post = $(this).serialize();
-					//is there files?
-					$('input[type="file"]', this).each(function() {
-						//if there is no name to this
-						if(!this.name || !this.name.length) {
-							//skip it
-							return;
-						}
-						
-						//store the files
-						files[this.name] = this.files;
-					});
-				}
-				
-				//push the state
-				window.history.pushState({ data: post, files: files }, '', url);
-			}
-		});
-	};
-	
-	/* Adaptor
-	-------------------------------*/
-	return Definition.load(); 
-}();
+}).singleton();

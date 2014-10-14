@@ -1,0 +1,156 @@
+<section class="{{name}}-info\{\{#when mode '==' 'update'\}\} {{name}}-update\{\{/when\}\} row">
+	<div class="col-sm-12">
+		<div class="tabbable">
+			\{\{#when mode '==' 'update'\}\}
+			<ul class="nav nav-tabs padding-16">
+			</ul>
+			\{\{/when\}\}
+			<div class="tab-content address-info-tab-content">
+				<form method="post" class="package-address-form form-horizontal">
+					<!-- NOTE: BULK GENERATE -->
+					{{#loop fields ~}}
+					{{~#if value.field}}
+					\{\{#block 'form/fieldset' '{{../value.label}}' errors.{{../key}}\}\}
+						{{~#when value.field.[0] '==' 'text'}}
+						\{\{\{block 'field/text' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'password'}}
+						\{\{\{block 'field/password' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+                        {{~#when value.field.[0] '==' 'file'}}
+                        <!--TODO make file preview -->
+						\{\{\{block 'field/file' '{{../../key}}' '' '
+                        {{~#if ../value.multiple}}multiple="multiple"{{/if~}}
+                        {{~#if ../value.options}} accept="{{#loop ../value.options~}}
+                        {{~#if last}}{{value.value}}{{else}}{{value.value}}, {{/if~}}
+                        {{~/loop}}"{{/if}}'\}\}\}{{/when~}}
+						
+						{{~#when value.field.[0] '==' 'slider'}}
+						\{\{\{block 'field/slider' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'number'}}
+						\{\{\{block 'field/number' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'mask'}}
+						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[1]}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'color'}}
+						\{\{\{block 'field/color' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'tag'}}
+						\{\{\{block 'field/tag' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'datetime'}}
+						\{\{\{block 'field/datetime' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'date'}}
+						\{\{\{block 'field/date' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'time'}}
+						\{\{\{block 'field/time' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'autocomplete'}}
+						\{\{\{block 'field/autocomplete' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}
+						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'combobox'}}
+						\{\{\{block 'field/combobox' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}_list
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'select'}}
+						\{\{\{block 'field/select' '{{../../key}}' ../{{../key}}_list ../{{../../../name}}.{{../key}}\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'country'}}
+						\{\{\{block 'field/country' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'textarea'}}
+						\{\{#block 'field/textarea' '{{../../key}}'
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'wysiwyg'}}
+						\{\{#block 'field/wysiwyg' '{{../../key}}'
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'markdown'}}
+						\{\{#block 'field/markdown' '{{../../key}}'
+						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
+						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'radio'}}
+						{{~#if value.options ~}}
+						{{~#loop value.options}}
+						\{\{#block 'field/radio' '{{../../../key}}' '{{value.value}}' ../{{../../../../../name}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
+						{{~/loop}}
+						{{else}}
+						\{\{#block 'field/radio' '{{../../key}}' '1' ../{{../../../../name}}.{{../key}}\}\}Yes\{\{/block\}\}
+						{{~/if~}}
+						{{~/when}}
+						
+						{{~#when value.field.[0] '==' 'checkbox'}}
+						{{~#if value.options ~}}
+						{{~#loop value.options}}
+						\{\{#block 'field/checkbox' '{{../../../key}}' '{{value.value}}' ../{{../../../../../name}}.{{../../key}}\}\}{{value.label}}\{\{/block\}\}
+						{{~/loop}}
+						{{else}}
+						\{\{#block 'field/checkbox' '{{../../key}}' '1' ../{{../../../../name}}.{{../key}}\}\}Yes\{\{/block\}\}
+						{{~/if~}}
+						{{~/when~}}
+						
+						{{~#when value.field.[0] '==' 'switch'}}
+						\{\{\{block 'field/switch' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						{{~/when}}
+					\{{/block}}
+					{{/if~}}
+					{{~/loop}}
+                    
+					<div class="clearfix form-actions">
+						<div class="col-md-12">
+							\{\{#block 'field/button' 'class="btn-primary"'\}\}
+								<i class="icon-ok bigger-110"></i>
+                                \{\{#when ../mode '==' 'update'\}\} Update \{\{/when\}\}
+								\{\{#when ../mode '==' 'create'\}\} Save \{\{/when\}\}
+							\{\{/block\}\}
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>

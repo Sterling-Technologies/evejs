@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Do On - Super light weight event driven containers.</title>
+</head>
+<body>
+	<h1>Do On - Super light weight event driven containers.</h1>
+	<div data-do="trigger" data-on="click|mouseout|mouseover"></div>
+  
+	<script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="doon.js"></script>
+    <script type="text/javascript">
+	$(window).on('trigger-init', function(e, target) {
+		$(target).html('Click Me');
+	}).on('trigger-click', function(e, target) {
+		$(target).css('color', 'red');
+	}).on('trigger-mouseout', function(e, target) {
+		$(target).css('color', 'blue');
+		$(target).css('font-size', '12px');
+	}).on('trigger-mouseover', function(e, target) {
+		$(target).css('font-size', '20px');
+	});
+		
+	$('div').doon();
+    </script>
+</body>
+</html>

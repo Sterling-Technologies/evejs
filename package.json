@@ -1,17 +1,16 @@
 {
     "name": "eve",
-    "version": "0.0.0",
+    "version": "0.0.2",
     "description": "Eve Builder",
-    "main": "./lib/index.js",
+    "main": "./eve.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "mocha"
     },
     "author": "Christian Blanquera",
     "license": "MIT",
     "dependencies": {
-        "edenjs": "0.0.5",
+        "edenjs": "0.0.22",
         "chokidar": "0.8.2",
-        "jshint": "2.5.2",
         "nodemon": "1.2.1",
         "mocha": "1.20.1",
 		"handlebars": "2.0.0-alpha.4"

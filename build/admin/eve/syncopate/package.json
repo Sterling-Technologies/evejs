@@ -1,0 +1,25 @@
+{
+  "name": "syncopate",
+  "description": "Turn async to sync in JS",
+  "version": "0.0.4",
+  "author": {
+    "name": "Christian Blanquera",
+    "email": "cblanquera@openovate.com"
+  },
+  "keywords": [
+    "async",
+    "sync"
+  ],
+  "devDependencies": {
+    "mocha": "1.21.4"
+  },
+  "dependencies": {},
+  "main": "./syncopate.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cblanquera/syncopate.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}

@@ -16,10 +16,10 @@ $ npm install -g evejs
 1 - Install 
 
 ```bash
-$ eve
+$ eve install
 ```
 
-2 - Point Apache to deploy/control
+2 - Point Apache to deploy/admin
 
 3 - Point Apache to deploy/web
 
@@ -29,8 +29,7 @@ $ eve
   * Built in file watcher
   * Built in JSHint
   * Built in Mocha
-  * Built in Scaffolding
-  * Pre-defined Core packages (Post, User, Category, File, Auth)
+  * Built in Scaffolding0
   * Pre-defined admin layout
   * Pre-defined form field and UI blocks
   * Handlebars templating

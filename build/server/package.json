@@ -1,24 +1,13 @@
 {
-  "name": "eden",
-  "description": "Eden Node JS Library",
-  "version": "0.0.1",
+  "name": "custom-server",
+  "description": "Custom server made with Eve",
+  "version": "0.0.0",
   "author": {
-    "name": "Christian Blanquera",
-    "email": "cblanquera@openovate.com"
+    "name": "[YOUR NAME]",
+    "email": "[YOUR EMAIL]"
   },
-  "keywords": [
-    "framework",
-    "eden"
-  ],
   "dependencies": {
-    "edenjs" : "0.0.2",
-    "mongoose": "3.8.11"
+    "edenjs" : "0.0.22"
   },
-  "main": "./index.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/openovate/evejs.git"
-  },
-  "_id": "evejs@0.0.1",
-  "_from": "evejs@"
+  "main": "./index.js"
 }
