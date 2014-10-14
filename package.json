@@ -1,7 +1,7 @@
 {
-    "name": "eve",
+    "name": "eve-pms",
     "version": "0.0.2",
-    "description": "Eve Builder",
+    "description": "Eve - Package Management System",
     "main": "./eve.js",
     "scripts": {
         "test": "mocha"

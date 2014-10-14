@@ -1,6 +1,6 @@
 ![Eve Logo](http://openovate.com/eve-logo.png)
 
-  A package management framework for [node](http://nodejs.org).
+  A package management system for [node](http://nodejs.org).
 
 ```
 WARNING: Eve is in development and has not passed testing. DO NOT USE IN LIVE ENVIRONMENTS!
@@ -9,7 +9,7 @@ WARNING: Eve is in development and has not passed testing. DO NOT USE IN LIVE EN
 ### Installation
 
 ```bash
-$ npm install -g evejs
+$ npm install -g eve-pms
 ```
 
 ## Quick Start
