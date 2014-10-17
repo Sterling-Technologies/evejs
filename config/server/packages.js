@@ -1,1 +1,1 @@
-module.exports = ['core/sink'];
+module.exports = [];
