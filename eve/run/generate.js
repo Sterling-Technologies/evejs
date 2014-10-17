@@ -136,16 +136,30 @@ module.exports = function(eve, command) {
 		}
 		
 		if(database) {
-			database = this
+			this
 				.trigger('message', 'Installing schema ...')
 				.Mysql(
 					database.host, 
 					database.port, 
-					database.name,
+					'',
 					database.user,
-					database.pass);
-			
-			next.thread('drop', i, database, data);
+					database.pass)
+				.query('CREATE DATABASE IF NOT EXISTS `'+database.name+'`;', function(error, rows, meta) {
+					if(error) {
+						this.trigger('error', error);
+						return;
+					}
+					
+					database = this
+					.Mysql(
+						database.host, 
+						database.port, 
+						database.name,
+						database.user,
+						database.pass);
+						
+					next.thread('drop', i, database, data);
+				}.bind(this));
 			return;
 		}
 		

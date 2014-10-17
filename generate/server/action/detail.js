@@ -30,7 +30,7 @@ module.exports = require('edenjs').extend(function() {
 		var search = this.Controller()
 			.{{name}}()
 			.search()
-			.addFilter('{{name}}_id = ?', request.variables[0])
+			.addFilter('{{primary}} = ?', request.variables[0])
 			.getRow(this._results.bind(this.Controller(), request, response));
 		
 		return this;

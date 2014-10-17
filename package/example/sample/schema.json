@@ -2,11 +2,11 @@
     "singular": "Sample",
     "plural": "Samples",
     "icon": "facebook",
-	"primary": "sample_id",
-    "slug": ["sample_slug", "title"],
-    "active": "sample_active",
-    "created": "sample_created",
-    "updated": "sample_updated",
+	"primary": "id",
+    "slug": ["slug", "title"],
+    "active": "active",
+    "created": "created",
+    "updated": "updated",
     "relation": [
         "sample", 
         "sample2"
@@ -96,15 +96,6 @@
                 }
             ],
             "field"	: "select"
-        },		
-        "file": {
-            "label": "File",
-            "type": "file",
-            "multiple": true,
-            "options": [
-                "image/jpg", 
-                "image/gif"
-            ]
         }
     },
 	"fixture" : [
