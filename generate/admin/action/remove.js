@@ -1,5 +1,5 @@
 define(function() {
-   return jQuery.eve.action.extend(function() {
+   return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -16,22 +16,9 @@ define(function() {
 		-------------------------------*/
 		/* Public.Methods
 		-------------------------------*/
-		this.response = function() {
-			var url = this.getServerUrl() + '/{{name}}/remove/';
-			
-			var id 	= window.location.pathname.split('/')[3];
-			
-			$.getJSON(url + id, function(response) {
-				//if error
-				if(response.error) {
-					controller().notify('Error', response.message, 'error');
-				} else {
-					controller().notify('Success', 'Item has been removed!', 'success');
-				}
-				
-				window.history.back();
-			});
-				
+		this.response = function(request) {
+			var id 	= request.path.split('/')[3];
+			this.Controller().trigger('{{name}}-remove', id, request, this);
 			return this;
 		};
 		
@@ -39,5 +26,5 @@ define(function() {
 		-------------------------------*/
 		/* Private Methods
 		-------------------------------*/
-	});
+	}).singleton();
 });

@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,9 +10,8 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
-	
-        this._template = controller().path('block/template') + '/field/wysiwyg.html';
+        this._data 		= {};
+        this._template 	= '/field/wysiwyg.html';
     
 		/* Private Properties
 		-------------------------------*/    
@@ -20,49 +19,75 @@ define(function() {
 
 		/* Public Methods
 		-------------------------------*/
-		this.loadAssets = function(callback) {
-			//make sure callback is a function
-			callback = callback || $.noop;
-			
+		this.loadAssets = function() {
 			//if loaded
 			if(_loaded) {
 				//do nothing
-				callback();
 				return this;
 			}
 			
 			//add the style to header
 			//<link rel="stylesheet" type="text/css" href="/styles/wysiwyg.css" />
 			$('<link rel="stylesheet" type="text/css" />')
-				.attr('href', controller().path('block/asset') + '/styles/wysiwyg.css')
+				.attr('href', this.Controller().path('block/asset') + '/styles/wysiwyg.css')
 				.appendTo('head');
 			
 			//add script to header
 			//<script type="text/javascript" src="/scripts/wysiwyg.js">script>
 			$('<script type="text/javascript"></script>')
-				.attr('src', controller().path('block/asset') + '/scripts/wysiwyg.js')
+				.attr('src', this.Controller().path('block/asset') + '/scripts/wysiwyg.js')
 				.appendTo('head');
 			
 			_loaded = true;
 			
-			callback();
-			
 			return this;
 		};
 	
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        /**
+		 * Determines the response
+		 * 
+		 * @param object request object
+		 * @return this
+		 */
+		this.response = function(request) {
+			//load assets
+			this.loadAssets();
 			
-			controller().sync()
-				.scope(this)
-				.then(this.loadAssets)
-				.then(this._output)
-				.then(this._listen);
+			//add the ace admin class
+			this._data.attributes = this._addAttribute(
+			this._data.attributes, 'class', 'eve-field-wysiwyg form-control');
+			
+			this._data.attributes = this._addAttribute(
+			this._data.attributes, 'rows', '6');
+			//store form templates path to array
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//require form templates
+			//assign it to main form
+			require(['text!' + template], function(template) {
+				//trigger
+				var response = Handlebars.compile(template)(this._data);
+				this.Controller().trigger('block-response', request, response);
+				
+				//now listen
+				this._listen();
+				
+				//unfreeze data
+				this.___unfreeze();
+			}.bind(this));
 			
 			return this;
 		};
 		
+		/**
+		 * Sets data depending on arguments from block
+		 *
+		 * @param mixed[,mixed..]
+		 * @return this
+		 */
 		this.setData = function(name, options, attributes) {
 			this._data.name 		= name;
 			this._data.attributes 	= attributes || '';
@@ -71,6 +96,12 @@ define(function() {
 			return this;
 		};
 		
+		/**
+		 * Sets inner template if applicable
+		 *
+		 * @param string
+		 * @return this
+		 */
 		this.setInnerTemplate = function(template) {
 			//make template an empty function
 			//if not already defined
@@ -85,30 +116,7 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			//store form templates path to array
-			var templates = ['text!' + this._template];
-			
-			//add the ace admin class
-			this._data.attributes = this._addAttribute(
-			this._data.attributes, 'class', 'eve-field-wysiwyg form-control');
-			
-			this._data.attributes = this._addAttribute(
-			this._data.attributes, 'rows', '6');
-			
-			var callback = this._callback, data = this._data;
-			
-			//require form templates
-			//assign it to main form
-			require(templates, function(template) {
-				//render
-				callback(Handlebars.compile(template)(data));
-					
-				next();
-			}.bind(this));
-		};
-		
-		this._listen = function(next) {
+		this._listen = function() {
 			var options = this._data.options;
 			//find all the widgets
 			$('textarea.eve-field-wysiwyg')
@@ -120,8 +128,6 @@ define(function() {
 				.each(function() {
 					$(this).wyzi($(this).prev(), options);
 				});
-				
-			next();
 		};
 		
 		this._addAttribute = function(attributes, key, value, verbose) {

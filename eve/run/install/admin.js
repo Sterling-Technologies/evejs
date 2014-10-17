@@ -175,6 +175,31 @@ module.exports = function(eve, command) {
 		
 		next.thread('copy-package', packages, i, j + 1);
 	})
+	//make a map file
+	.then(function(next) {
+		//get the deploy path
+		var deploy = this.getDeployPath();
+		
+		//get all the files in the deploy path
+		this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+			//if there's an error
+			if(error) {
+				//do nothing
+				return;
+			}
+			
+			//add files to the map
+			for(var map = [], i = 0; i < files.length; i++) {
+				map.push(files[i].path.substr(deploy.length));
+			}
+			
+			//set the map
+			this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+			function(error) {
+				next();
+			});
+		}.bind(this));
+	})
 	//finish up
 	.then(function(next) {
 		this.trigger('install-complete', 'admin', name);	

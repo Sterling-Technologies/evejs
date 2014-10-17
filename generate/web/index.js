@@ -1,61 +1,54 @@
-controller()
-//when the application is initialized
-.on('init', function() {
-	//set paths
-	this
-		.path('{{name}}'			, this.path('package') + '/{{vendor}}/{{name}}/')
-		.path('{{name}}/action'		, this.path('package') + '/{{vendor}}/{{name}}/action/')
-		.path('{{name}}/block'		, this.path('package') + '/{{vendor}}/{{name}}/block/')
-		.path('{{name}}/template'	, this.path('package') + '/{{vendor}}/{{name}}/template/');	
-	
-	//load the factory
-	require([this.path('{{name}}') + '/factory.js'], function(factory) {
-		this.{{name}} = factory;
-		this.trigger('{{name}}-init');
-	});
-})
-
-//when a url request has been made
-.on('request', function() {
-	//event when the {{name}} request is starting
-	this.trigger('{{name}}-request-before');
-
-	//if the package has not initialized
-	//if it doesn't start with {{name}}
-	if(!this.{{name}} 
-	|| window.location.pathname.indexOf('/{{name}}') !== 0) {
-		//we don't care about it
-		return;
-	}
-	
-	//router -> action
-	var route = { action: null };
-	switch(true) {
-		// TODO: ADD ROUTES HERE
-		case window.location.pathname === '/{{name}}':
-			route.action = 'index';
-			break;
-	}
-
-	// if there is no route
-	if(!route.action) {
-		// just do nothing
-		return;
-	}
-	
-	route.path = this.path('{{name}}/action') + '/' + route.action + '.js';
-	
-	//event when the {{name}} action is about to render
-	this.trigger('{{name}}-action-' + route.action + '-before', route);
-	
-	//load up the action
-	require([route.path], function(action) {
-		action().load().render();
+define(function() {
+	return function() {
+		//set paths
+		this
+			.path('{{name}}'			, this.path('package') + '/{{vendor}}/{{name}}')
+			.path('{{name}}/action'		, this.path('package') + '/{{vendor}}/{{name}}/action')
+			.path('{{name}}/event'		, this.path('package') + '/{{vendor}}/{{name}}/event')
+			.path('{{name}}/template'	, this.path('package') + '/{{vendor}}/{{name}}/template');	
 		
-		//event when the {{name}} action is rendered
-		controller().trigger('{{name}}-action-' + route.action + '-after', route);
-	});
-
-	// event when the {{name}} request is finished
-	this.trigger('{{name}}-request-after');
+		//load the factory
+		require([this.path('{{name}}') + '/factory.js'], function(factory) {
+			//add it to the base class definitions
+			jQuery.eve.base.define({ {{name}}: factory });
+			
+			this.{{name}} = factory;
+			
+			//get event path
+			var events = this.{{name}}().path('event');
+			
+			//get files in the event folder
+			this.Folder(events).getFiles(null, false, function(error, files) {
+				//loop through files  
+				for(var events = [], callbacks = [], i = 0; i < files.length; i++) {
+					//accept only js
+					if(files[i].getExtension() !== 'js') {
+						continue;
+					}
+					
+					events.push(files[i].getBase());
+					callbacks.push(files[i].path);
+				}
+				
+				require(callbacks, function() {
+					var callbacks = Array.prototype.slice.apply(arguments);
+					
+					//loop through events 
+					for(var i = 0; i < callbacks.length; i++) {
+						//only listen if it is a callback
+						if(typeof callbacks[i] !== 'function') {
+							continue;
+						}
+						
+						//now listen
+						this.on(events[i], callbacks[i]);
+					}
+					
+					this.trigger('{{name}}-init');
+				}.bind(this));
+			}.bind(this));
+		}.bind(this));
+		
+		return '{{name}}-init';
+	};
 });

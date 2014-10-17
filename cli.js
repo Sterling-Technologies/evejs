@@ -46,6 +46,9 @@ eve()
 			case 4:
 				message = 'Copying packages.';
 				break;
+			case 6:
+				message = 'npm install.';
+				break;
 			
 		}
 		
@@ -56,7 +59,6 @@ eve()
 	
 	.on('install-complete', function(name, type, deploy) {
 		console.log('\x1b[32m%s\x1b[0m', name + ' installation complete!');
-		process.exit(0);
 	})
 	
 	.on('generate-complete', function(packages, environments) {
@@ -161,6 +163,44 @@ eve()
 					.File(destination).setContent(content.toString('utf8'));
 			}
 		});
+	})
+	
+	//update map
+	.on('watch-update', function(event, type, name, source, destination, push) {
+		//we only care if this is not a server
+		if(type === 'server') {
+			return;
+		}
+		
+		//we only care if we are creating or unlinking
+		if(event !== 'add' && event !== 'unlink') {
+			return;
+		}
+		
+		//we only care if this is a js file
+		if (this.File(source).getExtension() !== 'js') {
+			return;
+		}
+		
+		//get the deploy path
+		var deploy = this.setDeployPath(this.getSettings()[name].path).getDeployPath();
+		
+		//get all the files in the deploy path
+		this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+			//if there's an error
+			if(error) {
+				//do nothing
+				return;
+			}
+			
+			//add files to the map
+			for(var map = [], i = 0; i < files.length; i++) {
+				map.push(files[i].path.substr(deploy.length));
+			}
+			
+			//set the map
+			this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';');
+		}.bind(this));
 	})
 	
 	//nodemon events

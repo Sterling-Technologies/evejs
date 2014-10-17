@@ -7,41 +7,30 @@ module.exports = require('edenjs').extend(function() {
 	-------------------------------*/
 	/* Protected Properties
 	-------------------------------*/
-	this._controller  	= null;
-    this._request   	= null;
-    this._response  	= null;
-	this._results		= [];
-	
 	/* Private Properties
 	-------------------------------*/
 	/* Magic
 	-------------------------------*/
-	this.___construct = function(controller, request, response) {
-		this._controller  	= controller;
-		this._request   	= request;
-		this._response  	= response;
-	};
-	
 	/* Public Methods
 	-------------------------------*/
-	this.response = function() {
-		if(!this._request.message.length) {
+	this.response = function(request, response) {
+		if(!request.message.length) {
 			//setup an error response
-			this._response.message = JSON.stringify({ 
+			response.message = JSON.stringify({ 
 				error: true, 
 				message: 'No request data found.'});
 			
 			//trigger that a response has been made
-			this._controller.trigger('{{name}}-action-response', this._request, this._response);
+			this.Controller().trigger('{{name}}-response', request, response);
 			
 			return this;
 		}
 		
 		//set batch to true
-        this._response.batch = true;
+        response.batch = { request: request, results: [] };
 		
 		//get the batch of requests
-        var batch = JSON.parse(this._request.message);
+        var batch = JSON.parse(request.message);
 		
 		//NOTE: We should sync
 		var sync = this.sync();
@@ -49,93 +38,58 @@ module.exports = require('edenjs').extend(function() {
 		//NOTE: Should sparse out request
 		
         //Loop the all the batch request
-        for(var request, action, i = 0; i < batch.length; i++) {
+        for(var clone, action, i = 0; i < batch.length; i++) {
 			//create default request object;
-			request 			= Object.create(this._request);
+			clone 			= Object.create(request);
 			
-			request.url 		= batch[i].url || '/{{name}}';
-			request.path 		= this.String().toPath(request.url);
-			request.pathArray	= this.String().pathToArray(request.url);
-			request.query 		= this.String().pathToQuery(request.url);
-			request.message 	= batch[i].data || '';
-			request.variables	= [];
+			clone.url 		= batch[i].url || '/{{name}}';
+			clone.path 		= this.String().toPath(clone.url);
+			clone.pathArray	= this.String().pathToArray(clone.url);
+			clone.query 	= this.String().pathToQuery(clone.url);
+			clone.message 	= batch[i].data || '';
+			clone.variables	= [];
 			
-			if(typeof request.message == 'object') {
-				request.message = this.Hash().toQuery(request.message);
+			if(typeof clone.message == 'object') {
+				clone.message = this.Hash().toQuery(clone.message);
 			}
 			
 			//now call the actions based on the method
             switch(true) {
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/create') === 0:  	
-					action 	 			= require('./create');
-					request.method 		= 'POST';
+					action 	 		= require('./create');
+					clone.method 	= 'POST';
 					break;
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/remove/') === 0:
-					action 	 			= require('./remove');
-					request.method 		= 'DELETE';
-					request.variables	= batch[i].url.replace('/{{name}}/remove/', '').split('/');
+					action 	 		= require('./remove');
+					clone.method 	= 'DELETE';
+					clone.variables	= batch[i].url.replace('/{{name}}/remove/', '').split('/');
 					break;
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/restore/') === 0:
-					action 	 			= require('./restore');
-					request.method 		= 'PUT';
-					request.variables	= batch[i].url.replace('/{{name}}/restore/', '').split('/');
+					action 	 		= require('./restore');
+					clone.method 	= 'PUT';
+					clone.variables	= batch[i].url.replace('/{{name}}/restore/', '').split('/');
 					break;
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/update/') === 0:
-					action 	 			= require('./update');
-					request.method 		= 'PUT';
-					request.variables	= batch[i].url.replace('/{{name}}/update/', '').split('/');
+					action 	 		= require('./update');
+					clone.method 	= 'PUT';
+					clone.variables	= batch[i].url.replace('/{{name}}/update/', '').split('/');
 					break;
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/detail/') === 0:
-					action 	 			= require('./detail');
-					request.method 		= 'GET';
-					request.variables	= batch[i].url.replace('/{{name}}/detail/', '').split('/');
+					action 	 		= require('./detail');
+					clone.method 	= 'GET';
+					clone.variables	= batch[i].url.replace('/{{name}}/detail/', '').split('/');
 					break;
                 case batch[i].url.toLowerCase().indexOf('/{{name}}/list') === 0:
-					action 	 			= require('./list');
-					request.method 		= 'GET';
+					action 	 		= require('./list');
+					clone.method 	= 'GET';
 					break;
 				default:
-					action 	 			= null;
+					action 	 		= null;
 					break;
             }
 				
 			//queue for sequence
-			sync.then(function(action, request, next) {
-				if(!action) {
-					this._results.push({ error: true, message: 'No Action Found' });
-					
-					//If results is equal to request query
-					if(this._results.length == JSON.parse(this._request.message).length) {
-						//All batch results will be JSON stringify
-						this._response.message = JSON.stringify({ batch: this._results });
-			
-						//Trigger to the server response
-						this._controller.trigger('server-response', request, this._response);
-					}
-					
-					next();
-					return;
-				}
-				
-				//listen for a post action
-				this._controller.once('{{name}}-action-response', function(request, response) {
-					//All results will be push to the array results
-					this._results.push(JSON.parse(response.message));
-					
-					//If results is equal to request query
-					if(this._results.length == JSON.parse(this._request.message).length) {
-						//All batch results will be JSON stringify
-						response.message = JSON.stringify({ batch: this._results });
-			
-						//Been trigger to the post action
-						this._controller.trigger('server-response', request, response);
-					}
-				
-					next();
-				}.bind(this));
-				
-				action.load(this._controller, request, this._response).response();
-			}.bind(this, action, request)); 
+			sync.then(this._process.bind(this, action, clone, response)); 
         }
 		
 		return this;
@@ -143,6 +97,21 @@ module.exports = require('edenjs').extend(function() {
 	
 	/* Protected Methods
 	-------------------------------*/
+	this._process = function(action, clone, response, next) {
+		response.batch.next = next;
+		
+		if(!action) {
+			response.message = JSON.stringify({ 
+				error: true, 
+				message: 'No Action Found' });
+			
+			this.Controller().trigger('{{name}}-response', clone, response);
+			return;
+		}
+		
+		action.load().response(clone, response);
+	};
+
 	/* Private Methods
 	-------------------------------*/
 });

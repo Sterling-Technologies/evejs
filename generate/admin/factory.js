@@ -23,7 +23,7 @@ define(function() {
 		 * @return string absolute path
 		 */
 		this.path = function(key) {
-			return this.___parent.path('{{name}}/' + key);
+			return this.Controller().path('{{name}}/' + key);
 		};
 		
 		/**
@@ -36,7 +36,7 @@ define(function() {
 		this.getList = function(query, callback) {
 			query = query || {};
 			
-			var url = this.getServerUrl() + '/{{name}}';
+			var url = this.Controller().getServerUrl() + '/{{name}}';
 			
 			//if there is something in the query
 			if(JSON.stringify(query) !== '{}') {
@@ -60,7 +60,7 @@ define(function() {
 		 * @return this|string
 		 */
 		this.getDetail = function(id, callback) {
-			var url = this.getServerUrl() + '/{{name}}/'+id;
+			var url = this.Controller().getServerUrl() + '/{{name}}/'+id;
 			
 			if(!callback) {
 				return url;
@@ -79,7 +79,8 @@ define(function() {
 		 * @return object hash of errors
 		 */
 		this.getErrors = function(data) {
-			var errors = {};
+			var errors = [];
+			
 			//VALIDATION
 			//NOTE: BULK GENERATE
 			{{#loop fields ~}} 
@@ -87,7 +88,7 @@ define(function() {
 					{{~#when value.[0] '==' 'required' ~}}
 					
 			if(!data.{{../../key}} || !data.{{../../key}}.length) {
-				errors.{{../../key}} = '{{../../value.label}} is required!';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is required!' });
 			}
 			
 					{{~/when~}}
@@ -96,13 +97,13 @@ define(function() {
 						{{~#when ../../value.type '==' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}}.length <= {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be greater than {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 						{{~#when ../../value.type '!=' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}} <= {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be greater than {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 					{{~/when~}}
@@ -111,13 +112,13 @@ define(function() {
 						{{~#when ../../value.type '==' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}}.length < {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be greater than or equal to {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than or equal to {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 						{{~#when ../../value.type '!=' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}} < {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be greater than or equal to {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than or equal to {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 					{{~/when~}}
@@ -126,13 +127,13 @@ define(function() {
 						{{~#when ../../value.type '==' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}}.length >= {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be less than {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 						{{~#when ../../value.type '!=' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}} >= {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be less than {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 					{{~/when~}}
@@ -141,13 +142,13 @@ define(function() {
 						{{~#when ../../value.type '==' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}}.length > {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be less than or equal to {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than or equal to {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 						{{~#when ../../value.type '!=' 'string'~}} 
 						
 			if(data.{{../../../key}} && data.{{../../../key}} > {{../../value.[1]}}) {
-				errors.{{../../../key}} = '{{../../../value.label}} must be less than or equal to {{../../value.[1]}}';
+				errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than or equal to {{../../value.[1]}}' });
 			}
 						{{~/when~}}
 					{{~/when~}}
@@ -160,8 +161,8 @@ define(function() {
 			&& {{/unless~}}
 			{{/loop}}
 			) {
-				errors.{{../../key}} = '{{../../value.label}} must be one of {{#loop value.[1] ~}}
-				{{value.label}}{{~#unless last}}, {{/unless~}}{{/loop}}';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} must be one of {{#loop value.[1] ~}}
+				{{value.label}}{{~#unless last}}, {{/unless~}}{{/loop}}' });
 			}
 			
 					{{~/when~}}
@@ -173,7 +174,7 @@ define(function() {
 				'".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' + 
 				'\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not a valid email';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid email' });
 			}
 			
 					{{~/when~}}
@@ -183,7 +184,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[0-9a-fA-F]{6}$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not a valid hexadecimal';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid hexadecimal' });
 			}
 			
 					{{~/when~}}
@@ -194,7 +195,7 @@ define(function() {
 				'^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3' +
 				'[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not a valid credit card';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid credit card' });
 			}
 			
 					{{~/when~}}
@@ -205,7 +206,7 @@ define(function() {
 				'<\\/?\\w+((\\s+(\\w|\\w[\\w-]*\\w)(\\s*=\\s*(?:\\".*?' + 
 				'\\"|\'.*?\'|[^\'\\">\\s]+))?)+\\s*|\\s*)\\/?>', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not valid HTML';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not valid HTML' });
 			}
 			
 					{{~/when~}}
@@ -215,7 +216,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^(http|https|ftp):\\/\\/([A-Z0-9][A-Z0-9_-]*(?:.[A-Z0-9][A-Z0-9_-]*)+):?(d+)?\\/?', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not a valid URL';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid URL' });
 			}
 			
 					{{~/when~}}
@@ -225,7 +226,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[a-z0-9-]+', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not a valid slug';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid slug' });
 			}
 			
 					{{~/when~}}
@@ -235,7 +236,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[a-zA-Z0-9]+$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} must be alpha-numeric';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric' });
 			}
 			
 					{{~/when~}}
@@ -245,7 +246,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[a-zA-Z0-9-]+$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} must be alpha-numeric-hyphen';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-hyphen' });
 			}
 			
 					{{~/when~}}
@@ -255,7 +256,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[a-zA-Z0-9_]+$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} must be alpha-numeric-underscore';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-underscore' });
 			}
 			
 					{{~/when~}}
@@ -265,7 +266,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'^[a-zA-Z0-9-_]+$', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} must be alpha-numeric-hyphen-underscore';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-hyphen-underscore' });
 			}
 			
 					{{~/when~}}
@@ -275,7 +276,7 @@ define(function() {
 			if(data.{{../../key}} && !(new RegExp(
 				'{{../value.[1]}}', 'ig'))
 				.test(data.{{../../key}})) {
-				errors.{{../../key}} = '{{../../value.label}} is not valid';
+				errors.push({ name: '{{../../key}}', message: '{{../../key}} is not valid' });
 			}
 			
 					{{~/when~}}
@@ -295,7 +296,7 @@ define(function() {
 		 * @return {fojo}
 		 */
 		this.create = function(data, callback) {
-			var url = this.getServerUrl() + '/{{name}}/create';
+			var url = this.Controller().getServerUrl() + '/{{name}}/create';
 			
 			//use fojo to send to db
 			return $.fojo()
@@ -326,7 +327,7 @@ define(function() {
 		 * @return {fojo}
 		 */
 		this.update = function(id, data, callback) {
-			var url = this.getServerUrl() + '/{{name}}/update/' + id;
+			var url = this.Controller().getServerUrl() + '/{{name}}/update/' + id;
 			
 			//use fojo to send to db
 			return $.fojo()
@@ -356,7 +357,7 @@ define(function() {
 		 * @return this
 		 */
 		this.remove = function(id, callback) {
-			var url = this.getServerUrl() + '/{{name}}/remove/' + id;
+			var url = this.Controller().getServerUrl() + '/{{name}}/remove/' + id;
 			
 			$.ajax({
 				url 	: url,

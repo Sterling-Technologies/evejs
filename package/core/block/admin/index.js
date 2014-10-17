@@ -1,55 +1,76 @@
-controller()
-//when the application is initialized
-.on('init', function() {
-	//set paths
-	this
-		.path('block'			, this.path('package') + '/core/block')
-		.path('block/action'	, this.path('package') + '/core/block/action')
-		.path('block/asset'		, this.path('package') + '/core/block/asset')
-		.path('block/template'	, this.path('package') + '/core/block/template');
-	
-	//add template helpers
-	//set pagination
-	var $ = jQuery, _id = 0;
-	//dynamically preload the block
-	Handlebars.registerHelper('block', function (action, options) {
-		var args 	= Array.prototype.slice.apply(arguments);
+define(function() {
+	return function() {
+		//set paths
+		this
+			.path('block'			, this.path('package') + '/core/block')
+			.path('block/asset'		, this.path('package') + '/core/block/asset')
+			.path('block/action'	, this.path('package') + '/core/block/action')
+			.path('block/event'		, this.path('package') + '/core/block/event')
+			.path('block/template'	, this.path('package') + '/core/block/template');	
 		
-		action 		= args.shift();
-		options 	= args.pop();
-		
-		//determine the path
-		action = controller().path('block/action') + '/' + action + '.js';
-		
-		//load up the action
-		var id = ++_id;
-		require([action], function(action) {
-			action = action();
-			action.setData.apply(action, args);
-			action.setInnerTemplate(options.fn);
-			action.response(function(html) {
-				$('#eve-block-'+ id).replaceWith(html);
+		//add template helpers
+		//set pagination
+		var $ = jQuery, _id = 0, controller = this;
+		//dynamically preload the block
+		Handlebars.registerHelper('block', function (action, options) {
+			var args 	= Array.prototype.slice.apply(arguments);
+			
+			action 		= args.shift();
+			options 	= args.pop();
+			
+			//determine the path
+			var path = controller.path('block/action') + '/' + action + '.js';
+			
+			var request = {
+				id		: ++_id,
+				path	: path,
+				action	: action };
+			
+			//load up the action
+			require([path], function(action) {
+				action = action();
+				action.setData.apply(action, args);
+				action.setInnerTemplate(options.fn);
+				action.response(request);
 			});
+			
+			return '<div id="eve-block-' + request.id + '"></div>';
 		});
 		
-		return '<div id="eve-block-' + id + '"></div>';
-	});
-	
-	this.trigger('block-init');
-})
-
-//when a url request has been made
-.on('request', function() {
-	//if it doesn't start with user
-	if(window.location.pathname.indexOf('/block') !== 0) {
-		//we don't care about it
-		return;
-	}
-	
-	action = this.path('block/action') + '/index.js';
-	
-	//load up the action
-	require([action], function(action) {
-		action().response();
-	});
-});;
+		//get event path
+		var events = this.path('block/event');
+		
+		//get files in the event folder
+		this.Folder(events).getFiles(null, false, function(error, files) {
+			//loop through files  
+			for(var events = [], callbacks = [], i = 0; i < files.length; i++) {
+				//accept only js
+				if(files[i].getExtension() !== 'js') {
+					continue;
+				}
+				
+				events.push(files[i].getBase());
+				callbacks.push(files[i].path);
+			}
+			
+			require(callbacks, function() {
+				var callbacks = Array.prototype.slice.apply(arguments);
+				
+				//loop through events 
+				for(var i = 0; i < callbacks.length; i++) {
+					//only listen if it is a callback
+					if(typeof callbacks[i] !== 'function') {
+						continue;
+					}
+					
+					//now listen
+					this.on(events[i], callbacks[i]);
+				}
+				
+				this.trigger('block-init');
+			}.bind(this));
+		}.bind(this));
+		
+		return 'block-init';
+	};
+});

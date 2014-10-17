@@ -1,5 +1,5 @@
 define(function() {
-   return jQuery.eve.action.extend(function() {
+   return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,9 +10,10 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-		this._title        = 'Updating {{singular}}';
-		this._header       = 'Updating {{singular}}';
-		this._subheader    = '';
+		this._data     		= {};
+		this._title       	= 'Updating {{singular}}';
+		this._header   		= 'Updating {{singular}}';
+		this._subheader		= '';
 		
 		this._crumbs = [{ 
 			path: '/{{name}}',
@@ -20,9 +21,7 @@ define(function() {
 			label: '{{plural}}' 
 		}, {  label: 'Updating {{singular}}' }];
 		
-		this._data     = {};
-		
-		this._template = controller().path('{{name}}/template') + '/form.html';
+		this._template = '/form.html';
 		
 		/* Private Properties
 		-------------------------------*/
@@ -30,55 +29,66 @@ define(function() {
 		-------------------------------*/
 		/* Public.Methods
 		-------------------------------*/
-		/* Protected Methods
-		-------------------------------*/
-		this._setData = function(next) {
+		this.response = function(request) {
+			//variable list
 			this._data.mode 	= 'update';
-			this._data.url 		= window.location.pathname;
-			this._data.{{name}}		= {};
+			this._data.url 		= request.url;
+			this._data.{{name}}		= request.data;
+			this._data.errors 	= {};
 			
-			var data = this.getState().data;
-			
-			if(Object.keys(data).length) {
-				//query to hash
-				this._data.{{name}} = data;
-				
-				if(!this._valid()) {			
-					//display message status
-					controller().notify('Error', 'There was an error in the form.', 'error');
-					
-					next();
-					
-					return;
+			//if there are field errors
+			if(request.errors instanceof Array && request.errors.length) {	
+				//parse out those errors for the template
+				for(var i = 0; i < request.errors.length; i++) {
+					this._data.errors[request.errors[i].name] = request.errors[i].message;
 				}
 				
-				//we are good to send this up
-				this._process(next);
+				//no need for these anymore
+				delete request.error;
+				delete request.errors;
 				
-				return;
+				//output the errors
+				this._output(request);
+				return this;
 			}
 			
-			//if no data {{name}} set
+			//find out the id
+			var id = request.path.split('/')[3];
+			
+			//if there is data from the request and there are no errors
+			if(Object.keys(this._data.{{name}}).length && !request.error) {
+				//start the update process
+				this.Controller().trigger('{{name}}-update', id, this._data.{{name}}, request, this);
+				return this;
+			}
+			
+			delete request.error;
+			
+			//if no data set
 			if(JSON.stringify(this._data.{{name}}) === '{}') {
-				//get it from the server
-				//get {{name}} id
-				var id =  window.location.pathname.split('/')[3];
+				//freeze the data
+				this.___freeze();
 				
+				//get it from the server
 				this.{{name}}().getDetail(id, function(response) {
+					//now set the data
 					this._data.{{name}} = response.results;
-					next();
+					//now output it
+					this._output(request);
 				}.bind(this));
 				
 				return;
 			}
 			
-			next();
+			//output the form
+			this._output(request);
+			
+			return this;
 		};
 		
-		this._output = function(next) {
-			//store form templates path to array
-			var templates = ['text!' + controller().path('{{name}}/template') +  '/form.html'];
-			
+		/* Protected Methods
+		-------------------------------*/
+		this._output = function(request) {
 			//ENUMS
 			//NOTE: BULK GENERATE
 			{{#loop fields ~}} 
@@ -119,105 +129,29 @@ define(function() {
 			{{/when~}}
 			{{~/if~}}
 			{{~/loop}}
-				
+			
+			var template = this.{{name}}().path('template') + this._template;
+			
+			//freeze the data
+			this.___freeze();
+			
 			//require form templates
 			//assign it to main form
-			require(templates, function(form) {
+			require(['text!' + template], function(template) {
 				//render the body
-				var body = Handlebars.compile(form)(this._data);
+				var body = Handlebars.compile(template)(this._data);
 				
-				controller()
+				this.Controller()
 					.setTitle(this._title)
 					.setHeader(this._header)
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
-					.setBody(body);            
-					
-				next();
+					.setBody(body)
+					.trigger('{{name}}-response', request, this);            
+			
+				//unfreeze data
+				this.___unfreeze();
 			}.bind(this));
-		};
-		
-		this._valid = function() {
-			//VALIDATION
-			this._data.errors = this.{{name}}().getErrors(this._data.{{name}});
-			
-			//if we have no errors
-			return JSON.stringify(this._data.errors) === '{}';
-		};
-		
-		this._process = function(next) {
-			var data = this._data, id = window.location.pathname.split('/')[3];
-			
-			//Convert to server date format
-			//NOTE: BULK GENERATE
-			{{#loop fields ~}}
-			{{~#if value.field ~}}
-			{{~#when value.field.[0] '==' 'datetime' ~}}
-			if(data.{{../../../name}} && data.{{../../../name}}.{{../../key}}) {
-				data.{{../../../name}}.{{../../key}} = this.Time().toDate(data.{{../../../name}}.{{../../key}}, 'Y-m-d H:i:s');
-			}
-			
-			{{/when~}}
-			{{~#when value.field.[0] '==' 'date' ~}}
-			if(data.{{../../../name}} && data.{{../../../name}}.{{../../key}}) {
-				data.{{../../../name}}.{{../../key}} = this.Time().toDate(data.{{../../../name}}.{{../../key}}, 'Y-m-d');
-			}
-			
-			{{/when~}}
-			{{~#when value.field.[0] '==' 'time' ~}}
-			if(data.{{../../../name}} && data.{{../../../name}}.{{../../key}}) {
-				data.{{../../../name}}.{{../../key}} = this.Time().toDate(data.{{../../../name}}.{{../../key}}, 'H:i:s');
-			}
-			
-			{{/when~}}
-			{{~/if~}}
-			{{~/loop}}
-			
-			//send to server
-			this.{{name}}().update(id, this._data.{{name}}, function(error, response) {
-				//if there is an error
-				if(error) {
-					//Add to gritter
-					controller().notify('Form Error', error, 'error');
-					next();
-					return;
-				}
-				
-				if(!response.error) {		
-					controller()			
-						//display message status
-						.notify('Success', '{{singular}} successfully updated!', 'success')
-						//go to listing
-						.redirect('/{{name}}');
-					
-					//no need to next since we are redirecting out
-					return;
-				}
-				
-				if(response.validation && response.validation instanceof Array) {
-					data.errors = {};
-					for(var j, i = 0; i < response.validation.length; i++) {
-						for(j in response.validation[i]) {
-							if(response.validation[i].hasOwnProperty(j)) {
-								data.errors[j] = response.validation[i][j];
-							}
-						}	
-					}
-				}
-				
-				//display message status
-				controller().notify('Error', 'There was an error in the form.', 'error');
-				
-				next();
-			})
-			
-			//track progress
-			.once('progress', function(e, percent) {
-				controller().notify('Submitting Form', percent + '%', 'info');
-			})
-			
-			//now send
-			.send();
 		};
 		
 		/* Private Methods

@@ -1,0 +1,15 @@
+define(function() {
+	return function(e, id, request, action) {
+		var url = this.Controller().getServerUrl() + '/{{name}}/restore/';
+		
+		$.getJSON(url + id, function(response) {
+			//if error
+			if(response.error) {
+				this.Controller().trigger('{{name}}-restore-error', response.message, request, action);
+				return;	
+			}
+			
+			this.Controller().trigger('{{name}}-restore-success', request, action);
+		}.bind(this));
+	};
+});

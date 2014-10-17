@@ -167,6 +167,7 @@ module.exports = function(eve, command) {
 	})
 	//finish up
 	.then(function(next) {
+		this.trigger('install-step', 6, 'server', name)
 		exec('cd ' + this.getDeployPath() + ' && npm install', function() {
 			eve.trigger('install-complete', 'server', name);	
 		});

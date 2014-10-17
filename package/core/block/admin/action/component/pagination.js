@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+   	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,19 +10,46 @@ define(function() {
 		-------------------------------*/
 		/* Protected.Properties
 		-------------------------------*/
-        this._callback = null;
-	
-        this._template = controller().path('block/template') + '/component/pagination.html';
+		this._data 		= {};
+       	this._template 	= '/component/pagination.html';
     	
 		/* Private Properties
 		-------------------------------*/
 		/* Public Methods
 		-------------------------------*/
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        this.response = function(request) {
+			//if there is one or less pages
+			if(this._data.pages < 2) {
+				//render nothing
+				this.Controller().trigger('block-response', request, '');
+				return;
+			}
 			
-			controller().sync().scope(this).then(this._output);
+			//store form templates path to array
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//require form templates
+			//assign it to main form
+			require(['text!' + template], function(template) {
+				this._data.items = [];
+				for(var i = 0; i < this._data.pages; i++) {
+					this._data.query.page = i + 1;
+					this._data.items.push({
+						page	: i + 1,
+						active	: this._data.current == (i + 1), 
+						query	: this.Hash().toQuery(this._data.query) });
+				}
+				
+				//trigger
+				var response = Handlebars.compile(template)(this._data);
+				this.Controller().trigger('block-response', request, response);
+				
+				//unfreeze data
+				this.___unfreeze();
+			}.bind(this));
 			
 			return this;
 		};
@@ -71,37 +98,6 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			//if there is one or less pages
-			if(this._data.pages < 2) {
-				//render nothing
-				this._callback('');
-				next();
-				return;
-			}
-			
-			//store form templates path to array
-			var templates = ['text!' + this._template];
-			
-			//require form templates
-			//assign it to main form
-			require(templates, function(template) {
-				this._data.items = [];
-				for(var i = 0; i < this._data.pages; i++) {
-					this._data.query.page = i + 1;
-					this._data.items.push({
-						page	: i + 1,
-						active	: this._data.current == (i + 1), 
-						query	: this.Hash().toQuery(this._data.query) });
-				}
-				
-				//render
-				this._callback(Handlebars.compile(template)(this._data));
-					
-				next();
-			}.bind(this));
-		};
-	
 		/* Private Methods
 		-------------------------------*/
 	});

@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,9 +10,8 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
-	
-        this._template = controller().path('block/template') + '/field/color.html';
+        this._data 		= {};
+        this._template 	= '/field/color.html';
     
 		/* Private Properties
 		-------------------------------*/    
@@ -20,10 +19,7 @@ define(function() {
 
 		/* Public Methods
 		-------------------------------*/
-		this.loadAssets = function(callback) {
-			//make sure callback is a function
-			callback = callback || $.noop;
-			
+		this.loadAssets = function() {
 			//if loaded
 			if(_loaded) {
 				//do nothing
@@ -34,34 +30,66 @@ define(function() {
 			//add the style to header
 			//<link rel="stylesheet" type="text/css" href="/styles/color.css" />
 			$('<link rel="stylesheet" type="text/css" />')
-				.attr('href', controller().path('block/asset') + '/styles/color.css')
+				.attr('href', this.Controller().path('block/asset') + '/styles/color.css')
 				.appendTo('head');
 			
 			//add script to header
 			//<script type="text/javascript" src="/scripts/color.js">script>
 			$('<script type="text/javascript"></script>')
-				.attr('src', controller().path('block/asset') + '/scripts/color.js')
+				.attr('src', this.Controller().path('block/asset') + '/scripts/color.js')
 				.appendTo('head');
 			
 			_loaded = true;
 			
-			callback();
-			
 			return this;
 		};
 	
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
-			controller().sync()
-				.scope(this)
-				.then(this.loadAssets)
-				.then(this._output)
-				.then(this._listen);
-        
+        /**
+		 * Determines the response
+		 * 
+		 * @param object request object
+		 * @return this
+		 */
+		this.response = function(request) {
+			//load assets
+			this.loadAssets();
+			
+			this._data.source 	= this.Controller().path('block/asset') + '/images/color/blank.gif';
+			this._data.value 	= this._data.value || '#FFFFFF';
+			
+			//add the ace admin class
+			this._data.attributes = this._addAttribute(
+			this._data.attributes, 'class', 'form-control');
+        	
+			//store form templates path to array
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//require form templates
+			//assign it to main form
+			require(['text!' + template], function(template) {
+				//trigger
+				var response = Handlebars.compile(template)(this._data);
+				this.Controller().trigger('block-response', request, response);
+				
+				//now listen
+				this._listen();
+				
+				//unfreeze data
+				this.___unfreeze();
+			}.bind(this));
+			
 			return this;
 		};
 		
+		/**
+		 * Sets data depending on arguments from block
+		 *
+		 * @param mixed[,mixed..]
+		 * @return this
+		 */
 		this.setData = function(name, value, attributes) {
 			this._data.name 		= name;
 			this._data.value 		= value;
@@ -70,6 +98,12 @@ define(function() {
 			return this;
 		};
 		
+		/**
+		 * Sets inner template if applicable
+		 *
+		 * @param string
+		 * @return this
+		 */
 		this.setInnerTemplate = function(template) {
 			//make template an empty function
 			//if not already defined
@@ -84,30 +118,8 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {	
-			//store form templates path to array
-			var templates 		= ['text!' + this._template];
-			this._data.source 	= controller().path('block/asset') + '/images/color/blank.gif';
-			this._data.value 	= this._data.value || '#FFFFFF';
-			
-			//add the ace admin class
-			this._data.attributes = this._addAttribute(
-			this._data.attributes, 'class', 'form-control');
-			
-			var callback = this._callback, data = this._data;
-			
-			//require form templates
-			//assign it to main form
-			require(templates, function(template) {
-				//render
-				callback(Handlebars.compile(template)(data));
-					
-				next();
-			}.bind(this));
-		};
-	
-		this._listen = function(next) {
-			var self = this;
+		this._listen = function() {
+			var color = this._data.value;
 			
 			//find all the widgets
 			var color = $('img.eve-field-color')
@@ -117,7 +129,7 @@ define(function() {
 				.addClass('eve-field-loaded')
 				//invoke the widget
 				.ColorPicker({
-					color: self._data.value,
+					color: color,
 					onShow: function(picker) {
 						$(picker).fadeIn(500);
 						return false;
@@ -139,8 +151,6 @@ define(function() {
 			color.parent().prev().focus(function() {
 				color.click();
 			});
-				
-			next();
 		};
 		
 		this._addAttribute = function(attributes, key, value, verbose) {

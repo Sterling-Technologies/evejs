@@ -1,5 +1,5 @@
 define(function() {
-   return jQuery.eve.action.extend(function() {
+   return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -13,14 +13,14 @@ define(function() {
 		this._title 	= '{{plural}}';
 		this._header 	= '{{plural}}';
 		this._subheader = '';
-		this._crumbs 	= [{ icon: 'Facebook', label: '{{plural}}' }];
+		this._crumbs 	= [{ icon: '{{icon}}', label: '{{plural}}' }];
 		this._data 		= {};
 		
 		this._start		= 0;
 		this._page 		= 1;
 		this._range 	= 25;
 		
-		this._template 	= controller().path('{{name}}/template') + '/index.html';
+		this._template 	= '/index.html';
 		
 		/* Private Properties
 		-------------------------------*/
@@ -28,23 +28,33 @@ define(function() {
 		-------------------------------*/
 		/* Public.Methods
 		-------------------------------*/
+		this.response = function(request) {
+			this.sync(this._setData.bind(this, request))
+				.then(this._output.bind(this, request))
+				.then(this._listen.bind(this, request));
+		};
+		
 		/* Protected Methods
 		-------------------------------*/
-		this._setData = function(next) {
+		this._setData = function(request, next) {
 			//use a batch call
-			var batch = [], query = this.String().pathToQuery(window.location.href);
+			var batch = [];
 			
 			//1. get the list
-			batch.push({ url: this._getListRequest(query) });
+			batch.push({ url: this._getListRequest(request.data) });
 			
+			{{#if active~}}
 			//2. get the active count
-			batch.push({ url: this._getActiveCountRequest(query) });
+			batch.push({ url: this._getActiveCountRequest(request.data) });
 			
 			//3. get the trash count
-			batch.push({ url: this._getTrashCountRequest(query) });
-			
+			batch.push({ url: this._getTrashCountRequest(request.data) });
+			{{~else~}}
+			//2. get the count
+			batch.push({ url: this._getCountRequest(request.data) });
+			{{/if~}}
 			$.post(
-				this.getServerUrl() + '/{{name}}/batch', 
+				this.Controller().getServerUrl() + '/{{name}}/batch', 
 				JSON.stringify(batch), function(response) { 
 				response = JSON.parse(response);
 				
@@ -68,12 +78,12 @@ define(function() {
 					response.batch[0].results[i].{{../key}} = response.batch[0].results[i].{{../key}} ? 'Yes': 'No';
 					{{/when~}}
 					{{~/loop}}
-					
+
 					//add it to row
 					rows.push(response.batch[0].results[i]);
 				}
 				
-				var showing = query.mode || 'active';
+				var showing = request.data.mode || 'active';
 				showing = showing.toUpperCase().substr(0, 1) + showing.toLowerCase().substr(1);
 				
 				//1. List
@@ -82,34 +92,41 @@ define(function() {
 				this._data = {
 					showing : showing,
 					rows	: rows,
-					mode	: query.mode || 'active',
-					keyword	: query.keyword || null,
+					mode	: request.data.mode || 'active',
+					keyword	: request.data.keyword || null,
+					{{#if active~}}
 					active	: response.batch[1].results,
 					trash	: response.batch[2].results,
+					{{~else~}}
+					count	: response.batch[1].results,
+					{{/if~}}
 					range	: this._range };
 				
 				next();
 			}.bind(this));
 		};
 	
-		this._output = function(next) {
+		this._output = function(request, next) {
+			var template = this.{{name}}().path('template') + this._template;
+			
 			//bulk load the templates
-			require(['text!' + this._template], function(template) {
+			require(['text!' + template], function(template) {
 				//render the body
 				var body = Handlebars.compile(template)(this._data);
 				
-				controller() 
+				this.Controller() 
 					.setTitle(this._title)
 					.setHeader(this._header)
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
-					.setBody(body);
+					.setBody(body)
+					.trigger('{{name}}-response', request, this);
 				
 				next();
 			}.bind(this));
 		};
 		
-		this._listen = function(next) {
+		this._listen = function(request, next) {
 			//listen to remove restore
 			$('section.{{name}}-list a.remove, section.{{name}}-list a.restore').click(function(e) {
 				e.preventDefault();
@@ -155,18 +172,21 @@ define(function() {
 				query.keyword = request.keyword;
 			}
 			
+			{{#if active~}}
 			switch(request.mode || 'active') {
 				case 'active':
-					query.filter.{{name}}_active = 1;
+					query.filter.{{active}} = 1;
 					break;
 				case 'trash':
-					query.filter.{{name}}_active = 0;
+					query.filter.{{active}} = 0;
 					break;
 			}
+			{{/if~}}
 			
 			return '/{{name}}/list?' + this.Hash().toQuery(query);
 		};
 		
+		{{#if active}}
 		this._getActiveCountRequest = function(request) {
 			var query = {};
 			
@@ -177,7 +197,7 @@ define(function() {
 			}
 		
 			query.count = 1;
-			query.filter.{{name}}_active = 1;
+			query.filter.{{active}} = 1;
 			
 			return '/{{name}}/list?' + this.Hash().toQuery(query);
 		};
@@ -192,11 +212,27 @@ define(function() {
 			}
 			
 			query.count = 1;
-			query.filter.{{name}}_active = 0; 
+			query.filter.{{active}} = 0; 
 			return '/{{name}}/list?' + this.Hash().toQuery(query);
 		};
 		
+		{{~else~}}
+		this._getCountRequest = function(request) {
+			var query = {};
+			
+			query.filter = request.filter || {};
+			
+			if(request.keyword) {
+				query.keyword = request.keyword;
+			}
+		
+			query.count = 1;
+			
+			return '/{{name}}/list?' + this.Hash().toQuery(query);
+		};
+		
+		{{/if~}}
 		/* Private Methods
 		-------------------------------*/
-	});
+	}).singleton();
 });

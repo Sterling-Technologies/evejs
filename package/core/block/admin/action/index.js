@@ -1,5 +1,5 @@
 define(function() {
-   return jQuery.eve.action.extend(function() {
+   return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -18,16 +18,13 @@ define(function() {
 		this._page 		= 1;
 		this._range 	= 25;
 		
-		this._template 	= controller().path('block/template') + '/index.html';
+		this._template 	= '/index.html';
 		
 		/* Private Properties
 		-------------------------------*/
 		/* Public Methods
 		-------------------------------*/
-		/* Protected Methods
-		-------------------------------*/
-		this._setData = function(next) {
-			
+		this.response = function(request) {
 			this._data.list = [
 				{ value: 1, label: 'Label 1' },
 				{ value: 2, label: 'Label 2' },
@@ -47,27 +44,32 @@ define(function() {
 					'Lord Of the Rings']
 			};
 			
-			next();
-		};
-	
-		this._output = function(next) {
 			//bulk load the templates
-			require(['text!' + this._template], function(template) {
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//now get the template
+			require(['text!' + template], function(template) {
 				//render the body
 				var body = Handlebars.compile(template)(this._data);
 				
-				controller()
+				this.Controller()
 					.setTitle(this._title)
 					.setHeader(this._header)
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
 					.setBody(body);
-				
-				next();
+					
+				//unfreeze data
+				this.___unfreeze();
 			}.bind(this));
 		};
 		
+		/* Protected Methods
+		-------------------------------*/
 		/* Private Methods
 		-------------------------------*/
-	});
+	}).singleton();
 });

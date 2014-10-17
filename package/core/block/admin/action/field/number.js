@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,7 +10,7 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
+        this._data = {};
     
 		/* Private Properties
 		-------------------------------*/    
@@ -18,43 +18,80 @@ define(function() {
 
 		/* Public Methods
 		-------------------------------*/
-		this.loadAssets = function(callback) {
-			//make sure callback is a function
-			callback = callback || $.noop;
-			
+		this.loadAssets = function() {
 			//if loaded
 			if(_loaded) {
 				//do nothing
-				callback();
 				return this;
 			}
 			
 			//add script to header
 			//<script type="text/javascript" src="/scripts/autocomplete.js">script>
 			$('<script type="text/javascript"></script>')
-				.attr('src', controller().path('block/asset') + '/scripts/number.js')
+				.attr('src', this.Controller().path('block/asset') + '/scripts/number.js')
 				.appendTo('head');
 			
 			_loaded = true;
 			
-			callback();
-			
 			return this;
 		};
 	
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        /**
+		 * Determines the response
+		 * 
+		 * @param object request object
+		 * @return this
+		 */
+		this.response = function(request) {
+			//load assets
+			this.loadAssets();
 			
-			controller().sync()
-				.scope(this)
-				.then(this.loadAssets)
-				.then(this._output)
-				.then(this._listen);
+			this._data.attributes = this._addAttribute(
+			this._data.attributes, 'class', 'eve-field-number');
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//load up the action
+			require([this.Controller().path('block/action') + '/field/text.js'], function(action) {
+				var id = request.id, innerTemplate = this._data.innerTemplate;
+				
+				this.Controller().on('block-response', function number(e, request, response) {
+					if(request.action === 'field/number' && request.id === id) {
+						//now listen
+						this._listen();
+						
+						//unfreeze data
+						this.___unfreeze();	
+						
+						this.Controller().off('block-response', number);
+					}				
+				}.bind(this));
+				
+				//load the action
+				action()
+				//set the data needed
+				.setData(
+					this._data.name, 
+					this._data.value, 
+					this._data.attributes)
+				//pass the attributes along
+				.setInnerTemplate(function() {
+					return innerTemplate;
+				})
+				//render the text field
+				.response(request);
+			}.bind(this));
 			
 			return this;
 		};
 		
+		/**
+		 * Sets data depending on arguments from block
+		 *
+		 * @param mixed[,mixed..]
+		 * @return this
+		 */
 		this.setData = function(name, value, min, max, step, attributes) {
 			this._data.name 		= name;
 			this._data.value 		= value;
@@ -66,6 +103,12 @@ define(function() {
 			return this;
 		};
 		
+		/**
+		 * Sets inner template if applicable
+		 *
+		 * @param string
+		 * @return this
+		 */
 		this.setInnerTemplate = function(template) {
 			//make template an empty function
 			//if not already defined
@@ -80,36 +123,8 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			this._data.attributes = this._addAttribute(
-			this._data.attributes, 'class', 'eve-field-number');
-			
-			//load up the action
-			require([controller().path('block/action') + '/field/text.js'], function(action) {
-				//load the action
-				action()
-				//set the data needed
-				.setData(
-					this._data.name, 
-					this._data.value, 
-					this._data.attributes)
-				//pass the attributes along
-				.setInnerTemplate(function() {
-					return this._data.innerTemplate;
-				}.bind(this))
-				//render the text field
-				.response(function(html) {
-					//call the callback set in render
-					this._callback(html);
-					
-					//continue with sequence
-					next();
-				}.bind(this));
-			}.bind(this));
-		};
-		
-		this._listen = function(next) {
-			var self = this;
+		this._listen = function() {
+			var step = this._data.step;
 			//find all the widgets
 			$('input.eve-field-number')
 				//remove the ones already set
@@ -136,15 +151,13 @@ define(function() {
 					//go up
 					if(e.keyCode == 38) {
 						e.preventDefault();
-						$(this).val(parseInt($(this).val()) + parseInt(self._data.step));
+						$(this).val(parseInt($(this).val()) + parseInt(step));
 						//go down
 					
 					} else if(e.keyCode == 40) {
-						$(this).val(parseInt($(this).val()) - parseInt(self._data.step));
+						$(this).val(parseInt($(this).val()) - parseInt(step));
 					}
 				});
-			
-			next();
 		};
 		
 		this._addAttribute = function(attributes, key, value, verbose) {

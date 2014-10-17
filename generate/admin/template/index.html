@@ -16,7 +16,9 @@
 	<form action="/{{name}}/bulk" method="post" class="form-inline bulk-form">
 		<!-- START: i18n HEADER TITLE -->
 		<div class="table-header">
+        	{{~#if active}}
 			Showing \{\{#if keyword\}\}Results for &quot;\{\{keyword\}\}&quot; in \{\{/if\}\}\{\{showing\}\}
+            {{~/if}}
 		</div>
 		<!-- END: i18n HEADER TITLE -->
 		<div class="table-responsive">
@@ -29,15 +31,24 @@
 						<!-- END: ADD NEW POST -->
 						\{\{#if rows\}\}
 						<!-- START: BULK ACTION -->
+                        {{~#if active}}
 						<select name="action" style="width:auto;" class="form-control">
 							<option value="" selected="selected">Bulk Actions</option>
 							<option value="remove">Remove</option>
 							<option value="restore">Restore</option>
 						</select>
 						<button class="btn-primary btn-sm btn">Apply</button>
+                        {{~else}}
+                        <select name="action" style="width:auto;" class="form-control">
+							<option value="" selected="selected">Bulk Actions</option>
+							<option value="remove">Remove</option>
+						</select>
+						<button class="btn-primary btn-sm btn">Apply</button>
+                        {{~/if}}
 						<!-- END: BULK ACTION -->
 						\{\{/if\}\}
 						
+                        {{~#if active}}
 						<!-- START: FILTER BUTTONS -->
 						<span class="filter">
 							<a class="btn btn-sm\{\{#when mode '==' 'active'\}\} btn-light\{\{/when\}\}" 
@@ -49,6 +60,7 @@
 							<span class="badge badge-grey">\{\{trash\}\}</span></a>
 						</span>
 						<!-- END: FILTER BUTTONS -->
+                        {{~/if}}
 					</div>
 				</div>
 			</div> 
@@ -60,37 +72,64 @@
 						<th><input class="checkall" type="checkbox" /></th>
 						<th>Action</th>
 						<th>ID</th>
-						<!-- NOTE: BULK GENERATE -->
+						{{~#if slug}}
+                        <th>Slug</th>
+                        {{~/if}}
+                        
+                        <!-- NOTE: BULK GENERATE -->
 						{{#loop fields ~}}
 						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
 						<th>{{value.label}}</th>
 						{{~/notin ~}}
 						{{~/loop}}
+                        {{~#if created}}
+                        <th>Created</th>
+                        {{~/if}}
+                        {{~#if updated}}
+                        <th>Updated</th>
+                        {{~/if}}
 					</tr>
 				</thead>
 				<tbody>
 					\{\{#each rows\}\}
-					<tr data-id="\{\{ {{name}}_id\}\}">
-						<td><input name="id[]" value="\{\{ {{name}}_id\}\}" type="checkbox" class="form-control" /></td>
+					<tr data-id="\{\{ {{primary}}\}\}">
+						<td><input name="id[]" value="\{\{ {{primary}}\}\}" type="checkbox" class="form-control" /></td>
 						<td>
-							\{\{#when {{name}}_active '==' 1\}\}
-							<a title="Edit" href="/{{name}}/update/\{\{ {{name}}_id\}\}">
+                        	{{~#if active}}
+							\{\{#when {{active}} '==' 1\}\}
+							<a title="Edit" href="/{{name}}/update/\{\{ {{primary}}\}\}">
 							<i class="icon-edit"></i></a> &nbsp; 
-							<a title="Remove" href="/{{name}}/remove/\{\{ {{name}}_id\}\}"
-							class="text-danger remove"><i class="icon-remove" value="\{\{ {{name}}_id\}\}"></i></a>
+							<a title="Remove" href="/{{name}}/remove/\{\{ {{primary}}\}\}"
+							class="text-danger remove"><i class="icon-remove" value="\{\{ {{primary}}\}\}"></i></a>
 							\{\{/when\}\}
-							\{\{#when {{name}}_active '==' 0\}\}
-							<a title="Restore" href="/{{name}}/restore/\{\{ {{name}}_id\}\}" class="text-success restore">
+							\{\{#when {{active}} '==' 0\}\}
+							<a title="Restore" href="/{{name}}/restore/\{\{ {{primary}}\}\}" class="text-success restore">
 							<i class="icon-external-link"></i></a>
 							\{\{/when\}\}
+                            {{~else}}
+                            <a title="Edit" href="/{{name}}/update/\{\{ {{primary}}\}\}">
+							<i class="icon-edit"></i></a> &nbsp; 
+							<a title="Remove" href="/{{name}}/remove/\{\{ {{primary}}\}\}"
+							class="text-danger remove"><i class="icon-remove" value="\{\{ {{primary}}\}\}"></i></a>
+                            {{~/if}}
 						</td>
-						<td>\{\{ {{name}}_id\}\}</td>
+						<td>\{\{ {{primary}}\}\}</td>
+                        {{~#if slug}}
+                        <td>\{\{ {{slug.[0]}}\}\}</td>
+                        {{~/if}}
+                        
 						<!-- NOTE: BULK GENERATE -->
 						{{#loop fields ~}}
 						{{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
 						<td>\{\{ {{../key}}\}\}</td>
 						{{~/notin ~}}
 						{{~/loop}}
+                        {{~#if created}}
+                        <td>\{\{ {{created}}\}\}</td>
+                        {{~/if}}
+                        {{~#if updated}}
+                        <td>\{\{ {{updated}}\}\}</td>
+                        {{~/if}}
 					</tr>	
 					\{\{/each\}\}
 				</tbody>	
@@ -103,6 +142,7 @@
 			\{\{/if\}\}
 		</div>
 		
+        {{~#if active}}
 		\{\{#when mode '==' 'active'\}\}
 		<ul class="pagination">
 			\{\{#block 'component/pagination' active range\}\}
@@ -118,5 +158,14 @@
 			\{\{/block\}\}
 		</ul>
 		\{\{/when\}\}
+        
+        {{~else}}
+        <ul class="pagination">
+			\{\{#block 'component/pagination' count range\}\}
+			<li\{\{#if active\}\} class="active"\{\{/if\}\}><a href="?\{\{query\}\}">\{\{page\}\}</a></li>
+			\{\{/block\}\}
+		</ul>
+        
+        {{~/if}}
 	</form>
 </section>

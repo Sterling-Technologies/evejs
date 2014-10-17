@@ -1,4 +1,4 @@
-module.exports = require('edenjs').extend(function() {
+var eden = require('edenjs'), controller = eden.extend(function() {
 	/* Require
 	-------------------------------*/
 	/* Constants
@@ -227,3 +227,6 @@ module.exports = require('edenjs').extend(function() {
 	/* Private Methods
 	-------------------------------*/
 }).singleton();
+
+eden.define({ Controller: controller });
+module.exports = controller;

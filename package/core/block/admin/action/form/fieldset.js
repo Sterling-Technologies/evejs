@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,17 +10,37 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
-	
-        this._template = controller().path('block/template') + '/form/fieldset.html';
+		this._data 		= {};
+        this._template 	= '/form/fieldset.html';
     
 		/* Public Methods
 		-------------------------------*/
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        this.response = function(request) {
+			//add the ace admin class
+			this._data.attributes = this._addAttribute(
+			this._data.attributes, 'class', 'form-group clearfix');
 			
-			controller().sync().scope(this).then(this._output);
+			if(this._data.error) {
+				this._data.attributes = this._addAttribute(
+				this._data.attributes, 'class', 'has-error');
+			}
+			
+			//store form templates path to array
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze data for async call
+			this.___freeze();
+			
+			//require form templates
+			//assign it to main form
+			require(['text!' + template], function(template) {
+				//trigger
+				var response = Handlebars.compile(template)(this._data);
+				this.Controller().trigger('block-response', request, response);
+				
+				//we are done, unfreeze data
+				this.___unfreeze();
+			}.bind(this));
 			
 			return this;
 		};
@@ -49,31 +69,6 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			//store form templates path to array
-			var templates = ['text!' + this._template];
-			
-			//add the ace admin class
-			this._data.attributes = this._addAttribute(
-			this._data.attributes, 'class', 'form-group clearfix');
-			
-			if(this._data.error) {
-				this._data.attributes = this._addAttribute(
-				this._data.attributes, 'class', 'has-error');
-			}
-			
-			var callback = this._callback, data = this._data;
-			
-			//require form templates
-			//assign it to main form
-			require(templates, function(template) {
-				//render
-				callback(Handlebars.compile(template)(data));
-					
-				next();
-			}.bind(this));
-		};
-		
 		this._addAttribute = function(attributes, key, value, verbose) {
 			//we are attempting to inject a new class name
 			if(attributes.indexOf(key + '=') == -1) {

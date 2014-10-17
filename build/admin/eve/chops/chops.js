@@ -1,7 +1,7 @@
 /**
  * Chops - Client HTML5 on Push State
  *
- * @version 0.0.2
+ * @version 0.0.3
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/chops
  * @license MIT
@@ -37,6 +37,7 @@
 		/**
 		 * Returns a default state even if one is not set
 		 *
+		 * @string
 		 * @return object
 		 */
 		this.getState = function() {
@@ -80,6 +81,17 @@
 	
 			$(window).unbind(event);
 			return this;
+		};
+		
+		/**
+		 * Effectively pushes a url 
+		 *
+		 * @param string
+		 * @return this
+		 */
+		this.redirect = function(url) {
+			__pushLink(url);
+			return this
 		};
 		
 		/**
@@ -334,12 +346,23 @@
 		var __getState = function(url) {
 			var state = { 
 				url		: url,
+				path	: url.split('?').shift(),
 				query	: '', //query string
 				json	: '', //json string; no files
 				method	: 'GET', 
 				data	: {}, //combined data in common js object
 				serial	: [], //serialized array; no files
 				files	: [] }; //serialized array; just files
+			
+			var origin = window.location.protocol + '//' + window.location.hostname;
+			
+			if(window.location.port) {
+				origin += ':' + window.location.port;
+			}
+			
+			if(state.path.indexOf(origin) === 0) {
+				state.path = state.path.substr(origin.length);
+			}
 			
 			//if there is a ?
 			if(state.url.indexOf('?') !== -1) {

@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,19 +10,52 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
+        this._data = {};
     
 		/* Public Methods
 		-------------------------------*/
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        /**
+		 * Determines the response
+		 * 
+		 * @param object request object
+		 * @return this
+		 */
+		this.response = function(request) {
+			//freeze the data for async call
+			this.___freeze();
 			
-			controller().sync().scope(this).then(this._output);
+			//load up the action
+			require([this.Controller().path('block/action') + '/field/select.js'], function(action) {
+				var innerTemplate = this._data.innerTemplate;
+				
+				//load the action
+				action()
+				//set the data needed
+				.setData(
+					this._data.name, 
+					__countries,
+					this._data.value, 
+					this._data.attributes)
+				//pass the attributes along
+				.setInnerTemplate(function() {
+					return innerTemplate;
+				})
+				//render the text field
+				.response(request);
+				
+				//unfreeze data
+				this.___unfreeze();
+			}.bind(this));
 			
 			return this;
 		};
 		
+		/**
+		 * Sets data depending on arguments from block
+		 *
+		 * @param mixed[,mixed..]
+		 * @return this
+		 */
 		this.setData = function(name, value, attributes) {
 			this._data.name 		= name;
 			this._data.value 		= value;
@@ -31,6 +64,12 @@ define(function() {
 			return this;
 		};
 		
+		/**
+		 * Sets inner template if applicable
+		 *
+		 * @param string
+		 * @return this
+		 */
 		this.setInnerTemplate = function(template) {
 			//make template an empty function
 			//if not already defined
@@ -45,32 +84,8 @@ define(function() {
 
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			//load up the action
-			require([controller().path('block/action') + '/field/select.js'], function(action) {
-				//load the action
-				action()
-				//set the data needed
-				.setData(
-					this._data.name, 
-					__countries,
-					this._data.value, 
-					this._data.attributes)
-				//pass the attributes along
-				.setInnerTemplate(function() {
-					return this._data.innerTemplate;
-				}.bind(this))
-				//render the text field
-				.response(function(html) {
-					//call the callback set in render
-					this._callback(html);
-					
-					//continue with sequence
-					next();
-				}.bind(this));
-			}.bind(this));
-		};
-		
+		/* Private Methods
+		-------------------------------*/
 		/* Large Data
 		-------------------------------*/
 		var __countries = [ 
@@ -315,8 +330,5 @@ define(function() {
 			{ value : 'YU', label : 'Yugoslavia' },
 			{ value : 'ZM', label : 'Zambia' },
 			{ value : 'ZW', label : 'Zimbabwe'} ];
-			
-		/* Private Methods
-		-------------------------------*/
 	});
 });

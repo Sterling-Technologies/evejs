@@ -1,5 +1,5 @@
 define(function() {
-	return jQuery.eve.action.extend(function() {
+	return jQuery.eve.base.extend(function() {
 		/* Require
 		-------------------------------*/
 		var $ = jQuery;
@@ -10,9 +10,8 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-        this._callback = null;
-    
-        this._template = controller().path('block/template') + '/field/file.html';
+        this._data 		= {};
+        this._template 	= '/field/file.html';
 	
 		/* Private Properties
 		-------------------------------*/    
@@ -20,49 +19,69 @@ define(function() {
 
 		/* Public Methods
 		-------------------------------*/
-		this.loadAssets = function(callback) {
-			//make sure callback is a function
-			callback = callback || $.noop;
-			
+		this.loadAssets = function() {
 			//if loaded
 			if(_loaded) {
 				//do nothing
-				callback();
 				return this;
 			}
 			
 			//add the style to header
 			//<link rel="stylesheet" type="text/css" href="/styles/file.css" />
 			$('<link rel="stylesheet" type="text/css" />')
-				.attr('href', controller().path('block/asset') + '/styles/file.css')
+				.attr('href', this.Controller().path('block/asset') + '/styles/file.css')
 				.appendTo('head');
 			
 			//add script to header
 			//<script type="text/javascript" src="/scripts/file.js">script>
 			$('<script type="text/javascript"></script>')
-				.attr('src', controller().path('block/asset') + '/scripts/file.js')
+				.attr('src', this.Controller().path('block/asset') + '/scripts/file.js')
 				.appendTo('head');
 			
 			_loaded = true;
 			
-			callback();
-			
 			return this;
 		};
 	
-        this.response = function(callback) {
-			//the callback will be called in output
-			this._callback = callback;
+        /**
+		 * Determines the response
+		 * 
+		 * @param object request object
+		 * @return this
+		 */
+		this.response = function(request) {
+			//load assets
+			this.loadAssets();
 			
-			controller().sync()
-				.scope(this)
-				.then(this.loadAssets)
-				.then(this._output)
-				.then(this._listen);
+			//store form templates path to array
+			var template = this.Controller().path('block/template') + this._template;
+			
+			//freeze the data for async call
+			this.___freeze();
+			
+			//require form templates
+			//assign it to main form
+			require(['text!' + template], function(template) {
+				//trigger
+				var response = Handlebars.compile(template)(this._data);
+				this.Controller().trigger('block-response', request, response);
+				
+				//now listen
+				this._listen();
+				
+				//unfreeze data
+				this.___unfreeze();
+			}.bind(this));
 			
 			return this;
 		};
 		
+		/**
+		 * Sets data depending on arguments from block
+		 *
+		 * @param mixed[,mixed..]
+		 * @return this
+		 */
 		this.setData = function(name, value, attributes) {
 			this._data.name 		= name;
 			this._data.value 		= value;
@@ -71,6 +90,12 @@ define(function() {
 			return this;
 		};
 		
+		/**
+		 * Sets inner template if applicable
+		 *
+		 * @param string
+		 * @return this
+		 */
 		this.setInnerTemplate = function(template) {
 			//make template an empty function
 			//if not already defined
@@ -85,23 +110,7 @@ define(function() {
 	
 		/* Protected Methods
 		-------------------------------*/
-		this._output = function(next) {
-			//store form templates path to array
-			var templates = ['text!' + this._template];
-			
-			var callback = this._callback, data = this._data;
-			
-			//require form templates
-			//assign it to main form
-			require(templates, function(template) {
-				//render
-				callback(Handlebars.compile(template)(data));
-					
-				next();
-			}.bind(this));
-		};
-	
-		this._listen = function(next) {
+		this._listen = function() {
 			//find all the widgets
 			$('div.eve-field-file')
 				//remove the ones already set
@@ -119,8 +128,6 @@ define(function() {
 				.find('button').click(function() {
 					$(this).parent().remove();
 				});
-				
-			next();
 		};
 		
 		this._addAttribute = function(attributes, key, value, verbose) {
