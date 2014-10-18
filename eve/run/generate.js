@@ -180,7 +180,7 @@ module.exports = function(eve, command) {
 		}
 		
 		//build the schema
-		var schema = [];
+		var defaults, schema = [];
 		schema.push('CREATE TABLE `'+data.name+'` (');
 		schema.push('`'+data.primary+'` int(10) unsigned NOT NULL,');
 		
@@ -192,31 +192,37 @@ module.exports = function(eve, command) {
 		
 		for(var name in data.fields) {
 			if(data.fields.hasOwnProperty(name)) {
+				if(typeof data.fields[name].default === 'undefined') {
+					defaults = 'DEFAULT NULL';
+				} else {
+					defaults = 'NOT NULL DEFAULT ' + data.fields[name].default;
+				}
+				
 				switch(data.fields[name].type) {
 					case 'int':
-						schema.push('`'+name+'` int(10) DEFAULT 0,');
+						schema.push('`'+name+'` int(10) ' + defaults + ',');
 						break;
 					case 'float':
-						schema.push('`'+name+'` float(10,2) DEFAULT 0.00,');
+						schema.push('`'+name+'` float(10,2) ' + defaults + ',');
 						break;
 					case 'file':
 					case 'string':
-						schema.push('`'+name+'` varchar(255) DEFAULT NULL,');
+						schema.push('`'+name+'` varchar(255) ' + defaults + ',');
 						break;
 					case 'text':
-						schema.push('`'+name+'` text DEFAULT NULL,');
+						schema.push('`'+name+'` text ' + defaults + ',');
 						break;
 					case 'boolean':
-						schema.push('`'+name+'` int(1) unsigned NOT NULL DEFAULT \'1\',');
+						schema.push('`'+name+'` int(1) unsigned ' + defaults + ',');
 						break;
 					case 'date':
-						schema.push('`'+name+'` date NOT NULL,');
+						schema.push('`'+name+'` date ' + defaults + ',');
 						break;
 					case 'datetime':
-						schema.push('`'+name+'` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,');
+						schema.push('`'+name+'` datetime ' + defaults + ',');
 						break;
 					case 'time':
-						schema.push('`'+name+'` time NOT NULL,');
+						schema.push('`'+name+'` time ' + defaults + ',');
 						break;
 				}
 			}
@@ -320,7 +326,7 @@ module.exports = function(eve, command) {
 				next.thread('fixture-item', i, j + 1, database, data);		
 			}.bind(this));
 			
-			return
+			return;
 		}
 		
 		next.thread('generate-type', i, 0);

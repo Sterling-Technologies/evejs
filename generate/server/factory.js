@@ -365,31 +365,67 @@ module.exports = require('edenjs').extend(function() {
 			{{/if~}}
 			{{#loop fields~}}
 			{{#when value.type '==' 'int'~}}
-			schema.push('`{{../key}}` int(10) DEFAULT 0,');
+			schema.push("`{{../key}}` int(10) {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'float'~}}
-			schema.push('`{{../key}}` float(10,2) DEFAULT 0.00,');
+			schema.push("`{{../key}}` float(10,2) {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'file'~}}
-			schema.push('`{{../key}}` varchar(255) DEFAULT NULL,');
+			schema.push("`{{../key}}` varchar(255) {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'string'~}}
-			schema.push('`{{../key}}` varchar(255) DEFAULT NULL,');
+			schema.push("`{{../key}}` varchar(255) {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'text'~}}
-			schema.push('`{{../key}}` text DEFAULT NULL,');
+			schema.push("`{{../key}}` text {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'boolean'~}}
-			schema.push('`{{../key}}` int(1) unsigned NOT NULL DEFAULT \'1\',');
+			schema.push("`{{../key}}` int(1) unsigned {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'date'~}}
-			schema.push('`{{../key}}` date NOT NULL,');
+			schema.push("`{{../key}}` date {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'datetime'~}}
-			schema.push('`{{../key}}` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,');
+			schema.push("`{{../key}}` datetime {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{#when value.type '==' 'time'~}}
-			schema.push('`{{../key}}` time NOT NULL,');
+			schema.push("`{{../key}}` time {{#if ../value.default~}}
+				NOT NULL DEFAULT {{{../value.default}}}
+				{{~else~}}
+				NOT NULL
+				{{~/if~}},");
 			{{/when~}}
 			{{/loop~}}
 			

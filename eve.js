@@ -117,6 +117,25 @@ module.exports = require('edenjs').extend(function() {
 			normal.default = field.default;
 		}
 		
+		if(normal.default === null || normal.default === 'NULL') {
+			normal.default = 'NULL'
+		} else if(normal.field === 'int' && typeof normal.default !== 'undefined') {
+			normal.default = parseInt(normal.default) || '0';
+			normal.default += '';
+		} else if(normal.field === 'float' && typeof normal.default !== 'undefined') {
+			normal.default = parseFloat(normal.default) || '0.00';
+			normal.default += '';
+		} else if(normal.field === 'boolean' && typeof normal.default !== 'undefined') {
+			normal.default = !!normal.default ? '1': '0';
+		} else if(normal.field === 'datetime' 
+		&& (normal.default === 'now' 
+		|| normal.default === 'now()'
+		|| normal.default === 'CURRENT_TIMESTAMP')) {
+			normal.default = 'CURRENT_TIMESTAMP';
+		} else if(typeof normal.default === 'string') {
+			normal.default = "'" + normal.default + "'";
+		}
+		
 		var valid = [];
 		
 		for(var i = 0; i < normal.valid.length; i++) {

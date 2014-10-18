@@ -69,7 +69,7 @@ define(function() {
 				this._data.{{../../../name}}.{{../../key}} = Date.now();
 						{{~/when~}} 
 						{{~#when value.default '!=' 'now()'}}
-				this._data.{{../../../name}}.{{../../key}} = {{../../value.default}};
+				this._data.{{../../../name}}.{{../../key}} = {{{../../value.default}}};
 						{{~/when~}} 
 					{{~/if~}} 
 				{{~/loop}}
