@@ -61,7 +61,7 @@ module.exports = require('edenjs').extend(function() {
 				{{~#when value.[0] '==' 'required' ~}}
 				
 		if(!data.{{../../key}} || !data.{{../../key}}.length) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is required!' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is required!' });
 		}
 		
 				{{~/when~}}
@@ -70,13 +70,13 @@ module.exports = require('edenjs').extend(function() {
 					{{~#when ../../value.type '==' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}}.length <= {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be greater than {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 					{{~#when ../../value.type '!=' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}} <= {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be greater than {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 				{{~/when~}}
@@ -85,13 +85,13 @@ module.exports = require('edenjs').extend(function() {
 					{{~#when ../../value.type '==' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}}.length < {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than or equal to {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be greater than or equal to {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 					{{~#when ../../value.type '!=' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}} < {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be greater than or equal to {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be greater than or equal to {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 				{{~/when~}}
@@ -100,13 +100,13 @@ module.exports = require('edenjs').extend(function() {
 					{{~#when ../../value.type '==' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}}.length >= {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be less than {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 					{{~#when ../../value.type '!=' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}} >= {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be less than {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 				{{~/when~}}
@@ -115,13 +115,13 @@ module.exports = require('edenjs').extend(function() {
 					{{~#when ../../value.type '==' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}}.length > {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than or equal to {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be less than or equal to {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 					{{~#when ../../value.type '!=' 'string'~}} 
 					
 		if(data.{{../../../key}} && data.{{../../../key}} > {{../../value.[1]}}) {
-			errors.push({ name: '{{../../../key}}', message: '{{../../../key}} must be less than or equal to {{../../value.[1]}}' });
+			errors.push({ name: '{{../../../key}}', message: '{{../../../value.label}} must be less than or equal to {{../../value.[1]}}' });
 		}
 					{{~/when~}}
 				{{~/when~}}
@@ -134,7 +134,7 @@ module.exports = require('edenjs').extend(function() {
 		&& {{/unless~}}
 		{{/loop}}
 		) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} must be one of {{#loop value.[1] ~}}
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} must be one of {{#loop value.[1] ~}}
 			{{value.label}}{{~#unless last}}, {{/unless~}}{{/loop}}' });
 		}
 		
@@ -147,7 +147,7 @@ module.exports = require('edenjs').extend(function() {
 			'".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}' + 
 			'\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid email' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not a valid email' });
 		}
 		
 				{{~/when~}}
@@ -157,7 +157,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[0-9a-fA-F]{6}$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid hexadecimal' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not a valid hexadecimal' });
 		}
 		
 				{{~/when~}}
@@ -168,7 +168,7 @@ module.exports = require('edenjs').extend(function() {
 			'^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3' +
 			'[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid credit card' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not a valid credit card' });
 		}
 		
 				{{~/when~}}
@@ -179,7 +179,7 @@ module.exports = require('edenjs').extend(function() {
 			'<\\/?\\w+((\\s+(\\w|\\w[\\w-]*\\w)(\\s*=\\s*(?:\\".*?' + 
 			'\\"|\'.*?\'|[^\'\\">\\s]+))?)+\\s*|\\s*)\\/?>', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not valid HTML' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not valid HTML' });
 		}
 		
 				{{~/when~}}
@@ -189,7 +189,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^(http|https|ftp):\\/\\/([A-Z0-9][A-Z0-9_-]*(?:.[A-Z0-9][A-Z0-9_-]*)+):?(d+)?\\/?', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid URL' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not a valid URL' });
 		}
 		
 				{{~/when~}}
@@ -199,7 +199,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[a-z0-9-]+', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not a valid slug' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not a valid slug' });
 		}
 		
 				{{~/when~}}
@@ -209,7 +209,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[a-zA-Z0-9]+$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} must be alpha-numeric' });
 		}
 		
 				{{~/when~}}
@@ -219,7 +219,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[a-zA-Z0-9-]+$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-hyphen' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} must be alpha-numeric-hyphen' });
 		}
 		
 				{{~/when~}}
@@ -229,7 +229,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[a-zA-Z0-9_]+$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-underscore' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} must be alpha-numeric-underscore' });
 		}
 		
 				{{~/when~}}
@@ -239,7 +239,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'^[a-zA-Z0-9-_]+$', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} must be alpha-numeric-hyphen-underscore' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} must be alpha-numeric-hyphen-underscore' });
 		}
 		
 				{{~/when~}}
@@ -249,7 +249,7 @@ module.exports = require('edenjs').extend(function() {
 		if(data.{{../../key}} && !(new RegExp(
 			'{{../value.[1]}}', 'ig'))
 			.test(data.{{../../key}})) {
-			errors.push({ name: '{{../../key}}', message: '{{../../key}} is not valid' });
+			errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is not valid' });
 		}
 		
 				{{~/when~}}
@@ -497,7 +497,7 @@ module.exports = require('edenjs').extend(function() {
 		
 		{{#loop fixture~}}
 		.then(function(next) {
-			var model = database.model({{../name}});
+			var model = database.model('{{../vendor}}_{{../name}}');
 			
 			model.___construct({
 				{{#loop value~}}

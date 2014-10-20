@@ -1,6 +1,6 @@
 module.exports = function(id, settings, request, response) {
 	//validate
-	var errors = this.{{name}}().getErrors(settings);
+	var errors = this.package('{{name}}').getErrors(settings);
 	
 	//if there are errors
 	if(errors.length) {
@@ -18,7 +18,7 @@ module.exports = function(id, settings, request, response) {
 	
 	{{~#if slug}}
 	
-	this.{{name}}()
+	this.package('{{name}}')
 	.search()
 	.addFilter('{{primary}} = ?', id)
 	.getRow(function(error, row) {
@@ -29,7 +29,7 @@ module.exports = function(id, settings, request, response) {
 			return;
 		}
 		
-		this.{{name}}().getSlug(settings.{{slug.[1]}}, row.{{slug.[0]}}, function(error, slug) {
+		this.package('{{name}}').getSlug(settings.{{slug.[1]}}, row.{{slug.[0]}}, function(error, slug) {
 			//if there are errors
 			if(error) {
 				//trigger an error
@@ -40,7 +40,7 @@ module.exports = function(id, settings, request, response) {
 			settings.{{slug.[0]}} = slug;
 			
 			//create the model and save
-			var model = this.{{name}}().model(settings);
+			var model = this.package('{{name}}').model(settings);
 	
 			model.{{primary}} = id;
 			
@@ -60,7 +60,7 @@ module.exports = function(id, settings, request, response) {
 	
 	{{~else~}}
 	
-	var model = this.{{name}}().model(settings);
+	var model = this.package('{{name}}').model(settings);
 	
 	model.{{primary}} = id;
 	

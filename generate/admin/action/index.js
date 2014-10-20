@@ -107,7 +107,7 @@ define(function() {
 		};
 	
 		this._output = function(request, next) {
-			var template = this.{{name}}().path('template') + this._template;
+			var template = this.Controller().package('{{name}}').path('template') + this._template;
 			
 			//bulk load the templates
 			require(['text!' + template], function(template) {

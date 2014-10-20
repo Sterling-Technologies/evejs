@@ -1,7 +1,7 @@
 define(function() {
 	return function(e, settings, request, action) {
 		//validate
-		var errors = this.{{name}}().getErrors(settings);
+		var errors = this.package('{{name}}').getErrors(settings);
 		
 		//if there are errors
 		if(errors.length) {
@@ -44,7 +44,7 @@ define(function() {
 		});
 		
 		//send to server
-		this.{{name}}().create(settings, function(error, response) {
+		this.package('{{name}}').create(settings, function(error, response) {
 			//stop listening to the progress
 			this.off('progress');
 			

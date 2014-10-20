@@ -2,10 +2,10 @@ define(function() {
 	return function() {
 		//set paths
 		this
-			.path('{{name}}'			, this.path('package') + '/{{vendor}}/{{name}}')
-			.path('{{name}}/action'		, this.path('package') + '/{{vendor}}/{{name}}/action')
-			.path('{{name}}/event'		, this.path('package') + '/{{vendor}}/{{name}}/event')
-			.path('{{name}}/template'	, this.path('package') + '/{{vendor}}/{{name}}/template');	
+			.path('{{name}}'			, this.path('package') + '/{{name}}')
+			.path('{{name}}/action'		, this.path('package') + '/{{name}}/action')
+			.path('{{name}}/event'		, this.path('package') + '/{{name}}/event')
+			.path('{{name}}/template'	, this.path('package') + '/{{name}}/template');	
 		
 		//load the factory
 		require([this.path('{{name}}') + '/factory.js'], function(factory) {

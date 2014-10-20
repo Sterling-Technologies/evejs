@@ -17,7 +17,15 @@ define(function() {
 		/* Public.Methods
 		-------------------------------*/
 		this.response = function(request) {
-			var id 	= request.path.split('/')[3];
+			//if no ID
+			if(!request.variables[0]) {
+				//setup an error
+				this.Controller().notify('Error', 'No ID set', 'error');
+				window.history.back();
+				return this;
+			}
+			
+			var id 	= request.variables[0];
 			this.Controller().trigger('{{name}}-restore', id, request, this);
 			return this;
 		};

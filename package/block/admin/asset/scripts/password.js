@@ -99,7 +99,7 @@ function MaskedPassword(passfield, symbol)
 	//save a reference to this
 	var self = this;
 	
-	//then apply the core events to the visible field
+	//then apply the events to the visible field
 	this.addListener(passfield, 'change', function(e) 
 	{ 
 		self.fullmask = false; 

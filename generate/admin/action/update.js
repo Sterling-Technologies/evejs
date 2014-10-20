@@ -33,7 +33,7 @@ define(function() {
 			//variable list
 			this._data.mode 	= 'update';
 			this._data.url 		= request.url;
-			this._data.{{name}}		= request.data;
+			this._data.setting		= request.data;
 			this._data.errors 	= {};
 			
 			//if there are field errors
@@ -53,26 +53,34 @@ define(function() {
 			}
 			
 			//find out the id
-			var id = request.path.split('/')[3];
+			//if no ID
+			if(!request.variables[0]) {
+				//setup an error
+				this.Controller().notify('Error', 'No ID set', 'error');
+				window.history.back();
+				return this;
+			}
+			
+			var id 	= request.variables[0];
 			
 			//if there is data from the request and there are no errors
-			if(Object.keys(this._data.{{name}}).length && !request.error) {
+			if(Object.keys(this._data.setting).length && !request.error) {
 				//start the update process
-				this.Controller().trigger('{{name}}-update', id, this._data.{{name}}, request, this);
+				this.Controller().trigger('{{name}}-update', id, this._data.setting, request, this);
 				return this;
 			}
 			
 			delete request.error;
 			
 			//if no data set
-			if(JSON.stringify(this._data.{{name}}) === '{}') {
+			if(JSON.stringify(this._data.setting) === '{}') {
 				//freeze the data
 				this.___freeze();
 				
 				//get it from the server
-				this.{{name}}().getDetail(id, function(response) {
+				this.Controller().package('{{name}}').getDetail(id, function(response) {
 					//now set the data
-					this._data.{{name}} = response.results;
+					this._data.setting = response.results;
 					//now output it
 					this._output(request);
 				}.bind(this));
@@ -110,27 +118,27 @@ define(function() {
 			{{#loop fields ~}}
 			{{~#if value.field ~}}
 			{{~#when value.field.[0] '==' 'datetime' ~}}
-			if(this._data.{{../../../name}} && this._data.{{../../../name}}.{{../../key}}) {
-				this._data.{{../../../name}}.{{../../key}} = this.Time().toDate(this._data.{{../../../name}}.{{../../key}}, 'm-d-Y g:i A');
+			if(this._data.setting.{{../../key}}) {
+				this._data.setting.{{../../key}} = this.Time().toDate(this._data.setting.{{../../key}}, 'm-d-Y g:i A');
 			}
 			
 			{{/when~}}
 			{{~#when value.field.[0] '==' 'date' ~}}
-			if(this._data.{{../../../name}} && this._data.{{../../../name}}.{{../../key}}) {
-				this._data.{{../../../name}}.{{../../key}} = this.Time().toDate(this._data.{{../../../name}}.{{../../key}}, 'm-d-Y');
+			if(this._data.setting.{{../../key}}) {
+				this._data.setting.{{../../key}} = this.Time().toDate(this._data.setting.{{../../key}}, 'm-d-Y');
 			}
 			
 			{{/when~}}
 			{{~#when value.field.[0] '==' 'time' ~}}
-			if(this._data.{{../../../name}} && this._data.{{../name}}.{{../../key}}) {
-				this._data.{{../../../name}}.{{../../key}} = this.Time().toDate(this._data.{{../../../name}}.{{../../key}}, 'g:i A');
+			if(this._data.setting.{{../../key}}) {
+				this._data.setting.{{../../key}} = this.Time().toDate(this._data.setting.{{../../key}}, 'g:i A');
 			}
 			
 			{{/when~}}
 			{{~/if~}}
 			{{~/loop}}
 			
-			var template = this.{{name}}().path('template') + this._template;
+			var template = this.Controller().package('{{name}}').path('template') + this._template;
 			
 			//freeze the data
 			this.___freeze();

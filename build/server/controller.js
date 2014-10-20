@@ -46,6 +46,16 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 	};
 	
 	/**
+	 * Returns the package factory
+	 *
+	 * @param string
+	 * @return object
+	 */
+	this.package = function(name) {
+		return require('./package/'+name+'/factory').load(this);
+	};
+	
+	/**
 	 * Returns the path given the key
 	 *
 	 * @param string

@@ -61,8 +61,8 @@ eve()
 		console.log('\x1b[32m%s\x1b[0m', name + ' installation complete!');
 	})
 	
-	.on('generate-complete', function(packages, environments) {
-		console.log('\x1b[32m%s\x1b[0m', packages.join(', ') + ' were successfully generated!');
+	.on('generate-complete', function(package, environments) {
+		console.log('\x1b[32m%s\x1b[0m', package + ' was successfully generated!');
 		process.exit(0);
 	})
 	

@@ -1,6 +1,6 @@
 module.exports = function(id, request, response) {
 	//create the model and save
-	var model = this.{{name}}().model();
+	var model = this.package('{{name}}').model();
 	
 	model.{{primary}} = id;
 	

@@ -3,13 +3,10 @@ module.exports = function() {
 	.path('{{name}}', __dirname)
 	.path('{{name}}/action', __dirname + '/action')
 	.path('{{name}}/event', __dirname + '/event')
-	.path('{{name}}/upload', this.path('upload') + '/core/{{name}}')
-	.{{name}} = function() {
-		return require('./factory').load(this);
-	};
-
+	.path('{{name}}/upload', this.path('upload') + '/{{name}}');
+	
 	//get event path
-	var events = this.{{name}}().path('event');
+	var events = this.package('{{name}}').path('event');
 	
 	//get files in the event folder
 	this.Folder(events).getFiles(null, false, function(error, files) {

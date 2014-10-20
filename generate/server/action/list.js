@@ -22,7 +22,7 @@ module.exports = require('edenjs').extend(function() {
 			keyword	= request.query.keyword || null;
 		
 		var search = this.Controller()
-			.{{name}}()
+			.package('{{name}}')
 			.search()
 			.setStart(parseInt(start) || 0)
 			.setRange(parseInt(range) || 0);

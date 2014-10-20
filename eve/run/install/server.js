@@ -2,7 +2,7 @@ module.exports = function(eve, command) {
 	var name 		= command.shift() || 'server',
 		exec 		= require('child_process').exec,
 		separator	= require('path').sep,
-		vendors 	= [];
+		packages 	= [];
 	
 	eve
 	.setDeployPath('./deploy/' + name)
@@ -66,7 +66,7 @@ module.exports = function(eve, command) {
 			.trigger('install-step', 4, 'server', name)
 			.Folder(source).copy(destination, next);
 	})
-	//get vendor folders
+	//get package folders
 	.then(function(error, next) {
 		if(error) {
 			this.trigger('error', error);
@@ -78,92 +78,67 @@ module.exports = function(eve, command) {
 			.Folder(this.getEvePath() + '/package')
 			.getFolders(null, false, next);
 	})
-	//for each vendor copy package
+	//start to copy package
 	.then(function(error, folders, next) {
 		if(error) {
 			this.trigger('error', error);
 			return;
 		}
 		
-		vendors = folders;
-		next.thread('copy-vendor', 0);
+		packages = folders;
+		
+		for(var i = 0; i < packages.length; i++) {
+			//append the server folder
+			packages[i].path += this.path('/server');
+		}
+		
+		next.thread('copy-package', 0);
 	})
-	//copy vendor
-	.thread('copy-vendor', function(i, next) {
-		if(i < vendors.length) {
-			//get folders
-			var callback = next.thread.bind(null, 'copy-packages', i);
+	//package loop
+	.thread('copy-package', function(i, next) {
+		if(i < packages.length) {
+			if(!packages[i].isFolder()) {
+				next.thread('copy-package', i + 1);	
+				return;
+			}
 			
-			vendors[i].getFolders(null, false, callback);
-			
+			next.thread('copy-package-to-deploy', i);
 			return;
 		}
 		
 		next();
 	})
-	//copy packages
-	.thread('copy-packages', function(i, error, folders, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		next.thread('copy-package', folders, i, 0);
-	})
-	//copy package
-	.thread('copy-package', function(packages, i, j, next) {
-		if(j < packages.length) {
-			//append the server folder
-			packages[j].path += this.path('/server');
-			
-			//is there a server folder ?
-			if(!packages[j].isFolder()) {
-				//move on
-				next.thread('copy-package', packages, i, j + 1);
-				return;
-			}
-			
-			//copy to deploy
-			next.thread('copy-package-to-deploy', packages, i, j);
-			return;
-		}
-		
-		next.thread('copy-vendor', i + 1);
-	})
-	//copy package to deploy
-	.thread('copy-package-to-deploy', function(packages, i, j, next) {
-		// /[EVE_PATH]/package/[VENDOR]/[PACKAGE]/server -> [DEPLOY_PATH]/package/[VENDOR]/[PACKAGE]
+	.thread('copy-package-to-deploy', function(i, next) {
+		// /[EVE_PATH]/package/[PACKAGE]/server -> [DEPLOY_PATH]/package/[PACKAGE]
 		var destination = this.getDeployPath() + '/package/' 
-			+ vendors[i].getName() + '/' 
-			+ packages[j].getParent().split(separator).pop(); 
+			+ packages[i].getParent().split(separator).pop(); 
 		
-		var callback = next.thread.bind(null, 'copy-package-to-build', packages, i, j);
-		packages[j].copy(this.path(destination), callback);
+		var callback = next.thread.bind(null, 'copy-package-to-build', i);
+		packages[i].copy(this.path(destination), callback);
 	})
-	//copy package to build
-	.thread('copy-package-to-build', function(packages, i, j, error, next) {
+	
+	.thread('copy-package-to-build', function(i, error, next) {
 		if(error) {
 			this.trigger('error', error);
 			return;
 		}
 		
-		// /[EVE_PATH]/package/[VENDOR]/[PACKAGE]/server -> [BUILD_PATH]/package/[VENDOR]/[PACKAGE]/[NAME]
+		// /[EVE_PATH]/package/[PACKAGE]/server -> [BUILD_PATH]/package/[PACKAGE]/[NAME]
 		var destination = this.getBuildPath() + '/package/' 
-			+ vendors[i].getName() + '/' 
-			+ packages[j].getParent().split(separator).pop() + '/'
+			+ packages[i].getParent().split(separator).pop() + '/'
 			+ name; 
 		
-		var callback = next.thread.bind(null, 'next-package', packages, i, j);
-		packages[j].copy(this.path(destination), callback);
+		var callback = next.thread.bind(null, 'next-package', i);
+		packages[i].copy(this.path(destination), callback);
 	})
 	//check for errors and traverse to the next package
-	.thread('next-package', function(packages, i, j, error, next) {
+	.thread('next-package', function(i, error, next) {
 		if(error) {
 			this.trigger('error', error);
 			return;
 		}
 		
-		next.thread('copy-package', packages, i, j + 1);
+		next.thread('copy-package', i + 1);
 	})
 	//finish up
 	.then(function(next) {

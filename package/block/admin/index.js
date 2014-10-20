@@ -2,11 +2,11 @@ define(function() {
 	return function() {
 		//set paths
 		this
-			.path('block'			, this.path('package') + '/core/block')
-			.path('block/asset'		, this.path('package') + '/core/block/asset')
-			.path('block/action'	, this.path('package') + '/core/block/action')
-			.path('block/event'		, this.path('package') + '/core/block/event')
-			.path('block/template'	, this.path('package') + '/core/block/template');	
+			.path('block'			, this.path('package') + '/block')
+			.path('block/asset'		, this.path('package') + '/block/asset')
+			.path('block/action'	, this.path('package') + '/block/action')
+			.path('block/event'		, this.path('package') + '/block/event')
+			.path('block/template'	, this.path('package') + '/block/template');	
 		
 		//add template helpers
 		//set pagination

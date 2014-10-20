@@ -21,6 +21,7 @@
 		var __paths 	= {};
 		var __settings 	= {};
 		var __chops		= null;
+		var __packages 	= {};
 		
 		/* Magic
 		-------------------------------*/
@@ -126,6 +127,21 @@
 			}
 			
 			return __paths[key];
+		};
+		
+		/**
+		 * Sets or gets a factory class
+		 *
+		 * @param string
+		 * @param object
+		 */
+		this.package = function(package, factory) {
+			if(typeof factory === 'function') {
+				__packages[package] = factory;
+				return this;
+			}
+			
+			return __packages[package]();
 		};
 		
 		/**

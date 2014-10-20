@@ -1,6 +1,6 @@
 module.exports = function(settings, request, response) {
 	//validate
-	var errors = this.{{name}}().getErrors(settings);
+	var errors = this.package('{{name}}').getErrors(settings);
 	
 	//if there are errors
 	if(errors.length) {
@@ -21,7 +21,7 @@ module.exports = function(settings, request, response) {
 	{{/if}}
 	
 	{{~#if slug}}
-	this.{{name}}().getSlug(settings.{{slug.[1]}}, null, function(error, slug) {
+	this.package('{{name}}').getSlug(settings.{{slug.[1]}}, null, function(error, slug) {
 		//if there are errors
 		if(error) {
 			//trigger an error
@@ -32,7 +32,7 @@ module.exports = function(settings, request, response) {
 		settings.{{slug.[0]}} = slug;
 		
 		//create the model and save
-		this.{{name}}().model(settings).save(function(error, model) {
+		this.package('{{name}}').model(settings).save(function(error, model) {
 			//if there are errors
 			if(error) {
 				//trigger an error
@@ -48,7 +48,7 @@ module.exports = function(settings, request, response) {
 	{{~else~}}
 	
 	//create the model and save
-	this.{{name}}().model(settings).save(function(error, model) {
+	this.package('{{name}}').model(settings).save(function(error, model) {
 		//if there are errors
 		if(error) {
 			//trigger an error

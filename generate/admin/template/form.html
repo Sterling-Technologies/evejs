@@ -1,4 +1,4 @@
-<section class="{{name}}-info\{\{#when mode '==' 'update'\}\} {{name}}-update\{\{/when\}\} row">
+<section class="{{name}}-form\{\{#when mode '==' 'update'\}\} {{name}}-update\{\{/when\}\} row">
 	<div class="col-sm-12">
 		<div class="tabbable">
 			\{\{#when mode '==' 'update'\}\}
@@ -12,13 +12,13 @@
 					{{~#if value.field}}
 					\{\{#block 'form/fieldset' '{{../value.label}}' errors.{{../key}}\}\}
 						{{~#when value.field.[0] '==' 'text'}}
-						\{\{\{block 'field/text' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/text' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'password'}}
-						\{\{\{block 'field/password' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/password' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
@@ -32,85 +32,85 @@
                         {{~/loop}}"{{/if}}'\}\}\}{{/when~}}
 						
 						{{~#when value.field.[0] '==' 'slider'}}
-						\{\{\{block 'field/slider' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						\{\{\{block 'field/slider' '{{../../key}}' ../setting.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'number'}}
-						\{\{\{block 'field/number' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						\{\{\{block 'field/number' '{{../../key}}' ../setting.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'mask'}}
-						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[1]}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/mask' '{{../../key}}' '{{../value.field.[1]}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'color'}}
-						\{\{\{block 'field/color' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/color' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'tag'}}
-						\{\{\{block 'field/tag' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/tag' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'datetime'}}
-						\{\{\{block 'field/datetime' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/datetime' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'date'}}
-						\{\{\{block 'field/date' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/date' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'time'}}
-						\{\{\{block 'field/time' '{{../../key}}' ../{{../../../name}}.{{../key}}
+						\{\{\{block 'field/time' '{{../../key}}' ../setting.{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'autocomplete'}}
-						\{\{\{block 'field/autocomplete' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}
+						\{\{\{block 'field/autocomplete' '{{../../key}}' ../setting.{{../key}} ../{{../key}}
 						{{~#if ../value.holder}} '' 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'combobox'}}
-						\{\{\{block 'field/combobox' '{{../../key}}' ../{{../../../name}}.{{../key}} ../{{../key}}_list
+						\{\{\{block 'field/combobox' '{{../../key}}' ../setting.{{../key}} ../{{../key}}_list
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
 						\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'select'}}
-						\{\{\{block 'field/select' '{{../../key}}' ../{{../key}}_list ../{{../../../name}}.{{../key}}\}\}\}
+						\{\{\{block 'field/select' '{{../../key}}' ../{{../key}}_list ../setting.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'country'}}
-						\{\{\{block 'field/country' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						\{\{\{block 'field/country' '{{../../key}}' ../setting.{{../key}}\}\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'textarea'}}
 						\{\{#block 'field/textarea' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../setting.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'wysiwyg'}}
 						\{\{#block 'field/wysiwyg' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../setting.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'markdown'}}
 						\{\{#block 'field/markdown' '{{../../key}}'
 						{{~#if ../value.holder}} 'placeholder="{{../value.holder}}"'{{/if~}}
-						\}\}\{\{\{../../{{../../../name}}.{{../key}}\}\}\}\{\{/block\}\}
+						\}\}\{\{\{../../setting.{{../key}}\}\}\}\{\{/block\}\}
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'radio'}}
@@ -134,7 +134,7 @@
 						{{~/when~}}
 						
 						{{~#when value.field.[0] '==' 'switch'}}
-						\{\{\{block 'field/switch' '{{../../key}}' ../{{../../../name}}.{{../key}}\}\}\}
+						\{\{\{block 'field/switch' '{{../../key}}' ../setting.{{../key}}\}\}\}
 						{{~/when}}
 					\{{/block}}
 					{{/if~}}

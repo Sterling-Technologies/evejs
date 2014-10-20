@@ -1,6 +1,7 @@
 module.exports = function(request, response) {
 	//if path does not starts with /{{name}}
-	if(request.path !== '/{{name}}' && request.path.indexOf('/{{name}}/') !== 0) {
+	if(request.path !== '/{{name}}' 
+	&& request.path.indexOf('/{{name}}/') !== 0) {
 		//do nothing
 		return;
 	}

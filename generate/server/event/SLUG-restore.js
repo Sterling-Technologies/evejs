@@ -1,7 +1,7 @@
 module.exports = function(id, request, response) {
 	{{~#if active}}
 	//create the model and save
-	var model = this.{{name}}().model();
+	var model = this.package('{{name}}').model();
 	
 	model.{{primary}} = id;
 	model.{{active}} = '1';

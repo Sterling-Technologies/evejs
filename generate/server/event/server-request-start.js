@@ -1,6 +1,7 @@
 module.exports = function(request, response) {
 	//if path does not starts with /{{name}}
-	if(request.path !== '/{{name}}' && request.path.indexOf('/{{name}}/') !== 0) {
+	if(request.path !== '/{{name}}' 
+	&& request.path.indexOf('/{{name}}/') !== 0) {
 		//do nothing
 		return;
 	}
@@ -8,7 +9,7 @@ module.exports = function(request, response) {
 	response.processing = true;
 	
 	//trim the prefix
-	var root 		= this.{{name}}().path('action'),
+	var root 		= this.package('{{name}}').path('action'),
 		path 		= request.path.replace('/{{name}}', ''),
 		buffer 		= path.split('/'),
 		action 		= root + '/index',
