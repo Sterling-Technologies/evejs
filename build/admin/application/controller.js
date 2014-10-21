@@ -22,6 +22,7 @@
 		var __settings 	= {};
 		var __chops		= null;
 		var __packages 	= {};
+		var __state		= null;
 		
 		/* Magic
 		-------------------------------*/
@@ -55,11 +56,7 @@
 		 * @return object|null
 		 */
 		this.getState = function() {
-			if(__chops === null) {
-				return null;
-			}
-			
-			return __chops.getState();
+			return __state;
 		};
 		
 		/**
@@ -347,6 +344,7 @@
 			
 			//get packages
 			this.config('packages', function(packages) {
+				
 				//compile a list of index.js found in each package
 				var list = [];
 				
@@ -447,7 +445,8 @@
 			__chops = $.chops();
 			
 			this.on('request', function(e, path, state) {
-				this.trigger('client-request', state);
+				__state = state || __chops.getState();
+				this.trigger('client-request', __state);
 			}.bind(this));
 			
 			this.trigger('request', window.location.href, this.getState());

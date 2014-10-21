@@ -27,15 +27,14 @@ module.exports = function(eve, command) {
 				extra = separator + 'application'
 			}
 			
-			if(path.length > 4
+			if(path.length > 3
 			&& path[1] == 'package'
-			&& path[4] == environments[i]) {
+			&& path[3] == environments[i]) {
 				destination = settings[environments[i]].path
 					+ extra 	+ separator 
 					+ 'package' + separator
-					+ path[2] 	+ separator 
-					+ path[3] 	+ separator  
-					+ path.slice(5).join(separator);
+					+ path[2] 	+ separator  
+					+ path.slice(4).join(separator);
 				
 				break;
 			}  
