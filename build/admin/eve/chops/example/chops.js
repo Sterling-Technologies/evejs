@@ -1,7 +1,7 @@
 /**
  * Chops - Client HTML5 on Push State
  *
- * @version 0.0.3
+ * @version 0.0.4
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/chops
  * @license MIT
@@ -130,9 +130,11 @@
 		this._hijackPopState = function() {
 			window.onpopstate = function(e) {
 				//now trigger something special
-				var event = jQuery.Event('request');
-				event.state = e.state;
-				$(window).trigger(event, [window.location.href, window.history.state]);
+				var state = __getState(window.location.href),
+					event = jQuery.Event('request');
+				
+				event.state = state;
+				$(window).trigger(event, [window.location.href, state]);
 			};
 		};
 		
