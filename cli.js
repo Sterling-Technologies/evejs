@@ -66,6 +66,12 @@ eve()
 		process.exit(0);
 	})
 	
+	.on('relate-complete', function(schema, environments) {
+		console.log('\x1b[32m%s\x1b[0m', schema.name + ' was successfully generated!');
+		process.exit(0);
+	})
+	
+	
 	.on('watch-init', function(environments) {
 		var settings = this.getSettings();
 		
@@ -150,7 +156,7 @@ eve()
 				return;
 			}
 			
-			console.log('\x1b[33m%s\x1b[0m', 'Testing2');
+			console.log('\x1b[33m%s\x1b[0m', 'Testing');
 			mocha.run(eve, tests, next.bind(this, content));
 		})
 		//then revert if nessisary
@@ -177,16 +183,11 @@ eve()
 			return;
 		}
 		
-		//we only care if this is a js file
-		if (this.File(source).getExtension() !== 'js') {
-			return;
-		}
-		
 		//get the deploy path
 		var deploy = this.setDeployPath(this.getSettings()[name].path).getDeployPath();
 		
 		//get all the files in the deploy path
-		this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+		this.Folder(deploy + '/application').clear().getFiles(null, true, function(error, files) {
 			//if there's an error
 			if(error) {
 				//do nothing
@@ -197,6 +198,8 @@ eve()
 			for(var map = [], i = 0; i < files.length; i++) {
 				map.push(files[i].path.substr(deploy.length));
 			}
+			
+			console.log('\x1b[33m%s\x1b[0m', 'Mapping...');
 			
 			//set the map
 			this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';');

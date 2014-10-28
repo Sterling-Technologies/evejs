@@ -64,7 +64,9 @@ define(function() {
 			var id 	= request.variables[0];
 			
 			//if there is data from the request and there are no errors
-			if(Object.keys(this._data.setting).length && !request.error) {
+			if(Object.keys(this._data.setting).length 
+			&& request.method.toUpperCase() === 'POST'
+			&& !request.error) {
 				//start the update process
 				this.Controller().trigger('{{name}}-update', id, this._data.setting, request, this);
 				return this;
@@ -155,7 +157,7 @@ define(function() {
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
 					.setBody(body)
-					.trigger('{{name}}-response', request, this);            
+					.trigger('{{name}}-update-output', request, this);            
 			
 				//unfreeze data
 				this.___unfreeze();

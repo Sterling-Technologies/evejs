@@ -1,0 +1,179 @@
+{
+    "singular": "User",
+    "plural": "Users",
+    "icon": "user",
+	"primary": "user_id",
+    "slug": ["user_slug", "user_name"],
+    "active": "user_active",
+    "created": "user_created",
+    "updated": "user_updated",
+    "import": true,
+    "export": true,
+    "fields": {
+        "user_name": {
+            "label": "Name",
+            "type": "string",
+            "field": "text",
+            "holder": "John Doe",
+            "valid": "required", 
+            "search": true
+        },		
+        "user_email": {
+            "label": "Email",
+            "type": "string",
+            "field": "text",
+            "holder": "john@acme.com",
+            "valid": ["required", "email"], 
+            "search": true
+        },
+		"user_password": {
+            "label": "Password",
+            "type": "string",
+            "field": "password",
+            "holder": "Enter a password."
+        },
+		"user_phone": {
+            "label": "Phone",
+            "type": "string",
+            "field": "text",
+            "holder": "+1 (415) 555-2424"
+        },
+		"user_street": {
+            "label": "Street",
+            "type": "string",
+            "field": "text",
+            "holder": "123 Sesame Street"
+        },
+		"user_city": {
+            "label": "City",
+            "type": "string",
+            "field": "text",
+            "holder": "New York City", 
+            "search": true
+        },
+		"user_state": {
+            "label": "State",
+            "type": "string",
+            "field": "text",
+            "holder": "New York", 
+            "search": true
+        },
+		"user_country": {
+            "label": "Country",
+            "type": "string",
+            "field": "country", 
+            "search": true
+        },
+		"user_postal": {
+            "label": "Postal",
+            "type": "string",
+            "field": "text",
+            "holder": "12345"
+        },
+		"user_facebook": {
+            "label": "Facebook",
+            "type": "string",
+            "field": "text",
+            "holder": "http://www.facebook.com/john.doe"
+        },
+		"user_twitter": {
+            "label": "Twitter",
+            "type": "string",
+            "field": "text",
+            "holder": "http://www.twitter.com/john.doe"
+        },
+		"user_google": {
+            "label": "Google",
+            "type": "string",
+            "field": "text",
+            "holder": "http://plus.google.com/john.doe"
+        }
+    },
+	"fixture" : [
+		{
+			"user_slug" : "jane-doe",
+			"user_name": "Jane Doe",	
+			"user_email": "jane@acme.com",
+			"user_phone": "+1 (415) 555-2121",
+			"user_street": "123 Sesame Street",
+			"user_city": "Makati City", 
+			"user_state": "Metro Manila", 
+			"user_country": "PH",
+			"user_postal": "12345",
+			"user_facebook": "http://www.facebook.com/jane.doe",
+			"user_twitter": "http://www.twitter.com/jane.doe",
+			"user_google": "http://plus.google.com/john.doe",
+			"user_active" : "1",
+			"user_created" : "2014-08-01 00:00:00",
+			"user_updated" : "2014-09-01 00:00:00"
+		},
+		{
+			"user_slug" : "james-doe",
+			"user_name": "James Doe",	
+			"user_email": "james@acme.com",
+			"user_phone": "+1 (415) 555-2222",
+			"user_street": "234 Sesame Street",
+			"user_city": "Mandaluyong City", 
+			"user_state": "Metro Manila", 
+			"user_country": "PH",
+			"user_postal": "23456",
+			"user_facebook": "http://www.facebook.com/james.doe",
+			"user_twitter": "http://www.twitter.com/james.doe",
+			"user_google": "http://plus.google.com/james.doe",
+			"user_active" : "1",
+			"user_created" : "2014-08-02 00:00:00",
+			"user_updated" : "2014-09-02 00:00:00"
+		},
+		{
+			"user_slug" : "janet-doe",
+			"user_name": "Janet Doe",	
+			"user_email": "janet@acme.com",
+			"user_phone": "+1 (415) 555-2323",
+			"user_street": "345 Sesame Street",
+			"user_city": "Pasig City", 
+			"user_state": "Metro Manila", 
+			"user_country": "PH",
+			"user_postal": "34567",
+			"user_facebook": "http://www.facebook.com/janet.doe",
+			"user_twitter": "http://www.twitter.com/janet.doe",
+			"user_google": "http://plus.google.com/janet.doe",
+			"user_active" : "0",
+			"user_created" : "2014-08-03 00:00:00",
+			"user_updated" : "2014-09-03 00:00:00"
+		},
+		{
+			"user_slug" : "jack-doe",
+			"user_name": "Jack Doe",	
+			"user_email": "jack@acme.com",
+			"user_phone": "+1 (415) 555-2424",
+			"user_street": "456 Sesame Street",
+			"user_city": "Makati City", 
+			"user_state": "Metro Manila", 
+			"user_country": "PH",
+			"user_postal": "45678",
+			"user_facebook": "http://www.facebook.com/jack.doe",
+			"user_twitter": "http://www.twitter.com/jack.doe",
+			"user_google": "http://plus.google.com/jack.doe",
+			"user_active" : "1",
+			"user_created" : "2014-08-04 00:00:00",
+			"user_updated" : "2014-09-04 00:00:00"
+		},
+		{
+			"user_slug" : "jill-doe",
+			"user_name": "Jill Doe",	
+			"user_email": "jill@acme.com",
+			"user_phone": "+1 (415) 555-2525",
+			"user_street": "567 Sesame Street",
+			"user_city": "Quezon City", 
+			"user_state": "Metro Manila", 
+			"user_country": "PH",
+			"user_postal": "56789",
+			"user_facebook": "http://www.facebook.com/jill.doe",
+			"user_twitter": "http://www.twitter.com/jill.doe",
+			"user_google": "http://plus.google.com/jill.doe",
+			"user_active" : "1",
+			"user_created" : "2014-08-05 00:00:00",
+			"user_updated" : "2014-09-05 00:00:00"
+		}
+	]
+}

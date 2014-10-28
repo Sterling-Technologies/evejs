@@ -27,6 +27,12 @@ module.exports = require('edenjs').extend(function() {
 			.setStart(parseInt(start) || 0)
 			.setRange(parseInt(range) || 0);
 		
+		{{~#if active}}
+		if(typeof filter.{{active}} === 'undefined') {
+			filter.{{active}} = 1;
+		}
+		{{/if}}
+		
 		//add filters
 		for(var column in filter) {
 			if(filter.hasOwnProperty(column)) {

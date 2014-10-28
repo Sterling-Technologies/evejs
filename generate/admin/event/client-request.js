@@ -8,7 +8,7 @@ define(function() {
 		
 		//trim the prefix
 		var root 		= this.package('{{name}}').path('action'),
-			path 		= request.url.replace('/{{name}}', ''),
+			path 		= request.path.replace('/{{name}}', ''),
 			buffer 		= path.split('/'),
 			action 		= root + '/index',
 			variables 	= [];

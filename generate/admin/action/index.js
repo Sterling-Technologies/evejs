@@ -38,26 +38,22 @@ define(function() {
 		-------------------------------*/
 		this._setData = function(request, next) {
 			//use a batch call
-			var batch = [];
+			var batch = this.Controller().package('batch');
 			
 			//1. get the list
-			batch.push({ url: this._getListRequest(request.data) });
+			batch.add(this._getListRequest(request.data));
 			
 			{{#if active~}}
 			//2. get the active count
-			batch.push({ url: this._getActiveCountRequest(request.data) });
+			batch.add(this._getActiveCountRequest(request.data));
 			
 			//3. get the trash count
-			batch.push({ url: this._getTrashCountRequest(request.data) });
+			batch.add(this._getTrashCountRequest(request.data));
 			{{~else~}}
 			//2. get the count
-			batch.push({ url: this._getCountRequest(request.data) });
+			batch.add(this._getCountRequest(request.data));
 			{{/if~}}
-			$.post(
-				this.Controller().getServerUrl() + '/{{name}}/batch', 
-				JSON.stringify(batch), function(response) { 
-				response = JSON.parse(response);
-				
+			batch.send(function(error, response) { 
 				var i, rows = [];
 				
 				//loop through data
@@ -120,7 +116,7 @@ define(function() {
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
 					.setBody(body)
-					.trigger('{{name}}-response', request, this);
+					.trigger('{{name}}-list-output', request, this);
 				
 				next();
 			}.bind(this));

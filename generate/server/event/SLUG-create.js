@@ -41,7 +41,7 @@ module.exports = function(settings, request, response) {
 			}
 			
 			//trigger that we are good
-			this.trigger('{{name}}-create-success', model.getSinkId(), request, response);
+			this.trigger('{{name}}-create-success', model.{{primary}}, request, response);
 		}.bind(this));
 	}.bind(this));
 	
@@ -57,7 +57,7 @@ module.exports = function(settings, request, response) {
 		}
 		
 		//trigger that we are good
-		this.trigger('{{name}}-create-success', model.getSinkId(), request, response);
+		this.trigger('{{name}}-create-success', model.{{primary}}, request, response);
 	}.bind(this));
 	
 	{{~/if}}

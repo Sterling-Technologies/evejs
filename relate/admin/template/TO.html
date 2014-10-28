@@ -1,0 +1,100 @@
+<section class="{{name}}-{{to.schema.name}}-list {{from.schema.name}}-update row">
+	<div class="col-sm-12">
+		<div class="tabbable">
+			<ul class="nav nav-tabs padding-16">
+			</ul>
+			<div class="tab-content address-info-tab-content">
+				<div class="table-responsive">
+                    <div class="dataTables_wrapper table-filters" role="grid">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            	<!-- START: SEARCH FORM -->
+                                <form class="pull-right search form-inline" method="get">
+                                    <div class="form-group">
+                                        <input name="keyword" placeholder="Search {{to.schema.plural}}" type="text"
+                                        value="\{\{#if keyword\}\}\{\{keyword\}\}\{\{/if\}\}" class="form-control" />
+                                        \{\{#if mode\}\}
+                                        <input type="hidden" name="mode" value="\{\{mode\}\}" /> 
+                                        \{\{/if\}\} 	
+                                    </div>
+                                    <button class="btn"><i class="icon-search"></i></button>	
+                                </form>
+                                <!-- END: SEARCH FORM -->
+                                
+                                <!-- START: ADD NEW -->
+                                <div class="create"><a class="btn btn-info btn-sm" 
+                                href="/{{to.schema.name}}/create/{{name}}/\{\{id\}\}?redirect=/{{name}}/{{to.schema.name}}/\{\{id\}\}">Create New {{to.schema.singular}}</a></div>
+                                <!-- END: ADD NEW -->
+                            </div>
+                        </div>
+                    </div> 
+                    \{\{#if rows\}\}
+                    <!-- START: POST TABLE -->
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>ID</th>
+                                {{~#if to.schema.slug}}
+                                <th>Slug</th>
+                                {{~/if}}
+                                
+                                <!-- NOTE: BULK GENERATE -->
+                                 
+                                {{#loop to.schema.fields ~}}
+                                {{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
+                                <th>{{value.label}}</th>
+                                {{~/notin ~}}
+                                {{~/loop}}
+                                {{~#if to.schema.created}}
+                                <th>Created</th>
+                                {{~/if}}
+                                {{~#if to.schema.updated}}
+                                <th>Updated</th>
+                                {{~/if}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            \{\{#each rows\}\}
+                            <tr data-id="\{\{ {{to.schema.primary}}\}\}">
+                                <td>
+                                	<a title="Remove" href="/{{name}}/remove/\{\{../id\}\}/\{\{ {{to.schema.primary}}\}\}"
+                                    class="text-danger remove"><i class="icon-remove"></i></a>    
+                                </td>
+                                <td>\{\{ {{to.schema.primary}}\}\}</td>
+                                {{~#if to.schema.slug}}
+                                <td>\{\{ {{to.schema.slug.[0]}}\}\}</td>
+                                {{~/if}}
+                                
+                                <!-- NOTE: BULK GENERATE -->
+                                {{#loop to.schema.fields ~}}
+                                {{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
+                                <td>\{\{ {{../key}}\}\}</td>
+                                {{~/notin ~}}
+                                {{~/loop}}
+                                {{~#if to.schema.created}}
+                                <td>\{\{ {{to.schema.created}}\}\}</td>
+                                {{~/if}}
+                                {{~#if to.schema.updated}}
+                                <td>\{\{ {{to.schema.updated}}\}\}</td>
+                                {{~/if}}
+                            </tr>	
+                            \{\{/each\}\}
+                        </tbody>	
+                    </table>
+                    <!-- END: POST TABLE -->
+                    \{\{else\}\}
+                    <!-- START: NO RESULTS -->
+                    <div class="well no-results">No {{to.schema.plural}} Found</div>
+                    <!-- END: NO RESULTS -->
+                    \{\{/if\}\}
+                </div>
+                <ul class="pagination">
+                    \{\{#block 'component/pagination' count range\}\}
+                    <li\{\{#if active\}\} class="active"\{\{/if\}\}><a href="?\{\{query\}\}">\{\{page\}\}</a></li>
+                    \{\{/block\}\}
+                </ul>
+			</div>
+		</div>
+	</div>
+</section>

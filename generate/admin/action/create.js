@@ -53,14 +53,17 @@ define(function() {
 			}
 			
 			//if there is data from the request and there are no errors
-			if(Object.keys(this._data.setting).length && !request.error) {
+			if(Object.keys(this._data.setting).length 
+			&& request.method.toUpperCase() === 'POST'
+			&& !request.error) {
 				//start the create process
 				this.Controller().trigger('{{name}}-create', this._data.setting, request, this);
 				return this;
 			}
 			
 			//if no data
-			if(!Object.keys(this._data.setting).length) {
+			if(!Object.keys(this._data.setting).length
+			&& request.method.toUpperCase() === 'POST') {
 				//set default data
 				//NOTE: BULK GENERATE
 				{{~#loop fields ~}} 
@@ -145,7 +148,7 @@ define(function() {
 					.setSubheader(this._subheader)
 					.setCrumbs(this._crumbs)
 					.setBody(body)
-					.trigger('{{name}}-response', request, this);            
+					.trigger('{{name}}-create-output', request, this);            
 			
 				//unfreeze data
 				this.___unfreeze();

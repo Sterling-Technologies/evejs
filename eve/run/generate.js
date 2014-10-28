@@ -31,6 +31,13 @@ module.exports = function(eve, command) {
 		
 		schema = require(this.getBuildPath() + '/package/' + package + '/schema.json');
 		
+		//is it relational data?
+		if(typeof schema.from === 'object' && typeof schema.to === 'object') {
+			command.unshift(package);
+			require('./relate')(eve, command);
+			return;
+		}
+		
 		//what is the name?
 		if(!schema.name) {
 			schema.name = package;

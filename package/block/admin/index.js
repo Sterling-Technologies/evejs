@@ -34,7 +34,7 @@ define(function() {
 				action.response(request);
 			});
 			
-			return '<div id="eve-block-' + request.id + '"></div>';
+			return '<div id="eve-block-' + request.id + '" class="eve-block"></div>';
 		});
 		
 		//get event path

@@ -57,7 +57,7 @@ define(function() {
 			}
 			
 			if(!response.error) {
-				this.trigger('{{name}}-create-success', request, action)		
+				this.trigger('{{name}}-create-success', response.results, request, action)		
 				return;
 			}
 			

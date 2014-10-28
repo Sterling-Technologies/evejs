@@ -38,16 +38,21 @@ define(function() {
 			//what is the url base
 			var url =  '/{{name}}/' + data.action + '/';
 			
+			//call the batch
+			var batch = this.Controller().package('batch');
+			
 			//prepare the batch query
-			for(var batch = [], i = 0; i < data.id.length; i++) {
-				batch.push({ url: url + data.id[i] });
+			for(var i = 0; i < data.id.length; i++) {
+				batch.add(url + data.id[i]);
 			}
 			
 			//call the batch remove
-			$.post(
-			this.Controller().getServerUrl() + '/{{name}}/batch', 
-			JSON.stringify(batch), function(response) { 
-				response = JSON.parse(response);
+			batch.send(function(error, response) { 
+				if(error) {
+					this.Controller().notify('Error', error, 'error');
+					return;
+				}
+				
 				for(var errors = false, i = 0; i < response.length; i++) {
 					if(response[i].error && response[i].message) {
 						errors = true;
