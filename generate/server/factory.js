@@ -294,7 +294,7 @@ module.exports = require('edenjs').extend(function() {
 				}
 				
 				for(var count = 0, i = 0; i < rows.length; i++) {
-					if(regex.test(rows[i].{{slug.[1]}})) {
+					if(regex.test(rows[i].{{slug.[0]}})) {
 							count++;
 					}
 				}

@@ -1,7 +1,7 @@
 /**
  * Fojo - Form Object submission with a JS Object
  *
- * @version 0.0.2
+ * @version 0.0.3
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/fojo
  * @license MIT
@@ -78,6 +78,12 @@
 							form.append(name + '[' + i + ']', this._data[name][i]);
 						}
 						
+						continue;
+					}
+					
+					if(typeof this._data[name] === 'undefined'
+					|| this._data[name] === null) {
+						form.append(name, '');
 						continue;
 					}
 					

@@ -2,11 +2,9 @@ var copy = {
 	'all': [
 		'admin/action/index.js',
 		'admin/event/client-request.js',
-		'admin/event/FROM-create-success.js',
 		'admin/event/FROM-update-output.js',
 		'admin/event/NAME-create-error.js',
 		'admin/event/NAME-create-success.js',
-		'admin/event/TO-create-success.js',
 		'admin/event/TO-update-output.js',
 		'admin/factory.js',
 		'admin/index.js',
@@ -68,13 +66,11 @@ var copy = {
 		'admin/action/FROM.js',
 		'admin/action/remove.js',
 		'admin/action/TO.js',
-		'admin/event/FROM-create-output.js',
 		'admin/event/NAME-FROM-output.js',
 		'admin/event/NAME-remove-error.js',
 		'admin/event/NAME-remove-success.js',
 		'admin/event/NAME-remove.js',
 		'admin/event/NAME-TO-output.js',
-		'admin/event/TO-create-output.js',
 		'admin/template/FROM.html',
 		'admin/template/TO.html' ]
 };
