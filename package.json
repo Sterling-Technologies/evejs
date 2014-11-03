@@ -1,6 +1,6 @@
 {
     "name": "eve-pms",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Eve - Package Management System",
     "main": "./eve.js",
     "scripts": {
@@ -9,7 +9,7 @@
     "author": "Christian Blanquera",
     "license": "MIT",
     "dependencies": {
-        "edenjs": "0.0.23",
+        "edenjs": "0.0.24",
         "chokidar": "0.8.2",
         "nodemon": "1.2.1",
         "mocha": "1.20.1",

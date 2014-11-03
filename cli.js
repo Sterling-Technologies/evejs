@@ -71,7 +71,6 @@ eve()
 		process.exit(0);
 	})
 	
-	
 	.on('watch-init', function(environments) {
 		var settings = this.getSettings();
 		
@@ -81,11 +80,14 @@ eve()
 					// starts the nodemon
 					var config = settings[name].nodemon || {
 						scriptPosition : 1, 
-						script : settings[name].path + '/index.js', 
-						args : ['--harmony']
+						script : 'index.js',
+						args : ['--harmony'],
+						cwd: settings[name].path,
+						ignore: ['node_modules', 'upload']
 					};
 					
-					//tmp fix this with config
+					//eventually we should write a better programmatic nodemon and watcher
+					//but for now it's this...
         			nodemon(eve, config);
 				}
 			}

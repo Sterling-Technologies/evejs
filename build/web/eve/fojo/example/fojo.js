@@ -1,7 +1,7 @@
 /**
  * Fojo - Form Object submission with a JS Object
  *
- * @version 0.0.3
+ * @version 0.0.4
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/fojo
  * @license MIT
@@ -227,16 +227,24 @@
 		 * @return object
 		 */
 		var __collapse = function(data) {
-			var result = {}, recurse = function(data, property) {
+			var result = {}, 
+			fix = function(property) {
+				if(property.indexOf('][') === -1) {
+					return property;
+				}
+				
+				return property.replace(']', '') + ']';
+			},
+			recurse = function(data, property) {
 				
 				if (Object(data) !== data) {
-					result[property] = data;
+					result[fix(property)] = data;
 					return;
 				}  
 				
 				if (Array.isArray(data)) {
 					if (data.length == 0) {
-						result[property] = [];
+						result[fix(property)] = [];
 						return;
 					}
 					
@@ -248,7 +256,7 @@
 				} 
 				
 				if(__isNative(data)) {
-					result[property] = data;
+					result[fix(property)] = data;
 					return;
 				}
 				
@@ -260,7 +268,7 @@
 				}
 				
 				if (isEmpty) {
-					result[property] = {};
+					result[fix(property)] = {};
 				}
 			};
 			
@@ -291,7 +299,9 @@
 			|| value instanceof Array
 			|| value instanceof String
 			|| value instanceof Boolean
-			|| value instanceof Number) {
+			|| value instanceof Number
+			|| value instanceof File
+			|| value instanceof FileList) {
 				return true;
 			}
 			

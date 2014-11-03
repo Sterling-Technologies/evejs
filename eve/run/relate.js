@@ -2,9 +2,11 @@ var copy = {
 	'all': [
 		'admin/action/index.js',
 		'admin/event/client-request.js',
+		'admin/event/FROM-create-success.js',
 		'admin/event/FROM-update-output.js',
 		'admin/event/NAME-create-error.js',
 		'admin/event/NAME-create-success.js',
+		'admin/event/TO-create-success.js',
 		'admin/event/TO-update-output.js',
 		'admin/factory.js',
 		'admin/index.js',

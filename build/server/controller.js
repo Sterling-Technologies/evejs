@@ -195,21 +195,21 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 			})
 			
 			//for streaming files
-			.on('file-start', function(file, mime, key) {
+			.on('file-start', function(meta) {
 				//pass it along
-				self.trigger('server-file-start', file, mime, key);
+				self.trigger('server-file-start', meta);
 			})
 			
 			//for streaming files
-			.on('file-data', function(data) {
+			.on('file-data', function(meta, data) {
 				//pass it along
-				self.trigger('server-file-data', data);
+				self.trigger('server-file-data', meta, data);
 			})
 			
 			//for streaming files
-			.on('file-end', function() {
+			.on('file-end', function(meta) {
 				//pass it along
-				self.trigger('server-file-end');
+				self.trigger('server-file-end', meta);
 			})
 			
 			//when a response has been given out

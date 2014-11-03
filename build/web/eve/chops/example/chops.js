@@ -1,7 +1,7 @@
 /**
  * Chops - Client HTML5 on Push State
  *
- * @version 0.0.4
+ * @version 0.0.5
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/chops
  * @license MIT
@@ -40,7 +40,11 @@
 		 * @string
 		 * @return object
 		 */
-		this.getState = function() {
+		this.getState = function(url) {
+			if(url) {
+				return __getState(url);
+			}
+			
 			if(!window.history.state) {
 				return __getState(window.location.href);
 			}
@@ -462,20 +466,20 @@
 	if(typeof define === 'function') {
 		define(['jquery', 'classified'], function(jQuery, classified) {
 			return function() {
-				return classified(chops)();
+				return (classified(chops).singleton())();
 			};
 		});
 	//how about jQuery?
 	} else if(typeof jQuery === 'function' && typeof jQuery.extend === 'function') {
 		jQuery.extend({
 			chops: function() {
-				return this.classified(chops)();
+				return (this.classified(chops).singleton())();
 			}
 		});
 	//ok fine lets put it in windows.
 	} else if(typeof window === 'object') {
 		window.chops = function() {
-			return window.classified(chops)();
+			return (window.classified(chops).singleton)();
 		};
 	}
 })();

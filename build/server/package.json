@@ -7,7 +7,7 @@
     "email": "[YOUR EMAIL]"
   },
   "dependencies": {
-    "edenjs" : "0.0.23"
+    "edenjs" : "0.0.24"
   },
   "main": "./index.js"
 }
