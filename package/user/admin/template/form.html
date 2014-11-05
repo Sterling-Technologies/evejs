@@ -1,0 +1,74 @@
+<section class="user-form{{#when mode '==' 'update'}} user-update{{/when}} row">
+	<div class="col-sm-12">
+		<div class="tabbable">
+			{{#when mode '==' 'update'}}
+			<ul class="nav nav-tabs padding-16">
+			</ul>
+			{{/when}}
+			<div class="tab-content address-info-tab-content">
+				<form method="post" class="package-address-form form-horizontal">
+					<!-- NOTE: BULK GENERATE -->
+					
+					{{#block 'form/fieldset' 'Name' errors.user_name}}
+						{{{block 'field/text' 'user_name' ../setting.user_name 'placeholder="John Doe"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Email' errors.user_email}}
+						{{{block 'field/text' 'user_email' ../setting.user_email 'placeholder="john@acme.com"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Password' errors.user_password}}
+						{{{block 'field/password' 'user_password' ../setting.user_password 'placeholder="Enter a password."'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Phone' errors.user_phone}}
+						{{{block 'field/text' 'user_phone' ../setting.user_phone 'placeholder="+1 (415) 555-2424"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Street' errors.user_street}}
+						{{{block 'field/text' 'user_street' ../setting.user_street 'placeholder="123 Sesame Street"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'City' errors.user_city}}
+						{{{block 'field/text' 'user_city' ../setting.user_city 'placeholder="New York City"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'State' errors.user_state}}
+						{{{block 'field/text' 'user_state' ../setting.user_state 'placeholder="New York"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Country' errors.user_country}}
+						{{{block 'field/country' 'user_country' ../setting.user_country}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Postal' errors.user_postal}}
+						{{{block 'field/text' 'user_postal' ../setting.user_postal 'placeholder="12345"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Facebook' errors.user_facebook}}
+						{{{block 'field/text' 'user_facebook' ../setting.user_facebook 'placeholder="http://www.facebook.com/john.doe"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Twitter' errors.user_twitter}}
+						{{{block 'field/text' 'user_twitter' ../setting.user_twitter 'placeholder="http://www.twitter.com/john.doe"'}}}
+					{{/block}}
+					
+					{{#block 'form/fieldset' 'Google' errors.user_google}}
+						{{{block 'field/text' 'user_google' ../setting.user_google 'placeholder="http://plus.google.com/john.doe"'}}}
+					{{/block}}
+					
+                    
+					<div class="clearfix form-actions">
+						<div class="col-md-12">
+							{{#block 'field/button' 'class="btn-primary"'}}
+								<i class="icon-ok bigger-110"></i>
+                                {{#when ../mode '==' 'update'}} Update {{/when}}
+								{{#when ../mode '==' 'create'}} Save {{/when}}
+							{{/block}}
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>

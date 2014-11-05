@@ -42,6 +42,19 @@ jQuery.eve.base().Controller()
 	next();
 })
 
+/* Start Session
+-------------------------------*/
+.then(function(next) {
+	this.startSession(next);
+})
+
+/* Trigger Session
+-------------------------------*/
+.then(function(next) {
+	this.trigger('session');
+	next();
+})
+
 /* Render Page
 -------------------------------*/
 .then(function(next) {

@@ -54,6 +54,16 @@ define(function() {
 			batch.add(this._getCountRequest(request.data));
 			{{/if~}}
 			batch.send(function(error, response) { 
+				if(error) {
+					this.Controller().notify('Error', error, 'error');
+					return;
+				}
+				
+				if(response.error) {
+					this.Controller().notify('Error', response.message, 'error');
+					return;
+				}
+				
 				var i, rows = [];
 				
 				//loop through data

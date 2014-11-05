@@ -53,6 +53,11 @@ define(function() {
 					return;
 				}
 				
+				if(response.error) {
+					this.Controller().notify('Error', response.message, 'error');
+					return;
+				}
+				
 				for(var errors = false, i = 0; i < response.length; i++) {
 					if(response[i].error && response[i].message) {
 						errors = true;

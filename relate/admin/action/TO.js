@@ -59,6 +59,11 @@ define(function() {
 				JSON.stringify(batch), function(response) { 
 				response = JSON.parse(response);
 				
+				if(response.error) {
+					this.Controller().notify('Error', response.message, 'error');
+					return;
+				}
+				
 				var i, rows = [];
 				
 				//loop through data

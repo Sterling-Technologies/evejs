@@ -35,6 +35,12 @@ define(function() {
 		}
 		
 		{{/when~}}
+		{{~#when value.field.[0] '==' 'password' ~}}
+		if(settings.{{../../key}}) {
+			settings.{{../../key}} = this.String().md5(''+settings.{{../../key}});
+		}
+		
+		{{/when~}}
 		{{~/if~}}
 		{{~/loop}}
 		

@@ -1,12 +1,13 @@
 module.exports = function(request, response) {
 	//if path does not starts with /user
-	if(request.path !== '/batch' 
-	&& request.path.indexOf('/batch/') !== 0) {
+	if((request.path !== '/batch' 
+	&& request.path.indexOf('/batch/') !== 0)
+	|| response.processing) {
 		//do nothing
 		return;
 	}
 	
-	response.processing = true;
+	response.processing = 'batch';
 	
 	//trim the prefix
 	var root 		= this.package('batch').path('action'),

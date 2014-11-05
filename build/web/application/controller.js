@@ -27,6 +27,28 @@
 		/* Public.Methods
 		-------------------------------*/
 		/**
+		 * Cookie wrapper
+		 *
+		 * @param string
+		 * @param mixed
+		 * @return mixes
+		 */
+		this.cookie = function(key, value) {
+			if(typeof value === 'undefined') {
+				return $.cookie(key);
+			}
+			
+			if(value === null) {
+				$.removeCookie(key, { path: '/' });
+				return this;
+			}
+			
+			$.cookie(key, value, { path: '/' });
+			
+			return this;
+		};
+		
+		/**
 		 * Get's a configuration
 		 *
 		 * @param string
@@ -46,6 +68,15 @@
 			return __settings.server.protocol 
 			+ '://' + __settings.server.host 
 			+ ':'	+ __settings.server.port;
+		};
+		
+		/**
+		 * This get settings
+		 *
+		 * @return object
+		 */
+		this.getSettings = function() {
+			return __settings;
 		};
 		
 		/**
@@ -354,6 +385,24 @@
 					}
 				}.bind(this));
 			}.bind(this));
+			
+			return this;
+		};
+		
+		/**
+		 * Starts client side session
+		 *
+		 * @param function
+		 * @return this
+		 */
+		this.startSession = function(callback) {
+			callback = callback || $.noop;
+			
+			if(!this.cookie('session')) {
+				this.cookie('session', Date.now() + '' + Math.floor(Math.random() * 10000));
+			}
+			
+			callback();
 			
 			return this;
 		};
