@@ -1,3 +1,3 @@
 define(function() {
-	return ['block', 'batch'];
+	return ['auth', 'block', 'batch'];
 });

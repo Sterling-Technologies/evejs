@@ -1,0 +1,26 @@
+{
+    "singular": "File",
+    "plural": "Files",
+    "icon": "file",
+	"primary": "file_id",
+    "active": "file_active",
+    "created": "file_created",
+    "fields": {
+        "file_name": {
+            "label": "Name",
+            "type": "string",
+            "field": false,
+			"search": true
+        },		
+        "file_path": {
+            "label": "Path",
+            "type": "string",
+            "field": false
+        },
+        "file_mime": {
+            "label": "Mime",
+            "type": "string",
+            "field": false
+        }
+    }
+}

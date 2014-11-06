@@ -35,9 +35,10 @@ module.exports = function(settings, request, response) {
 			
 			//create a token
 			// for the user, we can just
-			// use id+slug+password for
+			// use id+slug+created for
 			// hmac signature
-			var signature = row.user_id + row.user_created;
+			var signature = this.origin(request) + '::::' + row.user_id + '::::' + row.user_created;
+			
 			// and user id for hmac key
 			var key 	  = row.user_id.toString();
 			// Create hmac token with sha-1 algorithm and hex digest

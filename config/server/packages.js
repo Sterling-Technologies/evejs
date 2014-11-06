@@ -1,1 +1,1 @@
-module.exports = ['batch'];
+module.exports = ['auth', 'batch'];

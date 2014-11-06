@@ -46,13 +46,41 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 	};
 	
 	/**
+	 * Returns the origin from whence
+	 * this request was made
+	 *
+	 * @param object request
+	 * @return object
+	 */
+	this.origin = function(request) {
+		if(!request.headers || !request.headers.origin) {
+			return {};
+		}
+		
+		var settings = this.config('settings');
+		
+		for(var key in settings) {
+			if(settings.hasOwnProperty(key)) {
+				if(settings[key].host
+				&& settings[key].protocol
+				&& request.headers.origin === 
+				(settings[key].protocol + '://' + settings[key].host)) {
+					return settings[key];	
+				}
+			}
+		}
+		
+		return {};
+	};
+	
+	/**
 	 * Returns the package factory
 	 *
 	 * @param string
 	 * @return object
 	 */
 	this.package = function(name) {
-		return require('./package/'+name+'/factory').load(this);
+		return require('./package/' + name + '/factory').load(this);
 	};
 	
 	/**

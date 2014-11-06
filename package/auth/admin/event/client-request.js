@@ -2,12 +2,6 @@ define(function() {
 	return function(e, request) {
 		//if path does not starts with /post
 		if(request.path !== '/auth' && request.path.indexOf('/auth/') !== 0) {
-			//authorize the site?
-			if(!this.getSettings().auth) {				
-				//do nothing
-				return;		
-			}
-			
 			//no cookie
 			if(!this.cookie('auth')) {
 				window.location = '/auth/login';
@@ -41,7 +35,7 @@ define(function() {
 		request.variables = variables;
 		
 		//call it, store it in response
-		require([action], function(callback) {
+		require([action + '.js'], function(callback) {
 			var action = callback();
 			
 			//event when the post request is starting

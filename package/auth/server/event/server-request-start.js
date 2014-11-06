@@ -3,10 +3,11 @@ module.exports = function(request, response) {
 	if((request.path !== '/auth' 
 	&& request.path.indexOf('/auth/') !== 0)
 	|| response.processing) {
-		//authorize the server?
-		if(!this.config('settings').auth) {				
-			//do nothing
-			return;		
+		//lock it down if the origin is an admin
+		if(!this.origin(request).type !== 'admin') {
+			//let it pass through
+			//every other type needs to do their due dillegence
+			return;
 		}
 		
 		//no auth query attached?
