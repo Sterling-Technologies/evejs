@@ -30,12 +30,12 @@ eve()
 		console.log('\x1b[33m%s\x1b[0m', message);
 	})
 	
-	.on('install-step', function(step, name, type, deploy) {
+	.on('create-step', function(step, type, name, deploy) {
 		var message = false;
 		
 		switch(step) {
 			case 1:
-				message = 'installing ' + name + '...';
+				message = 'creating ' + name + '...';
 				break;
 			case 2:
 				message = 'Copying ' + type + ' to deploy.';
@@ -57,7 +57,7 @@ eve()
 		}
 	})
 	
-	.on('install-complete', function(name, type, deploy) {
+	.on('create-complete', function(name, type, deploy) {
 		console.log('\x1b[32m%s\x1b[0m', name + ' installation complete!');
 	})
 	
@@ -74,16 +74,17 @@ eve()
 	.on('watch-init', function(environments) {
 		var settings = this.getSettings();
 		
-		for(var name in settings) {
-			if(settings.hasOwnProperty(name)) {
-				if(settings[name].type === 'server') {
+		for(var name in settings.environments) {
+			if(settings.environments.hasOwnProperty(name)) {
+				if(settings.environments[name].type === 'server') {
 					// starts the nodemon
-					var config = settings[name].nodemon || {
+					var config = settings.environments[name].nodemon || {
 						scriptPosition : 1, 
 						script : 'index.js',
 						args : ['--harmony'],
-						cwd: settings[name].path,
-						ignore: ['node_modules', 'upload']
+						cwd: settings.environments[name].path,
+						ignore: ['node_modules', 'upload'],
+						ext: 'js json'
 					};
 					
 					//eventually we should write a better programmatic nodemon and watcher
@@ -127,8 +128,8 @@ eve()
 		}
 		
 		//we only care if there are tests
-		if(!(settings[name].test instanceof Array)
-		|| !settings[name].test.length) {
+		if(!(settings.environments[name].test instanceof Array)
+		|| !settings.environments[name].test.length) {
 			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
 			push(event, source, destination, processError);
 			return;
@@ -138,9 +139,9 @@ eve()
 		console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
 		
 		//generate a list of test folders
-		for(var tests = [], i = 0; i < settings[name].test.length; i++) {
-			//settings[name].test[i] -> sample/sample
-			tests.push(build + '/package/' + settings[name].test[i] + '/' + name + '/test');
+		for(var tests = [], i = 0; i < settings.environments[name].test.length; i++) {
+			//settings.environments[name].test[i] -> sample/sample
+			tests.push(build + '/package/' + settings.environments[name].test[i] + '/' + name + '/test');
 		}
 		
 		//capture the contents of the deploy folder

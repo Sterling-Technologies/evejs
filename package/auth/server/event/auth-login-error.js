@@ -10,5 +10,5 @@ module.exports = function(error, request, response) {
 		validation: error.errors || [] });
 	
 	//trigger that a response has been made
-	this.trigger('post-response', request, response);
+	this.trigger('auth-response', request, response);
 };

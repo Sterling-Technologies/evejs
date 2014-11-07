@@ -4,7 +4,7 @@ module.exports = function(request, response) {
 	&& request.path.indexOf('/auth/') !== 0)
 	|| response.processing) {
 		//lock it down if the origin is an admin
-		if(!this.origin(request).type !== 'admin') {
+		if(this.origin(request).type !== 'admin') {
 			//let it pass through
 			//every other type needs to do their due dillegence
 			return;

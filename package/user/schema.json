@@ -94,6 +94,7 @@
 			"user_slug" : "jane-doe",
 			"user_name": "Jane Doe",	
 			"user_email": "jane@acme.com",
+			"user_password": "202cb962ac59075b964b07152d234b70",
 			"user_phone": "+1 (415) 555-2121",
 			"user_street": "123 Sesame Street",
 			"user_city": "Makati City", 

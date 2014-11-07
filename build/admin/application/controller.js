@@ -57,19 +57,39 @@
 		 * @return this
 		 */
 		this.config = function(key, callback) {
-			require([this.path('config') + '/' + key + '.js'], callback);
+			require(['text!' + this.path('config') + '/' + key + '.json'], function(config) {
+				callback(JSON.parse(config));
+			});
+			
 			return this;
 		};
 		
 		/**
 		 * Returns the server url
 		 *
+		 * @param string
 		 * @return string
 		 */
-		this.getServerUrl = function() {
-			return __settings.server.protocol 
-			+ '://' + __settings.server.host 
-			+ ':'	+ __settings.server.port;
+		this.getServerUrl = function(key) {
+			if(__settings.environments[key]) {
+				return __settings.environments[key].protocol 
+				+ '://' + __settings.environments[key].host 
+				+ ':'	+ __settings.environments[key].port;
+			}
+			
+			//loop through the environments
+			for(key in __settings.environments) {
+				if(__settings.environments.hasOwnProperty(key)) {
+					if(__settings.environments[key].type === 'server') {
+						return __settings.environments[key].protocol 
+						+ '://' + __settings.environments[key].host 
+						+ ':'	+ __settings.environments[key].port;
+					}
+				}
+			} 
+			
+			//we don't know...
+			return '';
 		};
 		
 		/**

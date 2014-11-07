@@ -4,7 +4,7 @@ module.exports = function(eve, command) {
 	//just let the files be responsible for the actions if it exists
 	
 	//first check for the file
-	var script = __dirname + '/install/' + environment + '.js';
+	var script = __dirname + '/create/' + environment + '.js';
 	
 	//if this is not a file
 	if(!eve.File(script).isFile()) {
@@ -13,7 +13,7 @@ module.exports = function(eve, command) {
 		return;
 	}
 	
-	eve.trigger('install-' + environment);
+	eve.trigger('create-' + environment);
 	
 	//require the file and let it do the rest
 	require(script)(eve, command);

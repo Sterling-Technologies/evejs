@@ -1,5 +1,5 @@
 module.exports = function(eve, command) {
-	var name 		= command.shift() || 'server',
+	var name 		= command[0] || 'server',
 		exec 		= require('child_process').exec,
 		separator	= require('path').sep,
 		packages 	= [];
@@ -9,7 +9,7 @@ module.exports = function(eve, command) {
 	.sync(function(next) {
 		var settings = this.getSettings();
 		
-		settings[name] = {
+		settings.environments[name] = {
 			type: 'server',
 			path: './deploy/' + name,
 			lint: {
@@ -21,7 +21,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 1, 'server', name)
+			.trigger('create-step', 1, 'server', name)
 			.setSettings(settings, next);
 	})
 	//copy eve/build/server folder to deploy 
@@ -35,7 +35,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath();
 		
 		this
-			.trigger('install-step', 2, 'server', name)
+			.trigger('create-step', 2, 'server', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/server to deploy
@@ -49,7 +49,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath() + this.path('/config');
 		
 		this
-			.trigger('install-step', 3, 'server', name)
+			.trigger('create-step', 3, 'server', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/server to build
@@ -63,7 +63,7 @@ module.exports = function(eve, command) {
 		var destination = this.getBuildPath() + this.path('/config/' + name);
 		
 		this
-			.trigger('install-step', 4, 'server', name)
+			.trigger('create-step', 4, 'server', name)
 			.Folder(source).copy(destination, next);
 	})
 	//get package folders
@@ -74,7 +74,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 5, 'server', name)
+			.trigger('create-step', 5, 'server', name)
 			.Folder(this.getEvePath() + '/package')
 			.getFolders(null, false, next);
 	})
@@ -108,6 +108,7 @@ module.exports = function(eve, command) {
 		
 		next();
 	})
+	
 	.thread('copy-package-to-deploy', function(i, next) {
 		// /[EVE_PATH]/package/[PACKAGE]/server -> [DEPLOY_PATH]/package/[PACKAGE]
 		var destination = this.getDeployPath() + '/package/' 
@@ -128,9 +129,62 @@ module.exports = function(eve, command) {
 			+ packages[i].getParent().split(separator).pop() + '/'
 			+ name; 
 		
-		var callback = next.thread.bind(null, 'next-package', i);
+		var callback = next.thread.bind(null, 'copy-package-schema', i);
 		packages[i].copy(this.path(destination), callback);
 	})
+	
+	.thread('copy-package-schema', function(i, error, next) {
+		var source = this.File(packages[i].getParent() + '/schema.json');
+		
+		var destination = this.File(this.getBuildPath() + '/package/' 
+			+ packages[i].getParent().split(separator).pop() 
+			+ '/schema.json');
+		
+		//if there is no source file or there is already a destination
+		if(!source.isFile() || destination.isFile()) {
+			next.thread('install-package', i);
+			return;
+		}
+		
+		//copy the file
+		source.copy(destination.path, function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next.thread('install-package', i);
+		}.bind(this));
+	})
+	
+	.thread('install-package', function(i, next) {
+		var source = this.File(packages[i].getParent() + '/install.js');
+		
+		var destination = this.File(this.getBuildPath() + '/package/' 
+			+ packages[i].getParent().split(separator).pop() 
+			+ '/install.js');
+		
+		//if there is no install file or there is already an install
+		if(!source.isFile() || destination.isFile()) {
+			next.thread('next-package', i, null);
+			return;
+		}
+		
+		//copy the file
+		source.copy(destination.path, function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			//what is the database?
+			var database = this.getDatabase();
+			
+			var callback = next.thread.bind(null, 'next-package', i);
+			require(source.path)(database, callback);
+		}.bind(this));
+	})
+	
 	//check for errors and traverse to the next package
 	.thread('next-package', function(i, error, next) {
 		if(error) {
@@ -140,11 +194,25 @@ module.exports = function(eve, command) {
 		
 		next.thread('copy-package', i + 1);
 	})
+	
+	//update settings
+	.then(function(next) {
+		this.setEnvironments(function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next();
+		}.bind(this));
+	})
+	
 	//finish up
 	.then(function(next) {
-		this.trigger('install-step', 6, 'server', name)
+		this.trigger('create-step', 6, 'server', name);
+		
 		exec('cd ' + this.getDeployPath() + ' && npm install', function() {
-			eve.trigger('install-complete', 'server', name);	
+			eve.trigger('create-complete', 'server', name);	
 		});
 		
 		next();

@@ -19,6 +19,134 @@ module.exports = require('edenjs').extend(function() {
 	/* Public Methods
 	-------------------------------*/
 	/**
+	 * Adds package to package settings
+	 *
+	 * @param string name
+	 * @param callback
+	 * @return this
+	 */
+	this.addPackage = function(name, callback) {
+		//what is the build path ?
+		var path 		= this.getBuildPath() + '/package/' + name;
+		var settings 	= this.getSettings();
+		var build		= this.getBuildPath();
+		
+		this
+		
+		.sync(function(next) {
+			this.Folder(path).getFolders(null, false, next);
+		})
+		
+		.then(function(error, folders, next) {
+			if(error) {
+				callback(error);
+				return;
+			}
+			
+			var environments = [];
+			for(var i = 0; i < folders.length; i++) {
+				environments.push(folders[i].getName());
+			}
+			
+			//loop through folders
+			next.thread('environment-loop', 0, environments);
+		})
+		
+		.thread('environment-loop', function(i, environments, next) {
+			if(i < environments.length) {
+				var file = build + '/config/' + environments[i] + '/packages.json';
+				
+				this.File(file).getData(function(error, data) {
+					if(error) {
+						callback(error, null);
+						return;
+					}
+					
+					next.thread('set-build', i, environments, data);
+				});
+				
+				return;
+			}
+			
+			//next
+			next();
+		})
+		
+		.thread('set-build', function(i, environments, data, next) {
+			var file = build + '/config/' + environments[i] + '/packages.json';
+			
+			if(data.indexOf(name) === -1) {
+				data.push(name);
+			}
+			
+			this.File(file).setData(data, function(error) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				var deploy = settings.environments[environments[i]].path;
+				
+				//if destination starts with a .
+				if(deploy.indexOf('.') === 0) {
+					//destination is relative to local
+					deploy = build + deploy.substr(1);
+				}
+				
+				if(settings.environments[environments[i]].type !== 'server') {
+					deploy += '/application';
+				}
+				
+				var file = deploy + '/config/packages.json';
+				
+				this.File(file).getData(function(error, data) {
+					if(error) {
+						callback(error);
+						return;
+					}
+					
+					next.thread('set-deploy', i, environments, data);
+				});
+			}.bind(this));
+		})
+		
+		.thread('set-deploy', function(i, environments, data, next) {
+			var deploy = settings.environments[environments[i]].path;
+			
+			//if destination starts with a .
+			if(deploy.indexOf('.') === 0) {
+				//destination is relative to local
+				deploy = build + deploy.substr(1);
+			}
+			
+			if(settings.environments[environments[i]].type !== 'server') {
+				deploy += '/application';
+			}
+			
+			var file = deploy + '/config/packages.json';
+			
+			if(data.indexOf(name) === -1) {
+				data.push(name);
+			}
+			
+			this.File(file).setData(data, function(error) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				next.thread('environment-loop', i + 1, environments);
+			})
+		})
+		
+		.then(function(next) {
+			callback(null);
+		});
+		
+		return this;
+	};
+	
+	/**
 	 * Default callback just for processing errors
 	 *
 	 * @return this
@@ -50,6 +178,33 @@ module.exports = require('edenjs').extend(function() {
 	};
 	
 	/**
+	 * Returns a database config
+	 *
+	 * @param string
+	 * @return object
+	 */
+	this.getDatabase = function(key) {
+		var settings = this.getSettings();
+		if(key && settings.databases[key]) {
+			return settings.databases[key];
+		}
+		
+		//find the first default one
+		for(key in settings.databases) {
+			if(settings.databases.hasOwnProperty(key)) {
+				if(settings.databases[key].default) {
+					return settings.databases[key];
+				}
+			}
+		}
+		
+		//um return the first one?
+		for(key in settings.databases) {
+			return settings.databases[key];
+		}
+	};
+	
+	/**
 	 * Returns the deploy path
 	 *
 	 * @return string
@@ -69,7 +224,17 @@ module.exports = require('edenjs').extend(function() {
 			this._settings = require(this.getBuildPath() + '/build.json') || null;
 		}
 		
-		return this._settings || {};
+		return this._settings || { databases: {
+			eve : {
+				type	: 'mysql',
+				host	: '127.0.0.1',
+				port	: null,
+				name	: 'eve',
+				user	: 'root',
+				pass	: '',
+				default	: true
+			}
+		}, environments: {} };
 	};
 	
 	/**
@@ -174,7 +339,7 @@ module.exports = require('edenjs').extend(function() {
 		}
 		
 		return normal;
-	}
+	};
 	
 	/**
 	 * Fixes path
@@ -200,6 +365,148 @@ module.exports = require('edenjs').extend(function() {
 			//destination is relative to local
 			this._deploy = this.getBuildPath() + this._deploy.substr(1);
 		}
+		
+		return this;
+	};
+	
+	/**
+	 * Updates each environment settings
+	 *
+	 * @param function
+	 * @return this
+	 */
+	this.setEnvironments = function(callback) {
+		var file, settings = this.getSettings();
+		
+		var sync = this.sync()
+		
+		.thread('add-to-build', function(name, next) {
+			var file = this.getBuildPath() + this.path('/config/' + name + '/settings.json');
+			
+			//get the settings data
+			this.File(file).getData(function(error, data) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				next.thread('set-to-build', file, name, data);
+			}.bind(this));
+		})
+		
+		.thread('set-to-build', function(file, name, data, next) {
+			//loop the environments
+			//to determine the data.environments
+			for(var environment in settings.environments) {
+				if(settings.environments.hasOwnProperty(environment)) {
+					//if the environment is already set
+					if(typeof data.environments[environment] === 'object') {
+						//dont tamper with it
+						continue;
+					}
+					
+					//clear to add it
+					data.environments[environment] =  { 
+						type: settings.environments[environment].type, 
+						protocol: 'http', 
+						host: environment + '.eve.dev', 
+						port: 8082 };	
+					
+					//determine the default server	
+					if(settings.environments[environment].type !== 'server' 
+					&& !data.server 
+					&& data.environments[environment].type === 'server') {
+						data.server = environment;
+					}
+				}
+			}
+			
+			//now save it
+			this.File(file).setData(data, function(error) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				next.thread('add-to-deploy', name);
+			});
+		})
+		
+		.thread('add-to-deploy', function(name, next) {
+			var deploy = settings.environments[name].path;
+			
+			//if destination starts with a .
+			if(deploy.indexOf('.') === 0) {
+				//destination is relative to local
+				deploy = this.getBuildPath() + deploy.substr(1);
+			}
+			
+			var file = deploy + this.path('/config/settings.json');
+			
+			if(settings.environments[name].type !== 'server') {
+				file = deploy + this.path('/application/config/settings.json');
+			}
+			
+			//get the settings data
+			this.File(file).getData(function(error, data) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				next.thread('set-to-deploy', file, name, data);
+			}.bind(this));
+		})
+		
+		.thread('set-to-deploy', function(file, name, data, next) {
+			//loop the environments
+			//to determine the data.environments
+			for(var environment in settings.environments) {
+				if(settings.environments.hasOwnProperty(environment)) {
+					//if the environment is already set
+					if(typeof data.environments[environment] === 'object') {
+						//dont tamper with it
+						continue;
+					}
+					
+					//clear to add it
+					data.environments[environment] =  { 
+						type: settings.environments[environment].type, 
+						protocol: 'http', 
+						host: environment + '.eve.dev', 
+						port: 8082 };	
+					
+					//determine the default server	
+					if(settings.environments[environment].type !== 'server' 
+					&& !data.server 
+					&& data.environments[environment].type === 'server') {
+						data.server = environment;
+					}
+				}
+			}
+			
+			//now save it
+			this.File(file).setData(data, function(error) {
+				if(error) {
+					callback(error);
+					return;
+				}
+				
+				next();
+			});
+		});
+		
+		for(var environment in settings.environments) {
+			if(settings.environments.hasOwnProperty(environment)) {
+				sync.then(function(environment, next) {
+					next.thread('add-to-build', environment);
+				}.bind(null, environment));
+			}
+		}
+		
+		sync.then(function(next) {
+			callback(null);
+		});
 		
 		return this;
 	};

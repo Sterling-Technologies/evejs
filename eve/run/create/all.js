@@ -1,5 +1,5 @@
 module.exports = function(eve, command) {
-	eve.on('install-complete', function(environment, name) {
+	eve.on('create-complete', function(environment, name) {
 		switch(environment) {
 			case 'server':
 				//install admin

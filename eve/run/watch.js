@@ -5,7 +5,7 @@ module.exports = function(eve, command) {
 		separator		= require('path').sep;
 	
 	if(environments === 'all') {
-		environments = Object.keys(settings);
+		environments = Object.keys(settings.environments);
 	}
 	
 	//make environments into an array
@@ -23,14 +23,14 @@ module.exports = function(eve, command) {
 		
 		for(var extra, i = 0; i < environments.length; i++) {
 			extra = '';
-			if(settings[environments[i]].type !== 'server') {
+			if(settings.environments[environments[i]].type !== 'server') {
 				extra = separator + 'application'
 			}
 			
 			if(path.length > 3
 			&& path[1] == 'package'
 			&& path[3] == environments[i]) {
-				destination = settings[environments[i]].path
+				destination = settings.environments[environments[i]].path
 					+ extra 	+ separator 
 					+ 'package' + separator
 					+ path[2] 	+ separator  
@@ -42,7 +42,7 @@ module.exports = function(eve, command) {
 			if(path.length > 2
 			&& path[1] == 'config'
 			&& path[2] == environments[i]) {
-				destination = settings[environments[i]].path
+				destination = settings.environments[environments[i]].path
 					+ extra 	+ separator 
 					+ 'config' 	+ separator
 					+ path.slice(3).join(separator);
@@ -65,7 +65,7 @@ module.exports = function(eve, command) {
 		
 		//we are updating now
 		eve.trigger('watch-update', 
-		event, settings[environments[i]].type, 
+		event, settings.environments[environments[i]].type, 
 		environments[i], source, destination, 
 		function(event, source, destination, callback) {
 			switch(event) {

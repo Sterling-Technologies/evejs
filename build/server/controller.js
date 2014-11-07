@@ -26,7 +26,7 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 	 * @return this
 	 */
 	this.config = function(key) {
-		return require(this._paths.config + '/' + key);
+		return require(this._paths.config + '/' + key + '.json');
 	};
 	
 	/**
@@ -59,13 +59,13 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 		
 		var settings = this.config('settings');
 		
-		for(var key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				if(settings[key].host
-				&& settings[key].protocol
+		for(var key in settings.environments) {
+			if(settings.environments.hasOwnProperty(key)) {
+				if(settings.environments[key].host
+				&& settings.environments[key].protocol
 				&& request.headers.origin === 
-				(settings[key].protocol + '://' + settings[key].host)) {
-					return settings[key];	
+				(settings.environments[key].protocol + '://' + settings.environments[key].host)) {
+					return settings.environments[key];	
 				}
 			}
 		}
@@ -186,7 +186,8 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 	 * @return this
 	 */
 	this.startServer = function() {
-		var self = this, settings = this.config('settings').server;
+		var self = this, settings = this.config('settings');
+		settings = settings.environments[__dirname.split('/').pop()];
 		
 		var server = this._server = this.Http()
 			.setHost(settings.host)
@@ -207,8 +208,9 @@ var eden = require('edenjs'), controller = eden.extend(function() {
 					//send a default response
 					response.headers.Allow = 'HEAD,GET,POST,PUT,DELETE,OPTIONS'; 
 					response.state = 200;
+					response.processing = 'options';
 					
-					this.trigger('response', request, response);
+					server.trigger('response', request, response);
 					
 					return;
 				}

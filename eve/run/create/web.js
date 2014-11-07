@@ -1,5 +1,5 @@
 module.exports = function(eve, command) {
-	var name 		= command.shift() || 'web',
+	var name 		= command[0] || 'web',
 		exec 		= require('child_process').exec,
 		separator	= require('path').sep,
 		packages 	= [];
@@ -9,7 +9,7 @@ module.exports = function(eve, command) {
 	.sync(function(next) {
 		var settings = this.getSettings();
 		
-		settings[name] = {
+		settings.environments[name] = {
 			type: 'web',
 			path: './deploy/' + name,
 			lint: {
@@ -31,7 +31,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 1, 'server', name)
+			.trigger('create-step', 1, 'web', name)
 			.setSettings(settings, next);
 	})
 	//copy eve/build/web folder to deploy 
@@ -45,7 +45,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath();
 		
 		this
-			.trigger('install-step', 2, 'web', name)
+			.trigger('create-step', 2, 'web', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/web to deploy
@@ -59,7 +59,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath() + this.path('/application/config');
 		
 		this
-			.trigger('install-step', 3, 'web', name)
+			.trigger('create-step', 3, 'web', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/web to build
@@ -73,7 +73,7 @@ module.exports = function(eve, command) {
 		var destination = this.getBuildPath() + this.path('/config/' + name);
 		
 		this
-			.trigger('install-step', 4, 'web', name)
+			.trigger('create-step', 4, 'web', name)
 			.Folder(source).copy(destination, next);
 	})
 	//get package folders
@@ -84,7 +84,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 5, 'server', name)
+			.trigger('create-step', 5, 'server', name)
 			.Folder(this.getEvePath() + '/package')
 			.getFolders(null, false, next);
 	})
@@ -175,9 +175,22 @@ module.exports = function(eve, command) {
 			});
 		}.bind(this));
 	})
+	
+	//update settings
+	.then(function(next) {
+		this.setEnvironments(function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next();
+		}.bind(this));
+	})
+	
 	//finish up
 	.then(function(next) {
-		this.trigger('install-complete', 'web', name);	
+		this.trigger('create-complete', 'web', name);	
 		next();
 	});
 };

@@ -1,5 +1,5 @@
 module.exports = function(eve, command) {
-	var name 		= command.shift() || 'admin',
+	var name 		= command[0] || 'admin',
 		exec 		= require('child_process').exec,
 		separator	= require('path').sep,
 		packages 	= [];
@@ -9,7 +9,7 @@ module.exports = function(eve, command) {
 	.sync(function(next) {
 		var settings = this.getSettings();
 		
-		settings[name] = {
+		settings.environments[name] = {
 			type: 'admin',
 			path: './deploy/' + name,
 			lint: {
@@ -31,7 +31,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 1, 'server', name)
+			.trigger('create-step', 1, 'admin', name)
 			.setSettings(settings, next);
 	})
 	//copy eve/build/admin folder to deploy 
@@ -45,7 +45,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath();
 		
 		this
-			.trigger('install-step', 2, 'admin', name)
+			.trigger('create-step', 2, 'admin', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/admin to deploy
@@ -59,7 +59,7 @@ module.exports = function(eve, command) {
 		var destination = this.getDeployPath() + this.path('/application/config');
 		
 		this
-			.trigger('install-step', 3, 'admin', name)
+			.trigger('create-step', 3, 'admin', name)
 			.Folder(source).copy(destination, next);
 	})
 	//copy eve/config/admin to build
@@ -73,7 +73,7 @@ module.exports = function(eve, command) {
 		var destination = this.getBuildPath() + this.path('/config/' + name);
 		
 		this
-			.trigger('install-step', 4, 'admin', name)
+			.trigger('create-step', 4, 'admin', name)
 			.Folder(source).copy(destination, next);
 	})
 	//get package folders
@@ -84,7 +84,7 @@ module.exports = function(eve, command) {
 		}
 		
 		this
-			.trigger('install-step', 5, 'server', name)
+			.trigger('create-step', 5, 'server', name)
 			.Folder(this.getEvePath() + '/package')
 			.getFolders(null, false, next);
 	})
@@ -175,9 +175,22 @@ module.exports = function(eve, command) {
 			});
 		}.bind(this));
 	})
+	
+	//update settings
+	.then(function(next) {
+		this.setEnvironments(function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next();
+		}.bind(this));
+	})
+	
 	//finish up
 	.then(function(next) {
-		this.trigger('install-complete', 'admin', name);	
+		this.trigger('create-complete', 'admin', name);	
 		next();
 	});
 };

@@ -50,6 +50,16 @@ define(function() {
 			batch.add(this._getTrashCountRequest(request.data));
 			
 			batch.send(function(error, response) { 
+				if(error) {
+					this.Controller().notify('Error', error, 'error');
+					return;
+				}
+				
+				if(response.error) {
+					this.Controller().notify('Error', response.message, 'error');
+					return;
+				}
+				
 				var i, rows = [];
 				
 				//loop through data
