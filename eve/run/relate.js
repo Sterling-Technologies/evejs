@@ -210,11 +210,11 @@ module.exports = function(eve, command) {
 		var settings = this.getSettings();
 		
 		//determine environments
-		for(var name in settings) {
-			if(settings.hasOwnProperty(name)) {
-				environments[settings[name].type].push({
+		for(var name in settings.environments) {
+			if(settings.environments.hasOwnProperty(name)) {
+				environments[settings.environments[name].type].push({
 					name	: name, 
-					settings: settings[name] });
+					settings: settings.environments[name] });
 			}
 		}
 		
@@ -225,15 +225,7 @@ module.exports = function(eve, command) {
 	.then(function(next) {
 		//where to put it?
 		//get the database file from the build
-		var database, databases = require(this.getBuildPath() + '/config/server/databases.js');
-		
-		for(var key in databases) {
-			if(databases.hasOwnProperty(key)) {
-				if(databases[key].default) {
-					database = databases[key];
-				}
-			}
-		}
+		var database = this.getDatabase();
 		
 		if(database) {
 			database = this
@@ -458,6 +450,18 @@ module.exports = function(eve, command) {
 		}
 		
 		next.thread('transform-file', i, j, k + 1, files);
+	})
+	
+	//auto update package settings
+	.then(function(next) {
+		this.addPackage(package, function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next();
+		}.bind(this));
 	})
 	
 	//make map files
