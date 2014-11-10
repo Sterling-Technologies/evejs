@@ -50,6 +50,22 @@ $ eve create
   surround a particular object like a post. A post package in Eve is plug and play with the REST, admin and general front
   end usage pre built in. Packages in Eve should be developed as independant from each other as best as possible.
 
+### Generating a Package
+1. As an example copy the [post folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post) to the package folder.
+2. In terminal type `eve generate post`
+3. In terminal type `eve`
+4. In your browser go to `[YOUR ADMIN URL]/post`
+
+### Generating a Package
+1. As an example copy the [post folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post) to the package folder.
+2. Also copy the [user folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/user) to package folder.
+3. Also copy the [post_user folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post_user) to the package folder.
+4. In terminal type `eve generate post_user`
+5. In terminal type `eve generate post`
+6. In terminal type `eve generate user`
+7. In terminal type `eve`
+8. In your browser go to `[YOUR ADMIN URL]/post/update/1` you should see a tab called *Users*
+
 #Contibuting to Eve
 
 ##Setting up your machine with the Eve repository and your fork

@@ -15,6 +15,10 @@
         "mocha": "1.20.1",
 		"handlebars": "2.0.0-alpha.4"
     },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Openovate/evejs.git"
+	},
     "bin": {
         "eve": "./bin/eve.js"
     }
