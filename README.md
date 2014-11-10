@@ -62,7 +62,7 @@ $ eve
 3. In terminal type `eve`
 4. In your browser go to `[YOUR ADMIN URL]/post`
 
-### Generating a Package
+### Generating a Relation
 1. As an example copy the [post folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post) to the package folder.
 2. Also copy the [user folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/user) to package folder.
 3. Also copy the [post_user folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post_user) to the package folder.
