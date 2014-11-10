@@ -23,6 +23,12 @@ $ eve create
 
 3 - Point Apache to deploy/web
 
+4 - Watch the folder 
+
+```bash
+$ eve
+```
+
 ### Features
 
   * Event driven packages
