@@ -187,7 +187,7 @@ eve()
 		}
 		
 		//get the deploy path
-		var deploy = this.setDeployPath(this.getSettings()[name].path).getDeployPath();
+		var deploy = this.setDeployPath(this.getSettings().environments[name].path).getDeployPath();
 		
 		//get all the files in the deploy path
 		this.Folder(deploy + '/application').clear().getFiles(null, true, function(error, files) {

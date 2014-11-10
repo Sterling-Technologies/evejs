@@ -75,7 +75,7 @@ module.exports = function(eve, command) {
 		
 		this
 			.trigger('create-step', 5, 'server', name)
-			.Folder(this.getEvePath() + '/package')
+			.Folder(this.getEvePath() + this.path('/package'))
 			.getFolders(null, false, next);
 	})
 	//start to copy package
@@ -134,11 +134,11 @@ module.exports = function(eve, command) {
 	})
 	
 	.thread('copy-package-schema', function(i, error, next) {
-		var source = this.File(packages[i].getParent() + '/schema.json');
+		var source = this.File(this.path(packages[i].getParent() + '/schema.json'));
 		
-		var destination = this.File(this.getBuildPath() + '/package/' 
+		var destination = this.File(this.path(this.getBuildPath() + '/package/' 
 			+ packages[i].getParent().split(separator).pop() 
-			+ '/schema.json');
+			+ '/schema.json'));
 		
 		//if there is no source file or there is already a destination
 		if(!source.isFile() || destination.isFile()) {
@@ -158,11 +158,11 @@ module.exports = function(eve, command) {
 	})
 	
 	.thread('install-package', function(i, next) {
-		var source = this.File(packages[i].getParent() + '/install.js');
+		var source = this.File(this.path(packages[i].getParent() + '/install.js'));
 		
-		var destination = this.File(this.getBuildPath() + '/package/' 
+		var destination = this.File(this.getBuildPath() + this.path('/package/' 
 			+ packages[i].getParent().split(separator).pop() 
-			+ '/install.js');
+			+ '/install.js'));
 		
 		//if there is no install file or there is already an install
 		if(!source.isFile() || destination.isFile()) {

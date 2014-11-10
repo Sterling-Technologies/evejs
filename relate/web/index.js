@@ -13,10 +13,15 @@ define(function() {
 			this.package('{{name}}', factory);
 			
 			//get event path
-			var events = this.package('{{name}}').path('event');
+			var events = this.Folder(this.package('{{name}}').path('event'));
+			
+			if(!events.isFolder()) {
+				this.trigger('{{name}}-init');
+				return;
+			}
 			
 			//get files in the event folder
-			this.Folder(events).getFiles(null, false, function(error, files) {
+			events.getFiles(null, false, function(error, files) {
 				//loop through files  
 				for(var events = [], callbacks = [], i = 0; i < files.length; i++) {
 					//accept only js

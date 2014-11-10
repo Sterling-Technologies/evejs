@@ -85,7 +85,7 @@ module.exports = function(eve, command) {
 		
 		this
 			.trigger('create-step', 5, 'server', name)
-			.Folder(this.getEvePath() + '/package')
+			.Folder(this.getEvePath() + this.path('/package'))
 			.getFolders(null, false, next);
 	})
 	//start to copy package
@@ -156,7 +156,8 @@ module.exports = function(eve, command) {
 		var deploy = this.getDeployPath();
 		
 		//get all the files in the deploy path
-		this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+		this.Folder(deploy + this.path('/application'))
+		.getFiles(null, true, function(error, files) {
 			//if there's an error
 			if(error) {
 				//do nothing
@@ -169,7 +170,8 @@ module.exports = function(eve, command) {
 			}
 			
 			//set the map
-			this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+			this.File(deploy + this.path('/application/map.js'))
+			.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 			function(error) {
 				next();
 			});

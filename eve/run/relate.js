@@ -3,11 +3,9 @@ var copy = {
 		'admin/action/index.js',
 		'admin/event/client-request.js',
 		'admin/event/FROM-create-success.js',
-		'admin/event/FROM-update-output.js',
 		'admin/event/NAME-create-error.js',
 		'admin/event/NAME-create-success.js',
 		'admin/event/TO-create-success.js',
-		'admin/event/TO-update-output.js',
 		'admin/factory.js',
 		'admin/index.js',
 		'server/action/batch.js',
@@ -38,27 +36,31 @@ var copy = {
 		
 	'one-to-one': [
 		'admin/event/FROM-create-output.js',
+		'admin/event/FROM-update-output.js',
 		'admin/event/FROM-update-success.js',
 		'admin/event/TO-create-output.js',
+		'admin/event/TO-update-output.js',
 		'admin/event/TO-update-success.js' ],
 		
 	'one-to-many': [
 		'admin/action/remove.js',
 		'admin/action/TO.js',
+		'admin/event/body.js',
 		'admin/event/NAME-remove-error.js',
 		'admin/event/NAME-remove-success.js',
 		'admin/event/NAME-remove.js',
-		'admin/event/NAME-TO-output.js',
 		'admin/event/TO-create-output.js',
+		'admin/event/TO-update-output.js',
 		'admin/event/TO-update-success.js',
 		'admin/template/TO.html' ],
 	
 	'many-to-one': [
 		'admin/action/FROM.js',
 		'admin/action/remove.js',
+		'admin/event/body.js',
 		'admin/event/FROM-create-output.js',
+		'admin/event/FROM-update-output.js',
 		'admin/event/FROM-update-success.js',
-		'admin/event/NAME-FROM-output.js',
 		'admin/event/NAME-remove-error.js',
 		'admin/event/NAME-remove-success.js',
 		'admin/event/NAME-remove.js',
@@ -68,11 +70,10 @@ var copy = {
 		'admin/action/FROM.js',
 		'admin/action/remove.js',
 		'admin/action/TO.js',
-		'admin/event/NAME-FROM-output.js',
+		'admin/event/body.js',
 		'admin/event/NAME-remove-error.js',
 		'admin/event/NAME-remove-success.js',
 		'admin/event/NAME-remove.js',
-		'admin/event/NAME-TO-output.js',
 		'admin/template/FROM.html',
 		'admin/template/TO.html' ]
 };
@@ -100,7 +101,7 @@ module.exports = function(eve, command) {
 	
 	//parse arguments
 	.then(function(next) {
-		schema = this.getBuildPath() + '/package/' + package + '/schema.json';
+		schema = this.getBuildPath() + this.path('/package/' + package + '/schema.json');
 		
 		//if the schema is not a file
 		if(!this.File(schema).isFile()) {
@@ -126,7 +127,7 @@ module.exports = function(eve, command) {
 		}
 		
 		//populate schema's sub-schemas
-		from = this.getBuildPath() + '/package/' + schema.from.package + '/schema.json';
+		from = this.getBuildPath() + this.path('/package/' + schema.from.package + '/schema.json');
 		
 		//if the from is not a file
 		if(!this.File(from).isFile()) {
@@ -137,7 +138,7 @@ module.exports = function(eve, command) {
 		}
 		
 		//populate schema's sub-schemas
-		to = this.getBuildPath() + '/package/' + schema.to.package + '/schema.json';
+		to = this.getBuildPath() + this.path('/package/' + schema.to.package + '/schema.json');
 		
 		//if the to is not a file
 		if(!this.File(to).isFile()) {
@@ -317,7 +318,7 @@ module.exports = function(eve, command) {
 			//do we have envronments ?
 			if(environments[types[i]].length) {
 				var callback = next.thread.bind(null, 'get-files', i);
-				this.Folder(this.getEvePath() + '/relate/' + types[i]).getFiles(null, true, callback);
+				this.Folder(this.getEvePath() + this.path('/relate/' + types[i])).getFiles(null, true, callback);
 				
 				return;
 			}
@@ -355,7 +356,7 @@ module.exports = function(eve, command) {
 	.thread('transform-file', function(i, j, k, files, next) {
 		if(k < files.length) {
 			//copy valid files
-			var root = this.getEvePath() + '/relate/';
+			var root = this.getEvePath() + this.path('/relate/');
 			if(copy.all.indexOf(files[k].path.substr(root.length)) === -1
 			&& copy[schema.mode].indexOf(files[k].path.substr(root.length)) === -1) {
 				next.thread('transform-file', i, j, k + 1, files);
@@ -477,7 +478,8 @@ module.exports = function(eve, command) {
 				.getDeployPath();
 			
 			//get all the files in the deploy path
-			this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+			this.Folder(deploy + this.path('/application'))
+			.getFiles(null, true, function(error, files) {
 				//if there's an error
 				if(error) {
 					this.trigger('error', error);
@@ -492,7 +494,8 @@ module.exports = function(eve, command) {
 				}
 				
 				//set the map
-				this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+				this.File(deploy + this.path('/application/map.js'))
+				.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 				function(error) {
 					if(error) {
 						this.trigger('error', error);
@@ -517,7 +520,8 @@ module.exports = function(eve, command) {
 				.getDeployPath();
 			
 			//get all the files in the deploy path
-			this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+			this.Folder(deploy + this.path('/application'))
+			.getFiles(null, true, function(error, files) {
 				//if there's an error
 				if(error) {
 					//do nothing
@@ -532,7 +536,8 @@ module.exports = function(eve, command) {
 				}
 				
 				//set the map
-				this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+				this.File(deploy + this.path('/application/map.js'))
+				.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 				function(error) {
 					if(error) {
 						this.trigger('error', error);

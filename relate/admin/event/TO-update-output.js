@@ -70,21 +70,5 @@ define(function() {
 			
 		}.bind(this));
 		{{/if}}
-		
-		{{#if from.many}}
-		//case for -> a {{to.schema.name}} having many {{from.schema.name}}
-		//add a tab to view many {{from.schema.name}}
-		
-		//create a tab
-		var body = Handlebars.compile('<li class="{{name}}-tab\{\{#when ' 
-		+ 'url \'startsWith\' \'/{{name}}/{{from.schema.name}}/\'\}\} active\{\{/when\}\}">\
-			<a href="/{{name}}/{{from.schema.name}}/\{\{id\}\}">\
-				<i class="blue icon-edit bigger-125"></i>\
-				{{from.schema.plural}}\
-			</a>\
-		</li>')({ id: request.variables[0], url: request.path });
-		
-		$('section.{{to.schema.name}}-update ul.nav-tabs').append(body);
-		{{/if}}
 	};
 });

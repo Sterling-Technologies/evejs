@@ -14,13 +14,13 @@
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-		this._menu 		= []; 
-		
 		/* Private Properties
 		-------------------------------*/
 		var __paths 	= {};
 		var __settings 	= {};
 		var __chops		= null;
+		var __packages 	= {};
+		var __state		= null;
 		
 		/* Magic
 		-------------------------------*/
@@ -105,11 +105,7 @@
 		 * @return object|null
 		 */
 		this.getState = function() {
-			if(__chops === null) {
-				return null;
-			}
-			
-			return __chops.getState();
+			return __state;
 		};
 		
 		/**
@@ -180,6 +176,21 @@
 		};
 		
 		/**
+		 * Sets or gets a factory class
+		 *
+		 * @param string
+		 * @param object
+		 */
+		this.package = function(package, factory) {
+			if(typeof factory === 'function') {
+				__packages[package] = factory;
+				return this;
+			}
+			
+			return __packages[package]();
+		};
+		
+		/**
 		 * Local redirect
 		 *
 		 * @param string path
@@ -205,48 +216,6 @@
 		/* Page Methods
 		-------------------------------*/
 		/**
-		 * Adds a message on top
-		 *
-		 * @param string
-		 * @param string
-		 * @param string
-		 * @return this
-		 */
-		this.addMessage = function(message, type, icon) {
-			icon = icon || 'okay';
-			type = type || 'success';
-			
-			//get the alert template
-			require(['text!' + this.path('template') + '/_alert.html'], function(template) {
-				//add the message to the messages container
-				$('#messages').prepend(Handlebars.compile(template)({
-					type	: type,
-					message	: message,
-					icon	: icon
-				}));
-			});
-			
-			return this;
-		};
-		
-		/**
-		 * Adds a popup notification
-		 * less intrusive than message
-		 *
-		 * @param string
-		 * @param string
-		 * @param string
-		 * @return this
-		 */
-		this.notify = function(title, message, type) {
-			$.extend($.gritter.options, { position: 'bottom-right' });
-			
-			$.gritter.add({ title: title, text: message, class_name: 'gritter-'+type });
-			
-			return this;
-		};
-		
-		/**
 		 * Sets page body
 		 *
 		 * @param string
@@ -257,44 +226,6 @@
 				
 			//trigger body event
 			return this.trigger('body');
-		};
-		
-		/**
-		 * Sets page crumbs
-		 *
-		 * @param array
-		 * @return this
-		 */
-		this.setCrumbs = function(crumbs) {
-			//get the global crumbs template
-			require(['text!' + this.path('template') + '/_crumbs.html'], function(template) {
-				//add the crumbs to the breadcrumbs container
-				$('#breadcrumbs').html(Handlebars.compile(template)({ crumbs: crumbs }));
-			});
-			
-			return this;
-		};
-		
-		/**
-		 * Sets page header
-		 *
-		 * @param string
-		 * @return this
-		 */
-		this.setHeader = function(header) {
-			$('#header-title').html(header);
-			return this;
-		};
-		
-		/**
-		 * Sets page subheader
-		 *
-		 * @param string
-		 * @return this
-		 */
-		this.setSubheader = function(subheader) {
-			$('#subheader-title').html(subheader);
-			return this;
 		};
 		
 		/**
@@ -326,42 +257,17 @@
 				templates 	= [
 					'text!' + this.path('template') + '/_page.html',
 					'text!' + this.path('template') + '/_head.html',
-					'text!' + this.path('template') + '/_foot.html',
-					'text!' + this.path('template') + '/_menu.html'];
+					'text!' + this.path('template') + '/_foot.html'];
 			
 			//require all the default templates
-			require(templates, function(page, head, foot, menu) {
-				//allow any package to add to the menu
-				self.trigger('menu', _menu);
+			require(templates, function(page, head, foot) {
 				//render head
 				head = Handlebars.compile(head)({ right: true });
-				
-				//render menu
-				menu = Handlebars.compile(menu)({ items: _menu });
 				
 				//render page
 				$(document.body).html(Handlebars.compile(page)({
 					head		: head,
-					foot		: foot,
-					menu		: menu
-				}));
-				
-				//listen for a change in url
-				self.on('client-request', function(e) {
-					//find all menu items
-					$('#sidebar li')
-					//make them inactive
-					.removeClass('active')
-					//for each link in the items
-					.find('a').each(function() {
-						//if the url starts with whats in the link
-						if(window.location.href.indexOf(this.href) === 0
-						|| window.location.pathname.indexOf(this.href) === 0) {
-							//set the item active
-							$(this).parent('li').addClass('active');
-						}
-					});
-				});
+					foot		: foot }));
 				
 				callback();
 			});
@@ -389,6 +295,11 @@
 				for(var i = 0; i < packages.length; i++) {
 					//create the path and push it into the list
 					list.push(self.path('package') + '/' + packages[i] + '/index.js');
+				}
+				
+				if(!list.length) {
+					callback();
+					return;
 				}
 				
 				//now we can bulk require all the packages
@@ -500,7 +411,8 @@
 			__chops = $.chops();
 			
 			this.on('request', function(e, path, state) {
-				this.trigger('client-request', state);
+				__state = state || __chops.getState();
+				this.trigger('client-request', __state);
 			}.bind(this));
 			
 			this.trigger('request', window.location.href, this.getState());

@@ -3,22 +3,25 @@ define(function() {
 		//set paths
 		this
 			.path('{{name}}'			, this.path('package') + '/{{name}}')
-			.path('{{name}}/action'		, this.path('package') + '/{{name}}/action')
-			.path('{{name}}/event'		, this.path('package') + '/{{name}}/event')
-			.path('{{name}}/template'	, this.path('package') + '/{{name}}/template');	
+			.path('{{name}}/action'	, this.path('package') + '/{{name}}/action')
+			.path('{{name}}/event'	, this.path('package') + '/{{name}}/event')
+			.path('{{name}}/template', this.path('package') + '/{{name}}/template');	
 		
 		//load the factory
 		require([this.path('{{name}}') + '/factory.js'], function(factory) {
-			//add it to the base class definitions
-			jQuery.eve.base.define({ {{name}}: factory });
-			
-			this.{{name}} = factory;
+			//add it to the global factory
+			this.package('{{name}}', factory);
 			
 			//get event path
-			var events = this.{{name}}().path('event');
+			var events = this.Folder(this.package('{{name}}').path('event'));
+			
+			if(!events.isFolder()) {
+				this.trigger('{{name}}-init');
+				return;
+			}
 			
 			//get files in the event folder
-			this.Folder(events).getFiles(null, false, function(error, files) {
+			events.getFiles(null, false, function(error, files) {
 				//loop through files  
 				for(var events = [], callbacks = [], i = 0; i < files.length; i++) {
 					//accept only js

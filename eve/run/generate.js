@@ -21,7 +21,7 @@ module.exports = function(eve, command) {
 	
 	//parse arguments
 	.then(function(next) {
-		schema = this.File(this.getBuildPath() + '/package/' + package + '/schema.json');
+		schema = this.File(this.getBuildPath() + this.path('/package/' + package + '/schema.json'));
 		
 		//if the schema is not a file
 		if(!schema.isFile()) {
@@ -29,7 +29,7 @@ module.exports = function(eve, command) {
 			return;
 		}
 		
-		schema = require(this.getBuildPath() + '/package/' + package + '/schema.json');
+		schema = require(this.getBuildPath() + this.path('/package/' + package + '/schema.json'));
 		
 		//is it relational data?
 		if(typeof schema.from === 'object' && typeof schema.to === 'object') {
@@ -280,7 +280,7 @@ module.exports = function(eve, command) {
 			//do we have envronments ?
 			if(environments[types[i]].length) {
 				var callback = next.thread.bind(null, 'get-files', i);
-				this.Folder(this.getEvePath() + '/generate/' + types[i]).getFiles(null, true, callback);
+				this.Folder(this.getEvePath() + this.path('/generate/' + types[i])).getFiles(null, true, callback);
 				
 				return;
 			}
@@ -425,7 +425,7 @@ module.exports = function(eve, command) {
 				.getDeployPath();
 			
 			//get all the files in the deploy path
-			this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
+			this.Folder(deploy + this.path('/application')).getFiles(null, true, function(error, files) {
 				//if there's an error
 				if(error) {
 					this.trigger('error', error);
@@ -440,7 +440,8 @@ module.exports = function(eve, command) {
 				}
 				
 				//set the map
-				this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+				this.File(deploy + this.path('/application/map.js'))
+				.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 				function(error) {
 					if(error) {
 						this.trigger('error', error);
@@ -480,7 +481,7 @@ module.exports = function(eve, command) {
 				}
 				
 				//set the map
-				this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
+				this.File(deploy + this.path('/application/map.js')).setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 				function(error) {
 					if(error) {
 						this.trigger('error', error);

@@ -3,7 +3,7 @@ define(function() {
 		var controller = this, $ = jQuery;
 		
 		$('<input class="file-input hide" '
-		+ 'type="file" multiple="multiple" />')
+		+ 'type="file" />')
 		.appendTo(document.body).change(function() {
 			var request 	= controller.getState();
 			var settings 	= { file: Array.prototype.slice.apply(this.files) };
