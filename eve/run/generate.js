@@ -1,18 +1,32 @@
 module.exports = function(eve, command) {
-	var handlebars		= require('../handlebars');
-		package 		= command.shift(), 
-		schema 			= null, 
-		environments	= {
-			server	: [],
-			admin	: [],
-			web		: [] },
+	var INVALID_PARAMETER = 'Invalid parameter. Must add package name to parse',
+		
+		wizard 			= require('prompt'),
+		handlebars		= require('../handlebars'),
+		
+		package 		= command[0], 
+		
+		root			= eve.getEvePath(),
+		settings		= eve.getSettings(),
+		build			= eve.getBuildPath(),
+		
+		path 			= build + '/package/' + package,
+		schema 			= path + '/schema.json', 
+		templates		= root + '/templates/package', 		
+		
+		environments	= { server: [], admin: [], web: [] },
 		types			= ['server', 'admin', 'web'];
 	
+	//clear cache
+	eve.Folder('/').clear();
+	
 	//validate arguments
-	eve.sync(function(next) {
+	eve
+	
+	.sync(function(next) {
 		//is there a package ?
 		if(!package || !package.length) {
-			this.trigger('error', 'Invalid parameter. Must add package name to parse');
+			this.trigger('error', INVALID_PARAMETER);
 			return;
 		}
 		
@@ -21,19 +35,16 @@ module.exports = function(eve, command) {
 	
 	//parse arguments
 	.then(function(next) {
-		schema = this.File(this.getBuildPath() + this.path('/package/' + package + '/schema.json'));
-		
 		//if the schema is not a file
-		if(!schema.isFile()) {
-			this.trigger('error', 'Invalid parameter. Must add a valid package name to parse');
+		if(!this.File(schema).isFile()) {
+			this.trigger('error', INVALID_PARAMETER);
 			return;
 		}
 		
-		schema = require(this.getBuildPath() + this.path('/package/' + package + '/schema.json'));
+		schema = require(schema);
 		
 		//is it relational data?
 		if(typeof schema.from === 'object' && typeof schema.to === 'object') {
-			command.unshift(package);
 			require('./relate')(eve, command);
 			return;
 		}
@@ -46,23 +57,47 @@ module.exports = function(eve, command) {
 		//normalize
 		schema.fields = this.normalize(schema.fields, true);
 		
-		//is there a file?
-		for(var name in schema.fields) {
-			if(schema.fields.hasOwnProperty(name)) {
-				if(schema.fields[name].type === 'file') {
-					schema.files = true;
-					break;
-				}
-			}
-		}
-		
 		next();
+	})
+	
+	.then(function(next) {
+		this.Folder(path).getFolders(function(error, folders) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			if(!folders.length) {
+				next();
+				return;
+			}
+			
+			var copy = [{
+				name 		: 'allow',
+				description : 'The package seems to be already generated ... Generating '
+							+ 'this package will remove all custom changes. Do you want ' 
+							+ 'to continue ? (Default: No)',
+				type 		: 'string' 
+			}];
+			
+			wizard.get(copy, function(error, result) {
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
+				if(['y', 'yes'].indexOf(result.allow.toLowerCase()) === -1) {
+					this.trigger('error', 'Process has been aborted!');
+					return;
+				}
+				
+				next();
+			}.bind(this));
+		}.bind(this));
 	})
 	
 	//packages are populated, get environemnts
 	.then(function(next) {
-		var settings = this.getSettings();
-		
 		//determine environments
 		for(var name in settings.environments) {
 			if(settings.environments.hasOwnProperty(name)) {
@@ -73,203 +108,6 @@ module.exports = function(eve, command) {
 		}
 		
 		//package and environments are populated, start generating
-		next();
-	})
-	
-	//select database
-	.then(function(next) {
-		//where to put it?
-		//get the database file from the build
-		var database = this.getDatabase();
-		
-		if(database) {
-			this
-				.trigger('message', 'Installing schema ...')
-				.Mysql(
-					database.host, 
-					database.port, 
-					'',
-					database.user,
-					database.pass)
-				.query('CREATE DATABASE IF NOT EXISTS `'+database.name+'`;', function(error, rows, meta) {
-					if(error) {
-						this.trigger('error', error);
-						return;
-					}
-					
-					database = this
-					.Mysql(
-						database.host, 
-						database.port, 
-						database.name,
-						database.user,
-						database.pass);
-						
-					next.thread('drop', database);
-				}.bind(this));
-			return;
-		}
-		
-		this.trigger('error', 'No database found. Check your server config for databases.js');
-		return;
-	})
-	
-	.thread('drop', function(database, next) {
-		var callback = next.thread.bind(null, 'schema', database);
-		
-		database.query('DROP TABLE IF EXISTS `' + schema.name + '`;', callback);
-	})
-	
-	.thread('schema', function(database, error, rows, meta, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		//build the schema
-		var defaults, query = [];
-		query.push('CREATE TABLE `' + schema.name + '` (');
-		query.push('`'+schema.primary+'` int(10) unsigned NOT NULL,');
-		
-		if(schema.slug instanceof Array 
-		&& typeof schema.slug[0] === 'string' 
-		&& schema.slug[0].length) {
-			query.push('`'+schema.slug[0]+'` varchar(255) NOT NULL,');
-		}
-		
-		for(var name in schema.fields) {
-			if(schema.fields.hasOwnProperty(name)) {
-				if(typeof schema.fields[name].default === 'undefined') {
-					defaults = 'DEFAULT NULL';
-				} else {
-					defaults = 'NOT NULL DEFAULT ' + schema.fields[name].default;
-				}
-				
-				switch(schema.fields[name].type) {
-					case 'int':
-						query.push('`'+name+'` int(10) ' + defaults + ',');
-						break;
-					case 'float':
-						query.push('`'+name+'` float(10,2) ' + defaults + ',');
-						break;
-					case 'file':
-					case 'string':
-						query.push('`'+name+'` varchar(255) ' + defaults + ',');
-						break;
-					case 'text':
-						query.push('`'+name+'` text ' + defaults + ',');
-						break;
-					case 'boolean':
-						query.push('`'+name+'` int(1) unsigned ' + defaults + ',');
-						break;
-					case 'date':
-						query.push('`'+name+'` date ' + defaults + ',');
-						break;
-					case 'datetime':
-						query.push('`'+name+'` datetime ' + defaults + ',');
-						break;
-					case 'time':
-						query.push('`'+name+'` time ' + defaults + ',');
-						break;
-				}
-			}
-		}
-		
-		if(typeof schema.active === 'string' && schema.active.length) {
-			query.push('`'+schema.active+'` int(1) unsigned NOT NULL DEFAULT \'1\',');
-		}
-		
-		if(typeof schema.created === 'string' && schema.created.length) {
-			query.push('`'+schema.created+'` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,');
-		}
-		
-		if(typeof schema.updated === 'string' && schema.updated.length) {
-			query.push('`'+schema.updated+'` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,');
-		}
-		
-		query[query.length - 1] = query[query.length - 1].substr(0, query[query.length - 1].length - 1);
-		
-		query.push(') ENGINE=InnoDB DEFAULT CHARSET=latin1;');
-		
-		var callback = next.thread.bind(null, 'primary-key', database);
-		
-		database.query(query.join("\n"), callback);
-	})
-	
-	.thread('primary-key', function(database, error, rows, meta, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var callback = next.thread.bind(null, 'auto-increment', database);
-		
-		if(schema.slug instanceof Array 
-		&& typeof schema.slug[0] === 'string' 
-		&& schema.slug[0].length) {
-			callback = next.thread.bind(null, 'add-slug', database);
-		}
-		
-		
-		database.query('ALTER TABLE `' + schema.name + '` ADD PRIMARY KEY (`' + schema.primary + '`);', 
-		callback);
-	})
-	
-	.thread('add-slug', function(database, error, rows, meta, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var callback = next.thread.bind(null, 'auto-increment', database);
-		database.query('ALTER TABLE `' + schema.name + '` ADD UNIQUE KEY `'+ schema.slug[0]
-		+'` (`' + schema.slug[0] + '`);', callback);
-	})
-	
-	.thread('auto-increment', function(database, error, rows, meta, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var callback = next.thread.bind(null, 'fixture', database);
-		database.query('ALTER TABLE `' + schema.name + '` MODIFY `'+schema.primary
-			+'` int(10) unsigned NOT NULL AUTO_INCREMENT;', 
-			callback);
-	})
-	
-	.thread('fixture', function(database, error, rows, meta, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		if(schema.fixture instanceof Array) {
-			next.thread('fixture-item', 0, database);
-			return;
-		}
-		
-		next.thread('generate-type', 0);
-	})
-	
-	.thread('fixture-item', function(i, database, next) {
-		if(i < schema.fixture.length) {
-			var model = database.model(schema.name);
-			
-			model.___construct(schema.fixture[i]);
-			
-			model.save(function(error) {
-				if(error) {
-					this.trigger('error', error);
-					return;
-				}
-				
-				next.thread('fixture-item', i + 1, database);		
-			}.bind(this));
-			
-			return;
-		}
-		
 		next.thread('generate-type', 0);
 	})
 	
@@ -280,7 +118,7 @@ module.exports = function(eve, command) {
 			//do we have envronments ?
 			if(environments[types[i]].length) {
 				var callback = next.thread.bind(null, 'get-files', i);
-				this.Folder(this.getEvePath() + this.path('/generate/' + types[i])).getFiles(null, true, callback);
+				this.Folder(templates + '/' + types[i]).getFiles(null, true, callback);
 				
 				return;
 			}
@@ -319,16 +157,21 @@ module.exports = function(eve, command) {
 		if(k < files.length) {
 			//get the data
 			files[k].getContent(function(error, content) {
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
 				try {
 					content = handlebars.compile(content.toString('utf8'))(schema)
 						.replace(/\\\{\s*/g, '{')
 						.replace(/\\\}/g, '}');
 				} catch(e) {
-					eve.trigger('error', e);
+					this.trigger('error', e, true);
 				}
 				
 				next.thread('copy-file-to-build', i, j, k, files, content);
-			});
+			}.bind(this));
 			
 			return;
 		}
@@ -339,55 +182,21 @@ module.exports = function(eve, command) {
 	//start to generate each file to build
 	.thread('copy-file-to-build', function(i, j, k, files, content, next) {	
 		//what's the detination?
-		var root = this.getEvePath() + '/generate/' + types[i];
+		var type = templates + '/' + types[i];
 		
-		var destination = this.path(this.getBuildPath() 
+		var destination = this.getBuildPath() 
 			+ '/package/' + package + '/' 
 			+ environments[types[i]][j].name 
-			+ files[k].path.substr(root.length));
+			+ files[k].path.substr(type.length);
 		
-		destination = destination.replace('SLUG', schema.name);
-		
-		this.trigger('message', 'Copying to: ' + destination);
-		
-		var callback = next.thread.bind(
-			null, 'copy-file-to-deploy', 
-			i, j, k, files, content);
-		
-		this.File(destination).setContent(content, callback);
-	})
-	
-	//start to generate each file to deploy
-	.thread('copy-file-to-deploy', function(i, j, k, files, content, error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		//what's the detination?
-		var root = this.getEvePath() + '/generate/' + types[i];
-		
-		var extra = '';
-		
-		if(environments[types[i]][j].settings.type === 'admin'
-		|| environments[types[i]][j].settings.type === 'web') {
-			extra = '/application';	
-		}
-		
-		//set the deploy path
-		this.setDeployPath(environments[types[i]][j].settings.path);
-		
-		var destination = this.path(this.getDeployPath() 
-			+ extra + '/package/' + package
-			+ files[k].path.substr(root.length));
-		
-		destination = destination.replace('SLUG', schema.name);
+		destination = destination.replace('NAME', schema.name);
 		
 		this.trigger('message', 'Copying to: ' + destination);
 		
 		var callback = next.thread.bind(
-			null, 'copy-next-file', i, j, k, files);
-			
+			null, 'copy-next-file', 
+			i, j, k, files);
+		
 		this.File(destination).setContent(content, callback);
 	})
 	
@@ -403,102 +212,62 @@ module.exports = function(eve, command) {
 	
 	//auto update package settings
 	.then(function(next) {
-		this.addPackage(package, function(error) {
+		this.Folder(path).getFolders(function(error, folders) {
 			if(error) {
 				this.trigger('error', error);
 				return;
 			}
 			
-			next();
+			var environments = [];
+			for(var i = 0; i < folders.length; i++) {
+				environments.push(folders[i].getName());
+			}
+			
+			//loop through folders
+			next.thread('package-environment-loop', 0, environments);
 		}.bind(this));
 	})
 	
-	//make map files
-	.then(function(next) {
-		next.thread('make-map-admin', 0);
-	})
-	.thread('make-map-admin', function(i, next) {
-		if(i < environments.admin.length) {
-			//get the deploy path
-			var deploy = this
-				.setDeployPath(environments.admin[i].settings.path)
-				.getDeployPath();
+	.thread('package-environment-loop', function(i, environments, next) {
+		if(i < environments.length) {
+			var file = build + '/config/' + environments[i] + '/packages.json';
 			
-			//get all the files in the deploy path
-			this.Folder(deploy + this.path('/application')).getFiles(null, true, function(error, files) {
-				//if there's an error
+			this.File(file).getData(function(error, data) {
 				if(error) {
 					this.trigger('error', error);
-					next.thread('make-map-admin', i + 1);
-					//do nothing
 					return;
 				}
 				
-				//add files to the map
-				for(var map = [], i = 0; i < files.length; i++) {
-					map.push(files[i].path.substr(deploy.length));
-				}
-				
-				//set the map
-				this.File(deploy + this.path('/application/map.js'))
-				.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
-				function(error) {
-					if(error) {
-						this.trigger('error', error);
-					}
-					
-					next.thread('make-map-admin', i + 1);
-				}.bind(this));
+				next.thread('set-build', i, environments, data);
 			}.bind(this));
 			
 			return;
 		}
 		
-		next.thread('make-map-web', 0);
-	})
-	
-	.thread('make-map-web', function(i, next) {
-		
-		if(i < environments.web.length) {
-			//get the deploy path
-			var deploy = this
-				.setDeployPath(environments.web[i].settings.path)
-				.getDeployPath();
-			
-			//get all the files in the deploy path
-			this.Folder(deploy + '/application').getFiles(null, true, function(error, files) {
-				//if there's an error
-				if(error) {
-					//do nothing
-					this.trigger('error', error);
-					next.thread('make-map-web', i + 1);
-					return;
-				}
-				
-				//add files to the map
-				for(var map = [], i = 0; i < files.length; i++) {
-					map.push(files[i].path.substr(deploy.length));
-				}
-				
-				//set the map
-				this.File(deploy + this.path('/application/map.js')).setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
-				function(error) {
-					if(error) {
-						this.trigger('error', error);
-					}
-					
-					next.thread('make-map-web', i + 1);
-				}.bind(this));
-			}.bind(this));
-			
-			return;
-		}
-		
+		//next
 		next();
 	})
+	
+	.thread('set-build', function(i, environments, data, next) {
+		var file = build + '/config/' + environments[i] + '/packages.json';
+		
+		if(data.indexOf(package) === -1) {
+			data.push(package);
+		}
+		
+		this.File(file).setData(data, function(error) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			next.thread('package-environment-loop', i + 1, environments);
+		}.bind(this));
+	})
+	
 	//we are done
 	.then(function(next) {
-		eve.trigger('generate-complete', package, environments);
+		this.trigger('generate-complete', package, environments);
 		next();
 	});
 };

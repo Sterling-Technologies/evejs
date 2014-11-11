@@ -224,17 +224,9 @@ module.exports = require('edenjs').extend(function() {
 			this._settings = require(this.getBuildPath() + '/build.json') || null;
 		}
 		
-		return this._settings || { databases: {
-			eve : {
-				type	: 'mysql',
-				host	: '127.0.0.1',
-				port	: null,
-				name	: 'eve',
-				user	: 'root',
-				pass	: '',
-				default	: true
-			}
-		}, environments: {} };
+		return this._settings || { 
+			databases: {}, 
+			environments: {} };
 	};
 	
 	/**
@@ -365,148 +357,6 @@ module.exports = require('edenjs').extend(function() {
 			//destination is relative to local
 			this._deploy = this.getBuildPath() + this._deploy.substr(1);
 		}
-		
-		return this;
-	};
-	
-	/**
-	 * Updates each environment settings
-	 *
-	 * @param function
-	 * @return this
-	 */
-	this.setEnvironments = function(callback) {
-		var file, settings = this.getSettings();
-		
-		var sync = this.sync()
-		
-		.thread('add-to-build', function(name, next) {
-			var file = this.getBuildPath() + this.path('/config/' + name + '/settings.json');
-			
-			//get the settings data
-			this.File(file).getData(function(error, data) {
-				if(error) {
-					callback(error);
-					return;
-				}
-				
-				next.thread('set-to-build', file, name, data);
-			}.bind(this));
-		})
-		
-		.thread('set-to-build', function(file, name, data, next) {
-			//loop the environments
-			//to determine the data.environments
-			for(var environment in settings.environments) {
-				if(settings.environments.hasOwnProperty(environment)) {
-					//if the environment is already set
-					if(typeof data.environments[environment] === 'object') {
-						//dont tamper with it
-						continue;
-					}
-					
-					//clear to add it
-					data.environments[environment] =  { 
-						type: settings.environments[environment].type, 
-						protocol: 'http', 
-						host: environment + '.eve.dev', 
-						port: 8082 };	
-					
-					//determine the default server	
-					if(settings.environments[environment].type !== 'server' 
-					&& !data.server 
-					&& data.environments[environment].type === 'server') {
-						data.server = environment;
-					}
-				}
-			}
-			
-			//now save it
-			this.File(file).setData(data, function(error) {
-				if(error) {
-					callback(error);
-					return;
-				}
-				
-				next.thread('add-to-deploy', name);
-			});
-		})
-		
-		.thread('add-to-deploy', function(name, next) {
-			var deploy = settings.environments[name].path;
-			
-			//if destination starts with a .
-			if(deploy.indexOf('.') === 0) {
-				//destination is relative to local
-				deploy = this.getBuildPath() + deploy.substr(1);
-			}
-			
-			var file = deploy + this.path('/config/settings.json');
-			
-			if(settings.environments[name].type !== 'server') {
-				file = deploy + this.path('/application/config/settings.json');
-			}
-			
-			//get the settings data
-			this.File(file).getData(function(error, data) {
-				if(error) {
-					callback(error);
-					return;
-				}
-				
-				next.thread('set-to-deploy', file, name, data);
-			}.bind(this));
-		})
-		
-		.thread('set-to-deploy', function(file, name, data, next) {
-			//loop the environments
-			//to determine the data.environments
-			for(var environment in settings.environments) {
-				if(settings.environments.hasOwnProperty(environment)) {
-					//if the environment is already set
-					if(typeof data.environments[environment] === 'object') {
-						//dont tamper with it
-						continue;
-					}
-					
-					//clear to add it
-					data.environments[environment] =  { 
-						type: settings.environments[environment].type, 
-						protocol: 'http', 
-						host: environment + '.eve.dev', 
-						port: 8082 };	
-					
-					//determine the default server	
-					if(settings.environments[environment].type !== 'server' 
-					&& !data.server 
-					&& data.environments[environment].type === 'server') {
-						data.server = environment;
-					}
-				}
-			}
-			
-			//now save it
-			this.File(file).setData(data, function(error) {
-				if(error) {
-					callback(error);
-					return;
-				}
-				
-				next();
-			});
-		});
-		
-		for(var environment in settings.environments) {
-			if(settings.environments.hasOwnProperty(environment)) {
-				sync.then(function(environment, next) {
-					next.thread('add-to-build', environment);
-				}.bind(null, environment));
-			}
-		}
-		
-		sync.then(function(next) {
-			callback(null);
-		});
 		
 		return this;
 	};

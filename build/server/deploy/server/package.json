@@ -1,0 +1,13 @@
+{
+  "name": "custom-server",
+  "description": "Custom server made with Eve",
+  "version": "0.0.0",
+  "author": {
+    "name": "[YOUR NAME]",
+    "email": "[YOUR EMAIL]"
+  },
+  "dependencies": {
+    "edenjs" : "0.0.28"
+  },
+  "main": "./index.js"
+}

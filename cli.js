@@ -1,13 +1,3 @@
-/* Sample Commands:
- * eve 							- Alias for "eve watch all"
- * eve install					- Alias for "eve install all"
- * eve install web [name]		- Installs web only
- * eve install admin [name]		- Installs admin only
- * eve install server [name]	- Installs server only
- * eve watch					- Alias for "eve watch all"
- * eve watch [name]				- Watches changes in web only
- * eve generate ecommerce/product
- */
 var eve 		= require('./eve.js'),
 	nodemon 	= require('./eve/nodemon'),
 	mocha 		= require('./eve/mocha'),
@@ -15,100 +5,152 @@ var eve 		= require('./eve.js'),
 	executable	= command.shift(),
 	bin 		= command.shift();
 
-var processError = function(error) {
-	if (error) {
-		eve().trigger('error', error);
-	}
-};
-
 eve()
-	.on('error', function(message) {
+	.on('error', function(message, soft) {
 		console.log('\x1b[31m%s\x1b[0m', message);
+		
+		if(!soft) {
+			this.trigger('complete');
+		}
+	})
+	
+	.on('success', function(message) {
+		console.log('\x1b[32m%s\x1b[0m', message);
 	})
 	
 	.on('message', function(message) {
 		console.log('\x1b[33m%s\x1b[0m', message);
 	})
 	
-	.on('create-step', function(step, type, name, deploy) {
-		var message = false;
+	.on('database-complete', function(config, noDeploy) {
+		this.trigger('success', 'Database has been added!');
 		
-		switch(step) {
-			case 1:
-				message = 'creating ' + name + '...';
-				break;
-			case 2:
-				message = 'Copying ' + type + ' to deploy.';
-				break;
-			case 3:
-				message = 'Copying ' + type + ' to build.';
-				break;
-			case 4:
-				message = 'Copying packages.';
-				break;
-			case 6:
-				message = 'npm install.';
-				break;
-			
+		if(!noDeploy) {
+			this.trigger('message', 'Deploying environments ...');
+			require('./eve/run/deploy')(this, []);
+			return;
 		}
 		
-		if(message) {
-			console.log('\x1b[33m%s\x1b[0m', message);
-		}
+		this.trigger('complete');
 	})
 	
-	.on('create-complete', function(name, type, deploy) {
-		console.log('\x1b[32m%s\x1b[0m', name + ' installation complete!');
+	.on('create-complete', function(name, type, noDeploy) {
+		this.trigger('success', name + ' installation complete!');
+		
+		if(!noDeploy) {
+			this.trigger('message', 'Deploying environments ...');
+			require('./eve/run/deploy')(this, []);
+			return;
+		}
+		
+		this.trigger('complete');
 	})
 	
 	.on('generate-complete', function(package, environments) {
-		console.log('\x1b[32m%s\x1b[0m', package + ' was successfully generated!');
-		process.exit(0);
+		this.trigger('success', package + ' was successfully generated!');
+		this.trigger('message', 'Deploying environments ...');
+		
+		require('./eve/run/deploy')(this, []);
 	})
 	
 	.on('relate-complete', function(schema, environments) {
-		console.log('\x1b[32m%s\x1b[0m', schema.name + ' was successfully generated!');
-		process.exit(0);
+		this.trigger('success', schema.name + ' was successfully generated!');
+		this.trigger('message', 'Deploying environments ...');
+		
+		require('./eve/run/deploy')(this, []);
 	})
 	
-	.on('watch-init', function(environments) {
+	.on('remove-complete', function(package) {
+		this.trigger('success', package + ' was successfully removed!');
+		this.trigger('message', 'Deploying environments ...');
+		
+		require('./eve/run/deploy')(this, []);
+	})
+	
+	.on('deploy-complete', function() {
+		this.trigger('success', 'Build files were successfully deployed!');
+		this.trigger('message', 'Mapping ...');
+		
+		require('./eve/run/map')(this, []);
+	})
+	
+	.on('map-complete', function() {
+		this.trigger('success', 'Deploy files were successfully mapped!');
+		
+		this.trigger('complete');
+	})
+	
+	.on('watch-init', function(watcher, environments) {
+		process.stdin.once('data', function(command) {
+			command = command.toString().trim().split(' ');
+			
+			if(command[0] !== 'watch') {
+				this.once('complete', function() {
+					var command = 'watch ' + environments.join(',');
+						command = command.split(' ');
+					
+					this.run(command);
+				});
+			}
+			
+			this.trigger('message', 'Shutting down watcher ...');
+			
+			for(var i = 0; i < watching.length; i++) {
+				watching[i].nodemon.emit('quit');
+			}
+			
+			watcher.close();
+			
+			this.run(command);
+		}.bind(this));
+		
 		var settings = this.getSettings();
 		
-		for(var name in settings.environments) {
-			if(settings.environments.hasOwnProperty(name)) {
-				if(settings.environments[name].type === 'server') {
-					// starts the nodemon
-					var config = settings.environments[name].nodemon || {
-						scriptPosition : 1, 
-						script : 'index.js',
-						args : ['--harmony'],
-						cwd: settings.environments[name].path,
-						ignore: ['node_modules', 'upload'],
-						ext: 'js json'
-					};
-					
-					//eventually we should write a better programmatic nodemon and watcher
-					//but for now it's this...
-        			nodemon(eve, config);
-				}
+		for(var watching = [], config, i = 0; i < environments.length; i++) {
+			if(settings.environments[environments[i]].type === 'server') {
+				// starts the nodemon
+				config = settings.environments[environments[i]].nodemon || {
+					scriptPosition : 1, 
+					script : 'index.js',
+					args : ['--harmony'],
+					cwd: settings.environments[environments[i]].path,
+					ignore: ['node_modules', 'upload'],
+					ext: 'js json' };
+				
+				//eventually we should write a better programmatic nodemon and watcher
+				//but for now it's this...
+				watching.push({
+					environment: environments[i], 
+					nodemon: nodemon(eve, config) });
 			}
 		}
 		
-		console.log('\x1b[33m%s\x1b[0m', 'watching on ' + environments.join(', '));
+		this.trigger('message', 'watching on ' + environments.join(', '));
 	})
 	
 	.on('watch-update', function(event, type, name, source, destination, push) {
 		//we only care if something has changed
 		if (event !== 'change' && event !== 'add') {
 			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-			push(event, source, destination, processError);
+			
+			push(event, source, destination, function(error) {
+				if (error) {
+					eve().trigger('error', error);
+				}
+			});
+			
 			return;
 		}
 
 		//we only care if this is a js file
 		if (this.File(source).getExtension() !== 'js') {
-			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-			push(event, source, destination, processError);
+			this.trigger('success', event + ' - ' + destination);
+			push(event, source, destination, function(error) {
+				if (error) {
+					eve().trigger('error', error);
+				}
+			});
+			
 			return;
 		}
 		
@@ -118,7 +160,7 @@ eve()
 		//if this is a test file
 		if(source.substr((build + '/package').length).split('/')[4] === 'test') {
 			//do not push just run the test
-			console.log('\x1b[33m%s\x1b[0m', 'Testing');
+			this.trigger('message', 'Testing ...');
 			
 			//delete the cache to reload again
 			delete require.cache[source];
@@ -131,12 +173,17 @@ eve()
 		if(!(settings.environments[name].test instanceof Array)
 		|| !settings.environments[name].test.length) {
 			console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
-			push(event, source, destination, processError);
+			push(event, source, destination, function(error) {
+				if (error) {
+					eve().trigger('error', error);
+				}
+			});
+			
 			return;
 		} 
 		
 		//okay it is a js file, it is not a test file and we have testing to do
-		console.log('\x1b[32m%s\x1b[0m', event + ' - ' + destination);
+		this.trigger('success', event + ' - ' + destination);
 		
 		//generate a list of test folders
 		for(var tests = [], i = 0; i < settings.environments[name].test.length; i++) {
@@ -145,7 +192,9 @@ eve()
 		}
 		
 		//capture the contents of the deploy folder
-		this.sync(function(next) {
+		this
+		
+		.sync(function(next) {
 			this.File(destination).getContent(next);
 		})
 		//then call the push command
@@ -159,7 +208,7 @@ eve()
 				return;
 			}
 			
-			console.log('\x1b[33m%s\x1b[0m', 'Testing');
+			this.trigger('message', 'Testing ...');
 			mocha.run(eve, tests, next.bind(this, content));
 		})
 		//then revert if nessisary
@@ -167,7 +216,7 @@ eve()
 			//if there was a fail and this is not a mocha test
 			if(failed) {
 				//revert
-				eve()
+				this
 					.trigger('error', 'Reverting ' + destination + ' because of a failed test')
 					.File(destination).setContent(content.toString('utf8'));
 			}
@@ -186,27 +235,9 @@ eve()
 			return;
 		}
 		
-		//get the deploy path
-		var deploy = this.setDeployPath(this.getSettings().environments[name].path).getDeployPath();
+		this.trigger('message', 'Mapping ...');
 		
-		//get all the files in the deploy path
-		this.Folder(deploy + '/application').clear().getFiles(null, true, function(error, files) {
-			//if there's an error
-			if(error) {
-				//do nothing
-				return;
-			}
-			
-			//add files to the map
-			for(var map = [], i = 0; i < files.length; i++) {
-				map.push(files[i].path.substr(deploy.length));
-			}
-			
-			console.log('\x1b[33m%s\x1b[0m', 'Mapping...');
-			
-			//set the map
-			this.File(deploy + '/application/map.js').setContent('jQuery.eve.map = '+JSON.stringify(map)+';');
-		}.bind(this));
+		require('./eve/run/map')(this, [name]);
 	})
 	
 	//nodemon events
