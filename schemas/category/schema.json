@@ -1,0 +1,52 @@
+{
+    "singular": "Category",
+    "plural": "Categories",
+    "icon": "sitemap",
+	"primary": "category_id",
+    "slug": ["category_slug", "category_title"],
+    "active": "category_active",
+    "created": "category_created",
+    "updated": "category_updated",
+    "import": true,
+    "export": true,
+    "fields": {
+        "category_title": {
+            "label": "Title",
+            "type": "string",
+            "field": "text",
+            "holder": "Please enter a title",
+            "valid": "required", 
+            "search": true
+        }
+    },
+	"fixture" : [
+		{
+			"category_slug": "some-category-1",
+			"category_title": "Some Category 1",
+			"active": "1",
+			"created" : "2014-08-01 00:00:00",
+			"updated" : "2014-09-01 00:00:00"
+		},
+		{
+			"category_slug": "some-category-2",
+			"category_title": "Some Category 2",
+			"active": "1",
+			"created" : "2014-08-02 00:00:00",
+			"updated" : "2014-09-02 00:00:00"
+		},
+		{
+			"category_slug": "some-category-3",
+			"category_title": "Some Category 3",
+			"active": "0",
+			"created" : "2014-08-03 00:00:00",
+			"updated" : "2014-09-03 00:00:00"
+		},
+		{
+			"category_slug": "some-category-4",
+			"category_title": "Some Category 4",
+			"active": "1",
+			"created" : "2014-08-04 00:00:00",
+			"updated" : "2014-09-04 00:00:00"
+		}
+	]
+}

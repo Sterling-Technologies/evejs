@@ -67,9 +67,8 @@ $ eve
 3. Also copy the [post_user folder in schema](https://github.com/Openovate/evejs/tree/master/schemas/post_user) to the package folder.
 4. In terminal type `eve generate post_user`
 5. In terminal type `eve generate post`
-6. In terminal type `eve generate user`
-7. In terminal type `eve`
-8. In your browser go to `[YOUR ADMIN URL]/post/update/1` you should see a tab called *Users*
+6. In terminal type `eve`
+7. In your browser go to `[YOUR ADMIN URL]/post/update/1` you should see a tab called *Users*
 
 ### CLI Commands
 
