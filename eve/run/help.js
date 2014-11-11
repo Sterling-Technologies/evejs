@@ -18,4 +18,6 @@ module.exports = function(eve, command) {
 	eve.trigger('success', '                                  in that same folder');
 	eve.trigger('success', ' * eve relate [name]            - Generates a relational package given the schema.json');
 	eve.trigger('success', '                                  in that same folder');
+	
+	eve.trigger('complete');
 };

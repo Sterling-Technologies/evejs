@@ -19,19 +19,23 @@ module.exports = function(eve, command) {
 		if(i < environments.length) {
 			var environment = settings.environments[environments[i]].path;
 			
+			var deploy = this.setDeployPath(environment).getDeployPath();
+			
 			var extra = '';
 			
 			if(settings.environments[environments[i]].type !== 'server') {
 				extra = '/application';
 			}
 			
-			this.Folder(environment + extra + '/config').remove(function(error) {
+			
+			
+			this.Folder(deploy + extra + '/config').remove(function(error) {
 				if(error) {
 					//this.trigger('error', error);
 					//return;
 				}
 				
-				this.Folder(environment + extra + '/package').remove(function(error) {
+				this.Folder(deploy + extra + '/package').remove(function(error) {
 					if(error) {
 						//this.trigger('error', error);
 						//return;

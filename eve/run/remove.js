@@ -6,12 +6,12 @@ module.exports = function(eve, command) {
 		package		= build + '/package/' + name;
 	 
 	if(!name) {
-		this.trigger('error', 'No package specified.');
+		eve.trigger('error', 'No package specified.');
 		return;
 	} 
 	
 	if(!eve.Folder(package).isFolder()) {
-		this.trigger('error', 'This is not a valid package.');
+		eve.trigger('error', 'This is not a valid package.');
 		return;
 	}
 	
@@ -72,7 +72,7 @@ module.exports = function(eve, command) {
 	})
 	
 	.thread('remove-config', function(i, environments, next) {
-		var file = build + '/config/' + environments[i] + '/packages.json';
+		var file = build + '/config/' + environments[i].getName() + '/packages.json';
 		
 		file = this.File(file);
 		
