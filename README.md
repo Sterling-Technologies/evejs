@@ -35,13 +35,12 @@ $ eve
   * Built in file watcher
   * Built in JSHint
   * Built in Mocha
-  * Built in Scaffolding0
+  * Built in Scaffolding
   * Pre-defined admin layout
   * Pre-defined form field and UI blocks
   * Handlebars templating
   * RESTable/OAUTH2
   * Loose definition of packages
-  * Socket IO ready
 
 ## Why ?
 
@@ -71,6 +70,24 @@ $ eve
 6. In terminal type `eve generate user`
 7. In terminal type `eve`
 8. In your browser go to `[YOUR ADMIN URL]/post/update/1` you should see a tab called *Users*
+
+### CLI Commands
+
+```bash
+ eve                          - Alias for "eve watch all"
+ eve database                 - Adds a database to build.json
+ eve remove [name]            - removes package from deploys
+ eve map                      - updates all maps
+ eve create                   - Alias for "eve install all"
+ eve create/web [name]        - Installs web only
+ eve create/admin [name]      - Installs admin only
+ eve create/server [name]     - Installs server only
+ eve deploy                   - deploys entire build to deploy folders
+ eve watch                    - Alias for "eve watch all"
+ eve watch [name]             - Watches changes in [name] only
+ eve generate [name]          - Generates a package given the schema.json in that same folder
+ eve relate [name]            - Generates a relational package given the schema.json in that same folder
+```
 
 #Contibuting to Eve
 
