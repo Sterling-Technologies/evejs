@@ -3,7 +3,7 @@ module.exports = function(eve, command) {
 		switch(environment) {
 			case 'server':
 				//install admin
-				require('./admin.js')(eve, command);
+				require('./admin.js')(eve, command, true);
 				break;
 			case 'admin':
 				//install web
@@ -13,5 +13,5 @@ module.exports = function(eve, command) {
 	});
 	
 	//install server
-	require('./server.js')(eve, command);
+	require('./server.js')(eve, command, true);
 };

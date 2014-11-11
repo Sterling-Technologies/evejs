@@ -1,8 +1,11 @@
 module.exports = function(eve, command) {
-	var environments 	= command.shift() || 'all',
+	var separator 		= require('path').sep,
+		environments 	= command.shift() || 'all',
 		settings 		= eve.getSettings(),
-		build			= eve.getBuildPath(),
-		separator		= require('path').sep;
+		build			= eve.getBuildPath();
+	
+	//clear cache
+	eve.Folder('/').clear();
 	
 	if(environments === 'all') {
 		environments = Object.keys(settings.environments);
@@ -13,28 +16,30 @@ module.exports = function(eve, command) {
 		environments = environments.split(',');
 	}
 	
-	require('chokidar')
-	.watch(build, { ignored: /[\/\\]\./, persistent: true, ignoreInitial: true })
-	.on('all', function(event, source, stats) {
+	var watcher = require('chokidar').watch(build, { 
+		ignored: /[\/\\]\./, 
+		persistent: true, 
+		ignoreInitial: true 
+	});
+	
+	watcher.on('all', function(event, source, stats) {
 		//NOTE: event types - unlink, add, change, unlinkDir, addDir
 		//path test
-		var destination, 
-			path = source.substr(build.length).split(separator);
+		var destination, path = source.substr(build.length).split(separator);
 		
 		for(var extra, i = 0; i < environments.length; i++) {
 			extra = '';
 			if(settings.environments[environments[i]].type !== 'server') {
-				extra = separator + 'application'
+				extra = '/application';
 			}
 			
 			if(path.length > 3
 			&& path[1] == 'package'
 			&& path[3] == environments[i]) {
 				destination = settings.environments[environments[i]].path
-					+ extra 	+ separator 
-					+ 'package' + separator
-					+ path[2] 	+ separator  
-					+ path.slice(4).join(separator);
+					+ extra 	+ '/package/'
+					+ path[2] 	+ '/'  
+					+ path.slice(4).join('/');
 				
 				break;
 			}  
@@ -43,9 +48,8 @@ module.exports = function(eve, command) {
 			&& path[1] == 'config'
 			&& path[2] == environments[i]) {
 				destination = settings.environments[environments[i]].path
-					+ extra 	+ separator 
-					+ 'config' 	+ separator
-					+ path.slice(3).join(separator);
+					+ extra + '/config/'
+					+ path.slice(3).join('/');
 				
 				break;
 			}
@@ -62,6 +66,8 @@ module.exports = function(eve, command) {
 			//destination is relative to local
 			destination = build + destination.substr(1);
 		}
+		
+		destination = eve.path(destination);
 		
 		//we are updating now
 		eve.trigger('watch-update', 
@@ -86,5 +92,5 @@ module.exports = function(eve, command) {
 		});
 	});
 	
-	eve.trigger('watch-init', environments);
+	eve.trigger('watch-init', watcher, environments);
 };

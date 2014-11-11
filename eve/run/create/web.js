@@ -1,18 +1,121 @@
-module.exports = function(eve, command) {
+module.exports = function(eve, command, noDeploy) {
 	var name 		= command[0] || 'web',
-		exec 		= require('child_process').exec,
-		separator	= require('path').sep,
-		packages 	= [];
+		
+		wizard 		= require('prompt'),
+		protocol	= 'http',
+		host		= name + '.eve.dev',
+		port		= 80,
+		
+		settings	= eve.getSettings(),
+		root		= eve.getEvePath(),
+		build		= eve.getBuildPath(),
+		config		= eve.path(root + '/build/web/config/web'),
+		deploy		= eve.path(root + '/build/web/deploy/web'),
+		batch		= eve.path(root + '/build/web/package/batch/web');
+	
+	//clear cache
+	eve.Folder('/').clear();
 	
 	eve
-	.setDeployPath('./deploy/' + name)
+	
 	.sync(function(next) {
-		var settings = this.getSettings();
+		this.trigger('message', 'Creating ' + name + ' (web) ...');
 		
-		settings.environments[name] = {
-			type: 'web',
-			path: './deploy/' + name,
-			lint: {
+		var destination = build + '/deploy/' + name;
+		
+		if(!this.Folder(destination).isFolder()) {
+			next();
+			return;
+		}
+		
+		var copy = [{
+			name 		: 'allow',
+			description : 'The deploy path exists! Creating an environment '
+						+ 'here will remove all custom changes. Do you want' 
+						+ ' to continue ? (Default: No)',
+			type 		: 'string' 
+		}];
+		
+		wizard.get(copy, function(error, result) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			if(['y', 'yes'].indexOf(result.allow.toLowerCase()) === -1) {
+				this.trigger('error', 'Process has been aborted!');
+				return;
+			}
+			
+			this.Folder(destination).remove(function(error) {
+				if(error) {
+					//this.trigger('error', error);
+					//return;
+				}
+				
+				next();
+			}.bind(this));
+		}.bind(this));
+	})
+	
+	.then(function(next) {
+		if(typeof settings.environments[name] !== 'undefined'
+		&& typeof settings.environments[name].host !== 'undefined'
+		&& typeof settings.environments[name].port !== 'undefined') {
+			host = settings.environments[name].host;
+			port = settings.environments[name].port;
+			next();
+			return;
+		}
+		
+		var copy = [];
+		
+		if(typeof settings.environments[name] === 'undefined' 
+		|| typeof settings.environments[name].host === 'undefined') {
+			copy.push({
+				name 		: 'url',
+				description : 'What is the web url ? (Default: ' + name + '.eve.dev)',
+				type 		: 'string' });
+		} else if(typeof settings.environments[name] !== 'undefined') {
+			host = settings.environments[name].host;
+		}
+		
+		if(typeof settings.environments[name] === 'undefined' 
+		|| typeof settings.environments[name].port === 'undefined') {
+			copy.push({
+				name 		: 'port',
+				description : 'What is the web port ? (Default: 80)',
+				type 		: 'number' });
+		} else if(typeof settings.environments[name] !== 'undefined') {
+			port = settings.environments[name].port;
+		}
+		
+		wizard.get(copy, function(error, result) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			host = result.url || host;
+			port = result.port || port;
+			
+			next();
+		}.bind(this));
+	})
+	
+	.then(function(next) {
+		if(typeof settings.environments[name] === 'undefined') {
+			settings.environments[name] = {};
+		}
+		
+		settings.environments[name].type 		= 'web';
+		settings.environments[name].path 		= './deploy/' + name;
+		settings.environments[name].host 		= host;
+		settings.environments[name].port 		= port;
+		settings.environments[name].protocol 	= protocol;
+		
+		if(typeof settings.environments[name].lint === 'undefined') {
+			settings.environments[name].lint = {
 				globals : {
 					define 		: true,
 					controller 	: true,
@@ -27,160 +130,11 @@ module.exports = function(eve, command) {
 				jquery 			: true,
 				node 			: false,
 				maxcomplexity	: 20
-			}
+			};
 		}
 		
 		this
-			.trigger('create-step', 1, 'web', name)
-			.setSettings(settings, next);
-	})
-	//copy eve/build/web folder to deploy 
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/build/web');
-		var destination = this.getDeployPath();
-		
-		this
-			.trigger('create-step', 2, 'web', name)
-			.Folder(source).copy(destination, next);
-	})
-	//copy eve/config/web to deploy
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/config/web');
-		var destination = this.getDeployPath() + this.path('/application/config');
-		
-		this
-			.trigger('create-step', 3, 'web', name)
-			.Folder(source).copy(destination, next);
-	})
-	//copy eve/config/web to build
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/config/web');
-		var destination = this.getBuildPath() + this.path('/config/' + name);
-		
-		this
-			.trigger('create-step', 4, 'web', name)
-			.Folder(source).copy(destination, next);
-	})
-	//get package folders
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		this
-			.trigger('create-step', 5, 'server', name)
-			.Folder(this.getEvePath() + this.path('/package'))
-			.getFolders(null, false, next);
-	})
-	//start to copy package
-	.then(function(error, folders, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		packages = folders;
-		
-		for(var i = 0; i < packages.length; i++) {
-			//append the server folder
-			packages[i].path += this.path('/web');
-		}
-		
-		next.thread('copy-package', 0);
-	})
-	//package loop
-	.thread('copy-package', function(i, next) {
-		if(i < packages.length) {
-			if(!packages[i].isFolder()) {
-				next.thread('copy-package', i + 1);	
-				return;
-			}
-			
-			next.thread('copy-package-to-deploy', i);
-			return;
-		}
-		
-		next();
-	})
-	.thread('copy-package-to-deploy', function(i, next) {
-		// /[EVE_PATH]/package/[PACKAGE]/web -> [DEPLOY_PATH]/application/package/[PACKAGE]
-		var destination = this.getDeployPath() + '/application/package/' 
-			+ packages[i].getParent().split(separator).pop(); 
-		
-		var callback = next.thread.bind(null, 'copy-package-to-build', i);
-		packages[i].copy(this.path(destination), callback);
-	})
-	
-	.thread('copy-package-to-build', function(i, error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		// /[EVE_PATH]/package/[PACKAGE]/web -> [BUILD_PATH]/package/[PACKAGE]/[NAME]
-		var destination = this.getBuildPath() + '/package/' 
-			+ packages[i].getParent().split(separator).pop() + '/'
-			+ name; 
-		
-		var callback = next.thread.bind(null, 'next-package', i);
-		packages[i].copy(this.path(destination), callback);
-	})
-	//check for errors and traverse to the next package
-	.thread('next-package', function(i, error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		next.thread('copy-package', i + 1);
-	})
-	//make a map file
-	.then(function(next) {
-		//get the deploy path
-		var deploy = this.getDeployPath();
-		
-		//get all the files in the deploy path
-		this.Folder(deploy + this.path('/application'))
-		.getFiles(null, true, function(error, files) {
-			//if there's an error
-			if(error) {
-				//do nothing
-				return;
-			}
-			
-			//add files to the map
-			for(var map = [], i = 0; i < files.length; i++) {
-				map.push(files[i].path.substr(deploy.length));
-			}
-			
-			//set the map
-			this.File(deploy + this.path('/application/map.js'))
-			.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
-			function(error) {
-				next();
-			});
-		}.bind(this));
-	})
-	
-	//update settings
-	.then(function(next) {
-		this.setEnvironments(function(error) {
+		.setSettings(settings, function(error) {
 			if(error) {
 				this.trigger('error', error);
 				return;
@@ -190,9 +144,94 @@ module.exports = function(eve, command) {
 		}.bind(this));
 	})
 	
+	.then(function(next) {
+		var source = root + '/build/web';
+		
+		this
+			.trigger('message', 'Copying web files ...')
+			.Folder(source).getFiles(null, true, next);
+	})
+	
+	.then(function(error, files, next) {
+		if(error) {
+			this.trigger('error', error);
+			return;
+		}
+		
+		next.thread('file-loop', 0, files);
+	})
+	
+	.thread('file-loop', function(i, files, next) {
+		if(i < files.length) {
+			var source = root + '/build/web';
+			source = files[i].path.substr(source.length);
+			
+			var destination = build + source;
+			
+			if(files[i].path.indexOf(config) === 0) {
+				destination = build + '/config/' + name + '/' + files[i].path.substr(config.length);
+			} else if(files[i].path.indexOf(deploy) === 0) {
+				destination = build + '/deploy/' + name + '/' + files[i].path.substr(deploy.length);
+			} else if(files[i].path.indexOf(batch) === 0) {
+				destination = build + '/package/batch/' + name + '/' + files[i].path.substr(batch.length);
+			}
+			
+			files[i].copy(destination, function(error) {
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
+				next.thread('file-loop', i + 1, files);
+			}.bind(this));
+			
+			return;
+		}
+		
+		next();
+	})
+	
+	.then(function(next) {
+		this.trigger('message', 'Updating environments ...');
+		
+		var meta = { environments: {} }, environments = Object.keys(settings.environments);
+		
+		for(var environment in settings.environments) {
+			if(settings.environments.hasOwnProperty(environment)) {
+				meta.environments[environment] = {
+					type: settings.environments[environment].type, 
+					protocol: settings.environments[environment].protocol, 
+					host: settings.environments[environment].host, 
+					port: settings.environments[environment].port };
+			}
+		}
+		
+		next.thread('environment-loop', 0, environments, meta);
+	})
+	
+	.thread('environment-loop', function(i, environments, meta, next) {
+		if(i < environments.length) {
+			var file = this.File(build + '/config/' + environments[i] + '/settings.json');
+			
+			//get the settings data
+			file.setData(meta, function(error, data) {			
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
+				next.thread('environment-loop', i + 1, environments, meta);
+			}.bind(this));
+			
+			return;
+		}
+		
+		next();
+	})
+	
 	//finish up
 	.then(function(next) {
-		this.trigger('create-complete', 'web', name);	
+		this.trigger('create-complete', 'web', name, noDeploy);	
 		next();
 	});
 };

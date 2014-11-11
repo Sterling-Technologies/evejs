@@ -1,203 +1,136 @@
-module.exports = function(eve, command) {
+module.exports = function(eve, command, noDeploy) {
 	var name 		= command[0] || 'server',
+	
 		exec 		= require('child_process').exec,
-		separator	= require('path').sep,
-		packages 	= [];
+		wizard 		= require('prompt'),
+		
+		protocol	= 'http',
+		host		= name + '.eve.dev',
+		port		= 8082,
+		
+		settings	= eve.getSettings(),
+		root		= eve.getEvePath(),
+		build		= eve.getBuildPath(),
+		config		= eve.path(root + '/build/server/config/server'),
+		deploy		= eve.path(root + '/build/server/deploy/server'),
+		auth		= eve.path(root + '/build/server/package/auth/server'),
+		batch		= eve.path(root + '/build/server/package/batch/server'),
+		file		= eve.path(root + '/build/server/package/file/server'),
+		user		= eve.path(root + '/build/server/package/user/server');
+	
+	//clear cache
+	eve.Folder('/').clear();
 	
 	eve
-	.setDeployPath('./deploy/' + name)
+	
 	.sync(function(next) {
-		var settings = this.getSettings();
+		this.trigger('message', 'Creating ' + name + ' (server) ...');
 		
-		settings.environments[name] = {
-			type: 'server',
-			path: './deploy/' + name,
-			lint: {
+		var destination = build + '/deploy/' + name;
+		
+		if(!this.Folder(destination).isFolder()) {
+			next();
+			return;
+		}
+		
+		var copy = [{
+			name 		: 'allow',
+			description : 'The deploy path exists! Creating an environment '
+						+ 'here will remove all custom changes. Do you want' 
+						+ ' to continue ? (Default: No)',
+			type 		: 'string' 
+		}];
+		
+		wizard.get(copy, function(error, result) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			if(['y', 'yes'].indexOf(result.allow.toLowerCase()) === -1) {
+				this.trigger('error', 'Process has been aborted!');
+				return;
+			}
+			
+			this.Folder(destination).remove(function(error) {
+				if(error) {
+					//this.trigger('error', error);
+					//return;
+				}
+				
+				next();
+			}.bind(this));
+		}.bind(this));
+	})
+	
+	.then(function(next) {
+		if(typeof settings.environments[name] !== 'undefined'
+		&& typeof settings.environments[name].host !== 'undefined'
+		&& typeof settings.environments[name].port !== 'undefined') {
+			host = settings.environments[name].host;
+			port = settings.environments[name].port;
+			next();
+			return;
+		}
+		
+		var copy = [];
+		
+		if(typeof settings.environments[name] === 'undefined' 
+		|| typeof settings.environments[name].host === 'undefined') {
+			copy.push({
+				name 		: 'url',
+				description : 'What is the server url ? (Default: ' + name + '.eve.dev)',
+				type 		: 'string' });
+		} else if(typeof settings.environments[name] !== 'undefined') {
+			host = settings.environments[name].host;
+		}
+		
+		if(typeof settings.environments[name] === 'undefined' 
+		|| typeof settings.environments[name].port === 'undefined') {
+			copy.push({
+				name 		: 'port',
+				description : 'What is the server port ? (Default: 8082)',
+				type 		: 'number' });
+		} else if(typeof settings.environments[name] !== 'undefined') {
+			port = settings.environments[name].port;
+		}
+		
+		wizard.get(copy, function(error, result) {
+			if(error) {
+				this.trigger('error', error);
+				return;
+			}
+			
+			host = result.url || host;
+			port = result.port || port;
+			
+			next();
+		}.bind(this));
+	})
+	
+	.then(function(next) {
+		if(typeof settings.environments[name] === 'undefined') {
+			settings.environments[name] = {};
+		}
+		
+		settings.environments[name].type 		= 'server';
+		settings.environments[name].path 		= './deploy/' + name;
+		settings.environments[name].host 		= host;
+		settings.environments[name].port 		= port;
+		settings.environments[name].protocol 	= protocol;
+		
+		if(typeof settings.environments[name].lint === 'undefined') {
+			settings.environments[name].lint = {
 				bitwise 		: false,
 				strict 			: false,
 				node 			: true,
 				maxcomplexity	: 20
-			}
+			};
 		}
 		
 		this
-			.trigger('create-step', 1, 'server', name)
-			.setSettings(settings, next);
-	})
-	//copy eve/build/server folder to deploy 
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/build/server');
-		var destination = this.getDeployPath();
-		
-		this
-			.trigger('create-step', 2, 'server', name)
-			.Folder(source).copy(destination, next);
-	})
-	//copy eve/config/server to deploy
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/config/server');
-		var destination = this.getDeployPath() + this.path('/config');
-		
-		this
-			.trigger('create-step', 3, 'server', name)
-			.Folder(source).copy(destination, next);
-	})
-	//copy eve/config/server to build
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		var source = this.getEvePath() + this.path('/config/server');
-		var destination = this.getBuildPath() + this.path('/config/' + name);
-		
-		this
-			.trigger('create-step', 4, 'server', name)
-			.Folder(source).copy(destination, next);
-	})
-	//get package folders
-	.then(function(error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		this
-			.trigger('create-step', 5, 'server', name)
-			.Folder(this.getEvePath() + this.path('/package'))
-			.getFolders(null, false, next);
-	})
-	//start to copy package
-	.then(function(error, folders, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		packages = folders;
-		
-		for(var i = 0; i < packages.length; i++) {
-			//append the server folder
-			packages[i].path += this.path('/server');
-		}
-		
-		next.thread('copy-package', 0);
-	})
-	//package loop
-	.thread('copy-package', function(i, next) {
-		if(i < packages.length) {
-			if(!packages[i].isFolder()) {
-				next.thread('copy-package', i + 1);	
-				return;
-			}
-			
-			next.thread('copy-package-to-deploy', i);
-			return;
-		}
-		
-		next();
-	})
-	
-	.thread('copy-package-to-deploy', function(i, next) {
-		// /[EVE_PATH]/package/[PACKAGE]/server -> [DEPLOY_PATH]/package/[PACKAGE]
-		var destination = this.getDeployPath() + '/package/' 
-			+ packages[i].getParent().split(separator).pop(); 
-		
-		var callback = next.thread.bind(null, 'copy-package-to-build', i);
-		packages[i].copy(this.path(destination), callback);
-	})
-	
-	.thread('copy-package-to-build', function(i, error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		// /[EVE_PATH]/package/[PACKAGE]/server -> [BUILD_PATH]/package/[PACKAGE]/[NAME]
-		var destination = this.getBuildPath() + '/package/' 
-			+ packages[i].getParent().split(separator).pop() + '/'
-			+ name; 
-		
-		var callback = next.thread.bind(null, 'copy-package-schema', i);
-		packages[i].copy(this.path(destination), callback);
-	})
-	
-	.thread('copy-package-schema', function(i, error, next) {
-		var source = this.File(this.path(packages[i].getParent() + '/schema.json'));
-		
-		var destination = this.File(this.path(this.getBuildPath() + '/package/' 
-			+ packages[i].getParent().split(separator).pop() 
-			+ '/schema.json'));
-		
-		//if there is no source file or there is already a destination
-		if(!source.isFile() || destination.isFile()) {
-			next.thread('install-package', i);
-			return;
-		}
-		
-		//copy the file
-		source.copy(destination.path, function(error) {
-			if(error) {
-				this.trigger('error', error);
-				return;
-			}
-			
-			next.thread('install-package', i);
-		}.bind(this));
-	})
-	
-	.thread('install-package', function(i, next) {
-		var source = this.File(this.path(packages[i].getParent() + '/install.js'));
-		
-		var destination = this.File(this.getBuildPath() + this.path('/package/' 
-			+ packages[i].getParent().split(separator).pop() 
-			+ '/install.js'));
-		
-		//if there is no install file or there is already an install
-		if(!source.isFile() || destination.isFile()) {
-			next.thread('next-package', i, null);
-			return;
-		}
-		
-		//copy the file
-		source.copy(destination.path, function(error) {
-			if(error) {
-				this.trigger('error', error);
-				return;
-			}
-			
-			//what is the database?
-			var database = this.getDatabase();
-			
-			var callback = next.thread.bind(null, 'next-package', i);
-			require(source.path)(database, callback);
-		}.bind(this));
-	})
-	
-	//check for errors and traverse to the next package
-	.thread('next-package', function(i, error, next) {
-		if(error) {
-			this.trigger('error', error);
-			return;
-		}
-		
-		next.thread('copy-package', i + 1);
-	})
-	
-	//update settings
-	.then(function(next) {
-		this.setEnvironments(function(error) {
+		.setDeployPath(settings.environments[name].path)
+		.setSettings(settings, function(error) {
 			if(error) {
 				this.trigger('error', error);
 				return;
@@ -207,14 +140,136 @@ module.exports = function(eve, command) {
 		}.bind(this));
 	})
 	
-	//finish up
 	.then(function(next) {
-		this.trigger('create-step', 6, 'server', name);
+		var source = root + '/build/server';
 		
-		exec('cd ' + this.getDeployPath() + ' && npm install', function() {
-			eve.trigger('create-complete', 'server', name);	
+		this
+			.trigger('message', 'Copying server files ...')
+			.Folder(source).getFiles(null, true, next);
+	})
+	
+	.then(function(error, files, next) {
+		if(error) {
+			this.trigger('error', error);
+			return;
+		}
+		
+		next.thread('file-loop', 0, files);
+	})
+	
+	.thread('file-loop', function(i, files, next) {
+		if(i < files.length) {
+			var source = root + '/build/server';
+			source = files[i].path.substr(source.length);
+			
+			var destination = build + source;
+			
+			if(files[i].path.indexOf(config) === 0) {
+				destination = build + '/config/' + name + '/' + files[i].path.substr(config.length);
+			} else if(files[i].path.indexOf(deploy) === 0) {
+				destination = build + '/deploy/' + name + '/' + files[i].path.substr(deploy.length);
+			} else if(files[i].path.indexOf(auth) === 0) {
+				destination = build + '/package/auth/' + name + '/' + files[i].path.substr(auth.length);
+			} else if(files[i].path.indexOf(batch) === 0) {
+				destination = build + '/package/batch/' + name + '/' + files[i].path.substr(batch.length);
+			} else if(files[i].path.indexOf(file) === 0) {
+				destination = build + '/package/file/' + name + '/' + files[i].path.substr(file.length);
+			} else if(files[i].path.indexOf(user) === 0) {
+				destination = build + '/package/user/' + name + '/' + files[i].path.substr(user.length);
+			}
+			
+			files[i].copy(destination, function(error) {
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
+				next.thread('file-loop', i + 1, files);
+			}.bind(this));
+			
+			return;
+		}
+		
+		next();
+	})
+	
+	.then(function(next) {
+		if(JSON.stringify(settings.databases) !== '{}') {
+			next();
+			return;
+		}
+		
+		this.trigger('error', 'No database configured. Please set one now.', true);
+		
+		this.once('database-complete', function() {
+			next();
 		});
 		
+		require('../database')(eve, [], true);
+	})
+	
+	.then(function(next) {
+		var file = build + '/config/' + name + '/databases.json';
+			
+		if(!this.File(file).isFile()) {
+			next();
+			return;
+		}
+		
+		this.File(file).setData(settings.databases, function(error) {
+			if(error) {
+				eve.trigger('error', error);
+				return;
+			}
+			
+			next();
+		});
+	})
+	
+	.then(function(next) {
+		this.trigger('message', 'Updating environments ...');
+		
+		var meta = { environments: {} }, environments = Object.keys(settings.environments);
+		
+		for(var environment in settings.environments) {
+			if(settings.environments.hasOwnProperty(environment)) {
+				meta.environments[environment] = {
+					type: settings.environments[environment].type, 
+					protocol: settings.environments[environment].protocol, 
+					host: settings.environments[environment].host, 
+					port: settings.environments[environment].port };
+			}
+		}
+		
+		next.thread('environment-loop', 0, environments, meta);
+	})
+	
+	.thread('environment-loop', function(i, environments, meta, next) {
+		if(i < environments.length) {
+			var file = this.File(build + '/config/' + environments[i] + '/settings.json');
+			
+			//get the settings data
+			file.setData(meta, function(error, data) {			
+				if(error) {
+					this.trigger('error', error);
+					return;
+				}
+				
+				next.thread('environment-loop', i + 1, environments, meta);
+			}.bind(this));
+			
+			return;
+		}
+		
+		next();
+	})
+	
+	//finish up
+	.then(function(next) {
+		this.trigger('message', 'npm install ...');
+		exec('cd ' + this.getDeployPath() + ' && npm install', function() {
+			this.trigger('create-complete', 'server', name, noDeploy);	
+		}.bind(this));
 		next();
 	});
 };
