@@ -9,7 +9,7 @@
     "author": "Christian Blanquera",
     "license": "MIT",
     "dependencies": {
-        "edenjs": "0.0.27",
+        "edenjs": "0.0.28",
 		"prompt": "0.2.14",
         "chokidar": "0.10.5",
         "nodemon": "1.2.1",
