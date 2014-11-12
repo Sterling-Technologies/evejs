@@ -1,5 +1,6 @@
 var eve 		= require('./eve.js'),
 	nodemon 	= require('./eve/nodemon'),
+	phonegap 	= require('./eve/phonegap'),
 	mocha 		= require('./eve/mocha'),
 	command 	= Array.prototype.slice.apply(process.argv),
 	executable	= command.shift(),
@@ -7,7 +8,7 @@ var eve 		= require('./eve.js'),
 
 eve()
 	.on('error', function(message, soft) {
-		console.log('\x1b[31m%s\x1b[0m', message);
+		console.log('\x1b[31m%s\x1b[0m', '[eve] ' + message);
 		
 		if(!soft) {
 			this.trigger('complete');
@@ -15,11 +16,11 @@ eve()
 	})
 	
 	.on('success', function(message) {
-		console.log('\x1b[32m%s\x1b[0m', message);
+		console.log('\x1b[32m%s\x1b[0m', '[eve] ' + message);
 	})
 	
 	.on('message', function(message) {
-		console.log('\x1b[33m%s\x1b[0m', message);
+		console.log('\x1b[33m%s\x1b[0m', '[eve] ' + message);
 	})
 	
 	.on('database-complete', function(config, noDeploy) {
@@ -96,7 +97,7 @@ eve()
 			this.trigger('message', 'Shutting down watcher ...');
 			
 			for(var i = 0; i < watching.length; i++) {
-				watching[i].nodemon.emit('quit');
+				watching[i].server.emit('quit');
 			}
 			
 			watcher.close();
@@ -107,7 +108,17 @@ eve()
 		var settings = this.getSettings();
 		
 		for(var watching = [], config, i = 0; i < environments.length; i++) {
-			if(settings.environments[environments[i]].type === 'server') {
+			if(settings.environments[environments[i]].type === 'phonegap') {
+				phonegap(eve, {
+					projectDir: eve()
+						.setDeployPath(settings.environments[environments[i]].path)
+						.getDeployPath()
+				}, function(environment, error, data) {
+					watching.push({
+						environment: environment, 
+						server: data.server });
+				}.bind(this, environments[i]));
+			} else if(settings.environments[environments[i]].type === 'server') {
 				// starts the nodemon
 				config = settings.environments[environments[i]].nodemon || {
 					scriptPosition : 1, 
@@ -121,7 +132,7 @@ eve()
 				//but for now it's this...
 				watching.push({
 					environment: environments[i], 
-					nodemon: nodemon(eve, config) });
+					server: nodemon(eve, config) });
 			}
 		}
 		
@@ -239,16 +250,22 @@ eve()
 		
 		require('./eve/run/map')(this, [name]);
 	})
-	
+	//phonegap events
+	.on('phonegap-start', function() {
+		console.log('\x1b[35m%s\x1b[0m', '[eve] Phonegap has started ...');
+	})
+	.on('phonegap-quit', function() {
+		console.log('\x1b[35m%s\x1b[0m', '[eve] Phonegap has stopped ...');
+	})
 	//nodemon events
 	.on('nodemon-start', function() {
-		console.log('\x1b[35m%s\x1b[0m', 'Server has started ...');
+		console.log('\x1b[35m%s\x1b[0m', '[eve] Server has started ...');
 	})
 	.on('nodemon-quit', function() {
-		console.log('\x1b[35m%s\x1b[0m', 'Server has stopped ...');
+		console.log('\x1b[35m%s\x1b[0m', '[eve] Server has stopped ...');
 	})
 	.on('nodemon-restart', function() {
-		console.log('\x1b[35m%s\x1b[0m', 'Server has restarted ...');
+		console.log('\x1b[35m%s\x1b[0m', '[eve] Server has restarted ...');
 	})
 	
 	.run(command);

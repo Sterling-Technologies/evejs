@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Classified Tests</title>
+<!--<script src="jquery.js"></script>
+<script src="require.js"></script>-->
+<script src="classified.js"></script>
+</head>
+
+<body>
+<h1>Classified Tests</h1>
+<div id="test-1"></div>
+<div id="test-2"></div>
+
+<script type="text/javascript">
+//root definition
+var RootClass = classified({
+	//constants
+	SOME_CONSTANT: 'foo',
+	
+	//public properties
+	sampleProperty: 4.5,
+	
+	//protected properties
+	_sampleProperty: 5.5,
+	
+	//private properties
+	__sampleProperty: 6.5,
+	
+	//constructor
+	___construct: function() {
+		this.constructCalled = true;
+	},
+	
+	//public methods
+	sampleMethod: function() {
+		return this._sampleMethod();
+	},
+	
+	//protected methods
+	_sampleMethod: function() {
+		return this.__sampleMethod();
+	},
+	
+	//private methods
+	__sampleMethod: function() {
+		return this.SOME_CONSTANT + this._sampleProperty;
+	}
+});
+
+//child definition
+//you can use object or function as the definition
+var ChildClass = RootClass.extend(function() {
+	//constants
+	this.SOME_CONSTANT_2 = 'bar';
+	
+	//protected properties
+	this._sampleProperty = 7.5;
+	
+	//public methods
+	this.sampleMethod = function() {
+		return this._sampleMethod();
+	};
+	
+	//protected methods
+	this._sampleMethod = function() {
+		return this.___parent._sampleMethod();
+	};
+});
+
+//instantiate child
+var child = ChildClass.load();
+
+//test it
+document.getElementById('test-1').innerHTML = 'Test 1: ' + child.sampleMethod(); //--> foo7.5
+
+try {
+	document.getElementById('test-2').innerHTML = 'Test 2: ' + child._sampleMethod();
+} catch(e) {
+	document.getElementById('test-2').innerHTML = 'Test 2: Protected call did not work';
+}
+</script>
+</body>
+</html>

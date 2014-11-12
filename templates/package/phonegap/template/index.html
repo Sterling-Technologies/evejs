@@ -1,0 +1,41 @@
+<section class="{{name}}-list">
+	<!-- START: SEARCH FORM -->
+	<form class="pull-right search form-inline" method="get">
+		<div class="form-group">
+			<input name="keyword" placeholder="Search {{plural}}" type="text"
+			value="\{\{#if keyword\}\}\{\{keyword\}\}\{\{/if\}\}" class="form-control" />
+		</div>
+		<button class="btn"><i class="fa fa-search"></i></button>	
+	</form>
+	<!-- END: SEARCH FORM -->
+	
+    <div>
+        \{\{#if rows\}\}
+        \{\{#each rows\}\}
+        <ul>
+            <li>\{\{ {{primary}}\}\}</li>
+            {{~#if slug}}
+            <li>\{\{ {{slug.[0]}}\}\}</li>
+            {{~/if}}
+            
+            <!-- NOTE: BULK GENERATE -->
+            {{#loop fields ~}}
+            {{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
+            <li>\{\{ {{../key}}\}\}</li>
+            {{~/notin ~}}
+            {{~/loop}}
+            {{~#if created}}
+            <li>\{\{ {{created}}\}\}</li>
+            {{~/if}}
+            {{~#if updated}}
+            <li>\{\{ {{updated}}\}\}</li>
+            {{~/if}}
+        </ul>	
+        \{\{/each\}\}
+        \{\{else\}\}
+        <!-- START: NO RESULTS -->
+        <div class="well no-results">No {{plural}} Found</div>
+        <!-- END: NO RESULTS -->
+        \{\{/if\}\}
+    </div>
+</section>

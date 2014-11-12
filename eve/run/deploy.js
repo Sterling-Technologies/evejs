@@ -23,11 +23,11 @@ module.exports = function(eve, command) {
 			
 			var extra = '';
 			
-			if(settings.environments[environments[i]].type !== 'server') {
+			if(settings.environments[environments[i]].type === 'phonegap') {
+				extra = '/www/application';
+			} else if(settings.environments[environments[i]].type !== 'server') {
 				extra = '/application';
 			}
-			
-			
 			
 			this.Folder(deploy + extra + '/config').remove(function(error) {
 				if(error) {
@@ -75,7 +75,9 @@ module.exports = function(eve, command) {
 			deploy = this.setDeployPath(deploy).getDeployPath();
 			
 			var extra = '';
-			if(settings.environments[environment].type !== 'server') {
+			if(settings.environments[environment].type === 'phonegap') {
+				extra = '/www/application';
+			} else if(settings.environments[environment].type !== 'server') {
 				extra = '/application';
 			}
 			
@@ -139,7 +141,9 @@ module.exports = function(eve, command) {
 			deploy = this.setDeployPath(deploy).getDeployPath();
 			
 			var extra = '';
-			if(settings.environments[environment].type !== 'server') {
+			if(settings.environments[environment].type === 'phonegap') {
+				extra = '/www/application';
+			} else if(settings.environments[environment].type !== 'server') {
 				extra = '/application';
 			}
 			

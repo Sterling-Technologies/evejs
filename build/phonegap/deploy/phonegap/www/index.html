@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <title>Openovate Boiler Plate</title>
+    
+    <script type="text/javascript">
+	(function() {
+		//pray that they don't have privacy on ...
+		var link = document.createElement('link');
+		link.rel 	= 'stylesheet';
+		link.type 	= 'text/css';
+		link.href 	= '/styles/chui-win.css';
+		
+		if(/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+			link.href 	= '/styles/chui-ios.css';
+		} else if(/Android/i.test(navigator.userAgent)) {
+			link.href 	= '/styles/chui-android.css';
+		}
+		
+		document.head.appendChild(script);
+	})();
+    </script>
+    
+    <link rel="stylesheet" type="text/css" href="/styles/awesome.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/application.css" />
+    
+	<script type="text/javascript" src="/eve/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/scripts/chui.js"></script>
+    
+	<script type="text/javascript" src="/eve/cookie/cookie.js"></script>
+    <script type="text/javascript" src="/eve/handlebars/handlebars.js"></script>
+	<script type="text/javascript" src="/eve/classified/classified.js"></script>
+    <script type="text/javascript" src="/eve/syncopate/syncopate.js"></script>
+    <script type="text/javascript" src="/eve/doon/doon.js"></script>
+    <script type="text/javascript" src="/eve/chops/chops.js"></script>
+    <script type="text/javascript" src="/eve/fojo/fojo.js"></script>
+    <script type="text/javascript" src="/eve/require/require.js"></script>
+    
+    <script type="text/javascript" src="/eve/template.js"></script>
+    <script type="text/javascript" src="/eve/class.js"></script>
+    <script type="text/javascript" src="/eve/class/sync.js"></script>
+    <script type="text/javascript" src="/eve/class/string.js"></script>
+    <script type="text/javascript" src="/eve/class/number.js"></script>
+    <script type="text/javascript" src="/eve/class/array.js"></script>
+    <script type="text/javascript" src="/eve/class/hash.js"></script>
+    <script type="text/javascript" src="/eve/class/time.js"></script>
+	<script type="text/javascript" src="/eve/class/file.js"></script>
+    <script type="text/javascript" src="/eve/class/folder.js"></script>
+    
+    <script type="text/javascript" src="/application/map.js"></script>
+    <script type="text/javascript" src="/application/controller.js"></script>
+</head>
+<body>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('deviceready', function() {
+			var script = document.createElement('script');
+			script.src = '/application/index.js';
+			document.head.appendChild(script);
+		}, false);
+    </script>
+</body>
+</html>

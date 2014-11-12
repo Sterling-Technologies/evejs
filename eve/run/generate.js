@@ -14,8 +14,8 @@ module.exports = function(eve, command) {
 		schema 			= path + '/schema.json', 
 		templates		= root + '/templates/package', 		
 		
-		environments	= { server: [], admin: [], web: [] },
-		types			= ['server', 'admin', 'web'];
+		environments	= { server: [], admin: [], web: [], phonegap: [] },
+		types			= ['server', 'admin', 'web', 'phonegap'];
 	
 	//clear cache
 	eve.Folder('/').clear();

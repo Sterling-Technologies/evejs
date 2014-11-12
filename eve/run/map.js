@@ -28,8 +28,14 @@ module.exports = function(eve, command) {
 				.setDeployPath(settings.environments[environments[i]].path)
 				.getDeployPath();
 			
+			var extra = '/application';
+			
+			if(settings.environments[environments[i]].type === 'phonegap') {
+				extra = '/www/application';
+			}
+			
 			//get all the files in the deploy path
-			this.Folder(deploy + '/application')
+			this.Folder(deploy + extra)
 			.getFiles(null, true, function(error, files) {
 				//if there's an error
 				if(error) {
@@ -44,7 +50,7 @@ module.exports = function(eve, command) {
 				}
 				
 				//set the map
-				this.File(deploy + '/application/map.js')
+				this.File(deploy + extra + '/map.js')
 				.setContent('jQuery.eve.map = '+JSON.stringify(map)+';', 
 				function(error) {
 					if(error) {

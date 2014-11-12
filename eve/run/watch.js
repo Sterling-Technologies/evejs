@@ -29,7 +29,9 @@ module.exports = function(eve, command) {
 		
 		for(var extra, i = 0; i < environments.length; i++) {
 			extra = '';
-			if(settings.environments[environments[i]].type !== 'server') {
+			if(settings.environments[environments[i]].type === 'phonegap') {
+				extra = '/www/application';
+			} else if(settings.environments[environments[i]].type !== 'server') {
 				extra = '/application';
 			}
 			

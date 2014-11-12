@@ -33,7 +33,11 @@ var copy = {
 		'/web/action/index.js',
 		'/web/event/client-request.js',
 		'/web/factory.js',
-		'/web/index.js' ],
+		'/web/index.js',
+		'/phonegap/action/index.js',
+		'/phonegap/event/client-request.js',
+		'/phonegap/factory.js',
+		'/phonegap/index.js' ],
 		
 	'one-to-one': [
 		'/admin/event/FROM-create-output.js',
@@ -102,8 +106,8 @@ module.exports = function(eve, command) {
 		from 			= build + '/package/[FROM]/schema.json',  
 		to 				= build + '/package/[TO]/schema.json', 
 		
-		environments	= { server: [], admin: [], web: [] },
-		types			= ['server', 'admin', 'web'];
+		environments	= { server: [], admin: [], web: [], phonegap: [] },
+		types			= ['server', 'admin', 'web', 'phonegap'];
 	
 	//clear cache
 	eve.Folder('/').clear();
