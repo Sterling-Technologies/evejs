@@ -212,7 +212,7 @@ module.exports = function(eve, command) {
 	
 	//auto update package settings
 	.then(function(next) {
-		this.Folder(path).getFolders(function(error, folders) {
+		this.Folder(path).clear().getFolders(function(error, folders) {
 			if(error) {
 				this.trigger('error', error);
 				return;
