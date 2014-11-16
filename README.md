@@ -23,7 +23,17 @@ $ eve create
 
 3 - Point Apache to deploy/web
 
-4 - Watch the folder 
+4 - Install server dependencies
+
+```bash
+$ cd deploy/server
+```
+
+```bash
+$ npm install
+```
+
+5 - Watch the folder 
 
 ```bash
 $ eve
