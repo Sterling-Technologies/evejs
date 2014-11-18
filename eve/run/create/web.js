@@ -194,12 +194,12 @@ module.exports = function(eve, command, noDeploy) {
 				to.on('close', function() {
 					fs.unlink(step2, function() {
 						fs.unlink(step3, function() {
-							next()
+							next();
 						});
 					});
 				});
 			});
-		});
+		}.bind(this));
 	})
 	
 	.then(function(next) {
