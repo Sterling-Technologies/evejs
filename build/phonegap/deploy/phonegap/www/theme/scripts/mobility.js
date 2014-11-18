@@ -18,7 +18,7 @@
 		
 		try {
 			if($(target).length && $(target).html()) {
-				data.html = $(target).html();
+				$.mobility.swap($(target).html(), 'slide-right');
 			}
 		} catch(e) {}
 		
@@ -32,7 +32,7 @@
 		
 		try {
 			if($(target).length && $(target).html()) {
-				data.html = $(target).html();
+				$.mobility.swap($(target).html(), 'slide-left');
 			}
 		} catch(e) {}
 		
