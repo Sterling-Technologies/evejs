@@ -15,7 +15,9 @@
         "nodemon": "1.2.1",
         "mocha": "1.20.1",
 		"phonegap": "3.6.0-0.21.19",
-		"handlebars": "2.0.0-alpha.4"
+		"handlebars": "2.0.0-alpha.4",
+		"request": "2.48.0",
+		"tar": "1.0.2"
     },
 	"repository": {
 		"type": "git",

@@ -94,6 +94,64 @@ module.exports = function(eve, command, noDeploy) {
 	})
 	
 	.then(function(next) {
+		if(!this.Folder(root + '/build/phonegap').isFolder()) {
+			next.thread('download');
+			return;
+		}
+		
+		next();
+	})
+	
+	.thread('download', function(next) {
+		if(!this.Folder(root + '/build').isFolder()) {
+			require('fs').mkdirSync(root + '/build');
+		}
+		
+		this.trigger('message', 'Downloading Environment ...');
+		
+		var request = require('request'),
+			fs		= require('fs'),
+			tar 	= require('tar'),
+			gz 		= require('zlib'),
+			
+			start 	= 'https://raw.githubusercontent.com/Openovate/evejs/master/build/phonegap.tar.gz',
+			end		= root + '/build',
+			
+			tmp		= 'tmp-' + Math.floor(Math.random() * 1000),
+			step1 	= start,	
+			step2 	= end + '/' + tmp + '.tar.gz',
+			step3 	= end + '/' + tmp + '.tar',
+			step4	= end;
+		
+		var from = request(step1);
+		var to = fs.createWriteStream(step2);
+		
+		from.pipe(to);
+		to.on('close', function() {
+			this.trigger('message', 'Extracting Environment ...');
+			
+			var from = fs.createReadStream(step2);
+			var to = fs.createWriteStream(step3);
+			
+			from.pipe(gz.createGunzip()).pipe(to);
+			
+			to.on('close', function() {
+				var from = fs.createReadStream(step3);
+				var to = tar.Extract({ path: step4 });
+				
+				from.pipe(to);
+				to.on('close', function() {
+					fs.unlink(step2, function() {
+						fs.unlink(step3, function() {
+							next()
+						});
+					});
+				});
+			});
+		});
+	})
+	
+	.then(function(next) {
 		var source = root + '/build/phonegap';
 		
 		this
