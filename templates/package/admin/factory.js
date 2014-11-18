@@ -87,7 +87,8 @@ define(function() {
 				{{~#loop value.valid ~}} 
 					{{~#when value.[0] '==' 'required' ~}}
 					
-			if(!data.{{../../key}} || !data.{{../../key}}.length) {
+			if(typeof data.{{../../key}} === 'string' 
+			&& (!data.{{../../key}} || !data.{{../../key}}.length)) {
 				errors.push({ name: '{{../../key}}', message: '{{../../value.label}} is required!' });
 			}
 			

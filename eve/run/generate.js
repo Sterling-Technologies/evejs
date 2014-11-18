@@ -5,6 +5,7 @@ module.exports = function(eve, command) {
 		handlebars		= require('../handlebars'),
 		
 		package 		= command[0], 
+		environment 	= command[1], 
 		
 		root			= eve.getEvePath(),
 		settings		= eve.getSettings(),
@@ -98,12 +99,20 @@ module.exports = function(eve, command) {
 	
 	//packages are populated, get environemnts
 	.then(function(next) {
+		//check what environments
+		if(environment && settings.environments[environment]) {
+			environments = {};
+			environments[settings.environments[environment].type] = [];
+		}
+		
 		//determine environments
 		for(var name in settings.environments) {
 			if(settings.environments.hasOwnProperty(name)) {
-				environments[settings.environments[name].type].push({
-					name	: name, 
-					settings: settings.environments[name] });
+				if(environments[settings.environments[name].type] instanceof Array) {
+					environments[settings.environments[name].type].push({
+						name	: name, 
+						settings: settings.environments[name] });
+				}
 			}
 		}
 		
@@ -116,7 +125,8 @@ module.exports = function(eve, command) {
 	.thread('generate-type', function(i, next) {
 		if(i < types.length) {	
 			//do we have envronments ?
-			if(environments[types[i]].length) {
+			if(environments[types[i]] instanceof Array 
+			&& environments[types[i]].length) {
 				var callback = next.thread.bind(null, 'get-files', i);
 				this.Folder(templates + '/' + types[i]).getFiles(null, true, callback);
 				

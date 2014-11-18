@@ -10,7 +10,8 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-		this._data 		= {};
+		this._title       	= '{{plural}}';
+		this._data     		= { title: this._title };
 		
 		this._start		= 0;
 		this._page 		= 1;

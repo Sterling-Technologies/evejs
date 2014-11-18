@@ -1,7 +1,7 @@
 /**
  * Do On - Super light weight event driven containers.
  *
- * @version 0.0.1
+ * @version 0.0.2
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/doon
  * @license MIT

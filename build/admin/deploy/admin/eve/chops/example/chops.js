@@ -1,7 +1,7 @@
 /**
  * Chops - Client HTML5 on Push State
  *
- * @version 0.0.5
+ * @version 0.0.6
  * @author Christian Blanquera <cblanquera@openovate.com>
  * @website https://github.com/cblanquera/chops
  * @license MIT
@@ -20,6 +20,8 @@
 		-------------------------------*/
 		/* Private Properties
 		-------------------------------*/
+		var __useHash = false;
+		
 		/* Magic
 		-------------------------------*/
 		this.___construct = function() {
@@ -45,7 +47,7 @@
 				return __getState(url);
 			}
 			
-			if(!window.history.state) {
+			if(!window.history.state || typeof window.history.state === 'number') {
 				return __getState(window.location.href);
 			}
 			
@@ -105,6 +107,16 @@
 		 */
 		this.trigger = function() {
 			$(window).trigger.apply($(window), arguments);
+			return this;
+		};
+		
+		/**
+		 * Enables hash mode
+		 *
+		 * @return this
+		 */
+		this.useHash = function() {
+			__useHash = true;
 			return this;
 		};
 		
@@ -352,8 +364,9 @@
 		var __getState = function(url) {
 			var state = { 
 				url		: url,
-				path	: url.split('?').shift(),
+				path	: url.split('#').shift().split('?').shift(),
 				query	: '', //query string
+				hash	: '',
 				json	: '', //json string; no files
 				method	: 'GET', 
 				data	: {}, //combined data in common js object
@@ -370,15 +383,14 @@
 				state.path = state.path.substr(origin.length);
 			}
 			
+			if(url.indexOf('#') !== -1) {
+				state.hash = url.split('#').pop();
+			}
+			
 			//if there is a ?
 			if(state.url.indexOf('?') !== -1) {
 				state.query = state.url.split('?')[1];
 			} 
-			
-			//remove the origin
-			if(state.url.indexOf(window.location.origin) === 0) {
-				state.url = state.url.substr(window.location.origin.length);
-			}
 			
 			state.data = __queryToHash(state.query);
 			state.json = JSON.stringify(state.data);
@@ -394,10 +406,28 @@
 				state.serial.push({name: setting.shift(), value: setting.join('=')});
 			}
 			
+			if(__useHash) {
+				state.path 	= state.hash || '/';
+				state.hash 	= '';
+			}
+			
 			return state;
 		};
 		
 		var __pushLink = function(url) {
+			if(__useHash) {
+				var origin = window.location.protocol + '//' + window.location.hostname;
+			
+				if(window.location.port) {
+					origin += ':' + window.location.port;
+				}
+				
+				if(url.indexOf(origin) === 0) {
+					url = url.substr(origin.length);
+					url = origin + '/#' + url;
+				}
+			}
+			
 			var state = __getState(url);
 			
 			//push the state
@@ -406,6 +436,19 @@
 		
 		var __pushForm = function(form) {
 			var url = $(form).attr('action') || window.location.href;
+			
+			if(__useHash) {
+				var origin = window.location.protocol + '//' + window.location.hostname;
+			
+				if(window.location.port) {
+					origin += ':' + window.location.port;
+				}
+				
+				if(url.indexOf(origin) === 0) {
+					url = url.substr(origin.length);
+					url = origin + '/#' + url;
+				}
+			}
 			
 			var state = __getState(url);
 			

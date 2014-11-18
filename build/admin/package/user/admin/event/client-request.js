@@ -29,7 +29,7 @@ define(function() {
 		request.variables = variables;
 		
 		//call it, store it in response
-		require([action], function(callback) {
+		require([action + '.js'], function(callback) {
 			var action = callback();
 			
 			//event when the user request is starting

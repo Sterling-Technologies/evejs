@@ -9,7 +9,7 @@ define(function() {
 		action = this.path('block/action') + '/index.js';
 		
 		//load up the action
-		require([action], function(action) {
+		require([action + '.js'], function(action) {
 			action().response(request);
 		});
 	};

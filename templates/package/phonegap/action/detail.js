@@ -10,8 +10,8 @@ define(function() {
 		-------------------------------*/
 		/* Protected Properties
 		-------------------------------*/
-		this._data     		= {};
 		this._title       	= '{{singular}}';
+		this._data     		= { title: this._title };
 		
 		this._template = '/detail.html';
 		

@@ -221,9 +221,9 @@
 		 * @param string
 		 * @return this
 		 */
-		this.setBody = function(html) {
-			$('#body').html(html);
-				
+		this.setBody = function(html, effect) {
+			$.mobility.swap(html, effect);
+		
 			//trigger body event
 			return this.trigger('body');
 		};
@@ -405,15 +405,26 @@
 		 * @return this
 		 */
 		this.startClient = function(callback) {
+			$(document.body).doon();
 			callback = callback || $.noop;
 			
 			//that's all it takes to start the server
-			__chops = $.chops();
+			__chops = $.chops().useHash();
 			
-			this.on('request', function(e, path, state) {
+			this
+			
+			.on('request', function(e, path, state) {
 				__state = state || __chops.getState();
 				this.trigger('client-request', __state);
+			}.bind(this))
+			
+			.on('mobility-request', function(e, href, effect) {
+				__state = __chops.getState('#' + href);
+				__state.effect = effect;
+				this.trigger('client-request', __state);
 			}.bind(this));
+			
+			$.mobility.start();
 			
 			this.trigger('request', window.location.href, this.getState());
 			

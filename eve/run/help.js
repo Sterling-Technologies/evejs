@@ -11,6 +11,7 @@ module.exports = function(eve, command) {
 	eve.trigger('success', ' * eve create/web [name]        - Installs web only');
 	eve.trigger('success', ' * eve create/admin [name]      - Installs admin only');
 	eve.trigger('success', ' * eve create/server [name]     - Installs server only');
+	eve.trigger('success', ' * eve create/phonegap [name]   - Installs phonegap only');
 	eve.trigger('success', ' * eve deploy                   - deploys entire build to deploy folders');
 	eve.trigger('success', ' * eve watch                    - Alias for "eve watch all"');
 	eve.trigger('success', ' * eve watch [name]             - Watches changes in [name] only');

@@ -45,8 +45,14 @@ module.exports = function(eve, command) {
 				}
 				
 				//add files to the map
-				for(var map = [], j = 0; j < files.length; j++) {
-					map.push(files[j].path.substr(deploy.length));
+				for(var path, map = [], j = 0; j < files.length; j++) {
+					path = files[j].path.substr(deploy.length);
+					
+					if(settings.environments[environments[i]].type === 'phonegap') {
+						path = path.substr(4);
+					}
+					
+					map.push(path);
 				}
 				
 				//set the map

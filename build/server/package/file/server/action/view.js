@@ -53,7 +53,8 @@ module.exports = require('edenjs').extend(function() {
 		
 		//then prepare the package
 		this.File(data.file_path).getContent(function(error, content) {
-			response.message = content;
+			response.message = content.toString('base64');
+			response.encoding = 'base64';
 			response.headers['Content-Type'] = data.file_mime;
 			//response.headers['Content-Length'] 	= response.message.length
 			//trigger that a response has been made

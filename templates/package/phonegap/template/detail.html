@@ -1,23 +1,22 @@
-<section class="{{name}}-list">
-	<div>
-        <ul>
-            <li>\{\{detail.{{primary}}\}\}</li>
-            {{~#if slug}}
-            <li>\{\{detail.{{slug.[0]}}\}\}</li>
-            {{~/if}}
-            
-            <!-- NOTE: BULK GENERATE -->
-            {{#loop fields ~}}
-            {{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
-            <li>\{\{detail.{{../key}}\}\}</li>
-            {{~/notin ~}}
-            {{~/loop}}
-            {{~#if created}}
-            <li>\{\{detail.{{created}}\}\}</li>
-            {{~/if}}
-            {{~#if updated}}
-            <li>\{\{detail.{{updated}}\}\}</li>
-            {{~/if}}
-        </ul>
-    </div>
+<header class="head"><h1>\{\{\{title\}\}\}</h1></header>
+<section class="body with-head with-foot {{name}}-list">
+   <ul>
+        <li>\{\{detail.{{primary}}\}\}</li>
+        {{~#if slug}}
+        <li>\{\{detail.{{slug.[0]}}\}\}</li>
+        {{~/if}}
+        
+        <!-- NOTE: BULK GENERATE -->
+        {{#loop fields ~}}
+        {{~#notin value.field.[0] 'textarea,wysiwyg,markdown,file'}} 
+        <li>\{\{detail.{{../key}}\}\}</li>
+        {{~/notin ~}}
+        {{~/loop}}
+        {{~#if created}}
+        <li>\{\{detail.{{created}}\}\}</li>
+        {{~/if}}
+        {{~#if updated}}
+        <li>\{\{detail.{{updated}}\}\}</li>
+        {{~/if}}
+    </ul>
 </section>
