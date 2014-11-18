@@ -1,6 +1,6 @@
 {
     "name": "eve-pms",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "Eve - Package Management System",
     "main": "./eve.js",
     "scripts": {

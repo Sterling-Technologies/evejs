@@ -13,17 +13,23 @@ $ npm install -g eve-pms
 ```
 
 ## Quick Start
-1 - Install 
+1 - Update 
 
 ```bash
-$ sudo eve create
+$ sudo eve environments
 ```
 
-2 - Point Apache to deploy/admin
+2 - Install
 
-3 - Point Apache to deploy/web
+```bash
+$ eve create
+```
 
-4 - Install server dependencies
+3 - Point Apache to deploy/admin
+
+4 - Point Apache to deploy/web
+
+5 - Install server dependencies
 
 ```bash
 $ cd deploy/server
@@ -33,7 +39,7 @@ $ cd deploy/server
 $ npm install
 ```
 
-5 - Watch the folder 
+6 - Watch the folder 
 
 ```bash
 $ eve

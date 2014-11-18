@@ -1,5 +1,5 @@
 # Build is too big
-build/*.gz
+build
 
 # Logs
 logs

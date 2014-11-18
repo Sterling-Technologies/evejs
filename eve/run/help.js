@@ -1,6 +1,7 @@
 module.exports = function(eve, command) {
 	eve.trigger('success', ' * Commands:');
 	eve.trigger('success', ' * eve                          - Alias for "eve watch all"');
+	eve.trigger('success', ' * sudo eve envronments         - downloads the latest environments');
 	eve.trigger('success', ' * eve database                 - Adds a database to build.json');
 	//eve.trigger('success', ' * eve install [name]           - installs package from remote');
 	//eve.trigger('success', ' * eve update [name]            - installs package from remote');
