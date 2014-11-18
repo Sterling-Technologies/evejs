@@ -16,7 +16,7 @@ $ npm install -g eve-pms
 1 - Install 
 
 ```bash
-$ eve create
+$ sudo eve create
 ```
 
 2 - Point Apache to deploy/admin

@@ -181,7 +181,13 @@ module.exports = function(eve, command, noDeploy) {
 		var from = request(step1);
 		var to = fs.createWriteStream(step2);
 		
-		from.pipe(to);
+		try {
+			from.pipe(to);
+		} catch(e) {
+			this.trigger('error', e.message);
+			return;
+		}
+		
 		to.on('close', function() {
 			this.trigger('message', 'Extracting Environment ...');
 			
@@ -251,6 +257,9 @@ module.exports = function(eve, command, noDeploy) {
 					this.trigger('error', error);
 					return;
 				}
+				
+				//we need to fix permissions
+				require('fs').chmodSync(destination, 0755);
 				
 				next.thread('file-loop', i + 1, files);
 			}.bind(this));
