@@ -17,6 +17,9 @@ module.exports = function(eve, command) {
 	eve.trigger('success', ' * eve watch [name]             - Watches changes in [name] only');
 	eve.trigger('success', ' * eve generate [name]          - Generates a package given the schema.json'); 
 	eve.trigger('success', '                                  in that same folder');
+	eve.trigger('success', ' * eve generate [name] [env]    - Generates a package given the schema.json'); 
+	eve.trigger('success', '                                  in that same folder only to the');
+	eve.trigger('success', '                                  specified environment');
 	eve.trigger('success', ' * eve relate [name]            - Generates a relational package given the schema.json');
 	eve.trigger('success', '                                  in that same folder');
 	
